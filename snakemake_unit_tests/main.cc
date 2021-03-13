@@ -1,7 +1,8 @@
 /*!
   \file main.cc
   \brief main entry/exit for software. interprets command line arguments,
-  dispatches tasks, exits \copyright Released under the MIT License. Copyright
+  dispatches tasks, exits
+  \copyright Released under the MIT License. Copyright
   2021 Cameron Palmer
  */
 
@@ -33,6 +34,10 @@ int main(int argc, char **argv) {
     ap.print_help(std::cout);
     return 0;
   }
+
+  std::string output_test_dir = ap.get_output_test_dir();
+  std::string snakemake_log = ap.get_snakemake_log();
+  std::vector<std::string> added_files = ap.get_added_files();
 
   std::cout << "all done woo!" << std::endl;
   return 0;

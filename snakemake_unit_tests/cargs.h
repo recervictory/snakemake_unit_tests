@@ -66,6 +66,43 @@ class cargs {
   bool help() const { return compute_flag("help"); }
 
   /*!
+    \brief get the snakemake log for the successful pipeline run that
+    needs unit tests
+    \return name of and path to file as a string
+
+    I'll eventually come back here and annotate this with the full
+    list of snakemake run settings that need to be used to make this
+    log sufficiently informative
+   */
+  std::string get_snakemake_log() const {
+    return compute_parameter<std::string>("snakemake-log");
+  }
+
+  /*!
+    \brief get top-level directory under which tests should be installed
+    \return top-level test directory
+
+    as of this writing (March 2021), the default value for this in snakemake
+    is '.tests' and that default is carried over here
+   */
+  std::string get_output_test_dir() const {
+    return compute_parameter<std::string>("output-test-dir");
+  }
+
+  /*!
+    \brief get optional multiple files (with relative paths) that will be
+    installed alongside each unit test \return all provided relative paths (if
+    any) in a string vector
+
+    This flag can be specified multiple times, or none. Note that the intention
+    is for this option to be unnecessary, but it's exposed as an option just
+    in case people come up with corner cases that the main logic cannot handle
+   */
+  std::vector<std::string> get_added_files() const {
+    return compute_parameter<std::vector<std::string> >("added-files");
+  }
+
+  /*!
     \brief find status of arbitrary flag
     @param tag name of flag
     \return whether the flag is set
