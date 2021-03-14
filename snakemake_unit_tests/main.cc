@@ -1,8 +1,9 @@
 /*!
-  \file main.cc
-  \brief main entry/exit for software. interprets command line arguments,
+  @file main.cc
+  @brief main entry/exit for software. interprets command line arguments,
   dispatches tasks, exits
-  \copyright Released under the MIT License. Copyright
+  @author Cameron Palmer
+  @copyright Released under the MIT License. Copyright
   2021 Cameron Palmer
  */
 
@@ -19,6 +20,7 @@
 #include <vector>
 
 #include "snakemake_unit_tests/cargs.h"
+#include "snakemake_unit_tests/rule_block.h"
 
 /*!
   \brief main program implementation

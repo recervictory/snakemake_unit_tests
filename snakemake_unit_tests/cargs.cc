@@ -14,8 +14,11 @@ void snakemake_unit_tests::cargs::initialize_options() {
       "top-level output directory for all tests")(
       "snakemake-log,s", boost::program_options::value<std::string>(),
       "snakemake log file for run that needs unit tests")(
-      "added-files,a",
+      "added-files,f",
       boost::program_options::value<std::vector<std::string> >(),
       "optional set of relative file paths that will be installed alongside "
-      "tests");
+      "tests")("added-directories,d",
+               boost::program_options::value<std::vector<std::string> >(),
+               "optional set of relative directory paths that will be "
+               "installed alongside tests");
 }

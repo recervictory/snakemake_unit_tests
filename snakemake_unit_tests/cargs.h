@@ -1,9 +1,9 @@
 /*!
- \file cargs.h
- \brief command line argument handling
- \author Cameron Palmer
- \note requires boost::program_options library + headers
- \copyright Released under the MIT License.
+ @file cargs.h
+ @brief command line argument handling
+ @author Cameron Palmer
+ @note requires boost::program_options library + headers
+ @copyright Released under the MIT License.
  Copyright 2021 Cameron Palmer
 
  Thanks to
@@ -21,13 +21,13 @@
 
 namespace snakemake_unit_tests {
 /*!
-  \class cargs
-  \brief command line argument parser using boost::program_options
+  @class cargs
+  @brief command line argument parser using boost::program_options
  */
 class cargs {
  public:
   /*!
-    \brief constructor with program arguments
+    @brief constructor with program arguments
     @param argc number of arguments including program name
     @param argv string array containing actual arguments
    */
@@ -38,7 +38,7 @@ class cargs {
     boost::program_options::notify(_vm);
   }
   /*!
-    \brief copy constructor
+    @brief copy constructor
     @param obj existing cargs object
    */
   cargs(const cargs &obj) : _desc(obj._desc), _vm(obj._vm) {}
@@ -48,7 +48,7 @@ class cargs {
   ~cargs() throw() {}
 
   /*!
-    \brief set user help documentation and default values for parameters as
+    @brief set user help documentation and default values for parameters as
     needed
 
     Note the weird syntax with overloaded () operators. The lists are not
@@ -57,8 +57,8 @@ class cargs {
   void initialize_options();
 
   /*!
-    \brief determine whether the user has requested help documentation
-    \return whether the user has requested help documentation
+    @brief determine whether the user has requested help documentation
+    @return whether the user has requested help documentation
 
     This test is separate from whether the user has run the software with no
     flags
@@ -66,9 +66,9 @@ class cargs {
   bool help() const { return compute_flag("help"); }
 
   /*!
-    \brief get the snakemake log for the successful pipeline run that
+    @brief get the snakemake log for the successful pipeline run that
     needs unit tests
-    \return name of and path to file as a string
+    @return name of and path to file as a string
 
     I'll eventually come back here and annotate this with the full
     list of snakemake run settings that need to be used to make this
@@ -79,8 +79,8 @@ class cargs {
   }
 
   /*!
-    \brief get top-level directory under which tests should be installed
-    \return top-level test directory
+    @brief get top-level directory under which tests should be installed
+    @return top-level test directory
 
     as of this writing (March 2021), the default value for this in snakemake
     is '.tests' and that default is carried over here
@@ -90,9 +90,9 @@ class cargs {
   }
 
   /*!
-    \brief get optional multiple files (with relative paths) that will be
-    installed alongside each unit test \return all provided relative paths (if
-    any) in a string vector
+    @brief get optional multiple files (with relative paths) that will be
+    installed alongside each unit test
+    @return all provided relative paths (if any) in a string vector
 
     This flag can be specified multiple times, or none. Note that the intention
     is for this option to be unnecessary, but it's exposed as an option just
@@ -103,9 +103,22 @@ class cargs {
   }
 
   /*!
-    \brief find status of arbitrary flag
+    @brief get optional multiple directories (with relative paths) that will be
+    installed alongside each unit test
+    @return all provided relative directories (if any) in a string vector
+
+    This flag can be specified multiple times, or none. Note that the intention
+    is for this option to be unnecessary, but it's exposed as an option just
+    in case people come up with corner  cases that the main logic cannot handle
+   */
+  std::vector<std::string> get_added_directories() const {
+    return compute_parameter<std::vector<std::string> >("added-directories");
+  }
+
+  /*!
+    @brief find status of arbitrary flag
     @param tag name of flag
-    \return whether the flag is set
+    @return whether the flag is set
 
     This is the underlying accessor function used by the custom flag accessors,
     and can be used for arbitrary flag additions if you don't want to type out
@@ -114,12 +127,12 @@ class cargs {
    */
   bool compute_flag(const std::string &tag) const { return _vm.count(tag); }
   /*!
-    \brief find value of arbitrary parameter
+    @brief find value of arbitrary parameter
     @tparam value_type class to which the value should be cast
     @param tag name of parameter
-    \return value of parameter if specified
+    @return value of parameter if specified
 
-    \warning throws exception if parameter was not set and had no default
+    @warning throws exception if parameter was not set and had no default
    */
   template <class value_type>
   value_type compute_parameter(const std::string &tag) const {
@@ -130,7 +143,7 @@ class cargs {
   }
 
   /*!
-    \brief report help documentation to arbitrary output stream
+    @brief report help documentation to arbitrary output stream
     @param out stream to which to write help documentation
 
     Parameter should probably be std::cout or std::cerr at your preference.
@@ -142,8 +155,8 @@ class cargs {
 
  private:
   /*!
-    \brief default constructor
-    \warning disabled
+    @brief default constructor
+    @warning disabled
    */
   cargs() { throw std::domain_error("cargs: do not use default constructor"); }
   boost::program_options::options_description
