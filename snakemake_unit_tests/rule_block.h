@@ -64,10 +64,24 @@ class rule_block {
   void set_rule_name(const std::string &s) { _rule_name = s; }
 
   /*!
+    @brief get the name of the rule
+    @return the name of the rule
+
+    @warning regex matching is currently borked, this entry may be garbage
+   */
+  const std::string &get_rule_name() const { return _rule_name; }
+
+  /*!
     @brief set the name of the base rule for derived rules
     @param s new name of base rule
    */
   void set_base_rule_name(const std::string &s) { _base_rule_name = s; }
+
+  /*!
+    @brief get the name of the base rule for derived rules
+    @return the name of the base rule if applicable, or an empty string
+   */
+  const std::string &get_base_rule_name() const { return _base_rule_name; }
 
   /*!
     @brief determine whether this block is a snakemake file include directive
@@ -91,7 +105,15 @@ class rule_block {
     @brief get internal storage of code chunk as const reference
     @return code chunk as const reference
   */
-  std::vector<std::string> get_code_chunk() const { return _code_chunk; }
+  const std::vector<std::string> &get_code_chunk() const { return _code_chunk; }
+
+  /*!
+    @brief get named blocks of rule body
+    @return named blocks of rule body, or empty map
+   */
+  const std::map<std::string, std::string> &get_named_blocks() const {
+    return _named_blocks;
+  }
 
  private:
   /*!

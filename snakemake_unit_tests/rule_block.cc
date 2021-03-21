@@ -224,7 +224,30 @@ std::string snakemake_unit_tests::rule_block::get_recursive_filename() const {
 }
 
 void snakemake_unit_tests::rule_block::print_contents(std::ostream &out) const {
-  // TODO(cpalmer718): implement function
+  // report contents. may eventually be used for printing to custom snakefile
+  if (!get_code_chunk().empty()) {
+    for (std::vector<std::string>::const_iterator iter =
+             get_code_chunk().begin();
+         iter != get_code_chunk().end(); ++iter) {
+      if (!(out << *iter << std::endl))
+        throw std::runtime_error("code chunk printing error");
+    }
+  } else {
+    if (get_base_rule_name().empty()) {
+      if (!(out << "rule " << get_rule_name() << ":" << std::endl))
+        throw std::runtime_error("rule name printing failure");
+    } else {
+      if (!(out << "use rule " << get_base_rule_name() << " as "
+                << get_rule_name() << " with:" << std::endl))
+        throw std::runtime_error("derived rule name printing failure");
+    }
+    for (std::map<std::string, std::string>::const_iterator iter =
+             get_named_blocks().begin();
+         iter != get_named_blocks().end(); ++iter) {
+      if (!(out << "    " << iter->first << ":\n" << iter->second << std::endl))
+        throw std::runtime_error("named block printing failure");
+    }
+  }
 }
 
 void snakemake_unit_tests::rule_block::clear() {
