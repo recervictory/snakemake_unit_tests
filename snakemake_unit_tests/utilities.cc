@@ -34,8 +34,6 @@ std::string snakemake_unit_tests::remove_comments_and_docstrings(
         if (line.find("\"\"\"") != std::string::npos) {
           found_docstring_terminator = true;
           res += line.substr(line.find("\"\"\"") + 3);
-        } else {
-          res += line;
         }
       }
       if (!found_docstring_terminator)
@@ -47,12 +45,49 @@ std::string snakemake_unit_tests::remove_comments_and_docstrings(
   }
   cur = 0;
   // remove comments: everything after the first unescaped '#', I think
-  while ((loc = res.find("#", cur)) != std::string::npos) {
-    if (loc == 0 || res.at(loc - 1) != '\\') {
-      res = res.substr(0, loc);
-      break;
+  // need to somewhat improve comment parsing, to handle situations where
+  // comment characters are present but not indicating comments
+  // basically, all of this is extremely (overly) simple handling
+  // of quotation marks and escape characters
+  char open_quote = '\0';
+  unsigned comment_char_location = 0;
+  bool comment_char_present = false;
+  for (unsigned i = 0; i < res.size() && !comment_char_present; ++i) {
+    if (res.at(i) == '\'' || res.at(i) == '\"') {
+      if (open_quote == res.at(i)) {
+        // count preceding escapes
+        unsigned escapes = 0;
+        for (int j = static_cast<int>(i) - 1; j >= 0; --j) {
+          if (res.at(j) == '\\') {
+            ++escapes;
+          } else {
+            break;
+          }
+        }
+        if (escapes % 2 == 0) {
+          open_quote = '\0';
+        }
+      } else if (open_quote == '\0') {
+        open_quote = res.at(i);
+      }
+    } else if (res.at(i) == '#') {
+      // count preceding escapes
+      unsigned escapes = 0;
+      for (int j = static_cast<int>(i) - 1; j >= 0; --j) {
+        if (res.at(j) == '\\') {
+          ++escapes;
+        } else {
+          break;
+        }
+      }
+      if (escapes % 2 == 0 && open_quote == '\0') {
+        comment_char_location = i;
+        comment_char_present = true;
+      }
     }
-    cur = loc + 1;
+  }
+  if (comment_char_present) {
+    res = res.substr(0, comment_char_location);
   }
   // remove trailing whitespace
   res = res.substr(0, res.find_last_not_of(" \t") + 1);

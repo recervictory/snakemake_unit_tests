@@ -23,9 +23,9 @@ bool snakemake_unit_tests::rule_block::load_snakemake_rule(
   bool verbose = true;
   std::ostringstream raw_content;
   // define regex patterns for testing
-  const boost::regex standard_rule_declaration("^rule ([^ ]+): *$");
+  const boost::regex standard_rule_declaration("^rule ([^ ]+):.*$");
   const boost::regex derived_rule_declaration(
-      "^use rule ([^ ]+) as ([^ ]+) with: *$");
+      "^use rule ([^ ]+) as ([^ ]+) with:.*$");
   const boost::regex named_block_tag("^    ([a-zA-Z_\\-]+):(.*)$");
   // define state flags
   bool within_rule_block = false;
@@ -196,7 +196,7 @@ bool snakemake_unit_tests::rule_block::load_snakemake_rule(
 
 bool snakemake_unit_tests::rule_block::is_include_directive() const {
   // what is an include directive?
-  const boost::regex include_directive("^include: *\"(.*)\" *$");
+  const boost::regex include_directive("^include: *\"(.*)\".*$");
   if (get_code_chunk().size() == 1) {
     boost::smatch include_match;
     return boost::regex_match(*get_code_chunk().begin(), include_match,
@@ -207,7 +207,7 @@ bool snakemake_unit_tests::rule_block::is_include_directive() const {
 
 std::string snakemake_unit_tests::rule_block::get_recursive_filename() const {
   // what is an include directive?
-  const boost::regex include_directive("^include: *\"(.*)\" *$");
+  const boost::regex include_directive("^include: *\"(.*)\".*$");
   if (get_code_chunk().size() == 1) {
     // TODO(cpalmer718): figure out why regex submatches are failing on osx for
     // both boost and std regex implementations
@@ -217,7 +217,7 @@ std::string snakemake_unit_tests::rule_block::get_recursive_filename() const {
       // return include_match[1].str();
       std::string ret = get_code_chunk().begin()->substr(8);
       ret = ret.substr(ret.find_first_not_of(" ") + 1);
-      ret = ret.substr(0, ret.rfind("\""));
+      ret = ret.substr(0, ret.find("\""));
       return ret;
     }
   }
