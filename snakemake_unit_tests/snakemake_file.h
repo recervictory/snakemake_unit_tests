@@ -14,6 +14,7 @@
 #include <string>
 #include <vector>
 
+#include "boost/filesystem.hpp"
 #include "snakemake_unit_tests/rule_block.h"
 
 namespace snakemake_unit_tests {
@@ -43,6 +44,20 @@ class snakemake_file {
    include statements
   */
   void load_file(const std::string &filename, const std::string &base_dir);
+
+  /*!
+    @brief print block contents to stream
+    @param out open stream to which to write data
+
+    this function is primarily intended for debugging purposes at this time
+   */
+  void print_blocks(std::ostream &out) const;
+
+  /*!
+    @brief get const access to internal block representation
+    @return const reference to internal block vector
+   */
+  const std::vector<rule_block> &get_blocks() const { return _blocks; }
 
  private:
   /*!

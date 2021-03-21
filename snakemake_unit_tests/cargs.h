@@ -66,6 +66,17 @@ class cargs {
   bool help() const { return compute_flag("help"); }
 
   /*!
+    @brief get the top-level snakefile used for the full workflow
+    @return name of and path to snakefile as a string
+
+    this just points to the top-level snakefile. any modularized
+    rules in secondary snakefiles are loaded in automatically
+   */
+  std::string get_snakefile() const {
+    return compute_parameter<std::string>("snakefile");
+  }
+
+  /*!
     @brief get the snakemake log for the successful pipeline run that
     needs unit tests
     @return name of and path to file as a string
@@ -99,7 +110,7 @@ class cargs {
     in case people come up with corner cases that the main logic cannot handle
    */
   std::vector<std::string> get_added_files() const {
-    return compute_parameter<std::vector<std::string> >("added-files");
+    return compute_parameter<std::vector<std::string> >("added-files", true);
   }
 
   /*!
@@ -112,7 +123,8 @@ class cargs {
     in case people come up with corner  cases that the main logic cannot handle
    */
   std::vector<std::string> get_added_directories() const {
-    return compute_parameter<std::vector<std::string> >("added-directories");
+    return compute_parameter<std::vector<std::string> >("added-directories",
+                                                        true);
   }
 
   /*!
@@ -130,16 +142,22 @@ class cargs {
     @brief find value of arbitrary parameter
     @tparam value_type class to which the value should be cast
     @param tag name of parameter
+    @param optional whether the parameter should be allowed to be unset
     @return value of parameter if specified
 
     @warning throws exception if parameter was not set and had no default
    */
   template <class value_type>
-  value_type compute_parameter(const std::string &tag) const {
+  value_type compute_parameter(const std::string &tag,
+                               bool optional = false) const {
     if (_vm.count(tag)) {
       return _vm[tag].as<value_type>();
+    } else if (optional) {
+      return value_type();
+    } else {
+      throw std::domain_error("cargs: requested parameter \"" + tag +
+                              "\" unset");
     }
-    throw std::domain_error("cargs: requested parameter \"" + tag + "\" unset");
   }
 
   /*!

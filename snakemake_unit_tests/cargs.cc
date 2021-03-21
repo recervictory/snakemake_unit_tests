@@ -12,7 +12,11 @@ void snakemake_unit_tests::cargs::initialize_options() {
       "output-test-dir,o",
       boost::program_options::value<std::string>()->default_value(".tests"),
       "top-level output directory for all tests")(
-      "snakemake-log,s", boost::program_options::value<std::string>(),
+      "snakefile,s",
+      boost::program_options::value<std::string>()->default_value(
+          "workflow/Snakefile"),
+      "snakefile used to run target pipeline")(
+      "snakemake-log,l", boost::program_options::value<std::string>(),
       "snakemake log file for run that needs unit tests")(
       "added-files,f",
       boost::program_options::value<std::vector<std::string> >(),

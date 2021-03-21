@@ -16,9 +16,12 @@ bool snakemake_unit_tests::rule_block::load_snakemake_rule(
   // clear out internals, just to be safe
   clear();
   // define variables for processing
-  std::string line = "", block_name = "", block_contents = "";
+  std::string line = "", block_name = "", block_contents = "", raw_line = "";
   std::string::size_type line_indentation = 0;
-  unsigned line_number = 1;
+  unsigned line_number = 0;
+  // debugging variables
+  bool verbose = true;
+  std::ostringstream raw_content;
   // define regex patterns for testing
   const boost::regex standard_rule_declaration("^rule ([^ ]+): *$");
   const boost::regex derived_rule_declaration(
@@ -29,8 +32,15 @@ bool snakemake_unit_tests::rule_block::load_snakemake_rule(
   while (input.peek() != EOF) {
     // read a line from file
     getline(input, line);
+    ++line_number;
     // remove comments
-    line = remove_comments_and_docstrings(line);
+    if (verbose) {
+      std::cout << "line before chomping is \"" << line << "\"" << std::endl;
+    }
+    line = remove_comments_and_docstrings(line, &input, &line_number);
+    if (verbose) {
+      std::cout << "line after chomping is \"" << line << "\"" << std::endl;
+    }
     // skip past empty lines, though not all of these are even valid snakemake
     if (line.empty() || line.find_first_not_of("\t ") == std::string::npos)
       continue;
@@ -39,8 +49,17 @@ bool snakemake_unit_tests::rule_block::load_snakemake_rule(
       // all remaining lines must be indented. any lack of indentation means the
       // rule is done
       if (line.at(0) != ' ') {
+        if (verbose) {
+          std::cout << "content: \"" << raw_content.str()
+                    << "\"; verdict: rule block" << std::endl;
+        }
+        --line_number;
+        // return it to the file
+        input.seekg(input.tellg() -
+                    static_cast<std::ifstream::pos_type>(raw_line.size() + 2));
         return true;
       }
+      raw_content << "\n" << line;
       // use pythonic indentation to flag an arbitrary number of named blocks
       line_indentation = line.find_first_not_of(" \t");
       // expose this to user space?
@@ -49,8 +68,8 @@ bool snakemake_unit_tests::rule_block::load_snakemake_rule(
         boost::smatch named_block_tag_result;
         if (boost::regex_match(line, named_block_tag_result, named_block_tag)) {
           block_name = named_block_tag_result[1];
-          block_contents =
-              remove_comments_and_docstrings(named_block_tag_result[2]);
+          block_contents = remove_comments_and_docstrings(
+              named_block_tag_result[2], &input, &line_number);
           // logic currently assumes linting will split any block contents into
           // their own lines
           if (!block_contents.empty()) {
@@ -63,13 +82,16 @@ bool snakemake_unit_tests::rule_block::load_snakemake_rule(
           // while additional block contents are theoretically available
           while (input.peek() != EOF) {
             getline(input, line);
-            line = remove_comments_and_docstrings(line);
+            raw_line = line;
+            ++line_number;
+            line = remove_comments_and_docstrings(line, &input, &line_number);
             line_indentation = line.find_first_not_of(" \t");
             // if a line that's not contents is found
             if (line_indentation < 5) {
+              --line_number;
               // return it to the file
-              input.seekg(input.tellg() -
-                          static_cast<std::ifstream::pos_type>(line.size()));
+              input.seekg(input.tellg() - static_cast<std::ifstream::pos_type>(
+                                              raw_line.size() + 2));
               // the block is aggregated. add it to the rule block
               _named_blocks[block_name] = block_contents;
               // proceed to the next possible block
@@ -77,8 +99,13 @@ bool snakemake_unit_tests::rule_block::load_snakemake_rule(
             } else {
               // TODO(cpalmer718): deal with entries extending across multiple
               // lines? aggregate the contents with some formatting
+              raw_content << "\n" << raw_line;
               block_contents += line + "\n";
             }
+          }
+          if (input.peek() == EOF) {
+            if (verbose) std::cout << "file terminating" << std::endl;
+            return true;
           }
         } else {
           throw std::runtime_error(
@@ -89,6 +116,7 @@ bool snakemake_unit_tests::rule_block::load_snakemake_rule(
       }
     } else {
       // flag indentation that does not match assumptions
+      raw_content << "\n" << line;
       if (line.at(0) == ' ') {
         throw std::runtime_error(
             "snakemake format error detected: file \"" + filename + "\" line " +
@@ -112,7 +140,9 @@ bool snakemake_unit_tests::rule_block::load_snakemake_rule(
         // load any number of successive indented lines
         while (input.peek() != EOF) {
           getline(input, line);
-          line = remove_comments_and_docstrings(line);
+          raw_line = line;
+          ++line_number;
+          line = remove_comments_and_docstrings(line, &input, &line_number);
           // if after pruning there's nothing here, ignore it
           if (line.empty()) continue;
           line_indentation = line.find_first_not_of(" \t");
@@ -120,14 +150,27 @@ bool snakemake_unit_tests::rule_block::load_snakemake_rule(
             // this is a continuation of the previous command line, and should
             // be added
             _code_chunk.push_back(line);
+            raw_content << "\n" << raw_line;
           } else {
             // this is either a different command or a rule block
             // return it to the file
-            input.seekg(input.tellg() -
-                        static_cast<std::ifstream::pos_type>(line.size()));
+            input.seekg(input.tellg() - static_cast<std::ifstream::pos_type>(
+                                            raw_line.size() + 2));
+            --line_number;
             // parse is complete
+            if (verbose) {
+              std::cout << "content: \"" << raw_content.str()
+                        << "\"; verdict: arbitrary code chunk" << std::endl;
+            }
             return true;
           }
+        }
+        // if this is the end of the file, cool. that was the last code block.
+        if (input.peek() == EOF) {
+          if (verbose) {
+            std::cout << "file terminating" << std::endl;
+          }
+          return true;
         }
         // if the entry is not a rule declaration, upstream logic has failed
         throw std::logic_error(
@@ -139,15 +182,49 @@ bool snakemake_unit_tests::rule_block::load_snakemake_rule(
     }
   }
   // end of file. probably ok?
+  if (verbose) {
+    std::cout << "content: \"" << raw_content.str() << "\"; verdict: "
+              << (within_rule_block ? "rule block" : "end of file")
+              << std::endl;
+  }
+
   return within_rule_block;
 }
 
 bool snakemake_unit_tests::rule_block::is_include_directive() const {
-  // TODO(cpalmer718): add implementation
+  // what is an include directive?
+  const boost::regex include_directive("^include: *\"(.*)\" *$");
+  if (get_code_chunk().size() == 1) {
+    std::cout << "testing versus code chunk \"" << *get_code_chunk().begin()
+              << "\"" << std::endl;
+    boost::smatch include_match;
+    return boost::regex_match(*get_code_chunk().begin(), include_match,
+                              include_directive);
+  }
+  return false;
 }
 
 std::string snakemake_unit_tests::rule_block::get_recursive_filename() const {
-  // TODO(cpalmer718): add implementation
+  // what is an include directive?
+  const boost::regex include_directive("^include: *\"(.*)\" *$");
+  if (get_code_chunk().size() == 1) {
+    std::cout << "testing versus code chunk \"" << *get_code_chunk().begin()
+              << "\"" << std::endl;
+    boost::smatch include_match;
+    if (boost::regex_match(*get_code_chunk().begin(), include_match,
+                           include_directive)) {
+      // std::cout << "recursive filename match is \"" << include_match[1].str()
+      // << "\"" << std::endl;
+      return include_match[1].str();
+    }
+  }
+  throw std::runtime_error(
+      "get_recursive_filename() called in code block "
+      "that does not match include directive pattern");
+}
+
+void snakemake_unit_tests::rule_block::print_contents(std::ostream &out) const {
+  // TODO(cpalmer718): implement function
 }
 
 void snakemake_unit_tests::rule_block::clear() {

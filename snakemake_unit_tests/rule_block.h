@@ -10,7 +10,9 @@
 #define SNAKEMAKE_UNIT_TESTS_RULE_BLOCK_H_
 
 #include <fstream>
+#include <iostream>
 #include <map>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -78,6 +80,18 @@ class rule_block {
     @return the included filename
    */
   std::string get_recursive_filename() const;
+
+  /*!
+    @brief report mildly formatted contents to a stream
+    @param an open stream to which to write formatted contents
+   */
+  void print_contents(std::ostream &out) const;
+
+  /*!
+    @brief get internal storage of code chunk as const reference
+    @return code chunk as const reference
+  */
+  std::vector<std::string> get_code_chunk() const { return _code_chunk; }
 
  private:
   /*!
