@@ -105,6 +105,9 @@ bool snakemake_unit_tests::rule_block::load_snakemake_rule(
           }
           if (input.peek() == EOF) {
             if (verbose) std::cout << "file terminating" << std::endl;
+            // catch dangling blocks at the end of files
+            if (_named_blocks.find(block_name) == _named_blocks.end())
+              _named_blocks[block_name] = block_contents;
             return true;
           }
         } else {
