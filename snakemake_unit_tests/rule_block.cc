@@ -131,11 +131,11 @@ bool snakemake_unit_tests::rule_block::load_snakemake_rule(
         set_rule_name(regex_result[1]);
       } else if (boost::regex_match(line, regex_result,
                                     derived_rule_declaration)) {
-        set_rule_name(regex_result[1]);
+        set_rule_name(regex_result[2]);
         // derived rules declare a base rule from which they inherit certain
         // fields. setting those certain fields must be deferred until all rules
         // are available.
-        set_base_rule_name(regex_result[2]);
+        set_base_rule_name(regex_result[1]);
       } else {
         // if the entry is not a rule declaration, it is treated as some form
         // of arbitrary python/snakemake code.
@@ -236,14 +236,8 @@ void snakemake_unit_tests::rule_block::print_contents(std::ostream &out) const {
         throw std::runtime_error("code chunk printing error");
     }
   } else {
-    if (get_base_rule_name().empty()) {
-      if (!(out << "rule " << get_rule_name() << ":" << std::endl))
-        throw std::runtime_error("rule name printing failure");
-    } else {
-      if (!(out << "use rule " << get_base_rule_name() << " as "
-                << get_rule_name() << " with:" << std::endl))
-        throw std::runtime_error("derived rule name printing failure");
-    }
+    if (!(out << "rule " << get_rule_name() << ":" << std::endl))
+      throw std::runtime_error("rule name printing failure");
     for (std::map<std::string, std::string>::const_iterator iter =
              get_named_blocks().begin();
          iter != get_named_blocks().end(); ++iter) {
@@ -257,4 +251,17 @@ void snakemake_unit_tests::rule_block::clear() {
   _rule_name = _base_rule_name = "";
   _named_blocks.clear();
   _code_chunk.clear();
+}
+
+void snakemake_unit_tests::rule_block::offer_base_rule_contents(
+    const std::string &provider_name, const std::string &block_name,
+    const std::string &block_values) {
+  // make sure the suggestion is consistent with stored annotations
+  if (provider_name.compare(get_base_rule_name()) ||
+      get_base_rule_name().empty())
+    return;
+  // only update if there wasn't a definition in the derived rule itself
+  if (_named_blocks.find(block_name) != _named_blocks.end()) return;
+  // only now, perform the update
+  _named_blocks[block_name] = block_values;
 }

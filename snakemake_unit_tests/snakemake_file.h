@@ -10,6 +10,7 @@
 #ifndef SNAKEMAKE_UNIT_TESTS_SNAKEMAKE_FILE_H_
 #define SNAKEMAKE_UNIT_TESTS_SNAKEMAKE_FILE_H_
 
+#include <map>
 #include <stdexcept>
 #include <string>
 #include <vector>
