@@ -25,6 +25,11 @@ void snakemake_unit_tests::cargs::initialize_options() {
       "output-test-dir,o",
       boost::program_options::value<std::string>()->default_value(".tests"),
       "top-level output directory for all tests")(
+      "pipeline-dir,p",
+      boost::program_options::value<std::string>()->default_value(""),
+      "top-level run directory for actual instance of pipeline (if not "
+      "specified, "
+      "will be computed as * assuming --snakefile is */workflow/Snakefile)")(
       "snakefile,s",
       boost::program_options::value<std::string>()->default_value(
           "workflow/Snakefile"),

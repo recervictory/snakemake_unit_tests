@@ -101,6 +101,25 @@ class cargs {
   }
 
   /*!
+    @brief get top-level directory under which actual pipeline was run
+    @return top-level run directory
+
+    this parameter is optional. if not specified, it will be computed
+    as the directory above the one the Snakefile (specified from --snakefile).
+    this assumes therefore that the pipeline is configured such that the
+    top-level snakefile is installed in ~/workflow.
+
+    if specified, be cautious to ensure that this directory and the snakefile
+    are provided from corresponding pipeline installations, or undefined
+    behaviors may occur. but you can use this to provide base pipeline
+    directories for non-compliant (but still valid) snakemake configurations,
+    such as when the file is in ~/Snakefile instead of ~/workflow/Snakefile.
+   */
+  std::string get_pipeline_dir() const {
+    return compute_parameter<std::string>("pipeline-dir");
+  }
+
+  /*!
     @brief get optional multiple files (with relative paths) that will be
     installed alongside each unit test
     @return all provided relative paths (if any) in a string vector

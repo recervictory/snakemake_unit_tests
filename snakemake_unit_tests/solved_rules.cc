@@ -80,27 +80,111 @@ void snakemake_unit_tests::solved_rules::load_file(
 }
 
 void snakemake_unit_tests::solved_rules::emit_tests(
-    const snakemake_file &sf, const std::string &output_test_dir,
+    const snakemake_file &sf, const boost::filesystem::path &output_test_dir,
+    const boost::filesystem::path &pipeline_dir,
     const std::vector<std::string> &exclude_rules,
     const std::vector<std::string> &added_files,
     const std::vector<std::string> &added_directories) const {
+  // create unit test output directory
+  // by default, this looks like `.tests/unit`
+  // but will be overridden as `output_test_dir/unit`
+  // for compatibility with pytest
+  boost::filesystem::path test_parent_path = output_test_dir.string() + "/unit";
+  boost::filesystem::create_directories(test_parent_path);
+
+  // create an excluded rule lookup, for filtering things the user
+  // wants skipped
+  std::map<std::string, bool> exclude_rule_lookup;
+  for (std::vector<std::string>::const_iterator iter = exclude_rules.begin();
+       iter != exclude_rules.end(); ++iter) {
+    exclude_rule_lookup[*iter] = true;
+  }
+
   // iterate across loaded recipes, creating tests as you go
   std::map<std::string, bool> test_history;
   for (std::vector<recipe>::const_iterator iter = _recipes.begin();
        iter != _recipes.end(); ++iter) {
-    // only create output if the rule has not already been hit
-    if (test_history.find(iter->get_rule_name()) == test_history.end()) {
+    // only create output if the rule has not already been hit,
+    // and if the user didn't want this rule disabled
+    if (test_history.find(iter->get_rule_name()) == test_history.end() &&
+        exclude_rule_lookup.find(iter->get_rule_name()) ==
+            exclude_rule_lookup.end()) {
       test_history[iter->get_rule_name()] = true;
-      // create an output file that is hopefully unique for the rule
-      std::string output_filename = "Snakefile." + iter->get_rule_name();
+      // create a test output directory that is unique for this rule
+      boost::filesystem::path rule_parent_path =
+          test_parent_path.string() + "/" + iter->get_rule_name();
+      boost::filesystem::create_directories(rule_parent_path);
+      // create data and test directories, for output from and data for test run
+      boost::filesystem::path rule_data_path =
+          rule_parent_path.string() + "/data";
+      boost::filesystem::path rule_expected_path =
+          rule_parent_path.string() + "/expected";
+      boost::filesystem::create_directories(rule_data_path);
+      boost::filesystem::create_directories(rule_expected_path);
+      // new to this program: create a workspace with all input directories
+      boost::filesystem::path workspace_path =
+          rule_parent_path.string() + "/workspace";
+      boost::filesystem::create_directories(workspace_path);
+      // copy *output* to expected path
+      for (std::vector<std::string>::const_iterator output_iter =
+               iter->get_outputs().begin();
+           output_iter != iter->get_outputs().end(); ++output_iter) {
+        // source file is: actual_snakemake_run/relative_path_to_file
+
+        // target file is: rule_expected_path/relative_path_to_file
+
+        // check source exists
+
+        // copy
+      }
+      // copy *input* to workspace
+      for (std::vector<std::string>::const_iterator input_iter =
+               iter->get_inputs().begin();
+           input_iter != iter->get_inputs().end(); ++input_iter) {
+        // source file is: actual_snakemake_run/relative_path_to_file
+
+        // target file is: workspace_path/relative_path_to_file
+
+        // check source exists
+
+        // copy
+      }
+      // copy extra files and directories, if provided, to workspace
+      for (std::vector<std::string>::const_iterator added_file_iter =
+               added_files.begin();
+           added_file_iter != added_files.end(); ++added_file_iter) {
+        // source file is: actual_snakemake_run/relative_path_to_file
+
+        // target file is: workspace_path/relative_path_to_file
+
+        // check source exists
+
+        // copy
+      }
+      for (std::vector<std::string>::const_iterator added_directory_iter =
+               added_directories.begin();
+           added_directory_iter != added_directories.end();
+           ++added_directory_iter) {
+        // source file is: actual_snakemake_run/relative_path_to_file
+
+        // target file is: workspace_path/relative_path_to_directory
+
+        // check source *directory* exists
+
+        // recursive copy
+      }
+      // create the synthetic snakefile in workspace/workflow/Snakefile
+      std::string output_filename =
+          workspace_path.string() + "/workflow/Snakefile";
       std::ofstream output;
       output.open(output_filename.c_str());
       if (!output.is_open())
-        throw std::runtime_error("cannot create working snakemake file \"" +
+        throw std::runtime_error("cannot create synthetic snakemake file \"" +
                                  output_filename + "\"");
       // find the rule from the parsed snakefile(s) and report it to file
       sf.report_single_rule(iter->get_rule_name(), output);
-      // for now, just report what you think the command should be
+      // for now, just report what you think the command should be;
+      // this needs to be replaced with some interaction with pytest
       output << "## snakemake -n";
       for (std::vector<std::string>::const_iterator output_iter =
                iter->get_outputs().begin();

@@ -132,6 +132,8 @@ class solved_rules {
     @param sf snakemake_file object with rule definitions corresponding
     to loaded log data
     @param output_test_dir output directory for tests (e.g. '.tests/')
+    @param pipeline_dir parent directory of snakemake pipeline used to generate
+    corresponding log file (e.g.: X for X/workflow/Snakefile)
     @param exclude_rules vector of rules to skip tests for
     @param added_files vector of additional files to add to test workspaces
     @param added_directories vector of additional directories to add to test
@@ -140,7 +142,9 @@ class solved_rules {
     TODO(cpalmer718): make this do what it actually has to do,
     the current content is just a proof of principle placeholder
   */
-  void emit_tests(const snakemake_file &sf, const std::string &output_test_dir,
+  void emit_tests(const snakemake_file &sf,
+                  const boost::filesystem::path &output_test_dir,
+                  const boost::filesystem::path &pipeline_dir,
                   const std::vector<std::string> &exclude_rules,
                   const std::vector<std::string> &added_files,
                   const std::vector<std::string> &added_directories) const;
