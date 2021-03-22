@@ -11,11 +11,13 @@
 
 #include <fstream>
 #include <iostream>
+#include <map>
 #include <stdexcept>
 #include <string>
 #include <vector>
 
 #include "boost/regex.hpp"
+#include "snakemake_unit_tests/snakemake_file.h"
 #include "snakemake_unit_tests/utilities.h"
 
 namespace snakemake_unit_tests {
@@ -125,6 +127,15 @@ class solved_rules {
     @param filename name of snakemake logfile to parse
    */
   void load_file(const std::string &filename);
+  /*!
+    @brief emit tests from parsed snakemake information
+    @param sf snakemake_file object with rule definitions corresponding
+    to loaded log data
+
+    TODO(cpalmer718): make this do what it actually has to do,
+    the current content is just a proof of principle placeholder
+  */
+  void emit_tests(const snakemake_file &sf) const;
 
  private:
   std::vector<recipe> _recipes;

@@ -59,6 +59,8 @@ int main(int argc, char **argv) {
   sr.load_file(snakemake_log);
 
   // iterate over the solved rules, emitting them with modifiers as desired
+  // TODO(cpalmer718): make responsive to cli, actually implement, etc.
+  sr.emit_tests(sf);
 
   std::cout << "all done woo!" << std::endl;
   return 0;

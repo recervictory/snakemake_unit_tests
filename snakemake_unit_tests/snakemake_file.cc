@@ -95,3 +95,27 @@ void snakemake_unit_tests::snakemake_file::print_blocks(
     iter->print_contents(out);
   }
 }
+
+void snakemake_unit_tests::snakemake_file::report_single_rule(
+    const std::string &rule_name, std::ostream &out) const {
+  // find the requested rule
+  bool found_rule = false;
+  for (std::vector<rule_block>::const_iterator iter = get_blocks().begin();
+       iter != get_blocks().end(); ++iter) {
+    // if this is the rule, that's great
+    if (!iter->get_rule_name().compare(rule_name)) {
+      found_rule = true;
+    }
+    // if this is the rule or if it's not a rule at all,
+    // report it to the synthetic snakefile
+    if (!iter->get_rule_name().compare(rule_name) ||
+        iter->get_rule_name().empty()) {
+      iter->print_contents(out);
+    }
+  }
+  // if the correct rule was never found, complain
+  if (!found_rule)
+    throw std::runtime_error(
+        "unable to locate log requested rule in scanned snakefiles: \"" +
+        rule_name + "\"");
+}

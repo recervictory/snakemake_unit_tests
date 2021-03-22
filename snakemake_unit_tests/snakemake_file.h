@@ -60,6 +60,14 @@ class snakemake_file {
    */
   const std::vector<rule_block> &get_blocks() const { return _blocks; }
 
+  /*!
+    @brief report all code blocks but a single requested rule to file
+    @param rule_name string name of requested rule
+    @param out open output stream to which to write data
+   */
+  void report_single_rule(const std::string &rule_name,
+                          std::ostream &out) const;
+
  private:
   /*!
     @brief minimal contents of snakemake file as blocks of code

@@ -62,3 +62,35 @@ void snakemake_unit_tests::solved_rules::load_file(
     throw;
   }
 }
+
+void snakemake_unit_tests::solved_rules::emit_tests(
+    const snakemake_file &sf) const {
+  // iterate across loaded recipes, creating tests as you go
+  std::map<std::string, bool> test_history;
+  for (std::vector<recipe>::const_iterator iter = _recipes.begin();
+       iter != _recipes.end(); ++iter) {
+    // only create output if the rule has not already been hit
+    if (test_history.find(iter->get_rule_name()) == test_history.end()) {
+      test_history[iter->get_rule_name()] = true;
+      // create an output file that is hopefully unique for the rule
+      std::string output_filename = "Snakefile." + iter->get_rule_name();
+      std::ofstream output;
+      output.open(output_filename.c_str());
+      if (!output.is_open())
+        throw std::runtime_error("cannot create working snakemake file \"" +
+                                 output_filename + "\"");
+      // find the rule from the parsed snakefile(s) and report it to file
+      sf.report_single_rule(iter->get_rule_name(), output);
+      // for now, just report what you think the command should be
+      output << "## snakemake -n";
+      for (std::vector<std::string>::const_iterator output_iter =
+               iter->get_outputs().begin();
+           output_iter != iter->get_outputs().end(); ++output_iter) {
+        output << ' ' << *output_iter;
+      }
+      output << std::endl;
+      output.close();
+      output.clear();
+    }
+  }
+}
