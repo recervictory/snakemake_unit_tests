@@ -11,6 +11,7 @@
 
 #include <fstream>
 #include <string>
+#include <vector>
 
 namespace snakemake_unit_tests {
 /*!
@@ -31,6 +32,13 @@ namespace snakemake_unit_tests {
 std::string remove_comments_and_docstrings(const std::string &s,
                                            std::ifstream *input,
                                            unsigned *line_number);
+/*!
+  @brief take a comma/space delimited list of filenames and break them up into a
+  vector
+  @param s input list; intended to be from snakemake log data
+  @param target vector in which to store data
+ */
+void split_comma_list(const std::string &s, std::vector<std::string> *target);
 }  // namespace snakemake_unit_tests
 
 #endif  // SNAKEMAKE_UNIT_TESTS_UTILITIES_H_

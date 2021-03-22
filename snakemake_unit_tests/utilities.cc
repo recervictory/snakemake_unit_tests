@@ -95,3 +95,21 @@ std::string snakemake_unit_tests::remove_comments_and_docstrings(
   // all done i hope
   return res;
 }
+
+void snakemake_unit_tests::split_comma_list(const std::string &s,
+                                            std::vector<std::string> *target) {
+  if (!target)
+    throw std::runtime_error("null target vector to split_comma_list");
+  target->clear();
+  std::string::size_type loc = 0, cur = 0;
+  while (true) {
+    loc = s.find(", ", cur);
+    if (loc == std::string::npos) {
+      target->push_back(s.substr(cur));
+      break;
+    } else {
+      target->push_back(s.substr(cur, loc - cur));
+      cur = loc + 2;
+    }
+  }
+}

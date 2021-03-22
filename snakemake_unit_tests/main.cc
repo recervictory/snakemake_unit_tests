@@ -23,6 +23,7 @@
 #include "snakemake_unit_tests/cargs.h"
 #include "snakemake_unit_tests/rule_block.h"
 #include "snakemake_unit_tests/snakemake_file.h"
+#include "snakemake_unit_tests/solved_rules.h"
 
 /*!
   \brief main program implementation
@@ -52,6 +53,12 @@ int main(int argc, char **argv) {
 
   // as a debug step, report the parsed contents of the snakefile
   sf.print_blocks(std::cout);
+
+  // parse the log file to determine the solved system of rules and outputs
+  snakemake_unit_tests::solved_rules sr;
+  sr.load_file(snakemake_log);
+
+  // iterate over the solved rules, emitting them with modifiers as desired
 
   std::cout << "all done woo!" << std::endl;
   return 0;
