@@ -20,7 +20,7 @@ bool snakemake_unit_tests::rule_block::load_snakemake_rule(
   std::string::size_type line_indentation = 0;
   unsigned line_number = 0;
   // debugging variables
-  bool verbose = true;
+  bool verbose = false;
   std::ostringstream raw_content;
   // define regex patterns for testing
   const boost::regex standard_rule_declaration("^rule ([^ ]+):.*$");
