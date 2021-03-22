@@ -114,12 +114,9 @@ void snakemake_unit_tests::solved_rules::emit_tests(
       boost::filesystem::path rule_parent_path =
           test_parent_path.string() + "/" + iter->get_rule_name();
       boost::filesystem::create_directories(rule_parent_path);
-      // create data and test directories, for output from and data for test run
-      boost::filesystem::path rule_data_path =
-          rule_parent_path.string() + "/data";
+      // create test directory, for output from test run
       boost::filesystem::path rule_expected_path =
           rule_parent_path.string() + "/expected";
-      boost::filesystem::create_directories(rule_data_path);
       boost::filesystem::create_directories(rule_expected_path);
       // new to this program: create a workspace with all input directories
       boost::filesystem::path workspace_path =
