@@ -228,17 +228,24 @@ void snakemake_unit_tests::solved_rules::emit_tests(
       if (!output.is_open())
         throw std::runtime_error("cannot create synthetic snakemake file \"" +
                                  output_filename + "\"");
-      // find the rule from the parsed snakefile(s) and report it to file
-      sf.report_single_rule(iter->get_rule_name(), output);
-      // for now, just report what you think the command should be;
-      // this needs to be replaced with some interaction with pytest
-      output << "## snakemake -n";
+      // before adding anything else: add a single 'all' rule that points at
+      // solved rule output files
+      if (!(output << "rule all:\n    output:" << std::endl))
+        throw std::runtime_error(
+            "cannot write phony 'all' rule to synthetic snakefile");
       for (std::vector<std::string>::const_iterator output_iter =
                iter->get_outputs().begin();
            output_iter != iter->get_outputs().end(); ++output_iter) {
-        output << ' ' << *output_iter;
+        if (!(output << "        \"" << *output_iter << "\"," << std::endl))
+          throw std::runtime_error(
+              "cannot write phony 'all' outputs to synthetic snakefile");
       }
-      output << std::endl;
+      if (!(output << std::endl))
+        throw std::runtime_error(
+            "cannot write phony 'all' rule trailing whitespace to synthetic "
+            "snakefile");
+      // find the rule from the parsed snakefile(s) and report it to file
+      sf.report_single_rule(iter->get_rule_name(), output);
       output.close();
       output.clear();
     }
