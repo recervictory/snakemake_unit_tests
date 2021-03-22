@@ -16,9 +16,10 @@ std::string snakemake_unit_tests::remove_comments_and_docstrings(
     throw std::logic_error(
         "null line counter pointer provided with non-null input stream");
   // remove docstrings: any text embedded between a pair of triple quotes """
-  if ((loc = res.find("\"\"\"", cur)) != std::string::npos) {
-    if (loc != res.rfind("\"\"\"")) {
-      res = res.substr(0, loc) + res.substr(res.find("\"\"\"", loc + 3) + 3);
+  if ((loc = s.find("\"\"\"", cur)) != std::string::npos) {
+    res = res.substr(0, loc);
+    if (loc != s.rfind("\"\"\"")) {
+      res += s.substr(s.find("\"\"\"", loc + 3) + 3);
       cur = loc + 3;
     } else {
       // allow multiline docstrings
