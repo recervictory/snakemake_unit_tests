@@ -135,6 +135,9 @@ class solved_rules {
     @param output_test_dir output directory for tests (e.g. '.tests/')
     @param pipeline_dir parent directory of snakemake pipeline used to generate
     corresponding log file (e.g.: X for X/workflow/Snakefile)
+    @param inst_dir directory in snakemake_unit_tests repo containing
+    installation files (when conda mode is enabled, this will default to
+    $CONDA_PREFIX/share/snakemake_unit_tests/inst)
     @param exclude_rules vector of rules to skip tests for
     @param added_files vector of additional files to add to test workspaces
     @param added_directories vector of additional directories to add to test
@@ -146,6 +149,7 @@ class solved_rules {
   void emit_tests(const snakemake_file &sf,
                   const boost::filesystem::path &output_test_dir,
                   const boost::filesystem::path &pipeline_dir,
+                  const boost::filesystem::path &inst_dir,
                   const std::vector<std::string> &exclude_rules,
                   const std::vector<std::string> &added_files,
                   const std::vector<std::string> &added_directories) const;

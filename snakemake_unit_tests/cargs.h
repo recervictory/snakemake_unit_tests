@@ -120,6 +120,19 @@ class cargs {
   }
 
   /*!
+    @brief get path to inst directory for this copy of snakemake_unit_tests
+    @return path to (including 'inst') inst directory from snakemake_unit_tests
+    repo
+
+    once this is bundled for conda, this will default to
+    $CONDA_PREFIX/share/snakemake_unit_tests/inst and the user's life will
+    improve concomitantly.
+   */
+  std::string get_inst_dir() const {
+    return compute_parameter<std::string>("inst-dir");
+  }
+
+  /*!
     @brief get optional multiple files (with relative paths) that will be
     installed alongside each unit test
     @return all provided relative paths (if any) in a string vector

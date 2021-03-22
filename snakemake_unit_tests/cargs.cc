@@ -20,6 +20,8 @@ void snakemake_unit_tests::cargs::initialize_options() {
       boost::program_options::value<std::vector<std::string> >(),
       "optional set of relative file paths that will be installed alongside "
       "tests")("help,h", "emit this help message")(
+      "inst-dir,i", boost::program_options::value<std::string>(),
+      "snakemake_unit_tests inst directory")(
       "snakemake-log,l", boost::program_options::value<std::string>(),
       "snakemake log file for run that needs unit tests")(
       "output-test-dir,o",

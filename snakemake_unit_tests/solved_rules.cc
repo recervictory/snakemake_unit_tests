@@ -82,6 +82,7 @@ void snakemake_unit_tests::solved_rules::load_file(
 void snakemake_unit_tests::solved_rules::emit_tests(
     const snakemake_file &sf, const boost::filesystem::path &output_test_dir,
     const boost::filesystem::path &pipeline_dir,
+    const boost::filesystem::path &inst_dir,
     const std::vector<std::string> &exclude_rules,
     const std::vector<std::string> &added_files,
     const std::vector<std::string> &added_directories) const {
@@ -91,6 +92,16 @@ void snakemake_unit_tests::solved_rules::emit_tests(
   // for compatibility with pytest
   boost::filesystem::path test_parent_path = output_test_dir.string() + "/unit";
   boost::filesystem::create_directories(test_parent_path);
+
+  // repo files for creating pytest infrastructure
+  boost::filesystem::path inst_test_py = inst_dir.string() + "/test.py";
+  boost::filesystem::path inst_common_py = inst_dir.string() + "/common.py";
+  if (!boost::filesystem::is_regular_file(inst_test_py) ||
+      !boost::filesystem::is_regular_file(inst_common_py))
+    throw std::runtime_error(
+        "cannot locate required files test.py or common.py "
+        "in inst directory \"" +
+        inst_dir.string() + "\"");
 
   // create an excluded rule lookup, for filtering things the user
   // wants skipped
@@ -230,7 +241,7 @@ void snakemake_unit_tests::solved_rules::emit_tests(
                                  output_filename + "\"");
       // before adding anything else: add a single 'all' rule that points at
       // solved rule output files
-      if (!(output << "rule all:\n    output:" << std::endl))
+      if (!(output << "rule all:\n    input:" << std::endl))
         throw std::runtime_error(
             "cannot write phony 'all' rule to synthetic snakefile");
       for (std::vector<std::string>::const_iterator output_iter =
@@ -248,6 +259,33 @@ void snakemake_unit_tests::solved_rules::emit_tests(
       sf.report_single_rule(iter->get_rule_name(), output);
       output.close();
       output.clear();
+      // modify repo inst/test.py into a test runner for this rule
+      std::string test_python_file =
+          test_parent_path.string() + "/test_" + iter->get_rule_name() + ".py";
+      output.open(test_python_file.c_str());
+      if (!output.is_open())
+        throw std::runtime_error("cannot write test python file \"" +
+                                 test_python_file + "\"");
+      if (!(output << "#!/usr/bin/env python3\ntestdir='"
+                   << output_test_dir.string() << "'\nrulename='"
+                   << iter->get_rule_name() << '\'' << std::endl))
+        throw std::runtime_error(
+            "cannot write rulename variable to test python file \"" +
+            test_python_file + "\"");
+      std::ifstream input;
+      input.open(inst_test_py.string().c_str());
+      if (!input.is_open())
+        throw std::runtime_error("cannot read installed file \"" +
+                                 inst_test_py.string() + "\"");
+      if (!(output << input.rdbuf()))
+        throw std::runtime_error("cannot dump \"" + inst_test_py.string() +
+                                 "\" to output \"" + test_python_file + "\"");
+      input.close();
+      input.clear();
+      output.close();
+      output.clear();
     }
   }
+  // emit common.py in the test_parent_path; no modifications needed
+  boost::filesystem::copy(inst_common_py, test_parent_path);
 }

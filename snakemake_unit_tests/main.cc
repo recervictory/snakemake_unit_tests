@@ -51,6 +51,10 @@ int main(int argc, char **argv) {
     pipeline_run_draft = snakefile.branch_path().branch_path().string();
   }
   boost::filesystem::path pipeline_run_dir = pipeline_run_draft;
+  boost::filesystem::path inst_dir = ap.get_inst_dir();
+  if (!boost::filesystem::is_directory(inst_dir))
+    throw std::runtime_error("provided inst directory \"" + inst_dir.string() +
+                             "\" does not exist");
   std::string snakemake_log = ap.get_snakemake_log();
   std::vector<std::string> added_files = ap.get_added_files();
   std::vector<std::string> added_directories = ap.get_added_directories();
@@ -74,7 +78,7 @@ int main(int argc, char **argv) {
 
   // iterate over the solved rules, emitting them with modifiers as desired
   // TODO(cpalmer718): make responsive to cli, actually implement, etc.
-  sr.emit_tests(sf, output_test_dir, pipeline_run_dir, exclude_rules,
+  sr.emit_tests(sf, output_test_dir, pipeline_run_dir, inst_dir, exclude_rules,
                 added_files, added_directories);
 
   std::cout << "all done woo!" << std::endl;

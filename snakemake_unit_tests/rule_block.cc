@@ -27,6 +27,10 @@ bool snakemake_unit_tests::rule_block::load_snakemake_rule(
   const boost::regex named_block_tag("^    ([a-zA-Z_\\-]+):(.*)$");
   // define state flags
   bool within_rule_block = false;
+  std::vector<std::string> reduced_relative_paths;
+  reduced_relative_paths.push_back("../envs");
+  reduced_relative_paths.push_back("../scripts");
+  reduced_relative_paths.push_back("../report");
   while (input.peek() != EOF) {
     // read a line from file
     getline(input, line);
@@ -42,6 +46,20 @@ bool snakemake_unit_tests::rule_block::load_snakemake_rule(
     // skip past empty lines, though not all of these are even valid snakemake
     if (line.empty() || line.find_first_not_of("\t ") == std::string::npos)
       continue;
+    // hackjob nonsense:
+    /*
+      reduce by one level relative paths from within workflow/rules.
+      this is necessary because recursively included files from rules/
+      are flattened by one level when loaded.
+     */
+    for (std::vector<std::string>::const_iterator iter =
+             reduced_relative_paths.begin();
+         iter != reduced_relative_paths.end(); ++iter) {
+      if (line.find(*iter) != std::string::npos) {
+        line = line.substr(0, line.find(*iter)) + iter->substr(3) +
+               line.substr(line.find(*iter) + iter->size());
+      }
+    }
     // switch behavior depending on state
     if (within_rule_block) {
       // all remaining lines must be indented. any lack of indentation means the
@@ -84,6 +102,20 @@ bool snakemake_unit_tests::rule_block::load_snakemake_rule(
             ++line_number;
             line = remove_comments_and_docstrings(line, &input, &line_number);
             line_indentation = line.find_first_not_of(" \t");
+            // hackjob nonsense:
+            /*
+              reduce by one level relative paths from within workflow/rules.
+              this is necessary because recursively included files from rules/
+              are flattened by one level when loaded.
+            */
+            for (std::vector<std::string>::const_iterator iter =
+                     reduced_relative_paths.begin();
+                 iter != reduced_relative_paths.end(); ++iter) {
+              if (line.find(*iter) != std::string::npos) {
+                line = line.substr(0, line.find(*iter)) + iter->substr(3) +
+                       line.substr(line.find(*iter) + iter->size());
+              }
+            }
             // if a line that's not contents is found
             if (line_indentation < 5) {
               --line_number;
@@ -146,6 +178,21 @@ bool snakemake_unit_tests::rule_block::load_snakemake_rule(
           line = remove_comments_and_docstrings(line, &input, &line_number);
           // if after pruning there's nothing here, ignore it
           if (line.empty()) continue;
+          // hackjob nonsense:
+          /*
+            reduce by one level relative paths from within workflow/rules.
+            this is necessary because recursively included files from rules/
+            are flattened by one level when loaded.
+          */
+          for (std::vector<std::string>::const_iterator iter =
+                   reduced_relative_paths.begin();
+               iter != reduced_relative_paths.end(); ++iter) {
+            if (line.find(*iter) != std::string::npos) {
+              line = line.substr(0, line.find(*iter)) + iter->substr(3) +
+                     line.substr(line.find(*iter) + iter->size());
+            }
+          }
+
           line_indentation = line.find_first_not_of(" \t");
           if (line_indentation > 0) {
             // this is a continuation of the previous command line, and should
