@@ -55,6 +55,9 @@ int main(int argc, char **argv) {
   std::vector<std::string> added_files = ap.get_added_files();
   std::vector<std::string> added_directories = ap.get_added_directories();
   std::vector<std::string> exclude_rules = ap.get_exclude_rules();
+  // add "all" to exclusion list, always
+  // it's ok if it dups with user specification, it's uniqued later
+  exclude_rules.push_back("all");
 
   // parse the top-level snakefile and all include files (hopefully)
   snakemake_unit_tests::snakemake_file sf;

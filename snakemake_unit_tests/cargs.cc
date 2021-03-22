@@ -15,7 +15,7 @@ void snakemake_unit_tests::cargs::initialize_options() {
       "alongside tests")(
       "exclude-rules,e",
       boost::program_options::value<std::vector<std::string> >(),
-      "optional set of rules to skip for testing (i.e. 'all')")(
+      "optional set of rules to skip for testing")(
       "added-files,f",
       boost::program_options::value<std::vector<std::string> >(),
       "optional set of relative file paths that will be installed alongside "
