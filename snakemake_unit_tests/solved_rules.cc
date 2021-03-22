@@ -136,13 +136,17 @@ void snakemake_unit_tests::solved_rules::emit_tests(
         boost::filesystem::path target_file =
             workspace_path.string() + "/" + *output_iter;
         // check source exists
-        if (!boost::filesystem::is_regular_file(source_file)) {
-          throw std::runtime_error("cannot find output file \"" +
+        if (!boost::filesystem::is_regular_file(source_file) ||
+            !boost::filesystem::is_directory(source_file)) {
+          throw std::runtime_error("cannot find output file/directory \"" +
                                    source_file.string() + "\" for rule \"" +
                                    iter->get_rule_name() + "\"");
         }
-        // copy
-        boost::filesystem::copy(source_file, target_file);
+        // recursive copy
+        boost::filesystem::copy(
+            source_file, target_file,
+            boost::filesystem::copy_options::overwrite_existing |
+                boost::filesystem::copy_options::recursive);
       }
       // copy *input* to workspace
       for (std::vector<std::string>::const_iterator input_iter =
@@ -155,13 +159,17 @@ void snakemake_unit_tests::solved_rules::emit_tests(
         boost::filesystem::path target_file =
             workspace_path.string() + "/" + *input_iter;
         // check source exists
-        if (!boost::filesystem::is_regular_file(source_file)) {
+        if (!boost::filesystem::is_regular_file(source_file) ||
+            !boost::filesystem::is_directory(source_file)) {
           throw std::runtime_error("cannot find input file \"" +
                                    source_file.string() + "\" for rule \"" +
                                    iter->get_rule_name() + "\"");
         }
-        // copy
-        boost::filesystem::copy(source_file, target_file);
+        // recursive copy
+        boost::filesystem::copy(
+            source_file, target_file,
+            boost::filesystem::copy_options::overwrite_existing |
+                boost::filesystem::copy_options::recursive);
       }
       // copy extra files and directories, if provided, to workspace
       for (std::vector<std::string>::const_iterator added_file_iter =
@@ -179,7 +187,9 @@ void snakemake_unit_tests::solved_rules::emit_tests(
                                    source_file.string() + "\"");
         }
         // copy
-        boost::filesystem::copy(source_file, target_file);
+        boost::filesystem::copy(
+            source_file, target_file,
+            boost::filesystem::copy_options::overwrite_existing);
       }
       for (std::vector<std::string>::const_iterator added_directory_iter =
                added_directories.begin();
