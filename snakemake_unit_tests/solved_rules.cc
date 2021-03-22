@@ -16,20 +16,27 @@ void snakemake_unit_tests::solved_rules::load_file(
   const boost::regex standard_rule_declaration("^rule ([^ ]+):.*$");
   boost::smatch regex_result;
   try {
+    // open log file
     input.open(filename.c_str());
     if (!input.is_open())
       throw std::runtime_error("cannot open snakemake log file \"" + filename +
                                "\"");
+    // while log entries remain
     while (input.peek() != EOF) {
       getline(input, line);
       // if the line is a valid rule declaration
       if (boost::regex_match(line, regex_result, standard_rule_declaration)) {
+        // set apparent rule name
+        // for magical reasons, this regex seems to be working where
+        // the include directive one wasn't; has to do with '/'?
         recipe rep;
         rep.set_rule_name(regex_result[1]);
+        // scan for remaining rule content lines
         while (input.peek() != EOF) {
           getline(input, line);
           if (line.empty()) break;
           if (line.find("    input:") == 0) {
+            // special handler for solved input files
             split_comma_list(line.substr(11), &input_filenames);
             for (std::vector<std::string>::const_iterator iter =
                      input_filenames.begin();
@@ -37,6 +44,7 @@ void snakemake_unit_tests::solved_rules::load_file(
               rep.add_input(*iter);
             }
           } else if (line.find("    output:") == 0) {
+            // special handler for solved output files
             split_comma_list(line.substr(12), &output_filenames);
             for (std::vector<std::string>::const_iterator iter =
                      output_filenames.begin();
@@ -44,11 +52,19 @@ void snakemake_unit_tests::solved_rules::load_file(
               rep.add_output(*iter);
             }
           } else if (line.find("    log:") == 0) {
+            // track log file but not 100% sure what to do with it.
+            // snakemake --generate-unit-tests tends to fail when
+            // log files get created. may need to add this to
+            // an exclusion list.
             rep.set_log(line.substr(9));
           } else if (line.find("    jobid:") == 0 ||
                      line.find("    wildcards:") == 0) {
-            // for the moment, do nothing
+            // other recognized solution annotations;
+            // for the moment, do nothing with them
           } else {
+            // flag solution annotations that aren't present
+            // in the example snakemake run, in case they
+            // need to be specially handled
             throw std::logic_error("unrecognized snakemake log block: \"" +
                                    line + "\"; please file bug report");
           }
