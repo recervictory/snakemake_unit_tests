@@ -130,48 +130,77 @@ void snakemake_unit_tests::solved_rules::emit_tests(
                iter->get_outputs().begin();
            output_iter != iter->get_outputs().end(); ++output_iter) {
         // source file is: actual_snakemake_run/relative_path_to_file
-
+        boost::filesystem::path source_file =
+            pipeline_dir.string() + "/" + *output_iter;
         // target file is: rule_expected_path/relative_path_to_file
-
+        boost::filesystem::path target_file =
+            workspace_path.string() + "/" + *output_iter;
         // check source exists
-
+        if (!boost::filesystem::is_regular_file(source_file)) {
+          throw std::runtime_error("cannot find output file \"" +
+                                   source_file.string() + "\" for rule \"" +
+                                   iter->get_rule_name() + "\"");
+        }
         // copy
+        boost::filesystem::copy(source_file, target_file);
       }
       // copy *input* to workspace
       for (std::vector<std::string>::const_iterator input_iter =
                iter->get_inputs().begin();
            input_iter != iter->get_inputs().end(); ++input_iter) {
         // source file is: actual_snakemake_run/relative_path_to_file
-
+        boost::filesystem::path source_file =
+            pipeline_dir.string() + "/" + *input_iter;
         // target file is: workspace_path/relative_path_to_file
-
+        boost::filesystem::path target_file =
+            workspace_path.string() + "/" + *input_iter;
         // check source exists
-
+        if (!boost::filesystem::is_regular_file(source_file)) {
+          throw std::runtime_error("cannot find input file \"" +
+                                   source_file.string() + "\" for rule \"" +
+                                   iter->get_rule_name() + "\"");
+        }
         // copy
+        boost::filesystem::copy(source_file, target_file);
       }
       // copy extra files and directories, if provided, to workspace
       for (std::vector<std::string>::const_iterator added_file_iter =
                added_files.begin();
            added_file_iter != added_files.end(); ++added_file_iter) {
         // source file is: actual_snakemake_run/relative_path_to_file
-
+        boost::filesystem::path source_file =
+            pipeline_dir.string() + "/" + *added_file_iter;
         // target file is: workspace_path/relative_path_to_file
-
+        boost::filesystem::path target_file =
+            workspace_path.string() + "/" + *added_file_iter;
         // check source exists
-
+        if (!boost::filesystem::is_regular_file(source_file)) {
+          throw std::runtime_error("cannot find added file \"" +
+                                   source_file.string() + "\"");
+        }
         // copy
+        boost::filesystem::copy(source_file, target_file);
       }
       for (std::vector<std::string>::const_iterator added_directory_iter =
                added_directories.begin();
            added_directory_iter != added_directories.end();
            ++added_directory_iter) {
-        // source file is: actual_snakemake_run/relative_path_to_file
-
+        // source file is: actual_snakemake_run/relative_path_to_directory
+        boost::filesystem::path source_directory =
+            pipeline_dir.string() + "/" + *added_directory_iter;
         // target file is: workspace_path/relative_path_to_directory
-
+        boost::filesystem::path target_directory =
+            workspace_path.string() + "/" + *added_directory_iter;
         // check source *directory* exists
-
+        if (!boost::filesystem::is_directory(source_directory)) {
+          throw std::runtime_error("cannot find added directory \"" +
+                                   source_directory.string() + "\"");
+        }
         // recursive copy
+        boost::filesystem::copy(
+            source_directory, target_directory,
+            boost::filesystem::copy_options::overwrite_existing |
+                boost::filesystem::copy_options::recursive);
       }
       // create the synthetic snakefile in workspace/workflow/Snakefile
       std::string output_filename =
