@@ -64,7 +64,10 @@ void snakemake_unit_tests::solved_rules::load_file(
 }
 
 void snakemake_unit_tests::solved_rules::emit_tests(
-    const snakemake_file &sf) const {
+    const snakemake_file &sf, const std::string &output_test_dir,
+    const std::vector<std::string> &exclude_rules,
+    const std::vector<std::string> &added_files,
+    const std::vector<std::string> &added_directories) const {
   // iterate across loaded recipes, creating tests as you go
   std::map<std::string, bool> test_history;
   for (std::vector<recipe>::const_iterator iter = _recipes.begin();

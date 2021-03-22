@@ -9,9 +9,8 @@
 #include "snakemake_unit_tests/snakemake_file.h"
 
 void snakemake_unit_tests::snakemake_file::load_file(
-    const std::string &filename, const std::string &base_dir) {
+    const std::string &filename, const std::string &base_dir, bool verbose) {
   std::ifstream input;
-  bool verbose = true;
   try {
     input.open((base_dir + "/" + filename).c_str());
     if (!input.is_open())
@@ -20,7 +19,7 @@ void snakemake_unit_tests::snakemake_file::load_file(
     rule_block rb;
     // while valid content is detected in the file
     std::cout << "starting file \"" << filename << "\" load" << std::endl;
-    while (rb.load_snakemake_rule(input, filename)) {
+    while (rb.load_snakemake_rule(input, filename, verbose)) {
       if (verbose) std::cout << "found a chunk" << std::endl;
       // determine if this block was actually an include directive
       if (rb.is_include_directive()) {
@@ -31,7 +30,7 @@ void snakemake_unit_tests::snakemake_file::load_file(
         boost::filesystem::path recursive_path =
             base_dir + "/" + rb.get_recursive_filename();
         load_file(recursive_path.leaf().string(),
-                  recursive_path.branch_path().string());
+                  recursive_path.branch_path().string(), verbose);
         // and now that the include has been performed, do not add the include
         // statement
       } else {

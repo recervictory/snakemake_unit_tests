@@ -128,6 +128,20 @@ class cargs {
   }
 
   /*!
+    @brief get optional rule names to exclude from testing
+    @return vector of all provided rules to exclude from test output
+   */
+  std::vector<std::string> get_exclude_rules() const {
+    return compute_parameter<std::vector<std::string> >("exclude-rules", true);
+  }
+
+  /*!
+    @brief determine whether the user has requested verbose logging output
+    @return whether the user has requested verbose logging output
+   */
+  bool verbose() const { return compute_flag("verbose"); }
+
+  /*!
     @brief find status of arbitrary flag
     @param tag name of flag
     @return whether the flag is set
@@ -138,6 +152,7 @@ class cargs {
     config file.
    */
   bool compute_flag(const std::string &tag) const { return _vm.count(tag); }
+
   /*!
     @brief find value of arbitrary parameter
     @tparam value_type class to which the value should be cast

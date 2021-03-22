@@ -50,12 +50,14 @@ class rule_block {
     @param input an open file stream connected to a snakemake file
     @param filename name of the open snakemake file. only used for
     informative error messages
+    @param verbose whether to report verbose logging output
     @return whether a rule was successfully loaded
 
     this function will parse out a single rule from a snakemake file.
     it is designed to be called until it returns false.
    */
-  bool load_snakemake_rule(std::ifstream &input, const std::string &filename);
+  bool load_snakemake_rule(std::ifstream &input, const std::string &filename,
+                           bool verbose);
 
   /*!
     @brief set the name of the rule

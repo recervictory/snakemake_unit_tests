@@ -10,7 +10,7 @@
 #include "snakemake_unit_tests/rule_block.h"
 
 bool snakemake_unit_tests::rule_block::load_snakemake_rule(
-    std::ifstream &input, const std::string &filename) {
+    std::ifstream &input, const std::string &filename, bool verbose) {
   // be sure input stream is open
   if (!input.is_open()) return false;
   // clear out internals, just to be safe
@@ -19,8 +19,6 @@ bool snakemake_unit_tests::rule_block::load_snakemake_rule(
   std::string line = "", block_name = "", block_contents = "", raw_line = "";
   std::string::size_type line_indentation = 0;
   unsigned line_number = 0;
-  // debugging variables
-  bool verbose = false;
   std::ostringstream raw_content;
   // define regex patterns for testing
   const boost::regex standard_rule_declaration("^rule ([^ ]+):.*$");

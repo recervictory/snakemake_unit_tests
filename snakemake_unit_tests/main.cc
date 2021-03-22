@@ -41,26 +41,31 @@ int main(int argc, char **argv) {
   }
 
   // load command line options
+  bool verbose = ap.verbose();
   std::string output_test_dir = ap.get_output_test_dir();
   boost::filesystem::path snakefile = ap.get_snakefile();
   std::string snakemake_log = ap.get_snakemake_log();
   std::vector<std::string> added_files = ap.get_added_files();
   std::vector<std::string> added_directories = ap.get_added_directories();
+  std::vector<std::string> exclude_rules = ap.get_exclude_rules();
 
   // parse the top-level snakefile and all include files (hopefully)
   snakemake_unit_tests::snakemake_file sf;
-  sf.load_file(snakefile.leaf().string(), snakefile.branch_path().string());
+  sf.load_file(snakefile.leaf().string(), snakefile.branch_path().string(),
+               verbose);
 
   // as a debug step, report the parsed contents of the snakefile
-  sf.print_blocks(std::cout);
-
+  if (verbose) {
+    sf.print_blocks(std::cout);
+  }
   // parse the log file to determine the solved system of rules and outputs
   snakemake_unit_tests::solved_rules sr;
   sr.load_file(snakemake_log);
 
   // iterate over the solved rules, emitting them with modifiers as desired
   // TODO(cpalmer718): make responsive to cli, actually implement, etc.
-  sr.emit_tests(sf);
+  sr.emit_tests(sf, output_test_dir, exclude_rules, added_files,
+                added_directories);
 
   std::cout << "all done woo!" << std::endl;
   return 0;
