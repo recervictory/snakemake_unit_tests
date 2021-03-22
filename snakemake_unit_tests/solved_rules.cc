@@ -134,14 +134,16 @@ void snakemake_unit_tests::solved_rules::emit_tests(
             pipeline_dir.string() + "/" + *output_iter;
         // target file is: rule_expected_path/relative_path_to_file
         boost::filesystem::path target_file =
-            workspace_path.string() + "/" + *output_iter;
+            rule_expected_path.string() + "/" + *output_iter;
         // check source exists
-        if (!boost::filesystem::is_regular_file(source_file) ||
+        if (!boost::filesystem::is_regular_file(source_file) &&
             !boost::filesystem::is_directory(source_file)) {
           throw std::runtime_error("cannot find output file/directory \"" +
                                    source_file.string() + "\" for rule \"" +
                                    iter->get_rule_name() + "\"");
         }
+        // create parent directories as needed
+        boost::filesystem::create_directories(target_file.branch_path());
         // recursive copy
         boost::filesystem::copy(
             source_file, target_file,
@@ -159,12 +161,14 @@ void snakemake_unit_tests::solved_rules::emit_tests(
         boost::filesystem::path target_file =
             workspace_path.string() + "/" + *input_iter;
         // check source exists
-        if (!boost::filesystem::is_regular_file(source_file) ||
+        if (!boost::filesystem::is_regular_file(source_file) &&
             !boost::filesystem::is_directory(source_file)) {
           throw std::runtime_error("cannot find input file \"" +
                                    source_file.string() + "\" for rule \"" +
                                    iter->get_rule_name() + "\"");
         }
+        // create parent directories as needed
+        boost::filesystem::create_directories(target_file.branch_path());
         // recursive copy
         boost::filesystem::copy(
             source_file, target_file,
@@ -186,6 +190,8 @@ void snakemake_unit_tests::solved_rules::emit_tests(
           throw std::runtime_error("cannot find added file \"" +
                                    source_file.string() + "\"");
         }
+        // create parent directories as needed
+        boost::filesystem::create_directories(target_file.branch_path());
         // copy
         boost::filesystem::copy(
             source_file, target_file,
@@ -206,12 +212,17 @@ void snakemake_unit_tests::solved_rules::emit_tests(
           throw std::runtime_error("cannot find added directory \"" +
                                    source_directory.string() + "\"");
         }
+        // create parent directories as needed
+        boost::filesystem::create_directories(target_directory.branch_path());
         // recursive copy
         boost::filesystem::copy(
             source_directory, target_directory,
             boost::filesystem::copy_options::overwrite_existing |
                 boost::filesystem::copy_options::recursive);
       }
+      // create parent directories for synthetic snakefile
+      boost::filesystem::create_directories(workspace_path.string() +
+                                            "/workflow");
       // create the synthetic snakefile in workspace/workflow/Snakefile
       std::string output_filename =
           workspace_path.string() + "/workflow/Snakefile";
