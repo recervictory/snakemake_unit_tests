@@ -43,8 +43,14 @@ int main(int argc, char **argv) {
   // load command line options
   bool verbose = ap.verbose();
   boost::filesystem::path output_test_dir = ap.get_output_test_dir();
-  boost::filesystem::path pipeline_run_dir = ap.get_pipeline_dir();
   boost::filesystem::path snakefile = ap.get_snakefile();
+  std::string pipeline_run_draft = ap.get_pipeline_dir();
+  if (pipeline_run_draft.empty()) {
+    // behavior: if not specified, select it as the directory above
+    // wherever the snakefile is installed
+    pipeline_run_draft = snakefile.branch_path().branch_path().string();
+  }
+  boost::filesystem::path pipeline_run_dir = pipeline_run_draft;
   std::string snakemake_log = ap.get_snakemake_log();
   std::vector<std::string> added_files = ap.get_added_files();
   std::vector<std::string> added_directories = ap.get_added_directories();
