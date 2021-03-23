@@ -11,7 +11,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 import common
 
 
-def test_extract_PharmGKB():
+def test_function():
 
     with TemporaryDirectory() as tmpdir:
         rundir = Path(tmpdir) / "rundir"
