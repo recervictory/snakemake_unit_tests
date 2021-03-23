@@ -24,6 +24,7 @@
 #include "snakemake_unit_tests/rule_block.h"
 #include "snakemake_unit_tests/snakemake_file.h"
 #include "snakemake_unit_tests/solved_rules.h"
+#include "snakemake_unit_tests/yaml_reader.h"
 
 /*!
   @brief main program implementation
