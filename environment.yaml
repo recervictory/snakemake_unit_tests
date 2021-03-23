@@ -1,4 +1,8 @@
 name: snakemake_unit_tests-env
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
 dependencies:
   - boost-cpp
   - yaml-cpp
