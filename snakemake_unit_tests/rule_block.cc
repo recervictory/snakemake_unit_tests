@@ -274,11 +274,46 @@ void snakemake_unit_tests::rule_block::print_contents(std::ostream &out) const {
   } else {
     if (!(out << "rule " << get_rule_name() << ":" << std::endl))
       throw std::runtime_error("rule name printing failure");
+    // enforce restrictions on block order
+    std::map<std::string, bool> high_priority_blocks, low_priority_blocks;
+    high_priority_blocks["input"] = true;
+    high_priority_blocks["output"] = true;
+    low_priority_blocks["run"] = true;
+    low_priority_blocks["shell"] = true;
+    low_priority_blocks["script"] = true;
+    low_priority_blocks["wrapper"] = true;
+    low_priority_blocks["cwl"] = true;
+    // get first blocks
     for (std::map<std::string, std::string>::const_iterator iter =
              get_named_blocks().begin();
          iter != get_named_blocks().end(); ++iter) {
-      if (!(out << "    " << iter->first << ": " << iter->second << std::endl))
-        throw std::runtime_error("named block printing failure");
+      if (high_priority_blocks.find(iter->first) !=
+          high_priority_blocks.end()) {
+        if (!(out << "    " << iter->first << ": " << iter->second
+                  << std::endl))
+          throw std::runtime_error("named block printing failure");
+      }
+    }
+    // get intermediate blocks
+    for (std::map<std::string, std::string>::const_iterator iter =
+             get_named_blocks().begin();
+         iter != get_named_blocks().end(); ++iter) {
+      if (high_priority_blocks.find(iter->first) ==
+              high_priority_blocks.end() &&
+          low_priority_blocks.find(iter->first) == low_priority_blocks.end()) {
+        if (!(out << "    " << iter->first << ": " << iter->second
+                  << std::endl))
+          throw std::runtime_error("named block printing failure");
+      }
+    }
+    // get last blocks
+    for (std::map<std::string, std::string>::const_iterator iter =
+             get_named_blocks().begin();
+         iter != get_named_blocks().end(); ++iter) {
+      if (low_priority_blocks.find(iter->first) != low_priority_blocks.end()) {
+        if (!(out << "    " << iter->first << ":" << iter->second << std::endl))
+          throw std::runtime_error("named block printing failure");
+      }
     }
   }
 }
