@@ -86,15 +86,6 @@ bool snakemake_unit_tests::rule_block::load_snakemake_rule(
           block_name = named_block_tag_result[1];
           block_contents = remove_comments_and_docstrings(
               named_block_tag_result[2], &input, &line_number);
-          // logic currently assumes linting will split any block contents into
-          // their own lines
-          if (!block_contents.empty()) {
-            throw std::logic_error(
-                "snakemake named block single-line specification detected: "
-                "file \"" +
-                filename + "\" line " + std::to_string(line_number) +
-                " entry \"" + line + "\"");
-          }
           // while additional block contents are theoretically available
           while (input.peek() != EOF) {
             getline(input, line);
@@ -130,7 +121,7 @@ bool snakemake_unit_tests::rule_block::load_snakemake_rule(
               // TODO(cpalmer718): deal with entries extending across multiple
               // lines? aggregate the contents with some formatting
               raw_content << "\n" << raw_line;
-              block_contents += line + "\n";
+              block_contents += "\n" + line;
             }
           }
           if (input.peek() == EOF) {
@@ -286,7 +277,7 @@ void snakemake_unit_tests::rule_block::print_contents(std::ostream &out) const {
     for (std::map<std::string, std::string>::const_iterator iter =
              get_named_blocks().begin();
          iter != get_named_blocks().end(); ++iter) {
-      if (!(out << "    " << iter->first << ":\n" << iter->second << std::endl))
+      if (!(out << "    " << iter->first << ": " << iter->second << std::endl))
         throw std::runtime_error("named block printing failure");
     }
   }
