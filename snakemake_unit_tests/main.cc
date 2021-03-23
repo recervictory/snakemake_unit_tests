@@ -44,6 +44,12 @@ int main(int argc, char **argv) {
 
   // load command line options
   bool verbose = ap.verbose();
+  // if yaml config is specified, use it to get default values;
+  // then add or overwrite those values with additional command
+  // line flags
+  std::string config_file = ap.get_config_yaml();
+  snakemake_unit_tests::yaml_reader config;
+  if (!config_file.empty()) config.load_file(config_file);
   boost::filesystem::path output_test_dir = ap.get_output_test_dir();
   boost::filesystem::path snakefile = ap.get_snakefile();
   std::string pipeline_run_draft = ap.get_pipeline_dir();

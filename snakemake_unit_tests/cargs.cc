@@ -9,6 +9,9 @@
 
 void snakemake_unit_tests::cargs::initialize_options() {
   _desc.add_options()(
+      "config,c",
+      boost::program_options::value<std::string>()->default_value(""),
+      "config yaml file specifying default options for other flags")(
       "added-directories,d",
       boost::program_options::value<std::vector<std::string> >(),
       "optional set of relative directory paths that will be installed "

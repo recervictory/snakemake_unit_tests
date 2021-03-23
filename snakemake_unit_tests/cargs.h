@@ -66,6 +66,16 @@ class cargs {
   bool help() const { return compute_flag("help"); }
 
   /*!
+    @brief get user-specified config yaml file,
+    containing all the various parameters they've specified
+    so they don't have to write out the horrible command
+    line call each time
+   */
+  std::string get_config_yaml() const {
+    return compute_parameter<std::string>("config");
+  }
+
+  /*!
     @brief get the top-level snakefile used for the full workflow
     @return name of and path to snakefile as a string
 
