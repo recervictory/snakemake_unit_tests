@@ -1,0 +1,62 @@
+\hypertarget{main_8cc}{}\doxysection{snakemake\+\_\+unit\+\_\+tests/main.cc File Reference}
+\label{main_8cc}\index{snakemake\_unit\_tests/main.cc@{snakemake\_unit\_tests/main.cc}}
+
+
+main entry/exit for software. interprets command line arguments, dispatches tasks, exits  
+
+
+{\ttfamily \#include $<$algorithm$>$}\newline
+{\ttfamily \#include $<$cmath$>$}\newline
+{\ttfamily \#include $<$fstream$>$}\newline
+{\ttfamily \#include $<$iostream$>$}\newline
+{\ttfamily \#include $<$map$>$}\newline
+{\ttfamily \#include $<$random$>$}\newline
+{\ttfamily \#include $<$sstream$>$}\newline
+{\ttfamily \#include $<$stdexcept$>$}\newline
+{\ttfamily \#include $<$string$>$}\newline
+{\ttfamily \#include $<$utility$>$}\newline
+{\ttfamily \#include $<$vector$>$}\newline
+{\ttfamily \#include \char`\"{}boost/filesystem.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}snakemake\+\_\+unit\+\_\+tests/cargs.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}snakemake\+\_\+unit\+\_\+tests/rule\+\_\+block.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}snakemake\+\_\+unit\+\_\+tests/snakemake\+\_\+file.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}snakemake\+\_\+unit\+\_\+tests/solved\+\_\+rules.\+h\char`\"{}}\newline
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{main_8cc_a3c04138a5bfe5d72780bb7e82a18e627}{main}} (int argc, char $\ast$$\ast$argv)
+\begin{DoxyCompactList}\small\item\em main program implementation \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+main entry/exit for software. interprets command line arguments, dispatches tasks, exits 
+
+\begin{DoxyAuthor}{Author}
+Cameron Palmer 
+\end{DoxyAuthor}
+\begin{DoxyCopyright}{Copyright}
+Released under the MIT License. Copyright 2021 Cameron Palmer 
+\end{DoxyCopyright}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{main_8cc_a3c04138a5bfe5d72780bb7e82a18e627}\label{main_8cc_a3c04138a5bfe5d72780bb7e82a18e627}} 
+\index{main.cc@{main.cc}!main@{main}}
+\index{main@{main}!main.cc@{main.cc}}
+\doxysubsubsection{\texorpdfstring{main()}{main()}}
+{\footnotesize\ttfamily int main (\begin{DoxyParamCaption}\item[{int}]{argc,  }\item[{char $\ast$$\ast$}]{argv }\end{DoxyParamCaption})}
+
+
+
+main program implementation 
+
+
+\begin{DoxyParams}{Parameters}
+{\em argc} & number of command line entries, including program name \\
+\hline
+{\em argv} & array of command line entries \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+exit code\+: 0 on success, nonzero otherwise 
+\end{DoxyReturn}

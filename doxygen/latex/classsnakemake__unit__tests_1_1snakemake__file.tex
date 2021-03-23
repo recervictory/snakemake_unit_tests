@@ -1,0 +1,130 @@
+\hypertarget{classsnakemake__unit__tests_1_1snakemake__file}{}\doxysection{snakemake\+\_\+unit\+\_\+tests\+::snakemake\+\_\+file Class Reference}
+\label{classsnakemake__unit__tests_1_1snakemake__file}\index{snakemake\_unit\_tests::snakemake\_file@{snakemake\_unit\_tests::snakemake\_file}}
+
+
+abstract representation of snakefile as a series of rules and python code chunks  
+
+
+
+
+{\ttfamily \#include $<$snakemake\+\_\+file.\+h$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1snakemake__file_a5484f7623475b04ac44a995fb662c46e}\label{classsnakemake__unit__tests_1_1snakemake__file_a5484f7623475b04ac44a995fb662c46e}} 
+\mbox{\hyperlink{classsnakemake__unit__tests_1_1snakemake__file_a5484f7623475b04ac44a995fb662c46e}{snakemake\+\_\+file}} ()
+\begin{DoxyCompactList}\small\item\em default constructor \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classsnakemake__unit__tests_1_1snakemake__file_a12fde0c600cb4fbb4d23edea68efe66e}{snakemake\+\_\+file}} (const \mbox{\hyperlink{classsnakemake__unit__tests_1_1snakemake__file}{snakemake\+\_\+file}} \&obj)
+\begin{DoxyCompactList}\small\item\em copy constructor \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1snakemake__file_a75af4c4c7927d70267481cb7915c8198}\label{classsnakemake__unit__tests_1_1snakemake__file_a75af4c4c7927d70267481cb7915c8198}} 
+\mbox{\hyperlink{classsnakemake__unit__tests_1_1snakemake__file_a75af4c4c7927d70267481cb7915c8198}{$\sim$snakemake\+\_\+file}} ()  throw ()
+\begin{DoxyCompactList}\small\item\em destructor \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classsnakemake__unit__tests_1_1snakemake__file_a8e0f1757bc55f74e80e6106916813efd}{load\+\_\+file}} (const std\+::string \&filename, const std\+::string \&base\+\_\+dir, bool verbose)
+\begin{DoxyCompactList}\small\item\em load and parse a snakemake file \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classsnakemake__unit__tests_1_1snakemake__file_af59b77d2fd21c3bd0298b7b4cd23bd03}{print\+\_\+blocks}} (std\+::ostream \&out) const
+\begin{DoxyCompactList}\small\item\em print block contents to stream \end{DoxyCompactList}\item 
+const std\+::vector$<$ \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block}{rule\+\_\+block}} $>$ \& \mbox{\hyperlink{classsnakemake__unit__tests_1_1snakemake__file_a90d509e74db2edee9d63708f5ff71615}{get\+\_\+blocks}} () const
+\begin{DoxyCompactList}\small\item\em get const access to internal block representation \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classsnakemake__unit__tests_1_1snakemake__file_a497771fee3e29671b877fc68a37af7c9}{report\+\_\+single\+\_\+rule}} (const std\+::string \&rule\+\_\+name, std\+::ostream \&out) const
+\begin{DoxyCompactList}\small\item\em report all code blocks but a single requested rule to file \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1snakemake__file_af9fc7c2f42403d86167fcaf102d304e3}\label{classsnakemake__unit__tests_1_1snakemake__file_af9fc7c2f42403d86167fcaf102d304e3}} 
+std\+::vector$<$ \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block}{rule\+\_\+block}} $>$ \mbox{\hyperlink{classsnakemake__unit__tests_1_1snakemake__file_af9fc7c2f42403d86167fcaf102d304e3}{\+\_\+blocks}}
+\begin{DoxyCompactList}\small\item\em minimal contents of snakemake file as blocks of code \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+abstract representation of snakefile as a series of rules and python code chunks 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1snakemake__file_a12fde0c600cb4fbb4d23edea68efe66e}\label{classsnakemake__unit__tests_1_1snakemake__file_a12fde0c600cb4fbb4d23edea68efe66e}} 
+\index{snakemake\_unit\_tests::snakemake\_file@{snakemake\_unit\_tests::snakemake\_file}!snakemake\_file@{snakemake\_file}}
+\index{snakemake\_file@{snakemake\_file}!snakemake\_unit\_tests::snakemake\_file@{snakemake\_unit\_tests::snakemake\_file}}
+\doxysubsubsection{\texorpdfstring{snakemake\_file()}{snakemake\_file()}}
+{\footnotesize\ttfamily snakemake\+\_\+unit\+\_\+tests\+::snakemake\+\_\+file\+::snakemake\+\_\+file (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classsnakemake__unit__tests_1_1snakemake__file}{snakemake\+\_\+file}} \&}]{obj }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+copy constructor 
+
+
+\begin{DoxyParams}{Parameters}
+{\em obj} & existing \mbox{\hyperlink{classsnakemake__unit__tests_1_1snakemake__file}{snakemake\+\_\+file}} object \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1snakemake__file_a90d509e74db2edee9d63708f5ff71615}\label{classsnakemake__unit__tests_1_1snakemake__file_a90d509e74db2edee9d63708f5ff71615}} 
+\index{snakemake\_unit\_tests::snakemake\_file@{snakemake\_unit\_tests::snakemake\_file}!get\_blocks@{get\_blocks}}
+\index{get\_blocks@{get\_blocks}!snakemake\_unit\_tests::snakemake\_file@{snakemake\_unit\_tests::snakemake\_file}}
+\doxysubsubsection{\texorpdfstring{get\_blocks()}{get\_blocks()}}
+{\footnotesize\ttfamily const std\+::vector$<$\mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block}{rule\+\_\+block}}$>$\& snakemake\+\_\+unit\+\_\+tests\+::snakemake\+\_\+file\+::get\+\_\+blocks (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+get const access to internal block representation 
+
+\begin{DoxyReturn}{Returns}
+const reference to internal block vector 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1snakemake__file_a8e0f1757bc55f74e80e6106916813efd}\label{classsnakemake__unit__tests_1_1snakemake__file_a8e0f1757bc55f74e80e6106916813efd}} 
+\index{snakemake\_unit\_tests::snakemake\_file@{snakemake\_unit\_tests::snakemake\_file}!load\_file@{load\_file}}
+\index{load\_file@{load\_file}!snakemake\_unit\_tests::snakemake\_file@{snakemake\_unit\_tests::snakemake\_file}}
+\doxysubsubsection{\texorpdfstring{load\_file()}{load\_file()}}
+{\footnotesize\ttfamily void snakemake\+\_\+unit\+\_\+tests\+::snakemake\+\_\+file\+::load\+\_\+file (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{filename,  }\item[{const std\+::string \&}]{base\+\_\+dir,  }\item[{bool}]{verbose }\end{DoxyParamCaption})}
+
+
+
+load and parse a snakemake file 
+
+
+\begin{DoxyParams}{Parameters}
+{\em filename} & name of file to load \\
+\hline
+{\em base\+\_\+dir} & directory from which to base relative file paths \\
+\hline
+{\em verbose} & whether to emit verbose logging output\\
+\hline
+\end{DoxyParams}
+designed to be called recursively to handle include statements \mbox{\Hypertarget{classsnakemake__unit__tests_1_1snakemake__file_af59b77d2fd21c3bd0298b7b4cd23bd03}\label{classsnakemake__unit__tests_1_1snakemake__file_af59b77d2fd21c3bd0298b7b4cd23bd03}} 
+\index{snakemake\_unit\_tests::snakemake\_file@{snakemake\_unit\_tests::snakemake\_file}!print\_blocks@{print\_blocks}}
+\index{print\_blocks@{print\_blocks}!snakemake\_unit\_tests::snakemake\_file@{snakemake\_unit\_tests::snakemake\_file}}
+\doxysubsubsection{\texorpdfstring{print\_blocks()}{print\_blocks()}}
+{\footnotesize\ttfamily void snakemake\+\_\+unit\+\_\+tests\+::snakemake\+\_\+file\+::print\+\_\+blocks (\begin{DoxyParamCaption}\item[{std\+::ostream \&}]{out }\end{DoxyParamCaption}) const}
+
+
+
+print block contents to stream 
+
+
+\begin{DoxyParams}{Parameters}
+{\em out} & open stream to which to write data\\
+\hline
+\end{DoxyParams}
+this function is primarily intended for debugging purposes at this time \mbox{\Hypertarget{classsnakemake__unit__tests_1_1snakemake__file_a497771fee3e29671b877fc68a37af7c9}\label{classsnakemake__unit__tests_1_1snakemake__file_a497771fee3e29671b877fc68a37af7c9}} 
+\index{snakemake\_unit\_tests::snakemake\_file@{snakemake\_unit\_tests::snakemake\_file}!report\_single\_rule@{report\_single\_rule}}
+\index{report\_single\_rule@{report\_single\_rule}!snakemake\_unit\_tests::snakemake\_file@{snakemake\_unit\_tests::snakemake\_file}}
+\doxysubsubsection{\texorpdfstring{report\_single\_rule()}{report\_single\_rule()}}
+{\footnotesize\ttfamily void snakemake\+\_\+unit\+\_\+tests\+::snakemake\+\_\+file\+::report\+\_\+single\+\_\+rule (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{rule\+\_\+name,  }\item[{std\+::ostream \&}]{out }\end{DoxyParamCaption}) const}
+
+
+
+report all code blocks but a single requested rule to file 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rule\+\_\+name} & string name of requested rule \\
+\hline
+{\em out} & open output stream to which to write data \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+snakemake\+\_\+unit\+\_\+tests/\mbox{\hyperlink{snakemake__file_8h}{snakemake\+\_\+file.\+h}}\item 
+snakemake\+\_\+unit\+\_\+tests/\mbox{\hyperlink{snakemake__file_8cc}{snakemake\+\_\+file.\+cc}}\end{DoxyCompactItemize}

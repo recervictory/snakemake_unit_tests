@@ -99,7 +99,7 @@ class rule_block {
 
   /*!
     @brief report mildly formatted contents to a stream
-    @param an open stream to which to write formatted contents
+    @param out an open stream to which to write formatted contents
    */
   void print_contents(std::ostream &out) const;
 

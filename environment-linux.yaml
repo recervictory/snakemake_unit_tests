@@ -18,3 +18,5 @@ dependencies:
   - autoconf
   - make>=4.2
   - gxx_linux-64>=8.2.0
+  - doxygen
+

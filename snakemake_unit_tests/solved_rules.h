@@ -97,9 +97,28 @@ class recipe {
   }
 
  private:
+  /*!
+    @brief extracted name of rule from log file
+   */
   std::string _rule_name;
+  /*!
+    @brief snakemake solved input files to rule
+
+    parsed from ", " delimited list from log output
+   */
   std::vector<std::string> _inputs;
+  /*!
+    @brief snakemake solved output files to rule
+
+    parsed from ", " delimited list from log output
+   */
   std::vector<std::string> _outputs;
+  /*!
+    @brief snakemake solved log file for rule
+
+    only exists if rule has log block, and nothing is
+    currently done with this information even if present
+   */
   std::string _log;
 };
 /*!
@@ -155,6 +174,9 @@ class solved_rules {
                   const std::vector<std::string> &added_directories) const;
 
  private:
+  /*!
+    @brief abstract set of solved recipe entries in a log file
+   */
   std::vector<recipe> _recipes;
 };
 }  // namespace snakemake_unit_tests
