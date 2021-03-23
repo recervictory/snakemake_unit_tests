@@ -151,7 +151,7 @@ void snakemake_unit_tests::solved_rules::emit_tests(
                                    iter->get_rule_name() + "\"");
         }
         // create parent directories as needed
-        boost::filesystem::create_directories(target_file.branch_path());
+        boost::filesystem::create_directories(target_file.parent_path());
         // recursive copy
         boost::filesystem::copy(
             source_file, target_file,
@@ -176,7 +176,7 @@ void snakemake_unit_tests::solved_rules::emit_tests(
                                    iter->get_rule_name() + "\"");
         }
         // create parent directories as needed
-        boost::filesystem::create_directories(target_file.branch_path());
+        boost::filesystem::create_directories(target_file.parent_path());
         // recursive copy
         boost::filesystem::copy(
             source_file, target_file,
@@ -199,7 +199,7 @@ void snakemake_unit_tests::solved_rules::emit_tests(
                                    source_file.string() + "\"");
         }
         // create parent directories as needed
-        boost::filesystem::create_directories(target_file.branch_path());
+        boost::filesystem::create_directories(target_file.parent_path());
         // copy
         boost::filesystem::copy(
             source_file, target_file,
@@ -221,7 +221,7 @@ void snakemake_unit_tests::solved_rules::emit_tests(
                                    source_directory.string() + "\"");
         }
         // create parent directories as needed
-        boost::filesystem::create_directories(target_directory.branch_path());
+        boost::filesystem::create_directories(target_directory.parent_path());
         // recursive copy
         boost::filesystem::copy(
             source_directory, target_directory,
