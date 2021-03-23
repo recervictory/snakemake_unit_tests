@@ -26,9 +26,10 @@
 #include "snakemake_unit_tests/solved_rules.h"
 
 /*!
-  \brief main program implementation
+  @brief main program implementation
   @param argc number of command line entries, including program name
   @param argv array of command line entries
+  @return exit code: 0 on success, nonzero otherwise
  */
 int main(int argc, char **argv) {
   // parse command line input

@@ -1,0 +1,227 @@
+\hypertarget{classsnakemake__unit__tests_1_1recipe}{}\doxysection{snakemake\+\_\+unit\+\_\+tests\+::recipe Class Reference}
+\label{classsnakemake__unit__tests_1_1recipe}\index{snakemake\_unit\_tests::recipe@{snakemake\_unit\_tests::recipe}}
+
+
+from the snakemake log, a simple description of how input(s) lead to output(s) via a rule  
+
+
+
+
+{\ttfamily \#include $<$solved\+\_\+rules.\+h$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1recipe_a9c7f1160b03663aea1fc39c88592e5bb}\label{classsnakemake__unit__tests_1_1recipe_a9c7f1160b03663aea1fc39c88592e5bb}} 
+\mbox{\hyperlink{classsnakemake__unit__tests_1_1recipe_a9c7f1160b03663aea1fc39c88592e5bb}{recipe}} ()
+\begin{DoxyCompactList}\small\item\em constructor \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classsnakemake__unit__tests_1_1recipe_a2f65d488510b127409238990d71aeb15}{recipe}} (const \mbox{\hyperlink{classsnakemake__unit__tests_1_1recipe}{recipe}} \&obj)
+\begin{DoxyCompactList}\small\item\em copy constructor \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1recipe_aaf422d3b767d0c790fea68c1d858b5c8}\label{classsnakemake__unit__tests_1_1recipe_aaf422d3b767d0c790fea68c1d858b5c8}} 
+\mbox{\hyperlink{classsnakemake__unit__tests_1_1recipe_aaf422d3b767d0c790fea68c1d858b5c8}{$\sim$recipe}} ()  throw ()
+\begin{DoxyCompactList}\small\item\em destructor \end{DoxyCompactList}\item 
+const std\+::string \& \mbox{\hyperlink{classsnakemake__unit__tests_1_1recipe_ac287c56f12d21d9fd9a8b2c8d66dc6bc}{get\+\_\+rule\+\_\+name}} () const
+\begin{DoxyCompactList}\small\item\em access rule name \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classsnakemake__unit__tests_1_1recipe_ac2b5f81d576bad7beaf89aed428d4249}{set\+\_\+rule\+\_\+name}} (const std\+::string \&s)
+\begin{DoxyCompactList}\small\item\em set rule name \end{DoxyCompactList}\item 
+const std\+::vector$<$ std\+::string $>$ \& \mbox{\hyperlink{classsnakemake__unit__tests_1_1recipe_a9eae835be347bdcd3ff0ffd54217c180}{get\+\_\+inputs}} () const
+\begin{DoxyCompactList}\small\item\em access list of input files \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classsnakemake__unit__tests_1_1recipe_af9e207fbc5a80d981a4752023ba5b51f}{add\+\_\+input}} (const std\+::string \&s)
+\begin{DoxyCompactList}\small\item\em add an input filename \end{DoxyCompactList}\item 
+const std\+::vector$<$ std\+::string $>$ \& \mbox{\hyperlink{classsnakemake__unit__tests_1_1recipe_aef7d54c908b7ec004a2b16a493be7873}{get\+\_\+outputs}} () const
+\begin{DoxyCompactList}\small\item\em access list of output files \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classsnakemake__unit__tests_1_1recipe_ac973313588ad85f2a960bc9e1cc6fac7}{add\+\_\+output}} (const std\+::string \&s)
+\begin{DoxyCompactList}\small\item\em add an output filename \end{DoxyCompactList}\item 
+const std\+::string \& \mbox{\hyperlink{classsnakemake__unit__tests_1_1recipe_ad08132e04256aac2733ed10b70337049}{get\+\_\+log}} () const
+\begin{DoxyCompactList}\small\item\em access log filename \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classsnakemake__unit__tests_1_1recipe_a6bafa6c1798a9aba6fa16f154ceec277}{set\+\_\+log}} (const std\+::string \&s)
+\begin{DoxyCompactList}\small\item\em set log filename \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1recipe_ad19f9fc4e090d4067d8fa16d8e6cc945}\label{classsnakemake__unit__tests_1_1recipe_ad19f9fc4e090d4067d8fa16d8e6cc945}} 
+void \mbox{\hyperlink{classsnakemake__unit__tests_1_1recipe_ad19f9fc4e090d4067d8fa16d8e6cc945}{clear}} ()
+\begin{DoxyCompactList}\small\item\em clear all stored contents \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1recipe_a151f0dc265eb7f3827e2359947004d15}\label{classsnakemake__unit__tests_1_1recipe_a151f0dc265eb7f3827e2359947004d15}} 
+std\+::string \mbox{\hyperlink{classsnakemake__unit__tests_1_1recipe_a151f0dc265eb7f3827e2359947004d15}{\+\_\+rule\+\_\+name}}
+\begin{DoxyCompactList}\small\item\em extracted name of rule from log file \end{DoxyCompactList}\item 
+std\+::vector$<$ std\+::string $>$ \mbox{\hyperlink{classsnakemake__unit__tests_1_1recipe_ad3afb1789369f25005d9a851cadace4c}{\+\_\+inputs}}
+\begin{DoxyCompactList}\small\item\em snakemake solved input files to rule \end{DoxyCompactList}\item 
+std\+::vector$<$ std\+::string $>$ \mbox{\hyperlink{classsnakemake__unit__tests_1_1recipe_ac099bb3942ef78445f39625a13c5ac99}{\+\_\+outputs}}
+\begin{DoxyCompactList}\small\item\em snakemake solved output files to rule \end{DoxyCompactList}\item 
+std\+::string \mbox{\hyperlink{classsnakemake__unit__tests_1_1recipe_a5757be48216d2214fc009ff9d92910b5}{\+\_\+log}}
+\begin{DoxyCompactList}\small\item\em snakemake solved log file for rule \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+from the snakemake log, a simple description of how input(s) lead to output(s) via a rule 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1recipe_a2f65d488510b127409238990d71aeb15}\label{classsnakemake__unit__tests_1_1recipe_a2f65d488510b127409238990d71aeb15}} 
+\index{snakemake\_unit\_tests::recipe@{snakemake\_unit\_tests::recipe}!recipe@{recipe}}
+\index{recipe@{recipe}!snakemake\_unit\_tests::recipe@{snakemake\_unit\_tests::recipe}}
+\doxysubsubsection{\texorpdfstring{recipe()}{recipe()}}
+{\footnotesize\ttfamily snakemake\+\_\+unit\+\_\+tests\+::recipe\+::recipe (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classsnakemake__unit__tests_1_1recipe}{recipe}} \&}]{obj }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+copy constructor 
+
+
+\begin{DoxyParams}{Parameters}
+{\em obj} & existing recipe object \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1recipe_af9e207fbc5a80d981a4752023ba5b51f}\label{classsnakemake__unit__tests_1_1recipe_af9e207fbc5a80d981a4752023ba5b51f}} 
+\index{snakemake\_unit\_tests::recipe@{snakemake\_unit\_tests::recipe}!add\_input@{add\_input}}
+\index{add\_input@{add\_input}!snakemake\_unit\_tests::recipe@{snakemake\_unit\_tests::recipe}}
+\doxysubsubsection{\texorpdfstring{add\_input()}{add\_input()}}
+{\footnotesize\ttfamily void snakemake\+\_\+unit\+\_\+tests\+::recipe\+::add\+\_\+input (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{s }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+add an input filename 
+
+
+\begin{DoxyParams}{Parameters}
+{\em s} & new input filename \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1recipe_ac973313588ad85f2a960bc9e1cc6fac7}\label{classsnakemake__unit__tests_1_1recipe_ac973313588ad85f2a960bc9e1cc6fac7}} 
+\index{snakemake\_unit\_tests::recipe@{snakemake\_unit\_tests::recipe}!add\_output@{add\_output}}
+\index{add\_output@{add\_output}!snakemake\_unit\_tests::recipe@{snakemake\_unit\_tests::recipe}}
+\doxysubsubsection{\texorpdfstring{add\_output()}{add\_output()}}
+{\footnotesize\ttfamily void snakemake\+\_\+unit\+\_\+tests\+::recipe\+::add\+\_\+output (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{s }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+add an output filename 
+
+
+\begin{DoxyParams}{Parameters}
+{\em s} & new output filename \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1recipe_a9eae835be347bdcd3ff0ffd54217c180}\label{classsnakemake__unit__tests_1_1recipe_a9eae835be347bdcd3ff0ffd54217c180}} 
+\index{snakemake\_unit\_tests::recipe@{snakemake\_unit\_tests::recipe}!get\_inputs@{get\_inputs}}
+\index{get\_inputs@{get\_inputs}!snakemake\_unit\_tests::recipe@{snakemake\_unit\_tests::recipe}}
+\doxysubsubsection{\texorpdfstring{get\_inputs()}{get\_inputs()}}
+{\footnotesize\ttfamily const std\+::vector$<$std\+::string$>$\& snakemake\+\_\+unit\+\_\+tests\+::recipe\+::get\+\_\+inputs (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+access list of input files 
+
+\begin{DoxyReturn}{Returns}
+vector storing all input filenames; may be empty 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1recipe_ad08132e04256aac2733ed10b70337049}\label{classsnakemake__unit__tests_1_1recipe_ad08132e04256aac2733ed10b70337049}} 
+\index{snakemake\_unit\_tests::recipe@{snakemake\_unit\_tests::recipe}!get\_log@{get\_log}}
+\index{get\_log@{get\_log}!snakemake\_unit\_tests::recipe@{snakemake\_unit\_tests::recipe}}
+\doxysubsubsection{\texorpdfstring{get\_log()}{get\_log()}}
+{\footnotesize\ttfamily const std\+::string\& snakemake\+\_\+unit\+\_\+tests\+::recipe\+::get\+\_\+log (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+access log filename 
+
+\begin{DoxyReturn}{Returns}
+log filename, if given; else empty string 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1recipe_aef7d54c908b7ec004a2b16a493be7873}\label{classsnakemake__unit__tests_1_1recipe_aef7d54c908b7ec004a2b16a493be7873}} 
+\index{snakemake\_unit\_tests::recipe@{snakemake\_unit\_tests::recipe}!get\_outputs@{get\_outputs}}
+\index{get\_outputs@{get\_outputs}!snakemake\_unit\_tests::recipe@{snakemake\_unit\_tests::recipe}}
+\doxysubsubsection{\texorpdfstring{get\_outputs()}{get\_outputs()}}
+{\footnotesize\ttfamily const std\+::vector$<$std\+::string$>$\& snakemake\+\_\+unit\+\_\+tests\+::recipe\+::get\+\_\+outputs (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+access list of output files 
+
+\begin{DoxyReturn}{Returns}
+vector storing all output filenames; shouldn\textquotesingle{}t be empty 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1recipe_ac287c56f12d21d9fd9a8b2c8d66dc6bc}\label{classsnakemake__unit__tests_1_1recipe_ac287c56f12d21d9fd9a8b2c8d66dc6bc}} 
+\index{snakemake\_unit\_tests::recipe@{snakemake\_unit\_tests::recipe}!get\_rule\_name@{get\_rule\_name}}
+\index{get\_rule\_name@{get\_rule\_name}!snakemake\_unit\_tests::recipe@{snakemake\_unit\_tests::recipe}}
+\doxysubsubsection{\texorpdfstring{get\_rule\_name()}{get\_rule\_name()}}
+{\footnotesize\ttfamily const std\+::string\& snakemake\+\_\+unit\+\_\+tests\+::recipe\+::get\+\_\+rule\+\_\+name (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+access rule name 
+
+\begin{DoxyReturn}{Returns}
+rule name 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1recipe_a6bafa6c1798a9aba6fa16f154ceec277}\label{classsnakemake__unit__tests_1_1recipe_a6bafa6c1798a9aba6fa16f154ceec277}} 
+\index{snakemake\_unit\_tests::recipe@{snakemake\_unit\_tests::recipe}!set\_log@{set\_log}}
+\index{set\_log@{set\_log}!snakemake\_unit\_tests::recipe@{snakemake\_unit\_tests::recipe}}
+\doxysubsubsection{\texorpdfstring{set\_log()}{set\_log()}}
+{\footnotesize\ttfamily void snakemake\+\_\+unit\+\_\+tests\+::recipe\+::set\+\_\+log (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{s }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+set log filename 
+
+
+\begin{DoxyParams}{Parameters}
+{\em s} & new log filename \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1recipe_ac2b5f81d576bad7beaf89aed428d4249}\label{classsnakemake__unit__tests_1_1recipe_ac2b5f81d576bad7beaf89aed428d4249}} 
+\index{snakemake\_unit\_tests::recipe@{snakemake\_unit\_tests::recipe}!set\_rule\_name@{set\_rule\_name}}
+\index{set\_rule\_name@{set\_rule\_name}!snakemake\_unit\_tests::recipe@{snakemake\_unit\_tests::recipe}}
+\doxysubsubsection{\texorpdfstring{set\_rule\_name()}{set\_rule\_name()}}
+{\footnotesize\ttfamily void snakemake\+\_\+unit\+\_\+tests\+::recipe\+::set\+\_\+rule\+\_\+name (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{s }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+set rule name 
+
+
+\begin{DoxyParams}{Parameters}
+{\em s} & new rule name \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Field Documentation}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1recipe_ad3afb1789369f25005d9a851cadace4c}\label{classsnakemake__unit__tests_1_1recipe_ad3afb1789369f25005d9a851cadace4c}} 
+\index{snakemake\_unit\_tests::recipe@{snakemake\_unit\_tests::recipe}!\_inputs@{\_inputs}}
+\index{\_inputs@{\_inputs}!snakemake\_unit\_tests::recipe@{snakemake\_unit\_tests::recipe}}
+\doxysubsubsection{\texorpdfstring{\_inputs}{\_inputs}}
+{\footnotesize\ttfamily std\+::vector$<$std\+::string$>$ snakemake\+\_\+unit\+\_\+tests\+::recipe\+::\+\_\+inputs\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+snakemake solved input files to rule 
+
+parsed from \char`\"{}, \char`\"{} delimited list from log output \mbox{\Hypertarget{classsnakemake__unit__tests_1_1recipe_a5757be48216d2214fc009ff9d92910b5}\label{classsnakemake__unit__tests_1_1recipe_a5757be48216d2214fc009ff9d92910b5}} 
+\index{snakemake\_unit\_tests::recipe@{snakemake\_unit\_tests::recipe}!\_log@{\_log}}
+\index{\_log@{\_log}!snakemake\_unit\_tests::recipe@{snakemake\_unit\_tests::recipe}}
+\doxysubsubsection{\texorpdfstring{\_log}{\_log}}
+{\footnotesize\ttfamily std\+::string snakemake\+\_\+unit\+\_\+tests\+::recipe\+::\+\_\+log\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+snakemake solved log file for rule 
+
+only exists if rule has log block, and nothing is currently done with this information even if present \mbox{\Hypertarget{classsnakemake__unit__tests_1_1recipe_ac099bb3942ef78445f39625a13c5ac99}\label{classsnakemake__unit__tests_1_1recipe_ac099bb3942ef78445f39625a13c5ac99}} 
+\index{snakemake\_unit\_tests::recipe@{snakemake\_unit\_tests::recipe}!\_outputs@{\_outputs}}
+\index{\_outputs@{\_outputs}!snakemake\_unit\_tests::recipe@{snakemake\_unit\_tests::recipe}}
+\doxysubsubsection{\texorpdfstring{\_outputs}{\_outputs}}
+{\footnotesize\ttfamily std\+::vector$<$std\+::string$>$ snakemake\+\_\+unit\+\_\+tests\+::recipe\+::\+\_\+outputs\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+snakemake solved output files to rule 
+
+parsed from \char`\"{}, \char`\"{} delimited list from log output 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+snakemake\+\_\+unit\+\_\+tests/\mbox{\hyperlink{solved__rules_8h}{solved\+\_\+rules.\+h}}\end{DoxyCompactItemize}

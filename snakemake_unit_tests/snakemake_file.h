@@ -19,6 +19,11 @@
 #include "snakemake_unit_tests/rule_block.h"
 
 namespace snakemake_unit_tests {
+/*!
+  @class snakemake_file
+  @brief abstract representation of snakefile
+  as a series of rules and python code chunks
+ */
 class snakemake_file {
  public:
   /*!
