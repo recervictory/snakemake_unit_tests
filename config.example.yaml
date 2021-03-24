@@ -1,0 +1,114 @@
+# output-test-dir: [arg]
+## this controls the location of snakemake_unit_tests output test directories.
+## for snakemake --generate-unit-tests, this defaults to '.tests' and all
+## tests are reported to '.tests/unit'; mirroring that behavior, your tests
+## will be emitted under 'arg/unit'. note that 'arg' need not exist already,
+## but if it does exist, contents under 'arg/unit' are likely to be overwritten
+## or deleted, so be cautious.
+## note that if you specify --output-test-dir at the command line, it will
+## *supercede* the setting in this file.
+output-test-dir: .tests.cam
+
+# snakefile: [arg]
+## the name of (and path to) the snakefile used to successfully run the pipeline
+## for which you want tests. this argument will look something like
+## '/path/to/pipeline/workflow/Snakefile' or '../pipeline/workflow/Snakefile'.
+## though the snakefile doesn't have to be in a 'workflow' subdirectory,
+## certain internal logic assumes this structure as of pre-alpha.
+## note that if you specify --snakefile at the command line, it will
+## *supercede* the setting in this file.
+snakefile: ../chip-variant-selection/workflow/Snakefile
+
+# pipeline-dir: [arg]
+## installation directory of pipeline for which you want tests. this is needed
+## to deal with relative paths for directories and files you want added
+## into the minimal test workspaces. if you do not specify this parameter,
+## internal logic will set it to [{snakefile directory}/..], assuming
+## the snakefile is in a one-deep subdirectory of the pipeline.
+## note that if you specify --pipeline-dir at the command line, it will
+## *supercede* the setting in this file.
+pipeline-dir: ../chip-variant-selection
+
+# inst-dir: [arg]
+## location on your system of the snakemake_unit_tests subdirectory 'inst'.
+## this folder contains schematic pytest files that will be mildly modified
+## and installed into your test workspaces, and which can be customized for
+## different test behaviors if you prefer. if you're running snakemake_unit_tests
+## from a cloned directory from GitLab, this can be simply 'inst'; otherwise
+## if you've cloned snakemake_unit_tests but are running it elsewhere, use
+## /path/to/snakemake_unit_tests/inst. eventually, once this is in conda,
+## you should set this to $CONDA_PREFIX/share/snakemake_unit_tests/inst.
+## note that if you specify --inst-dir at the command line, it will
+## *supercede* the setting in this file.
+inst-dir: inst
+
+# snakemake-log: [arg]
+## log file from successful run of your pipeline, off of which you
+## are generating unit tests. this will probably be something like
+## '../path/to/pipeline/my.log' or equivalent. this is most generally
+## the literal output of `snakemake -nF > my.log`.
+## note that the log file controls which rules are considered for
+## generating tests. if you're having issues, or if you have two logs
+## because a pipeline broke halfway through and you fixed it, or something
+## like that, you can go into the log and add or remove rules as you
+## see fit; however, that can be a somewhat error-prone process.
+## note that if you specify --snakemake-log at the command line,
+## it will *supercede* the setting in this file.
+snakemake-log: ../chip-variant-selection/test.log
+
+# added-files: [scalar or sequence]
+## one or more files that you want added to test workspaces, so that
+## the minimal test snakefile can have access to them. an example might
+## be your manifest file; this is also how config files are propagated.
+## the syntax is the *relative path of the file from the snakemake execution
+## directory for your pipeline*: that is, from 'pipeline-dir'.
+## note that if you specify additional --added-files at the command
+## line, they will be *added* to this list; they will not replace this list.
+## if you want that behavior, remove entries from this file.
+added-files:
+  - config/config.yaml
+  - config/manifest.tsv
+
+# added-directories: [scalar or sequence]
+## one or more directories that you want added to test workspaces, so that
+## the minimal test snakefile can have access to them. an example might
+## be your config subdirectory, or workflows/envs, or workflows/scripts.
+## the syntax is the *relative path of the directory from the snakemake
+## execution directory for your pipeline*: that is, from 'pipeline-dir'.
+## note that directory contents are copied recursively. you only need
+## to use this option for things that are *not explicitly tracked as inputs
+## or outputs of your rules*
+## note that if you specify additional --added-directories at the command
+## line, they will be *added* to this list; they will not replace this list.
+## if you want that behavior, remove entries from this file.
+added-directories:
+  - schemas
+  - workflow/envs
+  - workflow/scripts
+
+# exclude-rules: [scalar or sequence]
+## one or more rule names that should be skipped in the test generation
+## process. there are various reasons why rules might fail: perhaps the intermediates
+## are absent for some reason (e.g. flagged as temp()), or perhaps the pipeline
+## run is incomplete but you still want tests, or perhaps a download rule
+## can't access a web resource that has been removed.
+## note that if you specify additional --exclude-rules at the command
+## line, they will be *added* to this list; they will not replace this list.
+## if you want that behavior, remove entries from this file.
+exclude-rules:
+  - filter_ClinVar
+  - convert_genes_to_regions_ACMG
+  - tabix_vcf
+  - download_ClinVar
+  - download_refseq_gtf
+  - download_GWAS_catalog
+  - download_PharmGKB
+  - download_html_table_ACMG
+  - download_ilmnid_rsid_GDA
+  - download_ilmnid_rsid_MEGA
+  - download_ucsc_rsid_bigbed
+
+
+
+
+  ./snakemake_unit_tests.out -e filter_ClinVar -e convert_genes_to_regions_ACMG -e tabix_vcf -e download_ClinVar -e download_refseq_gtf -e download_GWAS_catalog -e download_PharmGKB -e download_html_table_ACMG -e download_ilmnid_rsid_GDA -e download_ilmnid_rsid_MEGA -e download_ucsc_rsid_bigbed -l ../chip-variant-selection/test.log -o tests-tests -p ../chip-variant-selection -s ../chip-variant-selection/workflow/Snakefile -d config -d schemas/ -d workflow/envs -d workflow/scripts -i inst
