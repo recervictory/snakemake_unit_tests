@@ -21,8 +21,12 @@ command line argument parser using boost\+::program\+\_\+options
 \begin{DoxyCompactList}\small\item\em destructor \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{classsnakemake__unit__tests_1_1cargs_aa6ed23df6e8352dcd2a2607688bb2180}{initialize\+\_\+options}} ()
 \begin{DoxyCompactList}\small\item\em set user help documentation and default values for parameters as needed \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classsnakemake__unit__tests_1_1params}{params}} \mbox{\hyperlink{classsnakemake__unit__tests_1_1cargs_a7f28c79bacf37a3cf205061251eb41ac}{set\+\_\+parameters}} () const
+\begin{DoxyCompactList}\small\item\em deal with parameter settings, across CLI and config yaml \end{DoxyCompactList}\item 
 bool \mbox{\hyperlink{classsnakemake__unit__tests_1_1cargs_a022cc6ee8a36c60f09e228c494719d64}{help}} () const
 \begin{DoxyCompactList}\small\item\em determine whether the user has requested help documentation \end{DoxyCompactList}\item 
+std\+::string \mbox{\hyperlink{classsnakemake__unit__tests_1_1cargs_a3e2c9af584be03ec588cf57940e8545e}{get\+\_\+config\+\_\+yaml}} () const
+\begin{DoxyCompactList}\small\item\em get user-\/specified config yaml file, containing all the various parameters they\textquotesingle{}ve specified so they don\textquotesingle{}t have to write out the horrible command line call each time \end{DoxyCompactList}\item 
 std\+::string \mbox{\hyperlink{classsnakemake__unit__tests_1_1cargs_af79c72f68e8a91cc0bbe146bdaeb14a2}{get\+\_\+snakefile}} () const
 \begin{DoxyCompactList}\small\item\em get the top-\/level snakefile used for the full workflow \end{DoxyCompactList}\item 
 std\+::string \mbox{\hyperlink{classsnakemake__unit__tests_1_1cargs_a456a635b99845592c19f842a2e329231}{get\+\_\+snakemake\+\_\+log}} () const
@@ -51,7 +55,19 @@ void \mbox{\hyperlink{classsnakemake__unit__tests_1_1cargs_aa50a26e90723123d7318
 \begin{DoxyCompactItemize}
 \item 
 \mbox{\hyperlink{classsnakemake__unit__tests_1_1cargs_a096a22cd763f374b370a05e358d6c0f9}{cargs}} ()
-\begin{DoxyCompactList}\small\item\em default constructor \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em default constructor \end{DoxyCompactList}\item 
+boost\+::filesystem\+::path \mbox{\hyperlink{classsnakemake__unit__tests_1_1cargs_a940197b74bb1793509c339387a4730c7}{override\+\_\+if\+\_\+specified}} (const std\+::string \&cli\+\_\+entry, const boost\+::filesystem\+::path \&params\+\_\+entry) const
+\begin{DoxyCompactList}\small\item\em if the first parameter is nonempty, return it; otherwise return the second \end{DoxyCompactList}\item 
+{\footnotesize template$<$class value\+\_\+type $>$ }\\void \mbox{\hyperlink{classsnakemake__unit__tests_1_1cargs_a47b20118f204085dd8f47e4db648c722}{add\+\_\+contents}} (const std\+::vector$<$ std\+::string $>$ \&cli\+\_\+entries, std\+::vector$<$ value\+\_\+type $>$ $\ast$params\+\_\+entries) const
+\begin{DoxyCompactList}\small\item\em append any CLI entries for a multitoken parameter to those already found in the config yaml \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classsnakemake__unit__tests_1_1cargs_a01412612909d772f3dc8f0cbc5832365}{check\+\_\+nonempty}} (const boost\+::filesystem\+::path \&p, const std\+::string \&msg) const
+\begin{DoxyCompactList}\small\item\em make sure a path isn\textquotesingle{}t just an empty string \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classsnakemake__unit__tests_1_1cargs_a8611545c69ac74ebb94156fd1d0fd021}{check\+\_\+regular\+\_\+file}} (const boost\+::filesystem\+::path \&p, const boost\+::filesystem\+::path \&prefix, const std\+::string \&msg) const
+\begin{DoxyCompactList}\small\item\em given a path, enforce it being a regular file \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classsnakemake__unit__tests_1_1cargs_a133690de88650eccb68af1281720cdb8}{check\+\_\+and\+\_\+fix\+\_\+dir}} (boost\+::filesystem\+::path $\ast$p, const boost\+::filesystem\+::path \&prefix, const std\+::string \&msg) const
+\begin{DoxyCompactList}\small\item\em given a path, enforce it being a directory, and gently clean up its format \end{DoxyCompactList}\item 
+{\footnotesize template$<$class value\+\_\+type $>$ }\\std\+::vector$<$ value\+\_\+type $>$ \mbox{\hyperlink{classsnakemake__unit__tests_1_1cargs_a58251551386f449835aa166dfc788a39}{vector\+\_\+convert}} (const std\+::vector$<$ std\+::string $>$ \&vec) const
+\begin{DoxyCompactList}\small\item\em cast entries of a vector into something else \end{DoxyCompactList}\end{DoxyCompactItemize}
 \doxysubsection*{Private Attributes}
 \begin{DoxyCompactItemize}
 \item 
@@ -115,6 +131,84 @@ disabled
 
 
 \doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1cargs_a47b20118f204085dd8f47e4db648c722}\label{classsnakemake__unit__tests_1_1cargs_a47b20118f204085dd8f47e4db648c722}} 
+\index{snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}!add\_contents@{add\_contents}}
+\index{add\_contents@{add\_contents}!snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}}
+\doxysubsubsection{\texorpdfstring{add\_contents()}{add\_contents()}}
+{\footnotesize\ttfamily template$<$class value\+\_\+type $>$ \\
+void snakemake\+\_\+unit\+\_\+tests\+::cargs\+::add\+\_\+contents (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ std\+::string $>$ \&}]{cli\+\_\+entries,  }\item[{std\+::vector$<$ value\+\_\+type $>$ $\ast$}]{params\+\_\+entries }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [private]}}
+
+
+
+append any CLI entries for a multitoken parameter to those already found in the config yaml 
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em value\+\_\+type} & class to cast command line strings into (can just be strings) \\
+\hline
+\end{DoxyTemplParams}
+
+\begin{DoxyParams}{Parameters}
+{\em cli\+\_\+entries} & values for the parameter found on the command line \\
+\hline
+{\em params\+\_\+entries} & values for the parameter found in the config yaml \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1cargs_a133690de88650eccb68af1281720cdb8}\label{classsnakemake__unit__tests_1_1cargs_a133690de88650eccb68af1281720cdb8}} 
+\index{snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}!check\_and\_fix\_dir@{check\_and\_fix\_dir}}
+\index{check\_and\_fix\_dir@{check\_and\_fix\_dir}!snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}}
+\doxysubsubsection{\texorpdfstring{check\_and\_fix\_dir()}{check\_and\_fix\_dir()}}
+{\footnotesize\ttfamily void snakemake\+\_\+unit\+\_\+tests\+::cargs\+::check\+\_\+and\+\_\+fix\+\_\+dir (\begin{DoxyParamCaption}\item[{boost\+::filesystem\+::path $\ast$}]{p,  }\item[{const boost\+::filesystem\+::path \&}]{prefix,  }\item[{const std\+::string \&}]{msg }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+given a path, enforce it being a directory, and gently clean up its format 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p} & input candidate directory \\
+\hline
+{\em prefix} & optional prefix for actual directory; can be empty \\
+\hline
+{\em msg} & name of parameter flag for error messages \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1cargs_a01412612909d772f3dc8f0cbc5832365}\label{classsnakemake__unit__tests_1_1cargs_a01412612909d772f3dc8f0cbc5832365}} 
+\index{snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}!check\_nonempty@{check\_nonempty}}
+\index{check\_nonempty@{check\_nonempty}!snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}}
+\doxysubsubsection{\texorpdfstring{check\_nonempty()}{check\_nonempty()}}
+{\footnotesize\ttfamily void snakemake\+\_\+unit\+\_\+tests\+::cargs\+::check\+\_\+nonempty (\begin{DoxyParamCaption}\item[{const boost\+::filesystem\+::path \&}]{p,  }\item[{const std\+::string \&}]{msg }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+make sure a path isn\textquotesingle{}t just an empty string 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p} & path to check \\
+\hline
+{\em msg} & name of parameter flag for error messages \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1cargs_a8611545c69ac74ebb94156fd1d0fd021}\label{classsnakemake__unit__tests_1_1cargs_a8611545c69ac74ebb94156fd1d0fd021}} 
+\index{snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}!check\_regular\_file@{check\_regular\_file}}
+\index{check\_regular\_file@{check\_regular\_file}!snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}}
+\doxysubsubsection{\texorpdfstring{check\_regular\_file()}{check\_regular\_file()}}
+{\footnotesize\ttfamily void snakemake\+\_\+unit\+\_\+tests\+::cargs\+::check\+\_\+regular\+\_\+file (\begin{DoxyParamCaption}\item[{const boost\+::filesystem\+::path \&}]{p,  }\item[{const boost\+::filesystem\+::path \&}]{prefix,  }\item[{const std\+::string \&}]{msg }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+given a path, enforce it being a regular file 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p} & input candidate file \\
+\hline
+{\em prefix} & optional prefix for actual file; can be empty \\
+\hline
+{\em msg} & name of parameter flag for error messages \\
+\hline
+\end{DoxyParams}
 \mbox{\Hypertarget{classsnakemake__unit__tests_1_1cargs_ad0724bc8922092911d533d126768f71e}\label{classsnakemake__unit__tests_1_1cargs_ad0724bc8922092911d533d126768f71e}} 
 \index{snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}!compute\_flag@{compute\_flag}}
 \index{compute\_flag@{compute\_flag}!snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}}
@@ -188,7 +282,20 @@ get optional multiple files (with relative paths) that will be installed alongsi
 \begin{DoxyReturn}{Returns}
 all provided relative paths (if any) in a string vector
 \end{DoxyReturn}
-This flag can be specified multiple times, or none. Note that the intention is for this option to be unnecessary, but it\textquotesingle{}s exposed as an option just in case people come up with corner cases that the main logic cannot handle \mbox{\Hypertarget{classsnakemake__unit__tests_1_1cargs_a6e83b9c67fc3ee8713435c5978d5b063}\label{classsnakemake__unit__tests_1_1cargs_a6e83b9c67fc3ee8713435c5978d5b063}} 
+This flag can be specified multiple times, or none. Note that the intention is for this option to be unnecessary, but it\textquotesingle{}s exposed as an option just in case people come up with corner cases that the main logic cannot handle \mbox{\Hypertarget{classsnakemake__unit__tests_1_1cargs_a3e2c9af584be03ec588cf57940e8545e}\label{classsnakemake__unit__tests_1_1cargs_a3e2c9af584be03ec588cf57940e8545e}} 
+\index{snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}!get\_config\_yaml@{get\_config\_yaml}}
+\index{get\_config\_yaml@{get\_config\_yaml}!snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}}
+\doxysubsubsection{\texorpdfstring{get\_config\_yaml()}{get\_config\_yaml()}}
+{\footnotesize\ttfamily std\+::string snakemake\+\_\+unit\+\_\+tests\+::cargs\+::get\+\_\+config\+\_\+yaml (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+get user-\/specified config yaml file, containing all the various parameters they\textquotesingle{}ve specified so they don\textquotesingle{}t have to write out the horrible command line call each time 
+
+\begin{DoxyReturn}{Returns}
+string filename of config yaml file 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1cargs_a6e83b9c67fc3ee8713435c5978d5b063}\label{classsnakemake__unit__tests_1_1cargs_a6e83b9c67fc3ee8713435c5978d5b063}} 
 \index{snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}!get\_exclude\_rules@{get\_exclude\_rules}}
 \index{get\_exclude\_rules@{get\_exclude\_rules}!snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}}
 \doxysubsubsection{\texorpdfstring{get\_exclude\_rules()}{get\_exclude\_rules()}}
@@ -291,7 +398,27 @@ This test is separate from whether the user has run the software with no flags \
 
 set user help documentation and default values for parameters as needed 
 
-Note the weird syntax with overloaded () operators. The lists are not separated by commas. \mbox{\Hypertarget{classsnakemake__unit__tests_1_1cargs_aa50a26e90723123d7318296b1a120b65}\label{classsnakemake__unit__tests_1_1cargs_aa50a26e90723123d7318296b1a120b65}} 
+Note the weird syntax with overloaded () operators. The lists are not separated by commas. \mbox{\Hypertarget{classsnakemake__unit__tests_1_1cargs_a940197b74bb1793509c339387a4730c7}\label{classsnakemake__unit__tests_1_1cargs_a940197b74bb1793509c339387a4730c7}} 
+\index{snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}!override\_if\_specified@{override\_if\_specified}}
+\index{override\_if\_specified@{override\_if\_specified}!snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}}
+\doxysubsubsection{\texorpdfstring{override\_if\_specified()}{override\_if\_specified()}}
+{\footnotesize\ttfamily boost\+::filesystem\+::path snakemake\+\_\+unit\+\_\+tests\+::cargs\+::override\+\_\+if\+\_\+specified (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{cli\+\_\+entry,  }\item[{const boost\+::filesystem\+::path \&}]{params\+\_\+entry }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+if the first parameter is nonempty, return it; otherwise return the second 
+
+
+\begin{DoxyParams}{Parameters}
+{\em cli\+\_\+entry} & the value for the parameter given on the command line \\
+\hline
+{\em params\+\_\+entry} & the value for the parameter loaded from the yaml config \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the resolved value from the two provided 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1cargs_aa50a26e90723123d7318296b1a120b65}\label{classsnakemake__unit__tests_1_1cargs_aa50a26e90723123d7318296b1a120b65}} 
 \index{snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}!print\_help@{print\_help}}
 \index{print\_help@{print\_help}!snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}}
 \doxysubsubsection{\texorpdfstring{print\_help()}{print\_help()}}
@@ -306,7 +433,44 @@ report help documentation to arbitrary output stream
 {\em out} & stream to which to write help documentation\\
 \hline
 \end{DoxyParams}
-Parameter should probably be std\+::cout or std\+::cerr at your preference. \mbox{\Hypertarget{classsnakemake__unit__tests_1_1cargs_a03a59ceee21f04905a7dc5eb6cf9f63a}\label{classsnakemake__unit__tests_1_1cargs_a03a59ceee21f04905a7dc5eb6cf9f63a}} 
+Parameter should probably be std\+::cout or std\+::cerr at your preference. \mbox{\Hypertarget{classsnakemake__unit__tests_1_1cargs_a7f28c79bacf37a3cf205061251eb41ac}\label{classsnakemake__unit__tests_1_1cargs_a7f28c79bacf37a3cf205061251eb41ac}} 
+\index{snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}!set\_parameters@{set\_parameters}}
+\index{set\_parameters@{set\_parameters}!snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}}
+\doxysubsubsection{\texorpdfstring{set\_parameters()}{set\_parameters()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classsnakemake__unit__tests_1_1params}{snakemake\+\_\+unit\+\_\+tests\+::params}} snakemake\+\_\+unit\+\_\+tests\+::cargs\+::set\+\_\+parameters (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+deal with parameter settings, across CLI and config yaml 
+
+\begin{DoxyReturn}{Returns}
+params object containing consistent parameter settings
+\end{DoxyReturn}
+note that this should be called after \mbox{\hyperlink{classsnakemake__unit__tests_1_1cargs_aa6ed23df6e8352dcd2a2607688bb2180}{initialize\+\_\+options()}}, and will have fairly lackluster effects otherwise lol \mbox{\Hypertarget{classsnakemake__unit__tests_1_1cargs_a58251551386f449835aa166dfc788a39}\label{classsnakemake__unit__tests_1_1cargs_a58251551386f449835aa166dfc788a39}} 
+\index{snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}!vector\_convert@{vector\_convert}}
+\index{vector\_convert@{vector\_convert}!snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}}
+\doxysubsubsection{\texorpdfstring{vector\_convert()}{vector\_convert()}}
+{\footnotesize\ttfamily template$<$class value\+\_\+type $>$ \\
+std\+::vector$<$value\+\_\+type$>$ snakemake\+\_\+unit\+\_\+tests\+::cargs\+::vector\+\_\+convert (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ std\+::string $>$ \&}]{vec }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [private]}}
+
+
+
+cast entries of a vector into something else 
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em target} & type for conversion \\
+\hline
+\end{DoxyTemplParams}
+
+\begin{DoxyParams}{Parameters}
+{\em vec} & vector of strings to convert \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+converted vector
+\end{DoxyReturn}
+there are definitely less silly ways of doing this \mbox{\Hypertarget{classsnakemake__unit__tests_1_1cargs_a03a59ceee21f04905a7dc5eb6cf9f63a}\label{classsnakemake__unit__tests_1_1cargs_a03a59ceee21f04905a7dc5eb6cf9f63a}} 
 \index{snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}!verbose@{verbose}}
 \index{verbose@{verbose}!snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}}
 \doxysubsubsection{\texorpdfstring{verbose()}{verbose()}}

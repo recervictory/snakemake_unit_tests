@@ -1,0 +1,317 @@
+\hypertarget{classsnakemake__unit__tests_1_1yaml__reader}{}\doxysection{snakemake\+\_\+unit\+\_\+tests\+::yaml\+\_\+reader Class Reference}
+\label{classsnakemake__unit__tests_1_1yaml__reader}\index{snakemake\_unit\_tests::yaml\_reader@{snakemake\_unit\_tests::yaml\_reader}}
+
+
+provide somewhat higher level interface with yaml-\/cpp nodes  
+
+
+
+
+{\ttfamily \#include $<$yaml\+\_\+reader.\+h$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1yaml__reader_a3ae52014ce8534b90a30199ebae799c1}\label{classsnakemake__unit__tests_1_1yaml__reader_a3ae52014ce8534b90a30199ebae799c1}} 
+\mbox{\hyperlink{classsnakemake__unit__tests_1_1yaml__reader_a3ae52014ce8534b90a30199ebae799c1}{yaml\+\_\+reader}} ()
+\begin{DoxyCompactList}\small\item\em default constructor \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classsnakemake__unit__tests_1_1yaml__reader_ad8787b9cc0d52c090c0f1402c757ac88}{yaml\+\_\+reader}} (const std\+::string \&filename)
+\begin{DoxyCompactList}\small\item\em constructor\+: load yaml file \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1yaml__reader_abe6834e1964be9f639c94089eeecce34}\label{classsnakemake__unit__tests_1_1yaml__reader_abe6834e1964be9f639c94089eeecce34}} 
+\mbox{\hyperlink{classsnakemake__unit__tests_1_1yaml__reader_abe6834e1964be9f639c94089eeecce34}{$\sim$yaml\+\_\+reader}} ()  throw ()
+\begin{DoxyCompactList}\small\item\em destructor \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classsnakemake__unit__tests_1_1yaml__reader_ab96ee9035b03035c9f9534d138a221e2}{load\+\_\+file}} (const std\+::string \&filename)
+\begin{DoxyCompactList}\small\item\em load yaml from file \end{DoxyCompactList}\item 
+std\+::string \mbox{\hyperlink{classsnakemake__unit__tests_1_1yaml__reader_a07e163536ccf6ae85da1a372c62ffe79}{get\+\_\+entry}} (const std\+::string \&query) const
+\begin{DoxyCompactList}\small\item\em get a single value corresponding to a single query \end{DoxyCompactList}\item 
+std\+::string \mbox{\hyperlink{classsnakemake__unit__tests_1_1yaml__reader_a0ff7f06ad3837c4edc6a8234cb6762e0}{get\+\_\+entry}} (const std\+::vector$<$ std\+::string $>$ \&queries) const
+\begin{DoxyCompactList}\small\item\em get a single value corresponding to an arbitrarily deep query \end{DoxyCompactList}\item 
+std\+::vector$<$ std\+::string $>$ \mbox{\hyperlink{classsnakemake__unit__tests_1_1yaml__reader_a10de71265ae4fa632f70826004fa6c6d}{get\+\_\+sequence}} (const std\+::string \&query) const
+\begin{DoxyCompactList}\small\item\em get a sequence of values corresponding to a single query \end{DoxyCompactList}\item 
+std\+::vector$<$ std\+::string $>$ \mbox{\hyperlink{classsnakemake__unit__tests_1_1yaml__reader_aa0c0277fee6d6d595e02745726e875bd}{get\+\_\+sequence}} (const std\+::vector$<$ std\+::string $>$ \&queries) const
+\begin{DoxyCompactList}\small\item\em get a sequence of values corresponding to an arbitrarily deep query \end{DoxyCompactList}\item 
+std\+::vector$<$ std\+::pair$<$ std\+::string, std\+::string $>$ $>$ \mbox{\hyperlink{classsnakemake__unit__tests_1_1yaml__reader_a36e00724c1b68204eb5ff29049fa1361}{get\+\_\+map}} (const std\+::string \&query) const
+\begin{DoxyCompactList}\small\item\em get map entries corresponding to a query \end{DoxyCompactList}\item 
+std\+::vector$<$ std\+::pair$<$ std\+::string, std\+::string $>$ $>$ \mbox{\hyperlink{classsnakemake__unit__tests_1_1yaml__reader_a6a8c2e50afd1f2abf0e520402505b836}{get\+\_\+map}} (const std\+::vector$<$ std\+::string $>$ \&queries) const
+\begin{DoxyCompactList}\small\item\em get map entries corresponding to a series of queries \end{DoxyCompactList}\item 
+YAML\+::\+Node \mbox{\hyperlink{classsnakemake__unit__tests_1_1yaml__reader_a13f38ebe47237710efa1413449a95ece}{get\+\_\+node}} (const std\+::string \&query) const
+\begin{DoxyCompactList}\small\item\em get arbitrary YAML Node corresponding to a query \end{DoxyCompactList}\item 
+YAML\+::\+Node \mbox{\hyperlink{classsnakemake__unit__tests_1_1yaml__reader_a5b968596cba68c8f04d0f9a0de062e9b}{get\+\_\+node}} (const std\+::vector$<$ std\+::string $>$ \&queries) const
+\begin{DoxyCompactList}\small\item\em get arbitrary YAML Node corresponding to a series of queries \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classsnakemake__unit__tests_1_1yaml__reader_a49813ab33de73bbf4a93afd17c1d09ed}{query\+\_\+valid}} (const std\+::string \&query) const
+\begin{DoxyCompactList}\small\item\em determine whether key exists in Node \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classsnakemake__unit__tests_1_1yaml__reader_acd7adda64af1d94408b0680aec542cc6}{query\+\_\+valid}} (const std\+::vector$<$ std\+::string $>$ \&queries) const
+\begin{DoxyCompactList}\small\item\em determine whether series of keys exists in Node \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{classsnakemake__unit__tests_1_1yaml__reader_a22d9f52b02bfcbc701bfe484749661b8}{apply\+\_\+queries}} (const std\+::vector$<$ std\+::string $>$ \&queries, YAML\+::\+Node $\ast$current, YAML\+::\+Node $\ast$next) const
+\begin{DoxyCompactList}\small\item\em apply an arbitrary query to a node \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1yaml__reader_a18b49bcfe3173b88083b2685f3fd489e}\label{classsnakemake__unit__tests_1_1yaml__reader_a18b49bcfe3173b88083b2685f3fd489e}} 
+YAML\+::\+Node \mbox{\hyperlink{classsnakemake__unit__tests_1_1yaml__reader_a18b49bcfe3173b88083b2685f3fd489e}{\+\_\+data}}
+\begin{DoxyCompactList}\small\item\em top level node representing config file, usually \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+provide somewhat higher level interface with yaml-\/cpp nodes 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1yaml__reader_ad8787b9cc0d52c090c0f1402c757ac88}\label{classsnakemake__unit__tests_1_1yaml__reader_ad8787b9cc0d52c090c0f1402c757ac88}} 
+\index{snakemake\_unit\_tests::yaml\_reader@{snakemake\_unit\_tests::yaml\_reader}!yaml\_reader@{yaml\_reader}}
+\index{yaml\_reader@{yaml\_reader}!snakemake\_unit\_tests::yaml\_reader@{snakemake\_unit\_tests::yaml\_reader}}
+\doxysubsubsection{\texorpdfstring{yaml\_reader()}{yaml\_reader()}}
+{\footnotesize\ttfamily snakemake\+\_\+unit\+\_\+tests\+::yaml\+\_\+reader\+::yaml\+\_\+reader (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{filename }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [explicit]}}
+
+
+
+constructor\+: load yaml file 
+
+
+\begin{DoxyParams}{Parameters}
+{\em filename} & name of yaml file to (attempt to) load \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1yaml__reader_a22d9f52b02bfcbc701bfe484749661b8}\label{classsnakemake__unit__tests_1_1yaml__reader_a22d9f52b02bfcbc701bfe484749661b8}} 
+\index{snakemake\_unit\_tests::yaml\_reader@{snakemake\_unit\_tests::yaml\_reader}!apply\_queries@{apply\_queries}}
+\index{apply\_queries@{apply\_queries}!snakemake\_unit\_tests::yaml\_reader@{snakemake\_unit\_tests::yaml\_reader}}
+\doxysubsubsection{\texorpdfstring{apply\_queries()}{apply\_queries()}}
+{\footnotesize\ttfamily void snakemake\+\_\+unit\+\_\+tests\+::yaml\+\_\+reader\+::apply\+\_\+queries (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ std\+::string $>$ \&}]{queries,  }\item[{YAML\+::\+Node $\ast$}]{current,  }\item[{YAML\+::\+Node $\ast$}]{next }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+apply an arbitrary query to a node 
+
+
+\begin{DoxyParams}{Parameters}
+{\em queries} & keys to search in node \\
+\hline
+{\em current} & top-\/level node to query \\
+\hline
+{\em next} & result of query in current node \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1yaml__reader_a07e163536ccf6ae85da1a372c62ffe79}\label{classsnakemake__unit__tests_1_1yaml__reader_a07e163536ccf6ae85da1a372c62ffe79}} 
+\index{snakemake\_unit\_tests::yaml\_reader@{snakemake\_unit\_tests::yaml\_reader}!get\_entry@{get\_entry}}
+\index{get\_entry@{get\_entry}!snakemake\_unit\_tests::yaml\_reader@{snakemake\_unit\_tests::yaml\_reader}}
+\doxysubsubsection{\texorpdfstring{get\_entry()}{get\_entry()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily std\+::string snakemake\+\_\+unit\+\_\+tests\+::yaml\+\_\+reader\+::get\+\_\+entry (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{query }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+get a single value corresponding to a single query 
+
+
+\begin{DoxyParams}{Parameters}
+{\em query} & key to query in yaml node \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+value of key in file, cast as std\+::string 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1yaml__reader_a0ff7f06ad3837c4edc6a8234cb6762e0}\label{classsnakemake__unit__tests_1_1yaml__reader_a0ff7f06ad3837c4edc6a8234cb6762e0}} 
+\index{snakemake\_unit\_tests::yaml\_reader@{snakemake\_unit\_tests::yaml\_reader}!get\_entry@{get\_entry}}
+\index{get\_entry@{get\_entry}!snakemake\_unit\_tests::yaml\_reader@{snakemake\_unit\_tests::yaml\_reader}}
+\doxysubsubsection{\texorpdfstring{get\_entry()}{get\_entry()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily std\+::string snakemake\+\_\+unit\+\_\+tests\+::yaml\+\_\+reader\+::get\+\_\+entry (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ std\+::string $>$ \&}]{queries }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+get a single value corresponding to an arbitrarily deep query 
+
+
+\begin{DoxyParams}{Parameters}
+{\em queries} & ordered set of keys to query in node \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+value of full query in file, cast as std\+::string 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1yaml__reader_a36e00724c1b68204eb5ff29049fa1361}\label{classsnakemake__unit__tests_1_1yaml__reader_a36e00724c1b68204eb5ff29049fa1361}} 
+\index{snakemake\_unit\_tests::yaml\_reader@{snakemake\_unit\_tests::yaml\_reader}!get\_map@{get\_map}}
+\index{get\_map@{get\_map}!snakemake\_unit\_tests::yaml\_reader@{snakemake\_unit\_tests::yaml\_reader}}
+\doxysubsubsection{\texorpdfstring{get\_map()}{get\_map()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily std\+::vector$<$std\+::pair$<$std\+::string, std\+::string$>$ $>$ snakemake\+\_\+unit\+\_\+tests\+::yaml\+\_\+reader\+::get\+\_\+map (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{query }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+get map entries corresponding to a query 
+
+
+\begin{DoxyParams}{Parameters}
+{\em query} & key to query in node \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+vector of key\+:value pairs 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1yaml__reader_a6a8c2e50afd1f2abf0e520402505b836}\label{classsnakemake__unit__tests_1_1yaml__reader_a6a8c2e50afd1f2abf0e520402505b836}} 
+\index{snakemake\_unit\_tests::yaml\_reader@{snakemake\_unit\_tests::yaml\_reader}!get\_map@{get\_map}}
+\index{get\_map@{get\_map}!snakemake\_unit\_tests::yaml\_reader@{snakemake\_unit\_tests::yaml\_reader}}
+\doxysubsubsection{\texorpdfstring{get\_map()}{get\_map()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily std\+::vector$<$ std\+::pair$<$ std\+::string, std\+::string $>$ $>$ snakemake\+\_\+unit\+\_\+tests\+::yaml\+\_\+reader\+::get\+\_\+map (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ std\+::string $>$ \&}]{queries }\end{DoxyParamCaption}) const}
+
+
+
+get map entries corresponding to a series of queries 
+
+
+\begin{DoxyParams}{Parameters}
+{\em queries} & ordered set of keys to query in node \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+vector of key\+:value pairs corresponding to full query 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1yaml__reader_a13f38ebe47237710efa1413449a95ece}\label{classsnakemake__unit__tests_1_1yaml__reader_a13f38ebe47237710efa1413449a95ece}} 
+\index{snakemake\_unit\_tests::yaml\_reader@{snakemake\_unit\_tests::yaml\_reader}!get\_node@{get\_node}}
+\index{get\_node@{get\_node}!snakemake\_unit\_tests::yaml\_reader@{snakemake\_unit\_tests::yaml\_reader}}
+\doxysubsubsection{\texorpdfstring{get\_node()}{get\_node()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily YAML\+::\+Node snakemake\+\_\+unit\+\_\+tests\+::yaml\+\_\+reader\+::get\+\_\+node (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{query }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+get arbitrary YAML Node corresponding to a query 
+
+
+\begin{DoxyParams}{Parameters}
+{\em query} & key to query in node \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Node result of query 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1yaml__reader_a5b968596cba68c8f04d0f9a0de062e9b}\label{classsnakemake__unit__tests_1_1yaml__reader_a5b968596cba68c8f04d0f9a0de062e9b}} 
+\index{snakemake\_unit\_tests::yaml\_reader@{snakemake\_unit\_tests::yaml\_reader}!get\_node@{get\_node}}
+\index{get\_node@{get\_node}!snakemake\_unit\_tests::yaml\_reader@{snakemake\_unit\_tests::yaml\_reader}}
+\doxysubsubsection{\texorpdfstring{get\_node()}{get\_node()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily YAML\+::\+Node snakemake\+\_\+unit\+\_\+tests\+::yaml\+\_\+reader\+::get\+\_\+node (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ std\+::string $>$ \&}]{queries }\end{DoxyParamCaption}) const}
+
+
+
+get arbitrary YAML Node corresponding to a series of queries 
+
+
+\begin{DoxyParams}{Parameters}
+{\em queries} & ordered set of keys to query in node \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Node result of full query 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1yaml__reader_a10de71265ae4fa632f70826004fa6c6d}\label{classsnakemake__unit__tests_1_1yaml__reader_a10de71265ae4fa632f70826004fa6c6d}} 
+\index{snakemake\_unit\_tests::yaml\_reader@{snakemake\_unit\_tests::yaml\_reader}!get\_sequence@{get\_sequence}}
+\index{get\_sequence@{get\_sequence}!snakemake\_unit\_tests::yaml\_reader@{snakemake\_unit\_tests::yaml\_reader}}
+\doxysubsubsection{\texorpdfstring{get\_sequence()}{get\_sequence()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily std\+::vector$<$std\+::string$>$ snakemake\+\_\+unit\+\_\+tests\+::yaml\+\_\+reader\+::get\+\_\+sequence (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{query }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+get a sequence of values corresponding to a single query 
+
+
+\begin{DoxyParams}{Parameters}
+{\em query} & key to query in yaml node \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+vector of values corresponding to query
+\end{DoxyReturn}
+this is\+: config\mbox{[}\char`\"{}key\char`\"{}\mbox{]}
+
+where the corresponding config entry is\+:
+
+key\+:
+\begin{DoxyItemize}
+\item val1
+\item val2
+\item val3 
+\end{DoxyItemize}\mbox{\Hypertarget{classsnakemake__unit__tests_1_1yaml__reader_aa0c0277fee6d6d595e02745726e875bd}\label{classsnakemake__unit__tests_1_1yaml__reader_aa0c0277fee6d6d595e02745726e875bd}} 
+\index{snakemake\_unit\_tests::yaml\_reader@{snakemake\_unit\_tests::yaml\_reader}!get\_sequence@{get\_sequence}}
+\index{get\_sequence@{get\_sequence}!snakemake\_unit\_tests::yaml\_reader@{snakemake\_unit\_tests::yaml\_reader}}
+\doxysubsubsection{\texorpdfstring{get\_sequence()}{get\_sequence()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily std\+::vector$<$ std\+::string $>$ snakemake\+\_\+unit\+\_\+tests\+::yaml\+\_\+reader\+::get\+\_\+sequence (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ std\+::string $>$ \&}]{queries }\end{DoxyParamCaption}) const}
+
+
+
+get a sequence of values corresponding to an arbitrarily deep query 
+
+
+\begin{DoxyParams}{Parameters}
+{\em queries} & ordered set of keys to query in node \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+vector of values corresponding to full query
+\end{DoxyReturn}
+this is\+: config\mbox{[}\char`\"{}key1\char`\"{}\mbox{]}\{\mbox{[}\char`\"{}key2\char`\"{}\mbox{]}...\}
+
+where the corresponding config entry is\+:
+
+key1\+: key2\+: key3\+:
+\begin{DoxyItemize}
+\item val1
+\item val2
+\item val3 
+\end{DoxyItemize}\mbox{\Hypertarget{classsnakemake__unit__tests_1_1yaml__reader_ab96ee9035b03035c9f9534d138a221e2}\label{classsnakemake__unit__tests_1_1yaml__reader_ab96ee9035b03035c9f9534d138a221e2}} 
+\index{snakemake\_unit\_tests::yaml\_reader@{snakemake\_unit\_tests::yaml\_reader}!load\_file@{load\_file}}
+\index{load\_file@{load\_file}!snakemake\_unit\_tests::yaml\_reader@{snakemake\_unit\_tests::yaml\_reader}}
+\doxysubsubsection{\texorpdfstring{load\_file()}{load\_file()}}
+{\footnotesize\ttfamily void snakemake\+\_\+unit\+\_\+tests\+::yaml\+\_\+reader\+::load\+\_\+file (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{filename }\end{DoxyParamCaption})}
+
+
+
+load yaml from file 
+
+
+\begin{DoxyParams}{Parameters}
+{\em filename} & name of yaml file to (attempt to) load \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1yaml__reader_a49813ab33de73bbf4a93afd17c1d09ed}\label{classsnakemake__unit__tests_1_1yaml__reader_a49813ab33de73bbf4a93afd17c1d09ed}} 
+\index{snakemake\_unit\_tests::yaml\_reader@{snakemake\_unit\_tests::yaml\_reader}!query\_valid@{query\_valid}}
+\index{query\_valid@{query\_valid}!snakemake\_unit\_tests::yaml\_reader@{snakemake\_unit\_tests::yaml\_reader}}
+\doxysubsubsection{\texorpdfstring{query\_valid()}{query\_valid()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily bool snakemake\+\_\+unit\+\_\+tests\+::yaml\+\_\+reader\+::query\+\_\+valid (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{query }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+determine whether key exists in Node 
+
+
+\begin{DoxyParams}{Parameters}
+{\em query} & key to query in node \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+whether the key exists 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1yaml__reader_acd7adda64af1d94408b0680aec542cc6}\label{classsnakemake__unit__tests_1_1yaml__reader_acd7adda64af1d94408b0680aec542cc6}} 
+\index{snakemake\_unit\_tests::yaml\_reader@{snakemake\_unit\_tests::yaml\_reader}!query\_valid@{query\_valid}}
+\index{query\_valid@{query\_valid}!snakemake\_unit\_tests::yaml\_reader@{snakemake\_unit\_tests::yaml\_reader}}
+\doxysubsubsection{\texorpdfstring{query\_valid()}{query\_valid()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily bool snakemake\+\_\+unit\+\_\+tests\+::yaml\+\_\+reader\+::query\+\_\+valid (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ std\+::string $>$ \&}]{queries }\end{DoxyParamCaption}) const}
+
+
+
+determine whether series of keys exists in Node 
+
+
+\begin{DoxyParams}{Parameters}
+{\em queries} & ordered set of keys to query in node \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+whether the series of keys exists 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+snakemake\+\_\+unit\+\_\+tests/\mbox{\hyperlink{yaml__reader_8h}{yaml\+\_\+reader.\+h}}\item 
+snakemake\+\_\+unit\+\_\+tests/\mbox{\hyperlink{yaml__reader_8cc}{yaml\+\_\+reader.\+cc}}\end{DoxyCompactItemize}

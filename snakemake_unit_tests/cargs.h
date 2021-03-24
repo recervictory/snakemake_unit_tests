@@ -41,7 +41,7 @@ class params {
         snakemake_log("") {}
   /*!
     @brief copy constructor
-    @obj existing params object
+    @param obj existing params object
   */
   params(const params &obj)
       : verbose(obj.verbose),
@@ -143,6 +143,7 @@ class cargs {
 
   /*!
     @brief deal with parameter settings, across CLI and config yaml
+    @return params object containing consistent parameter settings
 
     note that this should be called after initialize_options(), and will
     have fairly lackluster effects otherwise lol
@@ -163,6 +164,7 @@ class cargs {
     containing all the various parameters they've specified
     so they don't have to write out the horrible command
     line call each time
+    @return string filename of config yaml file
    */
   std::string get_config_yaml() const {
     return compute_parameter<std::string>("config", true);

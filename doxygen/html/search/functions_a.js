@@ -1,7 +1,4 @@
 var searchData=
 [
-  ['recipe_122',['recipe',['../classsnakemake__unit__tests_1_1recipe.html#a9c7f1160b03663aea1fc39c88592e5bb',1,'snakemake_unit_tests::recipe::recipe()'],['../classsnakemake__unit__tests_1_1recipe.html#a2f65d488510b127409238990d71aeb15',1,'snakemake_unit_tests::recipe::recipe(const recipe &amp;obj)']]],
-  ['remove_5fcomments_5fand_5fdocstrings_123',['remove_comments_and_docstrings',['../utilities_8h.html#a19982ae2854f4c8c67861bd69a9e5a19',1,'snakemake_unit_tests']]],
-  ['report_5fsingle_5frule_124',['report_single_rule',['../classsnakemake__unit__tests_1_1snakemake__file.html#a497771fee3e29671b877fc68a37af7c9',1,'snakemake_unit_tests::snakemake_file']]],
-  ['rule_5fblock_125',['rule_block',['../classsnakemake__unit__tests_1_1rule__block.html#a677876bfc5c03953f8b888368b1c068a',1,'snakemake_unit_tests::rule_block::rule_block()'],['../classsnakemake__unit__tests_1_1rule__block.html#a2122be784b8ecf4651a76a653b0306ea',1,'snakemake_unit_tests::rule_block::rule_block(const rule_block &amp;obj)']]]
+  ['query_5fvalid_169',['query_valid',['../classsnakemake__unit__tests_1_1yaml__reader.html#a49813ab33de73bbf4a93afd17c1d09ed',1,'snakemake_unit_tests::yaml_reader::query_valid(const std::string &amp;query) const'],['../classsnakemake__unit__tests_1_1yaml__reader.html#acd7adda64af1d94408b0680aec542cc6',1,'snakemake_unit_tests::yaml_reader::query_valid(const std::vector&lt; std::string &gt; &amp;queries) const']]]
 ];

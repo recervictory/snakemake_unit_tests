@@ -146,7 +146,7 @@ class yaml_reader {
   /*!
     @brief determine whether key exists in Node
     @param query key to query in node
-    @rturn whether the key exists
+    @return whether the key exists
    */
   bool query_valid(const std::string &query) const {
     std::vector<std::string> queries;

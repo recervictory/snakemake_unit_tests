@@ -96,9 +96,15 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aa6ed23df6e8352dcd2a2607688bb2180"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1cargs.html#aa6ed23df6e8352dcd2a2607688bb2180">initialize_options</a> ()</td></tr>
 <tr class="memdesc:aa6ed23df6e8352dcd2a2607688bb2180"><td class="mdescLeft">&#160;</td><td class="mdescRight">set user help documentation and default values for parameters as needed  <a href="classsnakemake__unit__tests_1_1cargs.html#aa6ed23df6e8352dcd2a2607688bb2180">More...</a><br /></td></tr>
 <tr class="separator:aa6ed23df6e8352dcd2a2607688bb2180"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f28c79bacf37a3cf205061251eb41ac"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classsnakemake__unit__tests_1_1params.html">params</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1cargs.html#a7f28c79bacf37a3cf205061251eb41ac">set_parameters</a> () const</td></tr>
+<tr class="memdesc:a7f28c79bacf37a3cf205061251eb41ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">deal with parameter settings, across CLI and config yaml  <a href="classsnakemake__unit__tests_1_1cargs.html#a7f28c79bacf37a3cf205061251eb41ac">More...</a><br /></td></tr>
+<tr class="separator:a7f28c79bacf37a3cf205061251eb41ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a022cc6ee8a36c60f09e228c494719d64"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1cargs.html#a022cc6ee8a36c60f09e228c494719d64">help</a> () const</td></tr>
 <tr class="memdesc:a022cc6ee8a36c60f09e228c494719d64"><td class="mdescLeft">&#160;</td><td class="mdescRight">determine whether the user has requested help documentation  <a href="classsnakemake__unit__tests_1_1cargs.html#a022cc6ee8a36c60f09e228c494719d64">More...</a><br /></td></tr>
 <tr class="separator:a022cc6ee8a36c60f09e228c494719d64"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e2c9af584be03ec588cf57940e8545e"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1cargs.html#a3e2c9af584be03ec588cf57940e8545e">get_config_yaml</a> () const</td></tr>
+<tr class="memdesc:a3e2c9af584be03ec588cf57940e8545e"><td class="mdescLeft">&#160;</td><td class="mdescRight">get user-specified config yaml file, containing all the various parameters they've specified so they don't have to write out the horrible command line call each time  <a href="classsnakemake__unit__tests_1_1cargs.html#a3e2c9af584be03ec588cf57940e8545e">More...</a><br /></td></tr>
+<tr class="separator:a3e2c9af584be03ec588cf57940e8545e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af79c72f68e8a91cc0bbe146bdaeb14a2"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1cargs.html#af79c72f68e8a91cc0bbe146bdaeb14a2">get_snakefile</a> () const</td></tr>
 <tr class="memdesc:af79c72f68e8a91cc0bbe146bdaeb14a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">get the top-level snakefile used for the full workflow  <a href="classsnakemake__unit__tests_1_1cargs.html#af79c72f68e8a91cc0bbe146bdaeb14a2">More...</a><br /></td></tr>
 <tr class="separator:af79c72f68e8a91cc0bbe146bdaeb14a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -142,6 +148,26 @@ Private Member Functions</h2></td></tr>
 <tr class="memitem:a096a22cd763f374b370a05e358d6c0f9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1cargs.html#a096a22cd763f374b370a05e358d6c0f9">cargs</a> ()</td></tr>
 <tr class="memdesc:a096a22cd763f374b370a05e358d6c0f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">default constructor  <a href="classsnakemake__unit__tests_1_1cargs.html#a096a22cd763f374b370a05e358d6c0f9">More...</a><br /></td></tr>
 <tr class="separator:a096a22cd763f374b370a05e358d6c0f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a940197b74bb1793509c339387a4730c7"><td class="memItemLeft" align="right" valign="top">boost::filesystem::path&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1cargs.html#a940197b74bb1793509c339387a4730c7">override_if_specified</a> (const std::string &amp;cli_entry, const boost::filesystem::path &amp;params_entry) const</td></tr>
+<tr class="memdesc:a940197b74bb1793509c339387a4730c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">if the first parameter is nonempty, return it; otherwise return the second  <a href="classsnakemake__unit__tests_1_1cargs.html#a940197b74bb1793509c339387a4730c7">More...</a><br /></td></tr>
+<tr class="separator:a940197b74bb1793509c339387a4730c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47b20118f204085dd8f47e4db648c722"><td class="memTemplParams" colspan="2">template&lt;class value_type &gt; </td></tr>
+<tr class="memitem:a47b20118f204085dd8f47e4db648c722"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1cargs.html#a47b20118f204085dd8f47e4db648c722">add_contents</a> (const std::vector&lt; std::string &gt; &amp;cli_entries, std::vector&lt; value_type &gt; *params_entries) const</td></tr>
+<tr class="memdesc:a47b20118f204085dd8f47e4db648c722"><td class="mdescLeft">&#160;</td><td class="mdescRight">append any CLI entries for a multitoken parameter to those already found in the config yaml  <a href="classsnakemake__unit__tests_1_1cargs.html#a47b20118f204085dd8f47e4db648c722">More...</a><br /></td></tr>
+<tr class="separator:a47b20118f204085dd8f47e4db648c722"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a01412612909d772f3dc8f0cbc5832365"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1cargs.html#a01412612909d772f3dc8f0cbc5832365">check_nonempty</a> (const boost::filesystem::path &amp;p, const std::string &amp;msg) const</td></tr>
+<tr class="memdesc:a01412612909d772f3dc8f0cbc5832365"><td class="mdescLeft">&#160;</td><td class="mdescRight">make sure a path isn't just an empty string  <a href="classsnakemake__unit__tests_1_1cargs.html#a01412612909d772f3dc8f0cbc5832365">More...</a><br /></td></tr>
+<tr class="separator:a01412612909d772f3dc8f0cbc5832365"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8611545c69ac74ebb94156fd1d0fd021"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1cargs.html#a8611545c69ac74ebb94156fd1d0fd021">check_regular_file</a> (const boost::filesystem::path &amp;p, const boost::filesystem::path &amp;prefix, const std::string &amp;msg) const</td></tr>
+<tr class="memdesc:a8611545c69ac74ebb94156fd1d0fd021"><td class="mdescLeft">&#160;</td><td class="mdescRight">given a path, enforce it being a regular file  <a href="classsnakemake__unit__tests_1_1cargs.html#a8611545c69ac74ebb94156fd1d0fd021">More...</a><br /></td></tr>
+<tr class="separator:a8611545c69ac74ebb94156fd1d0fd021"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a133690de88650eccb68af1281720cdb8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1cargs.html#a133690de88650eccb68af1281720cdb8">check_and_fix_dir</a> (boost::filesystem::path *p, const boost::filesystem::path &amp;prefix, const std::string &amp;msg) const</td></tr>
+<tr class="memdesc:a133690de88650eccb68af1281720cdb8"><td class="mdescLeft">&#160;</td><td class="mdescRight">given a path, enforce it being a directory, and gently clean up its format  <a href="classsnakemake__unit__tests_1_1cargs.html#a133690de88650eccb68af1281720cdb8">More...</a><br /></td></tr>
+<tr class="separator:a133690de88650eccb68af1281720cdb8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58251551386f449835aa166dfc788a39"><td class="memTemplParams" colspan="2">template&lt;class value_type &gt; </td></tr>
+<tr class="memitem:a58251551386f449835aa166dfc788a39"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; value_type &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1cargs.html#a58251551386f449835aa166dfc788a39">vector_convert</a> (const std::vector&lt; std::string &gt; &amp;vec) const</td></tr>
+<tr class="memdesc:a58251551386f449835aa166dfc788a39"><td class="mdescLeft">&#160;</td><td class="mdescRight">cast entries of a vector into something else  <a href="classsnakemake__unit__tests_1_1cargs.html#a58251551386f449835aa166dfc788a39">More...</a><br /></td></tr>
+<tr class="separator:a58251551386f449835aa166dfc788a39"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
@@ -265,6 +291,208 @@ boost::program_options::variables_map&#160;</td><td class="memItemRight" valign=
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="a47b20118f204085dd8f47e4db648c722"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47b20118f204085dd8f47e4db648c722">&#9670;&nbsp;</a></span>add_contents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class value_type &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void snakemake_unit_tests::cargs::add_contents </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramname"><em>cli_entries</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; value_type &gt; *&#160;</td>
+          <td class="paramname"><em>params_entries</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>append any CLI entries for a multitoken parameter to those already found in the config yaml </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">value_type</td><td>class to cast command line strings into (can just be strings) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cli_entries</td><td>values for the parameter found on the command line </td></tr>
+    <tr><td class="paramname">params_entries</td><td>values for the parameter found in the config yaml </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a133690de88650eccb68af1281720cdb8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a133690de88650eccb68af1281720cdb8">&#9670;&nbsp;</a></span>check_and_fix_dir()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void snakemake_unit_tests::cargs::check_and_fix_dir </td>
+          <td>(</td>
+          <td class="paramtype">boost::filesystem::path *&#160;</td>
+          <td class="paramname"><em>p</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const boost::filesystem::path &amp;&#160;</td>
+          <td class="paramname"><em>prefix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>msg</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>given a path, enforce it being a directory, and gently clean up its format </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">p</td><td>input candidate directory </td></tr>
+    <tr><td class="paramname">prefix</td><td>optional prefix for actual directory; can be empty </td></tr>
+    <tr><td class="paramname">msg</td><td>name of parameter flag for error messages </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a01412612909d772f3dc8f0cbc5832365"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a01412612909d772f3dc8f0cbc5832365">&#9670;&nbsp;</a></span>check_nonempty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void snakemake_unit_tests::cargs::check_nonempty </td>
+          <td>(</td>
+          <td class="paramtype">const boost::filesystem::path &amp;&#160;</td>
+          <td class="paramname"><em>p</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>msg</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>make sure a path isn't just an empty string </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">p</td><td>path to check </td></tr>
+    <tr><td class="paramname">msg</td><td>name of parameter flag for error messages </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a8611545c69ac74ebb94156fd1d0fd021"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8611545c69ac74ebb94156fd1d0fd021">&#9670;&nbsp;</a></span>check_regular_file()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void snakemake_unit_tests::cargs::check_regular_file </td>
+          <td>(</td>
+          <td class="paramtype">const boost::filesystem::path &amp;&#160;</td>
+          <td class="paramname"><em>p</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const boost::filesystem::path &amp;&#160;</td>
+          <td class="paramname"><em>prefix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>msg</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>given a path, enforce it being a regular file </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">p</td><td>input candidate file </td></tr>
+    <tr><td class="paramname">prefix</td><td>optional prefix for actual file; can be empty </td></tr>
+    <tr><td class="paramname">msg</td><td>name of parameter flag for error messages </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="ad0724bc8922092911d533d126768f71e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad0724bc8922092911d533d126768f71e">&#9670;&nbsp;</a></span>compute_flag()</h2>
 
@@ -411,6 +639,34 @@ template&lt;class value_type &gt; </div>
 <p>get optional multiple files (with relative paths) that will be installed alongside each unit test </p>
 <dl class="section return"><dt>Returns</dt><dd>all provided relative paths (if any) in a string vector</dd></dl>
 <p>This flag can be specified multiple times, or none. Note that the intention is for this option to be unnecessary, but it's exposed as an option just in case people come up with corner cases that the main logic cannot handle </p>
+
+</div>
+</div>
+<a id="a3e2c9af584be03ec588cf57940e8545e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e2c9af584be03ec588cf57940e8545e">&#9670;&nbsp;</a></span>get_config_yaml()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string snakemake_unit_tests::cargs::get_config_yaml </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>get user-specified config yaml file, containing all the various parameters they've specified so they don't have to write out the horrible command line call each time </p>
+<dl class="section return"><dt>Returns</dt><dd>string filename of config yaml file </dd></dl>
 
 </div>
 </div>
@@ -637,6 +893,52 @@ template&lt;class value_type &gt; </div>
 
 </div>
 </div>
+<a id="a940197b74bb1793509c339387a4730c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a940197b74bb1793509c339387a4730c7">&#9670;&nbsp;</a></span>override_if_specified()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">boost::filesystem::path snakemake_unit_tests::cargs::override_if_specified </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>cli_entry</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const boost::filesystem::path &amp;&#160;</td>
+          <td class="paramname"><em>params_entry</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>if the first parameter is nonempty, return it; otherwise return the second </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cli_entry</td><td>the value for the parameter given on the command line </td></tr>
+    <tr><td class="paramname">params_entry</td><td>the value for the parameter loaded from the yaml config </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>the resolved value from the two provided </dd></dl>
+
+</div>
+</div>
 <a id="aa50a26e90723123d7318296b1a120b65"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aa50a26e90723123d7318296b1a120b65">&#9670;&nbsp;</a></span>print_help()</h2>
 
@@ -669,6 +971,71 @@ template&lt;class value_type &gt; </div>
   </dd>
 </dl>
 <p>Parameter should probably be std::cout or std::cerr at your preference. </p>
+
+</div>
+</div>
+<a id="a7f28c79bacf37a3cf205061251eb41ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f28c79bacf37a3cf205061251eb41ac">&#9670;&nbsp;</a></span>set_parameters()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classsnakemake__unit__tests_1_1params.html">snakemake_unit_tests::params</a> snakemake_unit_tests::cargs::set_parameters </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>deal with parameter settings, across CLI and config yaml </p>
+<dl class="section return"><dt>Returns</dt><dd>params object containing consistent parameter settings</dd></dl>
+<p>note that this should be called after <a class="el" href="classsnakemake__unit__tests_1_1cargs.html#aa6ed23df6e8352dcd2a2607688bb2180" title="set user help documentation and default values for parameters as needed">initialize_options()</a>, and will have fairly lackluster effects otherwise lol </p>
+
+</div>
+</div>
+<a id="a58251551386f449835aa166dfc788a39"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58251551386f449835aa166dfc788a39">&#9670;&nbsp;</a></span>vector_convert()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class value_type &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;value_type&gt; snakemake_unit_tests::cargs::vector_convert </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramname"><em>vec</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>cast entries of a vector into something else </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">target</td><td>type for conversion </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">vec</td><td>vector of strings to convert </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>converted vector</dd></dl>
+<p>there are definitely less silly ways of doing this </p>
 
 </div>
 </div>
