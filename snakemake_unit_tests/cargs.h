@@ -361,6 +361,13 @@ class cargs {
     }
   }
   /*!
+    @brief make sure a path isn't just an empty string
+    @param p path to check
+    @param msg name of parameter flag for error messages
+   */
+  void check_nonempty(const boost::filesystem::path &p,
+                      const std::string &msg) const;
+  /*!
     @brief given a path, enforce it being a regular file
     @param p input candidate file
     @param prefix optional prefix for actual file; can be empty
@@ -379,6 +386,25 @@ class cargs {
   void check_and_fix_dir(boost::filesystem::path *p,
                          const boost::filesystem::path &prefix,
                          const std::string &msg) const;
+
+  /*!
+    @brief cast entries of a vector into something else
+    @tparam target type for conversion
+    @param vec vector of strings to convert
+    @return converted vector
+
+    there are definitely less silly ways of doing this
+   */
+  template <class value_type>
+  std::vector<value_type> vector_convert(
+      const std::vector<std::string> &vec) const {
+    std::vector<value_type> res;
+    for (std::vector<std::string>::const_iterator iter = vec.begin();
+         iter != vec.end(); ++iter) {
+      res.push_back(value_type(*iter));
+    }
+    return res;
+  }
 };
 }  // namespace snakemake_unit_tests
 

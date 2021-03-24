@@ -61,6 +61,34 @@ snakemake_unit_tests::params snakemake_unit_tests::cargs::set_parameters()
                                  "\" does not conform to yaml syntax");
       }
       // TODO(cpalmer718): populate entries from yaml into params object
+      // do NOT accept help from config file
+      // do NOT accept verbose from config file
+      if (p.config.query_valid("output-test-dir")) {
+        p.output_test_dir = p.config.get_entry("output-test-dir");
+      }
+      if (p.config.query_valid("snakefile")) {
+        p.snakefile = p.config.get_entry("snakefile");
+      }
+      if (p.config.query_valid("pipeline-dir")) {
+        p.pipeline_run_dir = p.config.get_entry("pipeline-dir");
+      }
+      if (p.config.query_valid("inst-dir")) {
+        p.inst_dir = p.config.get_entry("inst-dir");
+      }
+      if (p.config.query_valid("snakemake-log")) {
+        p.snakemake_log = p.config.get_entry("snakemake-log");
+      }
+      if (p.config.query_valid("added-files")) {
+        p.added_files = vector_convert<boost::filesystem::path>(
+            p.config.get_sequence("added-files"));
+      }
+      if (p.config.query_valid("added-directories")) {
+        p.added_directories = vector_convert<boost::filesystem::path>(
+            p.config.get_sequence("added-directories"));
+      }
+      if (p.config.query_valid("exclude-rules")) {
+        p.exclude_rules = p.config.get_sequence("exclude-rules");
+      }
     }
   }
   // load command line options
@@ -102,11 +130,16 @@ snakemake_unit_tests::params snakemake_unit_tests::cargs::set_parameters()
   // verbose is fine regardless
   // output_test_dir: doesn't have trailing separator, but doesn't have to exist
   p.output_test_dir = p.output_test_dir.remove_trailing_separator();
+  // but it should at least be nonempty
+  check_nonempty(p.output_test_dir, "output-test-dir");
   // snakefile: should exist, be regular file
+  check_nonempty(p.snakefile, "snakefile");
   check_regular_file(p.snakefile, "", "snakefile");
   // pipeline_run_dir: should exist, be directory, no trailing separator
+  check_nonempty(p.pipeline_run_dir, "pipeline-dir");
   check_and_fix_dir(&p.pipeline_run_dir, "", "pipeline-dir");
   // inst_dir: should exist, be directory
+  check_nonempty(p.inst_dir, "inst-dir");
   check_and_fix_dir(&p.inst_dir, "", "inst-dir");
   //     should also contain two files: test.py and common.py
   try {
@@ -124,14 +157,17 @@ snakemake_unit_tests::params snakemake_unit_tests::cargs::set_parameters()
         "$CONDA_PREFIX/share/snakemake_unit_tests/inst");
   }
   // snakemake_log: should exist, be a regular file
+  check_nonempty(p.snakemake_log, "snakemake-log");
   check_regular_file(p.snakemake_log, "", "snakemake-log");
   // added_files: should be regular files, relative to pipeline run dir
+  // doesn't have to be specified at all though
   for (std::vector<boost::filesystem::path>::iterator iter =
            p.added_files.begin();
        iter != p.added_files.end(); ++iter) {
     check_regular_file(*iter, p.pipeline_run_dir, "added-files");
   }
   // added_directories: should be directories, relative to pipeline run dir
+  // doesn't have to be specified at all though
   for (std::vector<boost::filesystem::path>::iterator iter =
            p.added_directories.begin();
        iter != p.added_directories.end(); ++iter) {
@@ -146,6 +182,14 @@ boost::filesystem::path snakemake_unit_tests::cargs::override_if_specified(
     const std::string &cli_entry,
     const boost::filesystem::path &params_entry) const {
   return cli_entry.empty() ? params_entry : boost::filesystem::path(cli_entry);
+}
+
+void snakemake_unit_tests::cargs::check_nonempty(
+    const boost::filesystem::path &p, const std::string &msg) const {
+  if (p.string().empty())
+    throw std::logic_error("parameter \"" + msg +
+                           "\" does not have a default value "
+                           "and must be specified");
 }
 
 void snakemake_unit_tests::cargs::check_regular_file(
