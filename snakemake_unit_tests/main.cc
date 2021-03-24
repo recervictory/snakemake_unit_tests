@@ -42,6 +42,7 @@ int main(int argc, char **argv) {
     ap.print_help(std::cout);
     return 0;
   }
+
   p = ap.set_parameters();
 
   // parse the top-level snakefile and all include files (hopefully)
