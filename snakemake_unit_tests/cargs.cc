@@ -9,8 +9,7 @@
 
 void snakemake_unit_tests::cargs::initialize_options() {
   _desc.add_options()(
-      "config,c",
-      boost::program_options::value<std::string>()->default_value(""),
+      "config,c", boost::program_options::value<std::string>(),
       "config yaml file specifying default options for other flags")(
       "added-directories,d",
       boost::program_options::value<std::vector<std::string> >(),
@@ -30,14 +29,11 @@ void snakemake_unit_tests::cargs::initialize_options() {
       "output-test-dir,o",
       boost::program_options::value<std::string>()->default_value(".tests"),
       "top-level output directory for all tests")(
-      "pipeline-dir,p",
-      boost::program_options::value<std::string>()->default_value(""),
+      "pipeline-dir,p", boost::program_options::value<std::string>(),
       "top-level run directory for actual instance of pipeline (if not "
       "specified, "
       "will be computed as * assuming --snakefile is */workflow/Snakefile)")(
-      "snakefile,s",
-      boost::program_options::value<std::string>()->default_value(
-          "workflow/Snakefile"),
+      "snakefile,s", boost::program_options::value<std::string>(),
       "snakefile used to run target pipeline")(
       "verbose,v", "emit verbose logging content; useful for debugging");
 }

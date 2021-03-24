@@ -165,7 +165,7 @@ class cargs {
     line call each time
    */
   std::string get_config_yaml() const {
-    return compute_parameter<std::string>("config");
+    return compute_parameter<std::string>("config", true);
   }
 
   /*!
@@ -176,7 +176,7 @@ class cargs {
     rules in secondary snakefiles are loaded in automatically
    */
   std::string get_snakefile() const {
-    return compute_parameter<std::string>("snakefile");
+    return compute_parameter<std::string>("snakefile", true);
   }
 
   /*!
@@ -189,7 +189,7 @@ class cargs {
     log sufficiently informative
    */
   std::string get_snakemake_log() const {
-    return compute_parameter<std::string>("snakemake-log");
+    return compute_parameter<std::string>("snakemake-log", true);
   }
 
   /*!
@@ -200,7 +200,7 @@ class cargs {
     is '.tests' and that default is carried over here
    */
   std::string get_output_test_dir() const {
-    return compute_parameter<std::string>("output-test-dir");
+    return compute_parameter<std::string>("output-test-dir", true);
   }
 
   /*!
@@ -219,7 +219,7 @@ class cargs {
     such as when the file is in ~/Snakefile instead of ~/workflow/Snakefile.
    */
   std::string get_pipeline_dir() const {
-    return compute_parameter<std::string>("pipeline-dir");
+    return compute_parameter<std::string>("pipeline-dir", true);
   }
 
   /*!
@@ -232,7 +232,7 @@ class cargs {
     improve concomitantly.
    */
   std::string get_inst_dir() const {
-    return compute_parameter<std::string>("inst-dir");
+    return compute_parameter<std::string>("inst-dir", true);
   }
 
   /*!
