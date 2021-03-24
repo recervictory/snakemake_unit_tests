@@ -84,8 +84,8 @@ void snakemake_unit_tests::solved_rules::emit_tests(
     const boost::filesystem::path &pipeline_dir,
     const boost::filesystem::path &inst_dir,
     const std::vector<std::string> &exclude_rules,
-    const std::vector<std::string> &added_files,
-    const std::vector<std::string> &added_directories) const {
+    const std::vector<boost::filesystem::path> &added_files,
+    const std::vector<boost::filesystem::path> &added_directories) const {
   // create unit test output directory
   // by default, this looks like `.tests/unit`
   // but will be overridden as `output_test_dir/unit`
@@ -184,15 +184,13 @@ void snakemake_unit_tests::solved_rules::emit_tests(
                 boost::filesystem::copy_options::recursive);
       }
       // copy extra files and directories, if provided, to workspace
-      for (std::vector<std::string>::const_iterator added_file_iter =
-               added_files.begin();
+      for (std::vector<boost::filesystem::path>::const_iterator
+               added_file_iter = added_files.begin();
            added_file_iter != added_files.end(); ++added_file_iter) {
         // source file is: actual_snakemake_run/relative_path_to_file
-        boost::filesystem::path source_file =
-            pipeline_dir.string() + "/" + *added_file_iter;
+        boost::filesystem::path source_file = pipeline_dir / *added_file_iter;
         // target file is: workspace_path/relative_path_to_file
-        boost::filesystem::path target_file =
-            workspace_path.string() + "/" + *added_file_iter;
+        boost::filesystem::path target_file = workspace_path / *added_file_iter;
         // check source exists
         if (!boost::filesystem::is_regular_file(source_file)) {
           throw std::runtime_error("cannot find added file \"" +
@@ -205,16 +203,16 @@ void snakemake_unit_tests::solved_rules::emit_tests(
             source_file, target_file,
             boost::filesystem::copy_options::overwrite_existing);
       }
-      for (std::vector<std::string>::const_iterator added_directory_iter =
-               added_directories.begin();
+      for (std::vector<boost::filesystem::path>::const_iterator
+               added_directory_iter = added_directories.begin();
            added_directory_iter != added_directories.end();
            ++added_directory_iter) {
         // source file is: actual_snakemake_run/relative_path_to_directory
         boost::filesystem::path source_directory =
-            pipeline_dir.string() + "/" + *added_directory_iter;
+            pipeline_dir / *added_directory_iter;
         // target file is: workspace_path/relative_path_to_directory
         boost::filesystem::path target_directory =
-            workspace_path.string() + "/" + *added_directory_iter;
+            workspace_path / *added_directory_iter;
         // check source *directory* exists
         if (!boost::filesystem::is_directory(source_directory)) {
           throw std::runtime_error("cannot find added directory \"" +
@@ -229,11 +227,10 @@ void snakemake_unit_tests::solved_rules::emit_tests(
                 boost::filesystem::copy_options::recursive);
       }
       // create parent directories for synthetic snakefile
-      boost::filesystem::create_directories(workspace_path.string() +
-                                            "/workflow");
+      boost::filesystem::create_directories(workspace_path / "workflow");
       // create the synthetic snakefile in workspace/workflow/Snakefile
       std::string output_filename =
-          workspace_path.string() + "/workflow/Snakefile";
+          (workspace_path / "workflow" / "Snakefile").string();
       std::ofstream output;
       output.open(output_filename.c_str());
       if (!output.is_open())
@@ -261,7 +258,8 @@ void snakemake_unit_tests::solved_rules::emit_tests(
       output.clear();
       // modify repo inst/test.py into a test runner for this rule
       std::string test_python_file =
-          test_parent_path.string() + "/test_" + iter->get_rule_name() + ".py";
+          (test_parent_path / ("test_" + iter->get_rule_name() + ".py"))
+              .string();
       output.open(test_python_file.c_str());
       if (!output.is_open())
         throw std::runtime_error("cannot write test python file \"" +
