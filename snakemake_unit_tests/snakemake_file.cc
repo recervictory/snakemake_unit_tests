@@ -29,8 +29,10 @@ void snakemake_unit_tests::snakemake_file::load_file(
         // load the included file
         boost::filesystem::path recursive_path =
             base_dir + "/" + rb.get_recursive_filename();
-        load_file(recursive_path.leaf().string(),
-                  recursive_path.branch_path().string(), verbose);
+        load_file(
+            recursive_path.filename().string(),
+            recursive_path.remove_trailing_separator().parent_path().string(),
+            verbose);
         // and now that the include has been performed, do not add the include
         // statement
       } else {

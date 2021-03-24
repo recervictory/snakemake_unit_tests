@@ -49,7 +49,10 @@ int main(int argc, char **argv) {
   if (pipeline_run_draft.empty()) {
     // behavior: if not specified, select it as the directory above
     // wherever the snakefile is installed
-    pipeline_run_draft = snakefile.branch_path().branch_path().string();
+    pipeline_run_draft = snakefile.remove_trailing_separator()
+                             .parent_path()
+                             .parent_path()
+                             .string();
   }
   boost::filesystem::path pipeline_run_dir = pipeline_run_draft;
   boost::filesystem::path inst_dir = ap.get_inst_dir();
@@ -66,7 +69,8 @@ int main(int argc, char **argv) {
 
   // parse the top-level snakefile and all include files (hopefully)
   snakemake_unit_tests::snakemake_file sf;
-  sf.load_file(snakefile.leaf().string(), snakefile.branch_path().string(),
+  sf.load_file(snakefile.filename().string(),
+               snakefile.remove_trailing_separator().parent_path().string(),
                verbose);
 
   // as a debug step, report the parsed contents of the snakefile
