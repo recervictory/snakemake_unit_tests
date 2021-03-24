@@ -14,7 +14,7 @@ import common
 def test_function():
 
     with TemporaryDirectory() as tmpdir:
-        rundir = Path(tmpdir) / "rundir"
+        rundir = PurePosixPath(testdir + "/out_" + rulename) # Path(tmpdir) / "rundir"
         workspace_path = PurePosixPath("{}/unit/{}/workspace".format(testdir, rulename))
         expected_path = PurePosixPath("{}/unit/{}/expected".format(testdir, rulename))
 
@@ -43,4 +43,5 @@ def test_function():
         # To modify this behavior, you can inherit from common.OutputChecker in here
         # and overwrite the method `compare_files(generated_file, expected_file), 
         # also see common.py.
+
         common.OutputChecker(workspace_path, expected_path, rundir).check()
