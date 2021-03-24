@@ -26,8 +26,7 @@ void snakemake_unit_tests::cargs::initialize_options() {
       "snakemake_unit_tests inst directory")(
       "snakemake-log,l", boost::program_options::value<std::string>(),
       "snakemake log file for run that needs unit tests")(
-      "output-test-dir,o",
-      boost::program_options::value<std::string>()->default_value(".tests"),
+      "output-test-dir,o", boost::program_options::value<std::string>(),
       "top-level output directory for all tests")(
       "pipeline-dir,p", boost::program_options::value<std::string>(),
       "top-level run directory for actual instance of pipeline (if not "
@@ -48,15 +47,9 @@ snakemake_unit_tests::params snakemake_unit_tests::cargs::set_parameters()
     // if the file exists at all
     if (boost::filesystem::is_regular_file(p.config_filename)) {
       // attempt to load it into yaml-cpp Node
-      try {
-        p.config.load_file(p.config_filename.string());
-      } catch (...) {
-        // this is *probably* the issue, if the file definitely exists
-        throw std::runtime_error("input config file \"" +
-                                 p.config_filename.string() +
-                                 "\" does not conform to yaml syntax");
-      }
-      // TODO(cpalmer718): populate entries from yaml into params object
+      // the exception from yaml-cpp is reasonably informative,
+      // so let that propagate upward
+      p.config.load_file(p.config_filename.string());
       // do NOT accept help from config file
       // do NOT accept verbose from config file
       if (p.config.query_valid("output-test-dir")) {

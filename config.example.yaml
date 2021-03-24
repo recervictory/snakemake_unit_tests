@@ -107,8 +107,3 @@ exclude-rules:
   - download_ilmnid_rsid_GDA
   - download_ilmnid_rsid_MEGA
   - download_ucsc_rsid_bigbed
-
-
-
-
-  ./snakemake_unit_tests.out -e filter_ClinVar -e convert_genes_to_regions_ACMG -e tabix_vcf -e download_ClinVar -e download_refseq_gtf -e download_GWAS_catalog -e download_PharmGKB -e download_html_table_ACMG -e download_ilmnid_rsid_GDA -e download_ilmnid_rsid_MEGA -e download_ucsc_rsid_bigbed -l ../chip-variant-selection/test.log -o tests-tests -p ../chip-variant-selection -s ../chip-variant-selection/workflow/Snakefile -d config -d schemas/ -d workflow/envs -d workflow/scripts -i inst
