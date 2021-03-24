@@ -17,9 +17,94 @@
 #include <string>
 #include <vector>
 
+#include "boost/filesystem.hpp"
 #include "boost/program_options.hpp"
+#include "snakemake_unit_tests/yaml_reader.h"
 
 namespace snakemake_unit_tests {
+/*!
+  @class params
+  @brief resolved set of parameters to control program operation
+ */
+class params {
+ public:
+  /*!
+    @brief constructor
+   */
+  params()
+      : verbose(false),
+        config_filename(""),
+        output_test_dir(""),
+        snakefile(""),
+        pipeline_run_dir(""),
+        inst_dir(""),
+        snakemake_log("") {}
+  /*!
+    @brief copy constructor
+    @obj existing params object
+  */
+  params(const params &obj)
+      : verbose(obj.verbose),
+        config_filename(obj.config_filename),
+        config(obj.config),
+        output_test_dir(obj.output_test_dir),
+        snakefile(obj.snakefile),
+        pipeline_run_dir(obj.pipeline_run_dir),
+        inst_dir(obj.inst_dir),
+        snakemake_log(obj.snakemake_log),
+        added_files(obj.added_files),
+        added_directories(obj.added_directories),
+        exclude_rules(obj.exclude_rules) {}
+  /*!
+    @brief destructor
+   */
+  ~params() throw() {}
+  /*!
+    @brief provide verbose logging output
+   */
+  bool verbose;
+  /*!
+    @brief name of yaml configuration file
+   */
+  boost::filesystem::path config_filename;
+  /*!
+    @brief parsed contents of yaml configuration file
+   */
+  snakemake_unit_tests::yaml_reader config;
+  /*!
+    @brief directory to which to write unit tests
+   */
+  boost::filesystem::path output_test_dir;
+  /*!
+    @brief top-level snakefile for successful pipeline run
+   */
+  boost::filesystem::path snakefile;
+  /*!
+    @brief top-level directory of successful pipeline run
+   */
+  boost::filesystem::path pipeline_run_dir;
+  /*!
+    @brief path to inst directory of snakemake_unit_tests
+   */
+  boost::filesystem::path inst_dir;
+  /*!
+    @brief name of log file of successful pipeline run
+   */
+  boost::filesystem::path snakemake_log;
+  /*!
+    @brief user-defined added files to place in test workspaces
+   */
+  std::vector<boost::filesystem::path> added_files;
+  /*!
+    @brief user-defined directories to recursively place in test workspaces
+   */
+  std::vector<boost::filesystem::path> added_directories;
+  /*!
+    @brief user-defined rulenames to skip in test generation
+   */
+  std::vector<std::string> exclude_rules;
+};
+
 /*!
   @class cargs
   @brief command line argument parser using boost::program_options
@@ -55,6 +140,14 @@ class cargs {
     separated by commas.
    */
   void initialize_options();
+
+  /*!
+    @brief deal with parameter settings, across CLI and config yaml
+
+    note that this should be called after initialize_options(), and will
+    have fairly lackluster effects otherwise lol
+   */
+  params set_parameters() const;
 
   /*!
     @brief determine whether the user has requested help documentation
@@ -238,6 +331,54 @@ class cargs {
       _desc;  //!< help documentation string
   boost::program_options::variables_map
       _vm;  //!< storage of parsed command line settings
+  /*!
+    @brief if the first parameter is nonempty, return it; otherwise return
+    the second
+    @param cli_entry the value for the parameter given on the command line
+    @param params_entry the value for the parameter loaded from the yaml config
+    @return the resolved value from the two provided
+  */
+  boost::filesystem::path override_if_specified(
+      const std::string &cli_entry,
+      const boost::filesystem::path &params_entry) const;
+
+  /*!
+    @brief append any CLI entries for a multitoken parameter to
+    those already found in the config yaml
+    @tparam value_type class to cast command line strings into (can just be
+    strings)
+    @param cli_entries values for the parameter found on the command line
+    @param params_entries values for the parameter found in the config yaml
+   */
+  template <class value_type>
+  void add_contents(const std::vector<std::string> &cli_entries,
+                    std::vector<value_type> *params_entries) const {
+    if (!params_entries)
+      throw std::runtime_error("null pointer to add_contents");
+    for (std::vector<std::string>::const_iterator iter = cli_entries.begin();
+         iter != cli_entries.end(); ++iter) {
+      params_entries->push_back(value_type(*iter));
+    }
+  }
+  /*!
+    @brief given a path, enforce it being a regular file
+    @param p input candidate file
+    @param prefix optional prefix for actual file; can be empty
+    @param msg name of parameter flag for error messages
+   */
+  void check_regular_file(const boost::filesystem::path &p,
+                          const boost::filesystem::path &prefix,
+                          const std::string &msg) const;
+  /*!
+    @brief given a path, enforce it being a directory, and
+    gently clean up its format
+    @param p input candidate directory
+    @param prefix optional prefix for actual directory; can be empty
+    @param msg name of parameter flag for error messages
+   */
+  void check_and_fix_dir(boost::filesystem::path *p,
+                         const boost::filesystem::path &prefix,
+                         const std::string &msg) const;
 };
 }  // namespace snakemake_unit_tests
 

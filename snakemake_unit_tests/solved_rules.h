@@ -165,13 +165,13 @@ class solved_rules {
     TODO(cpalmer718): make this do what it actually has to do,
     the current content is just a proof of principle placeholder
   */
-  void emit_tests(const snakemake_file &sf,
-                  const boost::filesystem::path &output_test_dir,
-                  const boost::filesystem::path &pipeline_dir,
-                  const boost::filesystem::path &inst_dir,
-                  const std::vector<std::string> &exclude_rules,
-                  const std::vector<std::string> &added_files,
-                  const std::vector<std::string> &added_directories) const;
+  void emit_tests(
+      const snakemake_file &sf, const boost::filesystem::path &output_test_dir,
+      const boost::filesystem::path &pipeline_dir,
+      const boost::filesystem::path &inst_dir,
+      const std::vector<std::string> &exclude_rules,
+      const std::vector<boost::filesystem::path> &added_files,
+      const std::vector<boost::filesystem::path> &added_directories) const;
 
  private:
   /*!

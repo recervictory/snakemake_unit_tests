@@ -35,59 +35,32 @@
 int main(int argc, char **argv) {
   // parse command line input
   snakemake_unit_tests::cargs ap(argc, argv);
+  snakemake_unit_tests::params p;
   // if help is requested or no flags specified
   if (ap.help() || argc == 1) {
     // print a help message and exist
     ap.print_help(std::cout);
     return 0;
   }
-
-  // load command line options
-  bool verbose = ap.verbose();
-  // if yaml config is specified, use it to get default values;
-  // then add or overwrite those values with additional command
-  // line flags
-  std::string config_file = ap.get_config_yaml();
-  snakemake_unit_tests::yaml_reader config;
-  if (!config_file.empty()) config.load_file(config_file);
-  boost::filesystem::path output_test_dir = ap.get_output_test_dir();
-  boost::filesystem::path snakefile = ap.get_snakefile();
-  std::string pipeline_run_draft = ap.get_pipeline_dir();
-  if (pipeline_run_draft.empty()) {
-    // behavior: if not specified, select it as the directory above
-    // wherever the snakefile is installed
-    pipeline_run_draft = snakefile.branch_path().branch_path().string();
-  }
-  boost::filesystem::path pipeline_run_dir = pipeline_run_draft;
-  boost::filesystem::path inst_dir = ap.get_inst_dir();
-  if (!boost::filesystem::is_directory(inst_dir))
-    throw std::runtime_error("provided inst directory \"" + inst_dir.string() +
-                             "\" does not exist");
-  std::string snakemake_log = ap.get_snakemake_log();
-  std::vector<std::string> added_files = ap.get_added_files();
-  std::vector<std::string> added_directories = ap.get_added_directories();
-  std::vector<std::string> exclude_rules = ap.get_exclude_rules();
-  // add "all" to exclusion list, always
-  // it's ok if it dups with user specification, it's uniqued later
-  exclude_rules.push_back("all");
+  p = ap.set_parameters();
 
   // parse the top-level snakefile and all include files (hopefully)
   snakemake_unit_tests::snakemake_file sf;
-  sf.load_file(snakefile.leaf().string(), snakefile.branch_path().string(),
-               verbose);
+  sf.load_file(p.snakefile.filename().string(),
+               p.snakefile.parent_path().string(), p.verbose);
 
   // as a debug step, report the parsed contents of the snakefile
-  if (verbose) {
+  if (p.verbose) {
     sf.print_blocks(std::cout);
   }
   // parse the log file to determine the solved system of rules and outputs
   snakemake_unit_tests::solved_rules sr;
-  sr.load_file(snakemake_log);
+  sr.load_file(p.snakemake_log.string());
 
   // iterate over the solved rules, emitting them with modifiers as desired
-  // TODO(cpalmer718): make responsive to cli, actually implement, etc.
-  sr.emit_tests(sf, output_test_dir, pipeline_run_dir, inst_dir, exclude_rules,
-                added_files, added_directories);
+  // TODO(cpalmer718): refactor this function and clean it up
+  sr.emit_tests(sf, p.output_test_dir, p.pipeline_run_dir, p.inst_dir,
+                p.exclude_rules, p.added_files, p.added_directories);
 
   std::cout << "all done woo!" << std::endl;
   return 0;
