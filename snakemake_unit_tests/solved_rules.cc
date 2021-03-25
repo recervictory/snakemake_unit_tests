@@ -103,6 +103,30 @@ void snakemake_unit_tests::solved_rules::emit_tests(
         "in inst directory \"" +
         inst_dir.string() + "\"");
 
+  // iterate across loaded recipes, creating tests as you go
+  std::map<std::string, bool> test_history;
+  for (std::vector<recipe>::const_iterator iter = _recipes.begin();
+       iter != _recipes.end(); ++iter) {
+    if (test_history.find(iter->get_rule_name()) == test_history.end()) {
+      create_workspace(*iter, sf, output_test_dir, test_parent_path,
+                       pipeline_dir, inst_test_py, exclude_rules, added_files,
+                       added_directories);
+      test_history[iter->get_rule_name()] = true;
+    }
+  }
+  // emit common.py in the test_parent_path; no modifications needed
+  boost::filesystem::copy(inst_common_py, test_parent_path);
+}
+
+void snakemake_unit_tests::solved_rules::create_workspace(
+    const recipe &rec, const snakemake_file &sf,
+    const boost::filesystem::path &output_test_dir,
+    const boost::filesystem::path &test_parent_path,
+    const boost::filesystem::path &pipeline_dir,
+    const boost::filesystem::path &inst_test_py,
+    const std::vector<std::string> &exclude_rules,
+    const std::vector<boost::filesystem::path> &added_files,
+    const std::vector<boost::filesystem::path> &added_directories) const {
   // create an excluded rule lookup, for filtering things the user
   // wants skipped
   std::map<std::string, bool> exclude_rule_lookup;
@@ -110,180 +134,122 @@ void snakemake_unit_tests::solved_rules::emit_tests(
        iter != exclude_rules.end(); ++iter) {
     exclude_rule_lookup[*iter] = true;
   }
-
-  // iterate across loaded recipes, creating tests as you go
-  std::map<std::string, bool> test_history;
-  for (std::vector<recipe>::const_iterator iter = _recipes.begin();
-       iter != _recipes.end(); ++iter) {
-    // only create output if the rule has not already been hit,
-    // and if the user didn't want this rule disabled
-    if (test_history.find(iter->get_rule_name()) == test_history.end() &&
-        exclude_rule_lookup.find(iter->get_rule_name()) ==
-            exclude_rule_lookup.end()) {
-      test_history[iter->get_rule_name()] = true;
-      // create a test output directory that is unique for this rule
-      boost::filesystem::path rule_parent_path =
-          test_parent_path.string() + "/" + iter->get_rule_name();
-      boost::filesystem::create_directories(rule_parent_path);
-      // create test directory, for output from test run
-      boost::filesystem::path rule_expected_path =
-          rule_parent_path.string() + "/expected";
-      boost::filesystem::create_directories(rule_expected_path);
-      // new to this program: create a workspace with all input directories
-      boost::filesystem::path workspace_path =
-          rule_parent_path.string() + "/workspace";
-      boost::filesystem::create_directories(workspace_path);
-      // copy *output* to expected path
-      for (std::vector<std::string>::const_iterator output_iter =
-               iter->get_outputs().begin();
-           output_iter != iter->get_outputs().end(); ++output_iter) {
-        // source file is: actual_snakemake_run/relative_path_to_file
-        boost::filesystem::path source_file =
-            pipeline_dir.string() + "/" + *output_iter;
-        // target file is: rule_expected_path/relative_path_to_file
-        boost::filesystem::path target_file =
-            rule_expected_path.string() + "/" + *output_iter;
-        // check source exists
-        if (!boost::filesystem::is_regular_file(source_file) &&
-            !boost::filesystem::is_directory(source_file)) {
-          throw std::runtime_error("cannot find output file/directory \"" +
-                                   source_file.string() + "\" for rule \"" +
-                                   iter->get_rule_name() + "\"");
-        }
-        // create parent directories as needed
-        boost::filesystem::create_directories(target_file.parent_path());
-        // recursive copy
-        boost::filesystem::copy(
-            source_file, target_file,
-            boost::filesystem::copy_options::overwrite_existing |
-                boost::filesystem::copy_options::recursive);
-      }
-      // copy *input* to workspace
-      for (std::vector<std::string>::const_iterator input_iter =
-               iter->get_inputs().begin();
-           input_iter != iter->get_inputs().end(); ++input_iter) {
-        // source file is: actual_snakemake_run/relative_path_to_file
-        boost::filesystem::path source_file =
-            pipeline_dir.string() + "/" + *input_iter;
-        // target file is: workspace_path/relative_path_to_file
-        boost::filesystem::path target_file =
-            workspace_path.string() + "/" + *input_iter;
-        // check source exists
-        if (!boost::filesystem::is_regular_file(source_file) &&
-            !boost::filesystem::is_directory(source_file)) {
-          throw std::runtime_error("cannot find input file \"" +
-                                   source_file.string() + "\" for rule \"" +
-                                   iter->get_rule_name() + "\"");
-        }
-        // create parent directories as needed
-        boost::filesystem::create_directories(target_file.parent_path());
-        // recursive copy
-        boost::filesystem::copy(
-            source_file, target_file,
-            boost::filesystem::copy_options::overwrite_existing |
-                boost::filesystem::copy_options::recursive);
-      }
-      // copy extra files and directories, if provided, to workspace
-      for (std::vector<boost::filesystem::path>::const_iterator
-               added_file_iter = added_files.begin();
-           added_file_iter != added_files.end(); ++added_file_iter) {
-        // source file is: actual_snakemake_run/relative_path_to_file
-        boost::filesystem::path source_file = pipeline_dir / *added_file_iter;
-        // target file is: workspace_path/relative_path_to_file
-        boost::filesystem::path target_file = workspace_path / *added_file_iter;
-        // check source exists
-        if (!boost::filesystem::is_regular_file(source_file)) {
-          throw std::runtime_error("cannot find added file \"" +
-                                   source_file.string() + "\"");
-        }
-        // create parent directories as needed
-        boost::filesystem::create_directories(target_file.parent_path());
-        // copy
-        boost::filesystem::copy(
-            source_file, target_file,
-            boost::filesystem::copy_options::overwrite_existing);
-      }
-      for (std::vector<boost::filesystem::path>::const_iterator
-               added_directory_iter = added_directories.begin();
-           added_directory_iter != added_directories.end();
-           ++added_directory_iter) {
-        // source file is: actual_snakemake_run/relative_path_to_directory
-        boost::filesystem::path source_directory =
-            pipeline_dir / *added_directory_iter;
-        // target file is: workspace_path/relative_path_to_directory
-        boost::filesystem::path target_directory =
-            workspace_path / *added_directory_iter;
-        // check source *directory* exists
-        if (!boost::filesystem::is_directory(source_directory)) {
-          throw std::runtime_error("cannot find added directory \"" +
-                                   source_directory.string() + "\"");
-        }
-        // create parent directories as needed
-        boost::filesystem::create_directories(target_directory.parent_path());
-        // recursive copy
-        boost::filesystem::copy(
-            source_directory, target_directory,
-            boost::filesystem::copy_options::overwrite_existing |
-                boost::filesystem::copy_options::recursive);
-      }
-      // create parent directories for synthetic snakefile
-      boost::filesystem::create_directories(workspace_path / "workflow");
-      // create the synthetic snakefile in workspace/workflow/Snakefile
-      std::string output_filename =
-          (workspace_path / "workflow" / "Snakefile").string();
-      std::ofstream output;
-      output.open(output_filename.c_str());
-      if (!output.is_open())
-        throw std::runtime_error("cannot create synthetic snakemake file \"" +
-                                 output_filename + "\"");
-      // before adding anything else: add a single 'all' rule that points at
-      // solved rule output files
-      if (!(output << "rule all:\n    input:" << std::endl))
-        throw std::runtime_error(
-            "cannot write phony 'all' rule to synthetic snakefile");
-      for (std::vector<std::string>::const_iterator output_iter =
-               iter->get_outputs().begin();
-           output_iter != iter->get_outputs().end(); ++output_iter) {
-        if (!(output << "        \"" << *output_iter << "\"," << std::endl))
-          throw std::runtime_error(
-              "cannot write phony 'all' outputs to synthetic snakefile");
-      }
-      if (!(output << std::endl))
-        throw std::runtime_error(
-            "cannot write phony 'all' rule trailing whitespace to synthetic "
-            "snakefile");
-      // find the rule from the parsed snakefile(s) and report it to file
-      sf.report_single_rule(iter->get_rule_name(), output);
-      output.close();
-      output.clear();
-      // modify repo inst/test.py into a test runner for this rule
-      std::string test_python_file =
-          (test_parent_path / ("test_" + iter->get_rule_name() + ".py"))
-              .string();
-      output.open(test_python_file.c_str());
-      if (!output.is_open())
-        throw std::runtime_error("cannot write test python file \"" +
-                                 test_python_file + "\"");
-      if (!(output << "#!/usr/bin/env python3\ntestdir='"
-                   << output_test_dir.string() << "'\nrulename='"
-                   << iter->get_rule_name() << '\'' << std::endl))
-        throw std::runtime_error(
-            "cannot write rulename variable to test python file \"" +
-            test_python_file + "\"");
-      std::ifstream input;
-      input.open(inst_test_py.string().c_str());
-      if (!input.is_open())
-        throw std::runtime_error("cannot read installed file \"" +
-                                 inst_test_py.string() + "\"");
-      if (!(output << input.rdbuf()))
-        throw std::runtime_error("cannot dump \"" + inst_test_py.string() +
-                                 "\" to output \"" + test_python_file + "\"");
-      input.close();
-      input.clear();
-      output.close();
-      output.clear();
-    }
+  // only create output if the rule has not already been hit,
+  // and if the user didn't want this rule disabled
+  if (exclude_rule_lookup.find(rec.get_rule_name()) ==
+      exclude_rule_lookup.end()) {
+    // create a test output directory that is unique for this rule
+    boost::filesystem::path rule_parent_path =
+        test_parent_path / rec.get_rule_name();
+    boost::filesystem::create_directories(rule_parent_path);
+    // create test directory, for output from test run
+    boost::filesystem::path rule_expected_path = rule_parent_path / "expected";
+    boost::filesystem::create_directories(rule_expected_path);
+    // new to this program: create a workspace with all input directories
+    boost::filesystem::path workspace_path = rule_parent_path / "workspace";
+    boost::filesystem::create_directories(workspace_path);
+    // copy *output* to expected path
+    copy_contents(rec.get_outputs(), pipeline_dir, rule_expected_path,
+                  rec.get_rule_name());
+    // copy *input* to workspace
+    copy_contents(rec.get_inputs(), pipeline_dir, workspace_path,
+                  rec.get_rule_name());
+    // copy extra files and directories, if provided, to workspace
+    copy_contents(added_files, pipeline_dir, workspace_path, "added files");
+    copy_contents(added_directories, pipeline_dir, workspace_path,
+                  "added directories");
+    // create parent directories for synthetic snakefile
+    boost::filesystem::create_directories(workspace_path / "workflow");
+    // create the synthetic snakefile in workspace/workflow/Snakefile
+    std::string output_filename =
+        (workspace_path / "workflow" / "Snakefile").string();
+    std::ofstream output;
+    output.open(output_filename.c_str());
+    if (!output.is_open())
+      throw std::runtime_error("cannot create synthetic snakemake file \"" +
+                               output_filename + "\"");
+    // before adding anything else: add a single 'all' rule that points at
+    // solved rule output files
+    report_phony_all_target(output, rec.get_outputs());
+    // find the rule from the parsed snakefile(s) and report it to file
+    sf.report_single_rule(rec.get_rule_name(), output);
+    output.close();
+    // modify repo inst/test.py into a test runner for this rule
+    report_modified_test_script(test_parent_path, output_test_dir,
+                                rec.get_rule_name(), inst_test_py);
   }
-  // emit common.py in the test_parent_path; no modifications needed
-  boost::filesystem::copy(inst_common_py, test_parent_path);
+}
+
+void snakemake_unit_tests::solved_rules::copy_contents(
+    const std::vector<boost::filesystem::path> &contents,
+    const boost::filesystem::path &source_prefix,
+    const boost::filesystem::path &target_prefix,
+    const std::string &rule_name) const {
+  for (std::vector<boost::filesystem::path>::const_iterator iter =
+           contents.begin();
+       iter != contents.end(); ++iter) {
+    boost::filesystem::path source_file = source_prefix / *iter;
+    boost::filesystem::path target_file = target_prefix / *iter;
+    // check source exists
+    if (!boost::filesystem::is_regular_file(source_file) &&
+        !boost::filesystem::is_directory(source_file)) {
+      throw std::runtime_error("cannot find file/directory \"" +
+                               source_file.string() + "\" for " + rule_name);
+    }
+    // create parent directories as needed
+    boost::filesystem::create_directories(target_file.parent_path());
+    // recursive copy
+    boost::filesystem::copy(
+        source_file, target_file,
+        boost::filesystem::copy_options::overwrite_existing |
+            boost::filesystem::copy_options::recursive);
+  }
+}
+
+void snakemake_unit_tests::solved_rules::report_phony_all_target(
+    std::ostream &out,
+    const std::vector<boost::filesystem::path> &targets) const {
+  if (!(out << "rule all:\n    input:" << std::endl))
+    throw std::runtime_error(
+        "cannot write phony 'all' rule to synthetic snakefile");
+  // 'all' rule triggers build by listing desired files as inputs
+  for (std::vector<boost::filesystem::path>::const_iterator output_iter =
+           targets.begin();
+       output_iter != targets.end(); ++output_iter) {
+    if (!(out << "        \"" << output_iter->string() << "\"," << std::endl))
+      throw std::runtime_error(
+          "cannot write phony 'all' outputs to synthetic snakefile");
+  }
+  if (!(out << std::endl))
+    throw std::runtime_error(
+        "cannot write phony 'all' rule trailing whitespace to synthetic "
+        "snakefile");
+}
+
+void snakemake_unit_tests::solved_rules::report_modified_test_script(
+    const boost::filesystem::path &parent_dir,
+    const boost::filesystem::path &test_dir, const std::string &rule_name,
+    const boost::filesystem::path &inst_test_py) const {
+  std::ifstream input;
+  std::ofstream output;
+  std::string test_python_file =
+      (parent_dir / ("test_" + rule_name + ".py")).string();
+  output.open(test_python_file.c_str());
+  if (!output.is_open())
+    throw std::runtime_error("cannot write test python file \"" +
+                             test_python_file + "\"");
+  if (!(output << "#!/usr/bin/env python3\ntestdir='" << test_dir.string()
+               << "'\nrulename='" << rule_name << '\'' << std::endl))
+    throw std::runtime_error(
+        "cannot write rulename variable to test python file \"" +
+        test_python_file + "\"");
+  input.open(inst_test_py.string().c_str());
+  if (!input.is_open())
+    throw std::runtime_error("cannot read installed file \"" +
+                             inst_test_py.string() + "\"");
+  if (!(output << input.rdbuf()))
+    throw std::runtime_error("cannot dump \"" + inst_test_py.string() +
+                             "\" to output \"" + test_python_file + "\"");
+  input.close();
+  output.close();
 }
