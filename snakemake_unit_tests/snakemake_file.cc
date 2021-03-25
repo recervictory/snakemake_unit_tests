@@ -8,6 +8,50 @@
 
 #include "snakemake_unit_tests/snakemake_file.h"
 
+/*
+  The parser reimplmentation will be structured as follows:
+
+  - consider every piece of content of the file as *either*:
+  -- a snakemake rule
+  -- a (possibly incomplete) python instruction, which can further be classified
+  as:
+  --- unrelated to file parse
+  --- an include directive (eventually split into: on strings or on
+  variables/expressions
+
+  The complete parse operation is as follows:
+
+  1) add the top-level snakefile as a pseudo-include directive to the
+  snakemake_file 2) parse the file, non-recursively 3) while unresolved
+  snakemake rule and include directives remain:
+  -- emit a dummy workspace containing a simplified representation of the
+  currently loaded data
+  ---- include directives and snakemake rules are assigned unique identifiers
+  ---- their locations in file are replaced with tracking statements
+  ---- python code unrelated to snakemake or include directives is included
+  as-is
+  -- run the python code, capture the screen output
+  -- inspect queue of unresolved rules and include directives
+  ---- if the next entry is a rule, determine whether the rule was evaluated and
+  resolve, pop, continue
+  ---- if the next entry is an include directive, determine whether the
+  directive was evaluated
+  ------ if not, flag it as such, do not process, pop, continue
+  ------ if so, set it to resolved, pop it, stop processing resolutions
+  -- parse the next include directive, without recursing. flag new rules and
+  includes as potentially problematic
+
+
+  Assorted comments:
+  - the above logic is incredibly conservative, and designed to handle some
+  additional issues not enumerated above (include directives on variables).
+  - the logic can be loosened for some types of includes that can be handled in
+  one pass, avoiding additional iterations of python evaluation. most notably,
+  include directives at the same depth with no intervening python code, and
+  0-depth includes in the currently parsed file.
+
+ */
+
 void snakemake_unit_tests::snakemake_file::load_file(
     const boost::filesystem::path &filename,
     const boost::filesystem::path &base_dir, bool verbose) {
