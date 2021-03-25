@@ -9,17 +9,19 @@
 #include "snakemake_unit_tests/snakemake_file.h"
 
 void snakemake_unit_tests::snakemake_file::load_file(
-    const std::string &filename, const std::string &base_dir, bool verbose) {
+    const boost::filesystem::path &filename,
+    const boost::filesystem::path &base_dir, bool verbose) {
   std::ifstream input;
   try {
-    input.open((base_dir + "/" + filename).c_str());
+    input.open((base_dir / filename).string().c_str());
     if (!input.is_open())
-      throw std::runtime_error("cannot open snakemake file \"" + filename +
-                               "\"");
+      throw std::runtime_error("cannot open snakemake file \"" +
+                               filename.string() + "\"");
     rule_block rb;
     // while valid content is detected in the file
-    std::cout << "starting file \"" << filename << "\" load" << std::endl;
-    while (rb.load_snakemake_rule(input, filename, verbose)) {
+    std::cout << "starting file \"" << filename.string() << "\" load"
+              << std::endl;
+    while (rb.load_snakemake_rule(input, filename.string(), verbose)) {
       if (verbose) std::cout << "found a chunk" << std::endl;
       // determine if this block was actually an include directive
       if (rb.is_include_directive()) {
@@ -28,11 +30,10 @@ void snakemake_unit_tests::snakemake_file::load_file(
                     << rb.get_recursive_filename() << "\"" << std::endl;
         // load the included file
         boost::filesystem::path recursive_path =
-            base_dir + "/" + rb.get_recursive_filename();
-        load_file(
-            recursive_path.filename().string(),
-            recursive_path.remove_trailing_separator().parent_path().string(),
-            verbose);
+            base_dir / rb.get_recursive_filename();
+        load_file(recursive_path.filename(),
+                  recursive_path.remove_trailing_separator().parent_path(),
+                  verbose);
         // and now that the include has been performed, do not add the include
         // statement
       } else {

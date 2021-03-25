@@ -51,8 +51,8 @@ class snakemake_file {
    designed to be called recursively to handle
    include statements
   */
-  void load_file(const std::string &filename, const std::string &base_dir,
-                 bool verbose);
+  void load_file(const boost::filesystem::path &filename,
+                 const boost::filesystem::path &base_dir, bool verbose);
 
   /*!
     @brief print block contents to stream
