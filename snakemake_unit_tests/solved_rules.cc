@@ -90,12 +90,12 @@ void snakemake_unit_tests::solved_rules::emit_tests(
   // by default, this looks like `.tests/unit`
   // but will be overridden as `output_test_dir/unit`
   // for compatibility with pytest
-  boost::filesystem::path test_parent_path = output_test_dir.string() + "/unit";
+  boost::filesystem::path test_parent_path = output_test_dir / "unit";
   boost::filesystem::create_directories(test_parent_path);
 
   // repo files for creating pytest infrastructure
-  boost::filesystem::path inst_test_py = inst_dir.string() + "/test.py";
-  boost::filesystem::path inst_common_py = inst_dir.string() + "/common.py";
+  boost::filesystem::path inst_test_py = inst_dir / "test.py";
+  boost::filesystem::path inst_common_py = inst_dir / "common.py";
   if (!boost::filesystem::is_regular_file(inst_test_py) ||
       !boost::filesystem::is_regular_file(inst_common_py))
     throw std::runtime_error(
