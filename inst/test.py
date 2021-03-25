@@ -13,7 +13,7 @@ import common
 def test_function():
 
     with TemporaryDirectory() as tmpdir:
-        rundir = PurePosixPath(testdir + "/out_" + rulename)  # Path(tmpdir) / "rundir"
+        rundir = Path(tmpdir) / "rundir"  # FOR TESTING: PurePosixPath(testdir + "/out_" + rulename)
         workspace_path = PurePosixPath("{}/unit/{}/workspace".format(testdir, rulename))
         expected_path = PurePosixPath("{}/unit/{}/expected".format(testdir, rulename))
 
