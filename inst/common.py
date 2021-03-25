@@ -1,15 +1,19 @@
+#!/usr/bin/env python
+
 """
 Common code for unit testing of rules generated with Snakemake 6.0.0.
 """
 
-from pathlib import Path
-import subprocess as sp
-import os
-import pytest
 import gzip
+import os
+import subprocess as sp
+from pathlib import Path
+
+import pytest
 
 exclude_ext = [".tbi", ".html"]
 # TODO: Read in a list of extensions to exclude from the config.  See issue #16.
+
 
 class OutputChecker:
     def __init__(self, data_path, expected_path, workdir):
@@ -49,9 +53,7 @@ class OutputChecker:
                     unexpected_files.add(f)
         if unexpected_files:
             raise ValueError(
-                "Unexpected files:\n{}".format(
-                    "\n".join(sorted(map(str, unexpected_files)))
-                )
+                "Unexpected files:\n{}".format("\n".join(sorted(map(str, unexpected_files))))
             )
 
     def compare_files(self, generated_file, expected_file):
@@ -62,6 +64,7 @@ class OutputChecker:
         else:
             sp.check_output(["cmp", generated_file, expected_file])
 
+
 def process_file(infile):
     if str(infile).lower().endswith(".gz"):
         with gzip.open(infile, mode="rt") as f:
@@ -71,8 +74,9 @@ def process_file(infile):
             n = remove_headers(f)
     return n
 
+
 def remove_headers(f):
     n = []
-    for l in (l for l in f if not l.startswith("##")):
-        n.append(l)
+    for line in (line for line in f if not line.startswith("##")):
+        n.append(line)
     return n
