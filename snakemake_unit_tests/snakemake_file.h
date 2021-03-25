@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "boost/filesystem.hpp"
+#include "boost/smart_ptr.hpp"
 #include "snakemake_unit_tests/rule_block.h"
 
 namespace snakemake_unit_tests {
@@ -66,7 +67,9 @@ class snakemake_file {
     @brief get const access to internal block representation
     @return const reference to internal block vector
    */
-  const std::vector<rule_block> &get_blocks() const { return _blocks; }
+  const std::vector<boost::shared_ptr<rule_block> > &get_blocks() const {
+    return _blocks;
+  }
 
   /*!
     @brief report all code blocks but a single requested rule to file
@@ -80,7 +83,7 @@ class snakemake_file {
   /*!
     @brief minimal contents of snakemake file as blocks of code
    */
-  std::vector<rule_block> _blocks;
+  std::vector<boost::shared_ptr<rule_block> > _blocks;
 };
 }  // namespace snakemake_unit_tests
 
