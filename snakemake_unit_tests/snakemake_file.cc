@@ -158,6 +158,16 @@ void snakemake_unit_tests::snakemake_file::detect_known_issues() {
   std::cout << "total loaded rules: " << aggregated_rules.size() << std::endl;
   std::cout << "  of those rules, " << duplicated_rules
             << " had multiple entries in unconditional logic" << std::endl;
+  if (duplicated_rules) {
+    std::cout << "note that multiple entries in unconditional logic are not \n"
+              << "necessarily problematic: this program does not interpret \n"
+              << "infrastructure logic (that feature is planned for later \n"
+              << "releases). however, if the conditional logic determines \n"
+              << "different definitions of the rule, that will probably \n"
+              << "break all tests. the simplest solution is to always use \n"
+              << "unique rule names, even in mutually-exclusively included \n"
+              << "files; or you can wait for a later patch" << std::endl;
+  }
   if (!unresolvable_duplicated_rules.empty()) {
     std::cout << "  and of those duplicates, "
               << unresolvable_duplicated_rules.size()
@@ -177,9 +187,14 @@ void snakemake_unit_tests::snakemake_file::detect_known_issues() {
          iter != leftover_includes.end(); ++iter) {
       std::cout << "  " << *iter << std::endl;
     }
-    std::cout << "if the above are actual include directives, please file a "
-                 "bug report with this information"
-              << std::endl;
+    std::cout
+        << "if the above are actual include directives, please file a \n"
+        << "bug report with this information. this is a hard break for \n"
+        << "the current logic (support is planned for a later release). \n"
+        << "the current simplest solution is to make sure that all \n"
+        << "'include:' directives operate directly on strings (as \n"
+        << "opposed to variables) and not wrapped in conditional logic \n"
+        << "on the same line (if/else single line statements)" << std::endl;
   }
 }
 
