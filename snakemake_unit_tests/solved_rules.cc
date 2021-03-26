@@ -110,8 +110,6 @@ void snakemake_unit_tests::solved_rules::emit_tests(
   for (std::vector<recipe>::const_iterator iter = _recipes.begin();
        iter != _recipes.end(); ++iter) {
     if (test_history.find(iter->get_rule_name()) == test_history.end()) {
-      std::cout << "emitting test for rule \"" << iter->get_rule_name() << "\""
-                << std::endl;
       create_workspace(*iter, sf, output_test_dir, test_parent_path,
                        pipeline_dir, inst_test_py, exclude_rules, added_files,
                        added_directories);
@@ -142,6 +140,9 @@ void snakemake_unit_tests::solved_rules::create_workspace(
   // and if the user didn't want this rule disabled
   if (exclude_rule_lookup.find(rec.get_rule_name()) ==
       exclude_rule_lookup.end()) {
+    std::cout << "emitting test for rule \"" << rec.get_rule_name() << "\""
+              << std::endl;
+
     // create a test output directory that is unique for this rule
     boost::filesystem::path rule_parent_path =
         test_parent_path / rec.get_rule_name();
