@@ -112,7 +112,8 @@ bool snakemake_unit_tests::rule_block::consume_rule_contents(
     const boost::filesystem::path &filename, bool verbose,
     unsigned *current_line) {
   std::ostringstream regex_formatter;
-  regex_formatter << "^" << indentation(4) << "([a-zA-Z_\\-]+):(.*)$";
+  regex_formatter << "^" << indentation(_local_indentation + 4)
+                  << "([a-zA-Z_\\-]+):(.*)$";
   const boost::regex named_block_tag(regex_formatter.str());
   if (!current_line)
     throw std::runtime_error(
@@ -258,8 +259,8 @@ void snakemake_unit_tests::rule_block::print_contents(std::ostream &out) const {
         throw std::runtime_error("code chunk printing error");
     }
   } else {
-    if (!(out << indentation(_global_indentation) << "rule " << get_rule_name()
-              << ":" << std::endl))
+    if (!(out << indentation(_global_indentation + _local_indentation)
+              << "rule " << get_rule_name() << ":" << std::endl))
       throw std::runtime_error("rule name printing failure");
     // enforce restrictions on block order
     std::map<std::string, bool> high_priority_blocks, low_priority_blocks;
@@ -276,8 +277,10 @@ void snakemake_unit_tests::rule_block::print_contents(std::ostream &out) const {
          iter != get_named_blocks().end(); ++iter) {
       if (high_priority_blocks.find(iter->first) !=
           high_priority_blocks.end()) {
-        if (!(out << indentation(_global_indentation + 4) << iter->first << ": "
-                  << apply_indentation(iter->second, 4) << std::endl))
+        if (!(out << indentation(_global_indentation + _local_indentation + 4)
+                  << iter->first << ": "
+                  << apply_indentation(iter->second, _global_indentation)
+                  << std::endl))
           throw std::runtime_error("named block printing failure");
       }
     }
@@ -288,8 +291,10 @@ void snakemake_unit_tests::rule_block::print_contents(std::ostream &out) const {
       if (high_priority_blocks.find(iter->first) ==
               high_priority_blocks.end() &&
           low_priority_blocks.find(iter->first) == low_priority_blocks.end()) {
-        if (!(out << indentation(_global_indentation + 4) << iter->first << ": "
-                  << apply_indentation(iter->second, 4) << std::endl))
+        if (!(out << indentation(_global_indentation + _local_indentation + 4)
+                  << iter->first << ": "
+                  << apply_indentation(iter->second, _global_indentation)
+                  << std::endl))
           throw std::runtime_error("named block printing failure");
       }
     }
@@ -298,8 +303,10 @@ void snakemake_unit_tests::rule_block::print_contents(std::ostream &out) const {
              get_named_blocks().begin();
          iter != get_named_blocks().end(); ++iter) {
       if (low_priority_blocks.find(iter->first) != low_priority_blocks.end()) {
-        if (!(out << indentation(_global_indentation + 4) << iter->first << ":"
-                  << apply_indentation(iter->second, 4) << std::endl))
+        if (!(out << indentation(_global_indentation + _local_indentation + 4)
+                  << iter->first << ":"
+                  << apply_indentation(iter->second, _global_indentation)
+                  << std::endl))
           throw std::runtime_error("named block printing failure");
       }
     }
@@ -326,20 +333,19 @@ void snakemake_unit_tests::rule_block::offer_base_rule_contents(
 }
 
 std::string snakemake_unit_tests::rule_block::indentation(
-    unsigned bonus) const {
+    unsigned count) const {
   std::ostringstream o;
-  for (unsigned i = 0; i < _global_indentation + _local_indentation + bonus;
-       ++i) {
+  for (unsigned i = 0; i < count; ++i) {
     o << ' ';
   }
   return o.str();
 }
 
 std::string snakemake_unit_tests::rule_block::apply_indentation(
-    const std::string &s, unsigned bonus) const {
+    const std::string &s, unsigned count) const {
   // this is a multi-line string with embedded newlines. the newlines need
   // to be replaced by "\n[some number of spaces]"
-  std::string res = s, indent = indentation(bonus);
+  std::string res = s, indent = indentation(count);
   std::string::size_type loc = 0, cur = 0;
   while ((loc = res.find('\n', cur)) != std::string::npos) {
     res = res.substr(0, loc + 1) + indent + res.substr(loc + 1);

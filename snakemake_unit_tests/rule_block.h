@@ -184,20 +184,20 @@ class rule_block {
 
   /*!
     @brief return a string containing some number of whitespaces
-    @param bonus extra whitespace to add beyond global and local default
+    @param count total whitespace indentation to apply
    */
-  std::string indentation(unsigned bonus) const;
+  std::string indentation(unsigned count) const;
 
   /*!
     @brief replace embedded newlines in a string with newlines plus indentation
     @param s input string, possibly with embedded newlines
-    @param bonus extra indentation to apply beyond global and local default
+    @param count total whitespace indentation to apply
     @return reformatted input string
 
     this is intended for use with rule block contents, and as such does
     not interact with the implied newline at the end of the string
    */
-  std::string apply_indentation(const std::string &s, unsigned bonus) const;
+  std::string apply_indentation(const std::string &s, unsigned count) const;
 
   /*!
     @brief clear out internal storage
