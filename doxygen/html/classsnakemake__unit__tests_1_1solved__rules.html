@@ -99,6 +99,18 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a486c63742ce07c50018679b5e6d62a71"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1solved__rules.html#a486c63742ce07c50018679b5e6d62a71">emit_tests</a> (const <a class="el" href="classsnakemake__unit__tests_1_1snakemake__file.html">snakemake_file</a> &amp;sf, const boost::filesystem::path &amp;output_test_dir, const boost::filesystem::path &amp;pipeline_dir, const boost::filesystem::path &amp;inst_dir, const std::vector&lt; std::string &gt; &amp;exclude_rules, const std::vector&lt; boost::filesystem::path &gt; &amp;added_files, const std::vector&lt; boost::filesystem::path &gt; &amp;added_directories) const</td></tr>
 <tr class="memdesc:a486c63742ce07c50018679b5e6d62a71"><td class="mdescLeft">&#160;</td><td class="mdescRight">emit tests from parsed snakemake information  <a href="classsnakemake__unit__tests_1_1solved__rules.html#a486c63742ce07c50018679b5e6d62a71">More...</a><br /></td></tr>
 <tr class="separator:a486c63742ce07c50018679b5e6d62a71"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4fc3ab0bb36434bf284c94f8feba51f2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1solved__rules.html#a4fc3ab0bb36434bf284c94f8feba51f2">create_workspace</a> (const <a class="el" href="classsnakemake__unit__tests_1_1recipe.html">recipe</a> &amp;rec, const <a class="el" href="classsnakemake__unit__tests_1_1snakemake__file.html">snakemake_file</a> &amp;sf, const boost::filesystem::path &amp;output_test_dir, const boost::filesystem::path &amp;test_parent_path, const boost::filesystem::path &amp;pipeline_dir, const boost::filesystem::path &amp;test_inst_py, const std::vector&lt; std::string &gt; &amp;exclude_rules, const std::vector&lt; boost::filesystem::path &gt; &amp;added_files, const std::vector&lt; boost::filesystem::path &gt; &amp;added_directories) const</td></tr>
+<tr class="memdesc:a4fc3ab0bb36434bf284c94f8feba51f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">create a test directory  <a href="classsnakemake__unit__tests_1_1solved__rules.html#a4fc3ab0bb36434bf284c94f8feba51f2">More...</a><br /></td></tr>
+<tr class="separator:a4fc3ab0bb36434bf284c94f8feba51f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac5f08211bb867ac7150239b62608e42d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1solved__rules.html#ac5f08211bb867ac7150239b62608e42d">copy_contents</a> (const std::vector&lt; boost::filesystem::path &gt; &amp;contents, const boost::filesystem::path &amp;source_prefix, const boost::filesystem::path &amp;target_prefix, const std::string &amp;rule_name) const</td></tr>
+<tr class="memdesc:ac5f08211bb867ac7150239b62608e42d"><td class="mdescLeft">&#160;</td><td class="mdescRight">copy files/folders enumerated in vector to a location  <a href="classsnakemake__unit__tests_1_1solved__rules.html#ac5f08211bb867ac7150239b62608e42d">More...</a><br /></td></tr>
+<tr class="separator:ac5f08211bb867ac7150239b62608e42d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a62290fa558f3ad0c6e95baacd75eb53e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1solved__rules.html#a62290fa558f3ad0c6e95baacd75eb53e">report_phony_all_target</a> (std::ostream &amp;out, const std::vector&lt; boost::filesystem::path &gt; &amp;targets) const</td></tr>
+<tr class="memdesc:a62290fa558f3ad0c6e95baacd75eb53e"><td class="mdescLeft">&#160;</td><td class="mdescRight">report phony all target controlling test snakemake run  <a href="classsnakemake__unit__tests_1_1solved__rules.html#a62290fa558f3ad0c6e95baacd75eb53e">More...</a><br /></td></tr>
+<tr class="separator:a62290fa558f3ad0c6e95baacd75eb53e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f0ba41f7119f4d9355fc24b3359976e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1solved__rules.html#a8f0ba41f7119f4d9355fc24b3359976e">report_modified_test_script</a> (const boost::filesystem::path &amp;parent_dir, const boost::filesystem::path &amp;test_dir, const std::string &amp;rule_name, const boost::filesystem::path &amp;inst_test_py) const</td></tr>
+<tr class="memdesc:a8f0ba41f7119f4d9355fc24b3359976e"><td class="mdescLeft">&#160;</td><td class="mdescRight">copy over pytest script with certain additions  <a href="classsnakemake__unit__tests_1_1solved__rules.html#a8f0ba41f7119f4d9355fc24b3359976e">More...</a><br /></td></tr>
+<tr class="separator:a8f0ba41f7119f4d9355fc24b3359976e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
@@ -145,6 +157,143 @@ std::vector&lt; <a class="el" href="classsnakemake__unit__tests_1_1recipe.html">
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="ac5f08211bb867ac7150239b62608e42d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5f08211bb867ac7150239b62608e42d">&#9670;&nbsp;</a></span>copy_contents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void snakemake_unit_tests::solved_rules::copy_contents </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; boost::filesystem::path &gt; &amp;&#160;</td>
+          <td class="paramname"><em>contents</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const boost::filesystem::path &amp;&#160;</td>
+          <td class="paramname"><em>source_prefix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const boost::filesystem::path &amp;&#160;</td>
+          <td class="paramname"><em>target_prefix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>rule_name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>copy files/folders enumerated in vector to a location </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">contents</td><td>files or folders to be copied </td></tr>
+    <tr><td class="paramname">source_prefix</td><td>parent directory of source files/folders </td></tr>
+    <tr><td class="paramname">target_prefix</td><td>directory destination of files/folders </td></tr>
+    <tr><td class="paramname">rule_name</td><td>label for error reporting </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a4fc3ab0bb36434bf284c94f8feba51f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4fc3ab0bb36434bf284c94f8feba51f2">&#9670;&nbsp;</a></span>create_workspace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void snakemake_unit_tests::solved_rules::create_workspace </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classsnakemake__unit__tests_1_1recipe.html">recipe</a> &amp;&#160;</td>
+          <td class="paramname"><em>rec</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classsnakemake__unit__tests_1_1snakemake__file.html">snakemake_file</a> &amp;&#160;</td>
+          <td class="paramname"><em>sf</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const boost::filesystem::path &amp;&#160;</td>
+          <td class="paramname"><em>output_test_dir</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const boost::filesystem::path &amp;&#160;</td>
+          <td class="paramname"><em>test_parent_path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const boost::filesystem::path &amp;&#160;</td>
+          <td class="paramname"><em>pipeline_dir</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const boost::filesystem::path &amp;&#160;</td>
+          <td class="paramname"><em>test_inst_py</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramname"><em>exclude_rules</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; boost::filesystem::path &gt; &amp;&#160;</td>
+          <td class="paramname"><em>added_files</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; boost::filesystem::path &gt; &amp;&#160;</td>
+          <td class="paramname"><em>added_directories</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>create a test directory </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">rec</td><td>recipe/rule entry for which a workspace should be created </td></tr>
+    <tr><td class="paramname">sf</td><td><a class="el" href="classsnakemake__unit__tests_1_1snakemake__file.html" title="abstract representation of snakefile as a series of rules and python code chunks">snakemake_file</a> object with rule definitions corresponding to loaded log data </td></tr>
+    <tr><td class="paramname">output_test_dir</td><td>output directory for tests (e.g. '.tests/') </td></tr>
+    <tr><td class="paramname">test_parent_path</td><td>'.tests/unit' by default </td></tr>
+    <tr><td class="paramname">pipeline_dir</td><td>parent directory of snakemake pipeline used to generate corresponding log file (e.g.: X for X/workflow/Snakefile) </td></tr>
+    <tr><td class="paramname">test_inst_py</td><td>snakemake_unit_tests installed test.py script installation files (when conda mode is enabled, this will default to $CONDA_PREFIX/share/snakemake_unit_tests/inst) </td></tr>
+    <tr><td class="paramname">exclude_rules</td><td>vector of rules to skip tests for </td></tr>
+    <tr><td class="paramname">added_files</td><td>vector of additional files to add to test workspaces </td></tr>
+    <tr><td class="paramname">added_directories</td><td>vector of additional directories to add to test workspaces </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a486c63742ce07c50018679b5e6d62a71"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a486c63742ce07c50018679b5e6d62a71">&#9670;&nbsp;</a></span>emit_tests()</h2>
 
@@ -210,11 +359,10 @@ std::vector&lt; <a class="el" href="classsnakemake__unit__tests_1_1recipe.html">
     <tr><td class="paramname">inst_dir</td><td>directory in snakemake_unit_tests repo containing installation files (when conda mode is enabled, this will default to $CONDA_PREFIX/share/snakemake_unit_tests/inst) </td></tr>
     <tr><td class="paramname">exclude_rules</td><td>vector of rules to skip tests for </td></tr>
     <tr><td class="paramname">added_files</td><td>vector of additional files to add to test workspaces </td></tr>
-    <tr><td class="paramname">added_directories</td><td>vector of additional directories to add to test workspaces</td></tr>
+    <tr><td class="paramname">added_directories</td><td>vector of additional directories to add to test workspaces </td></tr>
   </table>
   </dd>
 </dl>
-<p>TODO(cpalmer718): make this do what it actually has to do, the current content is just a proof of principle placeholder </p>
 
 </div>
 </div>
@@ -238,6 +386,94 @@ std::vector&lt; <a class="el" href="classsnakemake__unit__tests_1_1recipe.html">
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">filename</td><td>name of snakemake logfile to parse </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a8f0ba41f7119f4d9355fc24b3359976e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f0ba41f7119f4d9355fc24b3359976e">&#9670;&nbsp;</a></span>report_modified_test_script()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void snakemake_unit_tests::solved_rules::report_modified_test_script </td>
+          <td>(</td>
+          <td class="paramtype">const boost::filesystem::path &amp;&#160;</td>
+          <td class="paramname"><em>parent_dir</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const boost::filesystem::path &amp;&#160;</td>
+          <td class="paramname"><em>test_dir</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>rule_name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const boost::filesystem::path &amp;&#160;</td>
+          <td class="paramname"><em>inst_test_py</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>copy over pytest script with certain additions </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">parent_dir</td><td>parent directory of test workspace </td></tr>
+    <tr><td class="paramname">test_dir</td><td>parent directory of all unit tests for the pipeline </td></tr>
+    <tr><td class="paramname">rule_name</td><td>name of rule whose test is being emitted </td></tr>
+    <tr><td class="paramname">inst_test_py</td><td>snakemake_unit_tests test.py script location </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a62290fa558f3ad0c6e95baacd75eb53e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a62290fa558f3ad0c6e95baacd75eb53e">&#9670;&nbsp;</a></span>report_phony_all_target()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void snakemake_unit_tests::solved_rules::report_phony_all_target </td>
+          <td>(</td>
+          <td class="paramtype">std::ostream &amp;&#160;</td>
+          <td class="paramname"><em>out</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; boost::filesystem::path &gt; &amp;&#160;</td>
+          <td class="paramname"><em>targets</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>report phony all target controlling test snakemake run </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">out</td><td>stream to which to write data </td></tr>
+    <tr><td class="paramname">targets</td><td>phony targets for all rule </td></tr>
   </table>
   </dd>
 </dl>

@@ -20,19 +20,25 @@ abstract representation of snakefile as a series of rules and python code chunks
 \mbox{\Hypertarget{classsnakemake__unit__tests_1_1snakemake__file_a75af4c4c7927d70267481cb7915c8198}\label{classsnakemake__unit__tests_1_1snakemake__file_a75af4c4c7927d70267481cb7915c8198}} 
 \mbox{\hyperlink{classsnakemake__unit__tests_1_1snakemake__file_a75af4c4c7927d70267481cb7915c8198}{$\sim$snakemake\+\_\+file}} ()  throw ()
 \begin{DoxyCompactList}\small\item\em destructor \end{DoxyCompactList}\item 
-void \mbox{\hyperlink{classsnakemake__unit__tests_1_1snakemake__file_a8e0f1757bc55f74e80e6106916813efd}{load\+\_\+file}} (const std\+::string \&filename, const std\+::string \&base\+\_\+dir, bool verbose)
-\begin{DoxyCompactList}\small\item\em load and parse a snakemake file \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classsnakemake__unit__tests_1_1snakemake__file_a0391ff91ad204a6f2b0240f0ee9ed404}{load\+\_\+everything}} (const boost\+::filesystem\+::path \&filename, const boost\+::filesystem\+::path \&base\+\_\+dir, bool verbose)
+\begin{DoxyCompactList}\small\item\em load and parse snakemake pipeline \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classsnakemake__unit__tests_1_1snakemake__file_aad083e297205df231dd78d2cb93a1afa}{parse\+\_\+file}} (const std\+::vector$<$ std\+::string $>$ \&loaded\+\_\+lines, std\+::list$<$ boost\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block}{rule\+\_\+block}} $>$ $>$\+::iterator insertion\+\_\+point, const boost\+::filesystem\+::path \&filename, bool verbose)
+\begin{DoxyCompactList}\small\item\em parse a snakemake file \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classsnakemake__unit__tests_1_1snakemake__file_aaa55fc451f722b94090f0f26f2671594}{load\+\_\+lines}} (const boost\+::filesystem\+::path \&filename, std\+::vector$<$ std\+::string $>$ $\ast$target) const
+\begin{DoxyCompactList}\small\item\em load all lines from a file into memory \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classsnakemake__unit__tests_1_1snakemake__file_a79cfa9d4504725992bb3cd6f10168fe2}{resolve\+\_\+derived\+\_\+rules}} ()
+\begin{DoxyCompactList}\small\item\em populate derived rules with base rule blocks \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{classsnakemake__unit__tests_1_1snakemake__file_af59b77d2fd21c3bd0298b7b4cd23bd03}{print\+\_\+blocks}} (std\+::ostream \&out) const
 \begin{DoxyCompactList}\small\item\em print block contents to stream \end{DoxyCompactList}\item 
-const std\+::vector$<$ \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block}{rule\+\_\+block}} $>$ \& \mbox{\hyperlink{classsnakemake__unit__tests_1_1snakemake__file_a90d509e74db2edee9d63708f5ff71615}{get\+\_\+blocks}} () const
+const std\+::list$<$ boost\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block}{rule\+\_\+block}} $>$ $>$ \& \mbox{\hyperlink{classsnakemake__unit__tests_1_1snakemake__file_a549735c89e4885eadbca1571fe5f8ab8}{get\+\_\+blocks}} () const
 \begin{DoxyCompactList}\small\item\em get const access to internal block representation \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{classsnakemake__unit__tests_1_1snakemake__file_a497771fee3e29671b877fc68a37af7c9}{report\+\_\+single\+\_\+rule}} (const std\+::string \&rule\+\_\+name, std\+::ostream \&out) const
 \begin{DoxyCompactList}\small\item\em report all code blocks but a single requested rule to file \end{DoxyCompactList}\end{DoxyCompactItemize}
 \doxysubsection*{Private Attributes}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\Hypertarget{classsnakemake__unit__tests_1_1snakemake__file_af9fc7c2f42403d86167fcaf102d304e3}\label{classsnakemake__unit__tests_1_1snakemake__file_af9fc7c2f42403d86167fcaf102d304e3}} 
-std\+::vector$<$ \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block}{rule\+\_\+block}} $>$ \mbox{\hyperlink{classsnakemake__unit__tests_1_1snakemake__file_af9fc7c2f42403d86167fcaf102d304e3}{\+\_\+blocks}}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1snakemake__file_aede7de0cb3961b3dd6f64ce05f5c039c}\label{classsnakemake__unit__tests_1_1snakemake__file_aede7de0cb3961b3dd6f64ce05f5c039c}} 
+std\+::list$<$ boost\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block}{rule\+\_\+block}} $>$ $>$ \mbox{\hyperlink{classsnakemake__unit__tests_1_1snakemake__file_aede7de0cb3961b3dd6f64ce05f5c039c}{\+\_\+blocks}}
 \begin{DoxyCompactList}\small\item\em minimal contents of snakemake file as blocks of code \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
@@ -58,39 +64,77 @@ copy constructor
 
 
 \doxysubsection{Member Function Documentation}
-\mbox{\Hypertarget{classsnakemake__unit__tests_1_1snakemake__file_a90d509e74db2edee9d63708f5ff71615}\label{classsnakemake__unit__tests_1_1snakemake__file_a90d509e74db2edee9d63708f5ff71615}} 
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1snakemake__file_a549735c89e4885eadbca1571fe5f8ab8}\label{classsnakemake__unit__tests_1_1snakemake__file_a549735c89e4885eadbca1571fe5f8ab8}} 
 \index{snakemake\_unit\_tests::snakemake\_file@{snakemake\_unit\_tests::snakemake\_file}!get\_blocks@{get\_blocks}}
 \index{get\_blocks@{get\_blocks}!snakemake\_unit\_tests::snakemake\_file@{snakemake\_unit\_tests::snakemake\_file}}
 \doxysubsubsection{\texorpdfstring{get\_blocks()}{get\_blocks()}}
-{\footnotesize\ttfamily const std\+::vector$<$\mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block}{rule\+\_\+block}}$>$\& snakemake\+\_\+unit\+\_\+tests\+::snakemake\+\_\+file\+::get\+\_\+blocks (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+{\footnotesize\ttfamily const std\+::list$<$boost\+::shared\+\_\+ptr$<$\mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block}{rule\+\_\+block}}$>$ $>$\& snakemake\+\_\+unit\+\_\+tests\+::snakemake\+\_\+file\+::get\+\_\+blocks (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
 
 
 
 get const access to internal block representation 
 
 \begin{DoxyReturn}{Returns}
-const reference to internal block vector 
+const reference to internal block list 
 \end{DoxyReturn}
-\mbox{\Hypertarget{classsnakemake__unit__tests_1_1snakemake__file_a8e0f1757bc55f74e80e6106916813efd}\label{classsnakemake__unit__tests_1_1snakemake__file_a8e0f1757bc55f74e80e6106916813efd}} 
-\index{snakemake\_unit\_tests::snakemake\_file@{snakemake\_unit\_tests::snakemake\_file}!load\_file@{load\_file}}
-\index{load\_file@{load\_file}!snakemake\_unit\_tests::snakemake\_file@{snakemake\_unit\_tests::snakemake\_file}}
-\doxysubsubsection{\texorpdfstring{load\_file()}{load\_file()}}
-{\footnotesize\ttfamily void snakemake\+\_\+unit\+\_\+tests\+::snakemake\+\_\+file\+::load\+\_\+file (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{filename,  }\item[{const std\+::string \&}]{base\+\_\+dir,  }\item[{bool}]{verbose }\end{DoxyParamCaption})}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1snakemake__file_a0391ff91ad204a6f2b0240f0ee9ed404}\label{classsnakemake__unit__tests_1_1snakemake__file_a0391ff91ad204a6f2b0240f0ee9ed404}} 
+\index{snakemake\_unit\_tests::snakemake\_file@{snakemake\_unit\_tests::snakemake\_file}!load\_everything@{load\_everything}}
+\index{load\_everything@{load\_everything}!snakemake\_unit\_tests::snakemake\_file@{snakemake\_unit\_tests::snakemake\_file}}
+\doxysubsubsection{\texorpdfstring{load\_everything()}{load\_everything()}}
+{\footnotesize\ttfamily void snakemake\+\_\+unit\+\_\+tests\+::snakemake\+\_\+file\+::load\+\_\+everything (\begin{DoxyParamCaption}\item[{const boost\+::filesystem\+::path \&}]{filename,  }\item[{const boost\+::filesystem\+::path \&}]{base\+\_\+dir,  }\item[{bool}]{verbose }\end{DoxyParamCaption})}
 
 
 
-load and parse a snakemake file 
+load and parse snakemake pipeline 
+
+
+\begin{DoxyParams}{Parameters}
+{\em filename} & name of top-\/level snakefile \\
+\hline
+{\em base\+\_\+dir} & directory from which to base relative file paths \\
+\hline
+{\em verbose} & whether to emit verbose logging output \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1snakemake__file_aaa55fc451f722b94090f0f26f2671594}\label{classsnakemake__unit__tests_1_1snakemake__file_aaa55fc451f722b94090f0f26f2671594}} 
+\index{snakemake\_unit\_tests::snakemake\_file@{snakemake\_unit\_tests::snakemake\_file}!load\_lines@{load\_lines}}
+\index{load\_lines@{load\_lines}!snakemake\_unit\_tests::snakemake\_file@{snakemake\_unit\_tests::snakemake\_file}}
+\doxysubsubsection{\texorpdfstring{load\_lines()}{load\_lines()}}
+{\footnotesize\ttfamily void snakemake\+\_\+unit\+\_\+tests\+::snakemake\+\_\+file\+::load\+\_\+lines (\begin{DoxyParamCaption}\item[{const boost\+::filesystem\+::path \&}]{filename,  }\item[{std\+::vector$<$ std\+::string $>$ $\ast$}]{target }\end{DoxyParamCaption}) const}
+
+
+
+load all lines from a file into memory 
 
 
 \begin{DoxyParams}{Parameters}
 {\em filename} & name of file to load \\
 \hline
-{\em base\+\_\+dir} & directory from which to base relative file paths \\
-\hline
-{\em verbose} & whether to emit verbose logging output\\
+{\em target} & where to store the loaded lines \\
 \hline
 \end{DoxyParams}
-designed to be called recursively to handle include statements \mbox{\Hypertarget{classsnakemake__unit__tests_1_1snakemake__file_af59b77d2fd21c3bd0298b7b4cd23bd03}\label{classsnakemake__unit__tests_1_1snakemake__file_af59b77d2fd21c3bd0298b7b4cd23bd03}} 
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1snakemake__file_aad083e297205df231dd78d2cb93a1afa}\label{classsnakemake__unit__tests_1_1snakemake__file_aad083e297205df231dd78d2cb93a1afa}} 
+\index{snakemake\_unit\_tests::snakemake\_file@{snakemake\_unit\_tests::snakemake\_file}!parse\_file@{parse\_file}}
+\index{parse\_file@{parse\_file}!snakemake\_unit\_tests::snakemake\_file@{snakemake\_unit\_tests::snakemake\_file}}
+\doxysubsubsection{\texorpdfstring{parse\_file()}{parse\_file()}}
+{\footnotesize\ttfamily void snakemake\+\_\+unit\+\_\+tests\+::snakemake\+\_\+file\+::parse\+\_\+file (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ std\+::string $>$ \&}]{loaded\+\_\+lines,  }\item[{std\+::list$<$ boost\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block}{rule\+\_\+block}} $>$ $>$\+::iterator}]{insertion\+\_\+point,  }\item[{const boost\+::filesystem\+::path \&}]{filename,  }\item[{bool}]{verbose }\end{DoxyParamCaption})}
+
+
+
+parse a snakemake file 
+
+
+\begin{DoxyParams}{Parameters}
+{\em loaded\+\_\+lines} & lines of file to parse \\
+\hline
+{\em insertion\+\_\+point} & list iterator to where to insert content \\
+\hline
+{\em filename} & name of file for informative errors \\
+\hline
+{\em verbose} & whether to emit verbose logging output \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1snakemake__file_af59b77d2fd21c3bd0298b7b4cd23bd03}\label{classsnakemake__unit__tests_1_1snakemake__file_af59b77d2fd21c3bd0298b7b4cd23bd03}} 
 \index{snakemake\_unit\_tests::snakemake\_file@{snakemake\_unit\_tests::snakemake\_file}!print\_blocks@{print\_blocks}}
 \index{print\_blocks@{print\_blocks}!snakemake\_unit\_tests::snakemake\_file@{snakemake\_unit\_tests::snakemake\_file}}
 \doxysubsubsection{\texorpdfstring{print\_blocks()}{print\_blocks()}}
@@ -122,7 +166,17 @@ report all code blocks but a single requested rule to file
 {\em out} & open output stream to which to write data \\
 \hline
 \end{DoxyParams}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1snakemake__file_a79cfa9d4504725992bb3cd6f10168fe2}\label{classsnakemake__unit__tests_1_1snakemake__file_a79cfa9d4504725992bb3cd6f10168fe2}} 
+\index{snakemake\_unit\_tests::snakemake\_file@{snakemake\_unit\_tests::snakemake\_file}!resolve\_derived\_rules@{resolve\_derived\_rules}}
+\index{resolve\_derived\_rules@{resolve\_derived\_rules}!snakemake\_unit\_tests::snakemake\_file@{snakemake\_unit\_tests::snakemake\_file}}
+\doxysubsubsection{\texorpdfstring{resolve\_derived\_rules()}{resolve\_derived\_rules()}}
+{\footnotesize\ttfamily void snakemake\+\_\+unit\+\_\+tests\+::snakemake\+\_\+file\+::resolve\+\_\+derived\+\_\+rules (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
 
+
+
+populate derived rules with base rule blocks 
+
+required after full load for snakemake 6.\+0 compatibility 
 
 The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
 \item 

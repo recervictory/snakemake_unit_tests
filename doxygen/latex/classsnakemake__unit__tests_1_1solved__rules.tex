@@ -23,7 +23,15 @@ store parsed simplified version of snakemake dag, focusing simply on which rule 
 void \mbox{\hyperlink{classsnakemake__unit__tests_1_1solved__rules_aca3bd612cf0b2479115f5e87d5148d0e}{load\+\_\+file}} (const std\+::string \&filename)
 \begin{DoxyCompactList}\small\item\em load solved recipes from a snakemake log file \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{classsnakemake__unit__tests_1_1solved__rules_a486c63742ce07c50018679b5e6d62a71}{emit\+\_\+tests}} (const \mbox{\hyperlink{classsnakemake__unit__tests_1_1snakemake__file}{snakemake\+\_\+file}} \&sf, const boost\+::filesystem\+::path \&output\+\_\+test\+\_\+dir, const boost\+::filesystem\+::path \&pipeline\+\_\+dir, const boost\+::filesystem\+::path \&inst\+\_\+dir, const std\+::vector$<$ std\+::string $>$ \&exclude\+\_\+rules, const std\+::vector$<$ boost\+::filesystem\+::path $>$ \&added\+\_\+files, const std\+::vector$<$ boost\+::filesystem\+::path $>$ \&added\+\_\+directories) const
-\begin{DoxyCompactList}\small\item\em emit tests from parsed snakemake information \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em emit tests from parsed snakemake information \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classsnakemake__unit__tests_1_1solved__rules_a4fc3ab0bb36434bf284c94f8feba51f2}{create\+\_\+workspace}} (const \mbox{\hyperlink{classsnakemake__unit__tests_1_1recipe}{recipe}} \&rec, const \mbox{\hyperlink{classsnakemake__unit__tests_1_1snakemake__file}{snakemake\+\_\+file}} \&sf, const boost\+::filesystem\+::path \&output\+\_\+test\+\_\+dir, const boost\+::filesystem\+::path \&test\+\_\+parent\+\_\+path, const boost\+::filesystem\+::path \&pipeline\+\_\+dir, const boost\+::filesystem\+::path \&test\+\_\+inst\+\_\+py, const std\+::vector$<$ std\+::string $>$ \&exclude\+\_\+rules, const std\+::vector$<$ boost\+::filesystem\+::path $>$ \&added\+\_\+files, const std\+::vector$<$ boost\+::filesystem\+::path $>$ \&added\+\_\+directories) const
+\begin{DoxyCompactList}\small\item\em create a test directory \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classsnakemake__unit__tests_1_1solved__rules_ac5f08211bb867ac7150239b62608e42d}{copy\+\_\+contents}} (const std\+::vector$<$ boost\+::filesystem\+::path $>$ \&contents, const boost\+::filesystem\+::path \&source\+\_\+prefix, const boost\+::filesystem\+::path \&target\+\_\+prefix, const std\+::string \&rule\+\_\+name) const
+\begin{DoxyCompactList}\small\item\em copy files/folders enumerated in vector to a location \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classsnakemake__unit__tests_1_1solved__rules_a62290fa558f3ad0c6e95baacd75eb53e}{report\+\_\+phony\+\_\+all\+\_\+target}} (std\+::ostream \&out, const std\+::vector$<$ boost\+::filesystem\+::path $>$ \&targets) const
+\begin{DoxyCompactList}\small\item\em report phony all target controlling test snakemake run \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classsnakemake__unit__tests_1_1solved__rules_a8f0ba41f7119f4d9355fc24b3359976e}{report\+\_\+modified\+\_\+test\+\_\+script}} (const boost\+::filesystem\+::path \&parent\+\_\+dir, const boost\+::filesystem\+::path \&test\+\_\+dir, const std\+::string \&rule\+\_\+name, const boost\+::filesystem\+::path \&inst\+\_\+test\+\_\+py) const
+\begin{DoxyCompactList}\small\item\em copy over pytest script with certain additions \end{DoxyCompactList}\end{DoxyCompactItemize}
 \doxysubsection*{Private Attributes}
 \begin{DoxyCompactItemize}
 \item 
@@ -54,6 +62,58 @@ copy constructor
 
 
 \doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1solved__rules_ac5f08211bb867ac7150239b62608e42d}\label{classsnakemake__unit__tests_1_1solved__rules_ac5f08211bb867ac7150239b62608e42d}} 
+\index{snakemake\_unit\_tests::solved\_rules@{snakemake\_unit\_tests::solved\_rules}!copy\_contents@{copy\_contents}}
+\index{copy\_contents@{copy\_contents}!snakemake\_unit\_tests::solved\_rules@{snakemake\_unit\_tests::solved\_rules}}
+\doxysubsubsection{\texorpdfstring{copy\_contents()}{copy\_contents()}}
+{\footnotesize\ttfamily void snakemake\+\_\+unit\+\_\+tests\+::solved\+\_\+rules\+::copy\+\_\+contents (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ boost\+::filesystem\+::path $>$ \&}]{contents,  }\item[{const boost\+::filesystem\+::path \&}]{source\+\_\+prefix,  }\item[{const boost\+::filesystem\+::path \&}]{target\+\_\+prefix,  }\item[{const std\+::string \&}]{rule\+\_\+name }\end{DoxyParamCaption}) const}
+
+
+
+copy files/folders enumerated in vector to a location 
+
+
+\begin{DoxyParams}{Parameters}
+{\em contents} & files or folders to be copied \\
+\hline
+{\em source\+\_\+prefix} & parent directory of source files/folders \\
+\hline
+{\em target\+\_\+prefix} & directory destination of files/folders \\
+\hline
+{\em rule\+\_\+name} & label for error reporting \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1solved__rules_a4fc3ab0bb36434bf284c94f8feba51f2}\label{classsnakemake__unit__tests_1_1solved__rules_a4fc3ab0bb36434bf284c94f8feba51f2}} 
+\index{snakemake\_unit\_tests::solved\_rules@{snakemake\_unit\_tests::solved\_rules}!create\_workspace@{create\_workspace}}
+\index{create\_workspace@{create\_workspace}!snakemake\_unit\_tests::solved\_rules@{snakemake\_unit\_tests::solved\_rules}}
+\doxysubsubsection{\texorpdfstring{create\_workspace()}{create\_workspace()}}
+{\footnotesize\ttfamily void snakemake\+\_\+unit\+\_\+tests\+::solved\+\_\+rules\+::create\+\_\+workspace (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classsnakemake__unit__tests_1_1recipe}{recipe}} \&}]{rec,  }\item[{const \mbox{\hyperlink{classsnakemake__unit__tests_1_1snakemake__file}{snakemake\+\_\+file}} \&}]{sf,  }\item[{const boost\+::filesystem\+::path \&}]{output\+\_\+test\+\_\+dir,  }\item[{const boost\+::filesystem\+::path \&}]{test\+\_\+parent\+\_\+path,  }\item[{const boost\+::filesystem\+::path \&}]{pipeline\+\_\+dir,  }\item[{const boost\+::filesystem\+::path \&}]{test\+\_\+inst\+\_\+py,  }\item[{const std\+::vector$<$ std\+::string $>$ \&}]{exclude\+\_\+rules,  }\item[{const std\+::vector$<$ boost\+::filesystem\+::path $>$ \&}]{added\+\_\+files,  }\item[{const std\+::vector$<$ boost\+::filesystem\+::path $>$ \&}]{added\+\_\+directories }\end{DoxyParamCaption}) const}
+
+
+
+create a test directory 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rec} & recipe/rule entry for which a workspace should be created \\
+\hline
+{\em sf} & \mbox{\hyperlink{classsnakemake__unit__tests_1_1snakemake__file}{snakemake\+\_\+file}} object with rule definitions corresponding to loaded log data \\
+\hline
+{\em output\+\_\+test\+\_\+dir} & output directory for tests (e.\+g. \textquotesingle{}.tests/\textquotesingle{}) \\
+\hline
+{\em test\+\_\+parent\+\_\+path} & \textquotesingle{}.tests/unit\textquotesingle{} by default \\
+\hline
+{\em pipeline\+\_\+dir} & parent directory of snakemake pipeline used to generate corresponding log file (e.\+g.\+: X for X/workflow/\+Snakefile) \\
+\hline
+{\em test\+\_\+inst\+\_\+py} & snakemake\+\_\+unit\+\_\+tests installed test.\+py script installation files (when conda mode is enabled, this will default to \$\+CONDA\+\_\+\+PREFIX/share/snakemake\+\_\+unit\+\_\+tests/inst) \\
+\hline
+{\em exclude\+\_\+rules} & vector of rules to skip tests for \\
+\hline
+{\em added\+\_\+files} & vector of additional files to add to test workspaces \\
+\hline
+{\em added\+\_\+directories} & vector of additional directories to add to test workspaces \\
+\hline
+\end{DoxyParams}
 \mbox{\Hypertarget{classsnakemake__unit__tests_1_1solved__rules_a486c63742ce07c50018679b5e6d62a71}\label{classsnakemake__unit__tests_1_1solved__rules_a486c63742ce07c50018679b5e6d62a71}} 
 \index{snakemake\_unit\_tests::solved\_rules@{snakemake\_unit\_tests::solved\_rules}!emit\_tests@{emit\_tests}}
 \index{emit\_tests@{emit\_tests}!snakemake\_unit\_tests::solved\_rules@{snakemake\_unit\_tests::solved\_rules}}
@@ -78,10 +138,10 @@ emit tests from parsed snakemake information
 \hline
 {\em added\+\_\+files} & vector of additional files to add to test workspaces \\
 \hline
-{\em added\+\_\+directories} & vector of additional directories to add to test workspaces\\
+{\em added\+\_\+directories} & vector of additional directories to add to test workspaces \\
 \hline
 \end{DoxyParams}
-TODO(cpalmer718)\+: make this do what it actually has to do, the current content is just a proof of principle placeholder \mbox{\Hypertarget{classsnakemake__unit__tests_1_1solved__rules_aca3bd612cf0b2479115f5e87d5148d0e}\label{classsnakemake__unit__tests_1_1solved__rules_aca3bd612cf0b2479115f5e87d5148d0e}} 
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1solved__rules_aca3bd612cf0b2479115f5e87d5148d0e}\label{classsnakemake__unit__tests_1_1solved__rules_aca3bd612cf0b2479115f5e87d5148d0e}} 
 \index{snakemake\_unit\_tests::solved\_rules@{snakemake\_unit\_tests::solved\_rules}!load\_file@{load\_file}}
 \index{load\_file@{load\_file}!snakemake\_unit\_tests::solved\_rules@{snakemake\_unit\_tests::solved\_rules}}
 \doxysubsubsection{\texorpdfstring{load\_file()}{load\_file()}}
@@ -94,6 +154,44 @@ load solved recipes from a snakemake log file
 
 \begin{DoxyParams}{Parameters}
 {\em filename} & name of snakemake logfile to parse \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1solved__rules_a8f0ba41f7119f4d9355fc24b3359976e}\label{classsnakemake__unit__tests_1_1solved__rules_a8f0ba41f7119f4d9355fc24b3359976e}} 
+\index{snakemake\_unit\_tests::solved\_rules@{snakemake\_unit\_tests::solved\_rules}!report\_modified\_test\_script@{report\_modified\_test\_script}}
+\index{report\_modified\_test\_script@{report\_modified\_test\_script}!snakemake\_unit\_tests::solved\_rules@{snakemake\_unit\_tests::solved\_rules}}
+\doxysubsubsection{\texorpdfstring{report\_modified\_test\_script()}{report\_modified\_test\_script()}}
+{\footnotesize\ttfamily void snakemake\+\_\+unit\+\_\+tests\+::solved\+\_\+rules\+::report\+\_\+modified\+\_\+test\+\_\+script (\begin{DoxyParamCaption}\item[{const boost\+::filesystem\+::path \&}]{parent\+\_\+dir,  }\item[{const boost\+::filesystem\+::path \&}]{test\+\_\+dir,  }\item[{const std\+::string \&}]{rule\+\_\+name,  }\item[{const boost\+::filesystem\+::path \&}]{inst\+\_\+test\+\_\+py }\end{DoxyParamCaption}) const}
+
+
+
+copy over pytest script with certain additions 
+
+
+\begin{DoxyParams}{Parameters}
+{\em parent\+\_\+dir} & parent directory of test workspace \\
+\hline
+{\em test\+\_\+dir} & parent directory of all unit tests for the pipeline \\
+\hline
+{\em rule\+\_\+name} & name of rule whose test is being emitted \\
+\hline
+{\em inst\+\_\+test\+\_\+py} & snakemake\+\_\+unit\+\_\+tests test.\+py script location \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1solved__rules_a62290fa558f3ad0c6e95baacd75eb53e}\label{classsnakemake__unit__tests_1_1solved__rules_a62290fa558f3ad0c6e95baacd75eb53e}} 
+\index{snakemake\_unit\_tests::solved\_rules@{snakemake\_unit\_tests::solved\_rules}!report\_phony\_all\_target@{report\_phony\_all\_target}}
+\index{report\_phony\_all\_target@{report\_phony\_all\_target}!snakemake\_unit\_tests::solved\_rules@{snakemake\_unit\_tests::solved\_rules}}
+\doxysubsubsection{\texorpdfstring{report\_phony\_all\_target()}{report\_phony\_all\_target()}}
+{\footnotesize\ttfamily void snakemake\+\_\+unit\+\_\+tests\+::solved\+\_\+rules\+::report\+\_\+phony\+\_\+all\+\_\+target (\begin{DoxyParamCaption}\item[{std\+::ostream \&}]{out,  }\item[{const std\+::vector$<$ boost\+::filesystem\+::path $>$ \&}]{targets }\end{DoxyParamCaption}) const}
+
+
+
+report phony all target controlling test snakemake run 
+
+
+\begin{DoxyParams}{Parameters}
+{\em out} & stream to which to write data \\
+\hline
+{\em targets} & phony targets for all rule \\
 \hline
 \end{DoxyParams}
 

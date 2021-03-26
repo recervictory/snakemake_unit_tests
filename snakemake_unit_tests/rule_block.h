@@ -69,6 +69,7 @@ class rule_block {
     for informative error messages
     @param verbose whether to report verbose logging output
     @param current_line currently probed line tracker
+    @return whether a rule was successfully loaded
    */
   bool consume_rule_contents(const std::vector<std::string> &loaded_lines,
                              const boost::filesystem::path &filename,
