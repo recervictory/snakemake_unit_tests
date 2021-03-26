@@ -91,7 +91,9 @@ bool snakemake_unit_tests::rule_block::load_content_block(
     } else {
       // new to refactor: this is arbitrary python and we're leaving it like
       // that
-      std::cout << "adding code chunk \"" << line << "\"" << std::endl;
+      if (verbose) {
+        std::cout << "adding code chunk \"" << line << "\"" << std::endl;
+      }
       _code_chunk.push_back(line);
       return true;
     }
