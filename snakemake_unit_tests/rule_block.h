@@ -17,6 +17,7 @@
 #include <string>
 #include <vector>
 
+#include "boost/filesystem.hpp"
 #include "boost/regex.hpp"
 #include "snakemake_unit_tests/utilities.h"
 
@@ -46,18 +47,32 @@ class rule_block {
   ~rule_block() throw() {}
 
   /*!
-    @brief load a rule block from a snakemake file stream
-    @param input an open file stream connected to a snakemake file
-    @param filename name of the open snakemake file. only used for
+    @brief load a rule block or python chunk from a snakemake file vector
+    @param loaded_lines vector of snakemake file lines to process
+    @param filename name of the loaded snakemake file. only used for
     informative error messages
     @param verbose whether to report verbose logging output
+    @param current_line currently probed line tracker
     @return whether a rule was successfully loaded
 
     this function will parse out a single rule from a snakemake file.
     it is designed to be called until it returns false.
    */
-  bool load_snakemake_rule(std::ifstream &input, const std::string &filename,
-                           bool verbose);
+  bool load_content_block(const std::vector<std::string> &loaded_lines,
+                          const boost::filesystem::path &filename, bool verbose,
+                          unsigned *current_line);
+
+  /*!
+    @brief having found a rule declaration, load its blocks
+    @param loaded_lines vector of snakemake lines to process
+    @param filename name of the loaded snakemake file. only used
+    for informative error messages
+    @param verbose whether to report verbose logging output
+    @param current_line currently probed line tracker
+   */
+  bool consume_rule_contents(const std::vector<std::string> &loaded_lines,
+                             const boost::filesystem::path &filename,
+                             bool verbose, unsigned *current_line);
 
   /*!
     @brief set the name of the rule
@@ -130,7 +145,25 @@ class rule_block {
                                 const std::string &block_name,
                                 const std::string &block_values);
 
+  /*!
+    @brief manually inject code into this block
+    @param s code to inject
+
+    required for the redesign of the parser
+   */
+  void add_code_chunk(const std::string &s) { _code_chunk.push_back(s); }
+
  private:
+  /*!
+    @brief apply hackjob nonsense to flatten certain relative paths by one level
+    @param s possible relative path to flatten
+    @return the input line with any changes applied
+
+    this is flagged to be handled some other way
+    TODO(cpalmer718): find any better way of flattening relative include paths
+   */
+  std::string reduce_relative_paths(const std::string &s) const;
+
   /*!
     @brief clear out internal storage
    */

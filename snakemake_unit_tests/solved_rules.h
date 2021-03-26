@@ -61,7 +61,9 @@ class recipe {
     @brief access list of input files
     @return vector storing all input filenames; may be empty
   */
-  const std::vector<std::string> &get_inputs() const { return _inputs; }
+  const std::vector<boost::filesystem::path> &get_inputs() const {
+    return _inputs;
+  }
   /*!
     @brief add an input filename
     @param s new input filename
@@ -71,7 +73,9 @@ class recipe {
     @brief access list of output files
     @return vector storing all output filenames; shouldn't be empty
    */
-  const std::vector<std::string> &get_outputs() const { return _outputs; }
+  const std::vector<boost::filesystem::path> &get_outputs() const {
+    return _outputs;
+  }
   /*!
     @brief add an output filename
     @param s new output filename
@@ -106,13 +110,13 @@ class recipe {
 
     parsed from ", " delimited list from log output
    */
-  std::vector<std::string> _inputs;
+  std::vector<boost::filesystem::path> _inputs;
   /*!
     @brief snakemake solved output files to rule
 
     parsed from ", " delimited list from log output
    */
-  std::vector<std::string> _outputs;
+  std::vector<boost::filesystem::path> _outputs;
   /*!
     @brief snakemake solved log file for rule
 
@@ -161,9 +165,6 @@ class solved_rules {
     @param added_files vector of additional files to add to test workspaces
     @param added_directories vector of additional directories to add to test
     workspaces
-
-    TODO(cpalmer718): make this do what it actually has to do,
-    the current content is just a proof of principle placeholder
   */
   void emit_tests(
       const snakemake_file &sf, const boost::filesystem::path &output_test_dir,
@@ -172,6 +173,63 @@ class solved_rules {
       const std::vector<std::string> &exclude_rules,
       const std::vector<boost::filesystem::path> &added_files,
       const std::vector<boost::filesystem::path> &added_directories) const;
+  /*!
+    @brief create a test directory
+    @param rec recipe/rule entry for which a workspace should be created
+    @param sf snakemake_file object with rule definitions corresponding
+    to loaded log data
+    @param output_test_dir output directory for tests (e.g. '.tests/')
+    @param test_parent_path '.tests/unit' by default
+    @param pipeline_dir parent directory of snakemake pipeline used to generate
+    corresponding log file (e.g.: X for X/workflow/Snakefile)
+    @param test_inst_py snakemake_unit_tests installed test.py script
+    installation files (when conda mode is enabled, this will default to
+    $CONDA_PREFIX/share/snakemake_unit_tests/inst)
+    @param exclude_rules vector of rules to skip tests for
+    @param added_files vector of additional files to add to test workspaces
+    @param added_directories vector of additional directories to add to test
+    workspaces
+  */
+  void create_workspace(
+      const recipe &rec, const snakemake_file &sf,
+      const boost::filesystem::path &output_test_dir,
+      const boost::filesystem::path &test_parent_path,
+      const boost::filesystem::path &pipeline_dir,
+      const boost::filesystem::path &test_inst_py,
+      const std::vector<std::string> &exclude_rules,
+      const std::vector<boost::filesystem::path> &added_files,
+      const std::vector<boost::filesystem::path> &added_directories) const;
+  /*!
+    @brief copy files/folders enumerated in vector to a location
+    @param contents files or folders to be copied
+    @param source_prefix parent directory of source files/folders
+    @param target_prefix directory destination of files/folders
+    @param rule_name label for error reporting
+   */
+  void copy_contents(const std::vector<boost::filesystem::path> &contents,
+                     const boost::filesystem::path &source_prefix,
+                     const boost::filesystem::path &target_prefix,
+                     const std::string &rule_name) const;
+
+  /*!
+    @brief report phony all target controlling test snakemake run
+    @param out stream to which to write data
+    @param targets phony targets for all rule
+   */
+  void report_phony_all_target(
+      std::ostream &out,
+      const std::vector<boost::filesystem::path> &targets) const;
+  /*!
+    @brief copy over pytest script with certain additions
+    @param parent_dir parent directory of test workspace
+    @param test_dir parent directory of all unit tests for the pipeline
+    @param rule_name name of rule whose test is being emitted
+    @param inst_test_py snakemake_unit_tests test.py script location
+   */
+  void report_modified_test_script(
+      const boost::filesystem::path &parent_dir,
+      const boost::filesystem::path &test_dir, const std::string &rule_name,
+      const boost::filesystem::path &inst_test_py) const;
 
  private:
   /*!
