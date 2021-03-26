@@ -110,6 +110,8 @@ void snakemake_unit_tests::solved_rules::emit_tests(
   for (std::vector<recipe>::const_iterator iter = _recipes.begin();
        iter != _recipes.end(); ++iter) {
     if (test_history.find(iter->get_rule_name()) == test_history.end()) {
+      std::cout << "emitting test for rule \"" << iter->get_rule_name() << "\""
+                << std::endl;
       create_workspace(*iter, sf, output_test_dir, test_parent_path,
                        pipeline_dir, inst_test_py, exclude_rules, added_files,
                        added_directories);
