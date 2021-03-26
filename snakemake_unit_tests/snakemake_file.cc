@@ -192,7 +192,7 @@ void snakemake_unit_tests::snakemake_file::detect_known_issues(
   if (!unresolvable_duplicated_rules.empty()) {
     std::cout << "***of these duplicate rules, "
               << unresolvable_duplicated_rules.size()
-              << " had incompatible duplicate definitions:" << std::endl;
+              << " had incompatible duplicate content:" << std::endl;
     for (std::vector<std::string>::const_iterator iter =
              unresolvable_duplicated_rules.begin();
          iter != unresolvable_duplicated_rules.end(); ++iter) {
@@ -205,7 +205,8 @@ void snakemake_unit_tests::snakemake_file::detect_known_issues(
                                                       : "these rules are")
         << " unsupported in the current software build. "
         << "this information will be automatically added to exclude-rules "
-        << "to prevent inconsistent behavior" << std::endl;
+        << "to prevent inconsistent behavior" << std::endl
+        << std::endl;
   }
   if (!leftover_includes.empty()) {
     std::cout << std::endl
