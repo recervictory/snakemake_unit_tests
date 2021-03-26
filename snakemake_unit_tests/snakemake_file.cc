@@ -159,6 +159,7 @@ void snakemake_unit_tests::snakemake_file::detect_known_issues() {
   std::cout << "  of those rules, " << duplicated_rules
             << " had multiple entries in unconditional logic" << std::endl;
   if (duplicated_rules) {
+    std::cout << std::endl;
     std::cout << "note that multiple entries in unconditional logic are not \n"
               << "necessarily problematic: this program does not interpret \n"
               << "infrastructure logic (that feature is planned for later \n"
@@ -169,7 +170,7 @@ void snakemake_unit_tests::snakemake_file::detect_known_issues() {
               << "files; or you can wait for a later patch" << std::endl;
   }
   if (!unresolvable_duplicated_rules.empty()) {
-    std::cout << "  and of those duplicates, "
+    std::cout << "***of these duplicate rules, "
               << unresolvable_duplicated_rules.size()
               << " had incompatible duplicate definitions:" << std::endl;
     for (std::vector<std::string>::const_iterator iter =
@@ -177,6 +178,15 @@ void snakemake_unit_tests::snakemake_file::detect_known_issues() {
          iter != unresolvable_duplicated_rules.end(); ++iter) {
       std::cout << "     " << *iter << std::endl;
     }
+    std::cout << std::endl
+              << "sorry, "
+              << (unresolvable_duplicated_rules.size() == 1 ? "this rule is"
+                                                            : "these rules are")
+              << " unsupported in the current software build. please cancel "
+                 "this run, "
+              << "purge any intermediates, and rerun excluding any offending "
+                 "rules with -e "
+              << "or exclude-files" << std::endl;
   }
   if (!leftover_includes.empty()) {
     std::cout << std::endl
