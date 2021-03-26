@@ -90,8 +90,97 @@ void snakemake_unit_tests::snakemake_file::load_everything(
     }
   }
 
+  // placeholder: add screening step to detect known issues/unsupported features
+  // TODO(cpalmer718): implement python integration. add checkpoints
+  detect_known_issues();
+
   // deal with derived rules
   resolve_derived_rules();
+}
+
+void snakemake_unit_tests::snakemake_file::detect_known_issues() {
+  /*
+    Known issues as implemented here
+
+    1) include directives on variables or in more complicated one line logic
+    statements
+
+    2) conditional rules causing duplicate rules with the same name but
+    different contents to be loaded; snakemake wouldn't care, but this code
+    isn't smart enough to resolve yet
+
+    3) derived rules where the base rule is not detected for some reason
+    (detected during that scan)
+   */
+  std::map<std::string, std::vector<boost::shared_ptr<rule_block> > >
+      aggregated_rules;
+  std::map<std::string, std::vector<boost::shared_ptr<rule_block> > >::iterator
+      finder;
+  unsigned duplicated_rules = 0;
+  std::vector<std::string> unresolvable_duplicated_rules, leftover_includes;
+  for (std::list<boost::shared_ptr<rule_block> >::iterator iter =
+           _blocks.begin();
+       iter != _blocks.end(); ++iter) {
+    // python code. scan for remaining include directives
+    if (!(*iter)->get_code_chunk().empty()) {
+      std::string::size_type include_location =
+          (*iter)->get_code_chunk().rbegin()->find("include:");
+      if (include_location != std::string::npos) {
+        leftover_includes.push_back((*(*iter)->get_code_chunk().rbegin()));
+      }
+    } else {
+      // rule. aggregate for duplication
+      if ((finder = aggregated_rules.find((*iter)->get_rule_name())) ==
+          aggregated_rules.end()) {
+        finder = aggregated_rules
+                     .insert(std::make_pair(
+                         (*iter)->get_rule_name(),
+                         std::vector<boost::shared_ptr<rule_block> >()))
+                     .first;
+      }
+      finder->second.push_back(*iter);
+    }
+  }
+  for (finder = aggregated_rules.begin(); finder != aggregated_rules.end();
+       ++finder) {
+    if (finder->second.size() > 1) ++duplicated_rules;
+    bool problematic = false;
+    for (unsigned i = 1; i < finder->second.size() && !problematic; ++i) {
+      if (*finder->second.at(i) != *finder->second.at(0)) {
+        problematic = true;
+        unresolvable_duplicated_rules.push_back(finder->first);
+      }
+    }
+  }
+  // report results
+  std::cout << "snakefile load summary" << std::endl;
+  std::cout << "----------------------" << std::endl;
+  std::cout << "total loaded rules: " << aggregated_rules.size() << std::endl;
+  std::cout << "  of those rules, " << duplicated_rules
+            << " had multiple entries in unconditional logic" << std::endl;
+  if (!unresolvable_duplicated_rules.empty()) {
+    std::cout << "  and of those duplicates, "
+              << unresolvable_duplicated_rules.size()
+              << " had incompatible duplicate definitions:" << std::endl;
+    for (std::vector<std::string>::const_iterator iter =
+             unresolvable_duplicated_rules.begin();
+         iter != unresolvable_duplicated_rules.end(); ++iter) {
+      std::cout << "     " << *iter << std::endl;
+    }
+  }
+  if (!leftover_includes.empty()) {
+    std::cout << std::endl
+              << "warning: possible unresolved include statements detected:"
+              << std::endl;
+    for (std::vector<std::string>::const_iterator iter =
+             leftover_includes.begin();
+         iter != leftover_includes.end(); ++iter) {
+      std::cout << "  " << *iter << std::endl;
+    }
+    std::cout << "if the above are actual include directives, please file a "
+                 "bug report with this information"
+              << std::endl;
+  }
 }
 
 void snakemake_unit_tests::snakemake_file::load_lines(

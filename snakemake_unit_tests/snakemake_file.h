@@ -75,6 +75,18 @@ class snakemake_file {
                   std::vector<std::string> *target) const;
 
   /*!
+    @brief report on internal discrepancies in the snakefile load results
+
+    this is particularly designed to detect known unsupported features in
+    snakemake/python interactions, specifically conditional inclusion of files
+    or rules that relies on python logic and/or leads to inconsistent results
+    if not correctly parsed.
+
+    these features are flagged to be correctly supported in a later patch
+   */
+  void detect_known_issues();
+
+  /*!
     @brief populate derived rules with base rule blocks
 
     required after full load for snakemake 6.0 compatibility

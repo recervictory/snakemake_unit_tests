@@ -151,6 +151,18 @@ class rule_block {
   }
 
   /*!
+    @brief get global indentation of file
+    @return global indentation of file
+   */
+  unsigned get_global_indentation() const { return _global_indentation; }
+
+  /*!
+    @brief get local indentation of rule block
+    @return local indentation of rule block
+   */
+  unsigned get_local_indentation() const { return _local_indentation; }
+
+  /*!
     @brief provide candidate base rule block definitions for derived rules
     @param provider_name name of candidate base rule providing this information
     @param block_name name of block definition from the base rule
@@ -170,6 +182,36 @@ class rule_block {
     required for the redesign of the parser
    */
   void add_code_chunk(const std::string &s) { _code_chunk.push_back(s); }
+
+  /*!
+    @brief test equality
+    @param obj other rule_block object to compare to
+    @return whether *this and obj contain the same contents
+
+    note that indentation level is irrelevant for this comparison
+   */
+  bool operator==(const rule_block &obj) const {
+    // global and local indentation *do not need to be equal*
+    if (get_rule_name().compare(obj.get_rule_name())) return false;
+    if (get_base_rule_name().compare(obj.get_base_rule_name())) return false;
+    if (get_named_blocks().size() != obj.get_named_blocks().size())
+      return false;
+    if (!std::equal(get_named_blocks().begin(), get_named_blocks().end(),
+                    obj.get_named_blocks().begin()))
+      return false;
+    if (!std::equal(get_code_chunk().begin(), get_code_chunk().end(),
+                    obj.get_code_chunk().begin()))
+      return false;
+    return true;
+  }
+  /*!
+    @brief test inequality
+    @param obj other rule_block object to compare to
+    @return whether *this and obj contain the same contents
+
+    note that indentation level is irrelevant for this comparison
+   */
+  bool operator!=(const rule_block &obj) const { return !(*this == obj); }
 
  private:
   /*!
