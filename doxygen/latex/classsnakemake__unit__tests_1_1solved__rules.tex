@@ -1,0 +1,104 @@
+\hypertarget{classsnakemake__unit__tests_1_1solved__rules}{}\doxysection{snakemake\+\_\+unit\+\_\+tests\+::solved\+\_\+rules Class Reference}
+\label{classsnakemake__unit__tests_1_1solved__rules}\index{snakemake\_unit\_tests::solved\_rules@{snakemake\_unit\_tests::solved\_rules}}
+
+
+store parsed simplified version of snakemake dag, focusing simply on which rule is used to generate which output from which input  
+
+
+
+
+{\ttfamily \#include $<$solved\+\_\+rules.\+h$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1solved__rules_a8565db2c01657945c3c18427c264c48c}\label{classsnakemake__unit__tests_1_1solved__rules_a8565db2c01657945c3c18427c264c48c}} 
+\mbox{\hyperlink{classsnakemake__unit__tests_1_1solved__rules_a8565db2c01657945c3c18427c264c48c}{solved\+\_\+rules}} ()
+\begin{DoxyCompactList}\small\item\em constructor \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classsnakemake__unit__tests_1_1solved__rules_af53f3064303923761555b2b086ab2f97}{solved\+\_\+rules}} (const \mbox{\hyperlink{classsnakemake__unit__tests_1_1solved__rules}{solved\+\_\+rules}} \&obj)
+\begin{DoxyCompactList}\small\item\em copy constructor \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1solved__rules_ac1124462db482c389be3d6c0c335045d}\label{classsnakemake__unit__tests_1_1solved__rules_ac1124462db482c389be3d6c0c335045d}} 
+\mbox{\hyperlink{classsnakemake__unit__tests_1_1solved__rules_ac1124462db482c389be3d6c0c335045d}{$\sim$solved\+\_\+rules}} ()  throw ()
+\begin{DoxyCompactList}\small\item\em destructor \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classsnakemake__unit__tests_1_1solved__rules_aca3bd612cf0b2479115f5e87d5148d0e}{load\+\_\+file}} (const std\+::string \&filename)
+\begin{DoxyCompactList}\small\item\em load solved recipes from a snakemake log file \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classsnakemake__unit__tests_1_1solved__rules_a486c63742ce07c50018679b5e6d62a71}{emit\+\_\+tests}} (const \mbox{\hyperlink{classsnakemake__unit__tests_1_1snakemake__file}{snakemake\+\_\+file}} \&sf, const boost\+::filesystem\+::path \&output\+\_\+test\+\_\+dir, const boost\+::filesystem\+::path \&pipeline\+\_\+dir, const boost\+::filesystem\+::path \&inst\+\_\+dir, const std\+::vector$<$ std\+::string $>$ \&exclude\+\_\+rules, const std\+::vector$<$ boost\+::filesystem\+::path $>$ \&added\+\_\+files, const std\+::vector$<$ boost\+::filesystem\+::path $>$ \&added\+\_\+directories) const
+\begin{DoxyCompactList}\small\item\em emit tests from parsed snakemake information \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1solved__rules_a505af3f6c04d181e76df8b944e5529c1}\label{classsnakemake__unit__tests_1_1solved__rules_a505af3f6c04d181e76df8b944e5529c1}} 
+std\+::vector$<$ \mbox{\hyperlink{classsnakemake__unit__tests_1_1recipe}{recipe}} $>$ \mbox{\hyperlink{classsnakemake__unit__tests_1_1solved__rules_a505af3f6c04d181e76df8b944e5529c1}{\+\_\+recipes}}
+\begin{DoxyCompactList}\small\item\em abstract set of solved recipe entries in a log file \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+store parsed simplified version of snakemake dag, focusing simply on which rule is used to generate which output from which input 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1solved__rules_af53f3064303923761555b2b086ab2f97}\label{classsnakemake__unit__tests_1_1solved__rules_af53f3064303923761555b2b086ab2f97}} 
+\index{snakemake\_unit\_tests::solved\_rules@{snakemake\_unit\_tests::solved\_rules}!solved\_rules@{solved\_rules}}
+\index{solved\_rules@{solved\_rules}!snakemake\_unit\_tests::solved\_rules@{snakemake\_unit\_tests::solved\_rules}}
+\doxysubsubsection{\texorpdfstring{solved\_rules()}{solved\_rules()}}
+{\footnotesize\ttfamily snakemake\+\_\+unit\+\_\+tests\+::solved\+\_\+rules\+::solved\+\_\+rules (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classsnakemake__unit__tests_1_1solved__rules}{solved\+\_\+rules}} \&}]{obj }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+copy constructor 
+
+
+\begin{DoxyParams}{Parameters}
+{\em obj} & existing \mbox{\hyperlink{classsnakemake__unit__tests_1_1solved__rules}{solved\+\_\+rules}} object \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1solved__rules_a486c63742ce07c50018679b5e6d62a71}\label{classsnakemake__unit__tests_1_1solved__rules_a486c63742ce07c50018679b5e6d62a71}} 
+\index{snakemake\_unit\_tests::solved\_rules@{snakemake\_unit\_tests::solved\_rules}!emit\_tests@{emit\_tests}}
+\index{emit\_tests@{emit\_tests}!snakemake\_unit\_tests::solved\_rules@{snakemake\_unit\_tests::solved\_rules}}
+\doxysubsubsection{\texorpdfstring{emit\_tests()}{emit\_tests()}}
+{\footnotesize\ttfamily void snakemake\+\_\+unit\+\_\+tests\+::solved\+\_\+rules\+::emit\+\_\+tests (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classsnakemake__unit__tests_1_1snakemake__file}{snakemake\+\_\+file}} \&}]{sf,  }\item[{const boost\+::filesystem\+::path \&}]{output\+\_\+test\+\_\+dir,  }\item[{const boost\+::filesystem\+::path \&}]{pipeline\+\_\+dir,  }\item[{const boost\+::filesystem\+::path \&}]{inst\+\_\+dir,  }\item[{const std\+::vector$<$ std\+::string $>$ \&}]{exclude\+\_\+rules,  }\item[{const std\+::vector$<$ boost\+::filesystem\+::path $>$ \&}]{added\+\_\+files,  }\item[{const std\+::vector$<$ boost\+::filesystem\+::path $>$ \&}]{added\+\_\+directories }\end{DoxyParamCaption}) const}
+
+
+
+emit tests from parsed snakemake information 
+
+
+\begin{DoxyParams}{Parameters}
+{\em sf} & \mbox{\hyperlink{classsnakemake__unit__tests_1_1snakemake__file}{snakemake\+\_\+file}} object with rule definitions corresponding to loaded log data \\
+\hline
+{\em output\+\_\+test\+\_\+dir} & output directory for tests (e.\+g. \textquotesingle{}.tests/\textquotesingle{}) \\
+\hline
+{\em pipeline\+\_\+dir} & parent directory of snakemake pipeline used to generate corresponding log file (e.\+g.\+: X for X/workflow/\+Snakefile) \\
+\hline
+{\em inst\+\_\+dir} & directory in snakemake\+\_\+unit\+\_\+tests repo containing installation files (when conda mode is enabled, this will default to \$\+CONDA\+\_\+\+PREFIX/share/snakemake\+\_\+unit\+\_\+tests/inst) \\
+\hline
+{\em exclude\+\_\+rules} & vector of rules to skip tests for \\
+\hline
+{\em added\+\_\+files} & vector of additional files to add to test workspaces \\
+\hline
+{\em added\+\_\+directories} & vector of additional directories to add to test workspaces\\
+\hline
+\end{DoxyParams}
+TODO(cpalmer718)\+: make this do what it actually has to do, the current content is just a proof of principle placeholder \mbox{\Hypertarget{classsnakemake__unit__tests_1_1solved__rules_aca3bd612cf0b2479115f5e87d5148d0e}\label{classsnakemake__unit__tests_1_1solved__rules_aca3bd612cf0b2479115f5e87d5148d0e}} 
+\index{snakemake\_unit\_tests::solved\_rules@{snakemake\_unit\_tests::solved\_rules}!load\_file@{load\_file}}
+\index{load\_file@{load\_file}!snakemake\_unit\_tests::solved\_rules@{snakemake\_unit\_tests::solved\_rules}}
+\doxysubsubsection{\texorpdfstring{load\_file()}{load\_file()}}
+{\footnotesize\ttfamily void snakemake\+\_\+unit\+\_\+tests\+::solved\+\_\+rules\+::load\+\_\+file (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{filename }\end{DoxyParamCaption})}
+
+
+
+load solved recipes from a snakemake log file 
+
+
+\begin{DoxyParams}{Parameters}
+{\em filename} & name of snakemake logfile to parse \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+snakemake\+\_\+unit\+\_\+tests/\mbox{\hyperlink{solved__rules_8h}{solved\+\_\+rules.\+h}}\item 
+snakemake\+\_\+unit\+\_\+tests/\mbox{\hyperlink{solved__rules_8cc}{solved\+\_\+rules.\+cc}}\end{DoxyCompactItemize}

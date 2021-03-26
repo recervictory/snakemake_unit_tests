@@ -1,0 +1,35 @@
+\hypertarget{solved__rules_8h}{}\doxysection{snakemake\+\_\+unit\+\_\+tests/solved\+\_\+rules.h File Reference}
+\label{solved__rules_8h}\index{snakemake\_unit\_tests/solved\_rules.h@{snakemake\_unit\_tests/solved\_rules.h}}
+
+
+simple representation of parsed snakemake dag  
+
+
+{\ttfamily \#include $<$algorithm$>$}\newline
+{\ttfamily \#include $<$fstream$>$}\newline
+{\ttfamily \#include $<$iostream$>$}\newline
+{\ttfamily \#include $<$map$>$}\newline
+{\ttfamily \#include $<$stdexcept$>$}\newline
+{\ttfamily \#include $<$string$>$}\newline
+{\ttfamily \#include $<$vector$>$}\newline
+{\ttfamily \#include \char`\"{}boost/regex.\+hpp\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}snakemake\+\_\+unit\+\_\+tests/snakemake\+\_\+file.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}snakemake\+\_\+unit\+\_\+tests/utilities.\+h\char`\"{}}\newline
+\doxysubsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{classsnakemake__unit__tests_1_1recipe}{snakemake\+\_\+unit\+\_\+tests\+::recipe}}
+\begin{DoxyCompactList}\small\item\em from the snakemake log, a simple description of how input(s) lead to output(s) via a rule \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{classsnakemake__unit__tests_1_1solved__rules}{snakemake\+\_\+unit\+\_\+tests\+::solved\+\_\+rules}}
+\begin{DoxyCompactList}\small\item\em store parsed simplified version of snakemake dag, focusing simply on which rule is used to generate which output from which input \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+simple representation of parsed snakemake dag 
+
+\begin{DoxyAuthor}{Author}
+Cameron Palmer 
+\end{DoxyAuthor}
+\begin{DoxyCopyright}{Copyright}
+Released under the MIT License. Copyright 2021 Cameron Palmer 
+\end{DoxyCopyright}

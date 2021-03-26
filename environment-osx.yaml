@@ -1,4 +1,8 @@
 name: snakemake_unit_tests-env
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
 dependencies:
   - boost-cpp
   - yaml-cpp
@@ -14,3 +18,4 @@ dependencies:
   - autoconf
   - make>=4.2
   - clang_osx-64>=8.2.0
+  - doxygen

@@ -1,0 +1,77 @@
+\hypertarget{utilities_8h}{}\doxysection{snakemake\+\_\+unit\+\_\+tests/utilities.h File Reference}
+\label{utilities_8h}\index{snakemake\_unit\_tests/utilities.h@{snakemake\_unit\_tests/utilities.h}}
+
+
+general utility functions  
+
+
+{\ttfamily \#include $<$fstream$>$}\newline
+{\ttfamily \#include $<$string$>$}\newline
+{\ttfamily \#include $<$vector$>$}\newline
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+std\+::string \mbox{\hyperlink{utilities_8h_a19982ae2854f4c8c67861bd69a9e5a19}{snakemake\+\_\+unit\+\_\+tests\+::remove\+\_\+comments\+\_\+and\+\_\+docstrings}} (const std\+::string \&s, std\+::ifstream $\ast$input, unsigned $\ast$line\+\_\+number)
+\begin{DoxyCompactList}\small\item\em prune superfluous content from snakemake content line \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{utilities_8h_a76f0f7dbe28096fdf1a71b74b3e46ff1}{snakemake\+\_\+unit\+\_\+tests\+::split\+\_\+comma\+\_\+list}} (const std\+::string \&s, std\+::vector$<$ std\+::string $>$ $\ast$target)
+\begin{DoxyCompactList}\small\item\em take a comma/space delimited list of filenames and break them up into a vector \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+general utility functions 
+
+\begin{DoxyAuthor}{Author}
+Cameron Palmer 
+\end{DoxyAuthor}
+\begin{DoxyCopyright}{Copyright}
+Released under the MIT License. Copyright 2021 Cameron Palmer 
+\end{DoxyCopyright}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{utilities_8h_a19982ae2854f4c8c67861bd69a9e5a19}\label{utilities_8h_a19982ae2854f4c8c67861bd69a9e5a19}} 
+\index{utilities.h@{utilities.h}!remove\_comments\_and\_docstrings@{remove\_comments\_and\_docstrings}}
+\index{remove\_comments\_and\_docstrings@{remove\_comments\_and\_docstrings}!utilities.h@{utilities.h}}
+\doxysubsubsection{\texorpdfstring{remove\_comments\_and\_docstrings()}{remove\_comments\_and\_docstrings()}}
+{\footnotesize\ttfamily std\+::string snakemake\+\_\+unit\+\_\+tests\+::remove\+\_\+comments\+\_\+and\+\_\+docstrings (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{s,  }\item[{std\+::ifstream $\ast$}]{input,  }\item[{unsigned $\ast$}]{line\+\_\+number }\end{DoxyParamCaption})}
+
+
+
+prune superfluous content from snakemake content line 
+
+
+\begin{DoxyParams}{Parameters}
+{\em s} & line to be pruned down to minimal essential content \\
+\hline
+{\em input} & open file stream from which to pull multiline content, if needed \\
+\hline
+{\em line\+\_\+number} & counter of line in file, for error reporting \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+pruned line
+\end{DoxyReturn}
+for the moment, this removes\+:
+
+
+\begin{DoxyItemize}
+\item things that look like docstrings (\char`\"{}\char`\"{}\char`\"{} content \char`\"{}\char`\"{}\char`\"{})
+\item comments (all text after unescaped \textquotesingle{}\#\textquotesingle{})
+\item trailing whitespace (tab or space) 
+\end{DoxyItemize}\mbox{\Hypertarget{utilities_8h_a76f0f7dbe28096fdf1a71b74b3e46ff1}\label{utilities_8h_a76f0f7dbe28096fdf1a71b74b3e46ff1}} 
+\index{utilities.h@{utilities.h}!split\_comma\_list@{split\_comma\_list}}
+\index{split\_comma\_list@{split\_comma\_list}!utilities.h@{utilities.h}}
+\doxysubsubsection{\texorpdfstring{split\_comma\_list()}{split\_comma\_list()}}
+{\footnotesize\ttfamily void snakemake\+\_\+unit\+\_\+tests\+::split\+\_\+comma\+\_\+list (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{s,  }\item[{std\+::vector$<$ std\+::string $>$ $\ast$}]{target }\end{DoxyParamCaption})}
+
+
+
+take a comma/space delimited list of filenames and break them up into a vector 
+
+
+\begin{DoxyParams}{Parameters}
+{\em s} & input list; intended to be from snakemake log data \\
+\hline
+{\em target} & vector in which to store data \\
+\hline
+\end{DoxyParams}
