@@ -9,225 +9,186 @@
 
 #include "snakemake_unit_tests/rule_block.h"
 
-bool snakemake_unit_tests::rule_block::load_snakemake_rule(
-    std::ifstream &input, const std::string &filename, bool verbose) {
-  // be sure input stream is open
-  if (!input.is_open()) return false;
-  // clear out internals, just to be safe
-  clear();
-  // define variables for processing
-  std::string line = "", block_name = "", block_contents = "", raw_line = "";
-  std::string::size_type line_indentation = 0;
-  unsigned line_number = 0;
-  std::ostringstream raw_content;
-  // define regex patterns for testing
-  const boost::regex standard_rule_declaration("^rule ([^ ]+):.*$");
-  const boost::regex derived_rule_declaration(
-      "^use rule ([^ ]+) as ([^ ]+) with:.*$");
-  const boost::regex named_block_tag("^    ([a-zA-Z_\\-]+):(.*)$");
-  // define state flags
-  bool within_rule_block = false;
+std::string snakemake_unit_tests::rule_block::reduce_relative_paths(
+    const std::string &s) const {
   std::vector<std::string> reduced_relative_paths;
   reduced_relative_paths.push_back("../envs");
   reduced_relative_paths.push_back("../scripts");
   reduced_relative_paths.push_back("../report");
-  while (input.peek() != EOF) {
-    // read a line from file
-    getline(input, line);
-    ++line_number;
-    // remove comments
-    if (verbose) {
-      std::cout << "line before chomping is \"" << line << "\"" << std::endl;
+  std::string line = s;
+  // hackjob nonsense:
+  /*
+    reduce by one level relative paths from within workflow/rules.
+    this is necessary because recursively included files from rules/
+    are flattened by one level when loaded.
+  */
+  for (std::vector<std::string>::const_iterator iter =
+           reduced_relative_paths.begin();
+       iter != reduced_relative_paths.end(); ++iter) {
+    if (line.find(*iter) != std::string::npos) {
+      line = line.substr(0, line.find(*iter)) + iter->substr(3) +
+             line.substr(line.find(*iter) + iter->size());
     }
-    line = remove_comments_and_docstrings(line, &input, &line_number);
-    if (verbose) {
-      std::cout << "line after chomping is \"" << line << "\"" << std::endl;
-    }
-    // skip past empty lines, though not all of these are even valid snakemake
-    if (line.empty() || line.find_first_not_of("\t ") == std::string::npos)
-      continue;
-    // hackjob nonsense:
-    /*
-      reduce by one level relative paths from within workflow/rules.
-      this is necessary because recursively included files from rules/
-      are flattened by one level when loaded.
-     */
-    for (std::vector<std::string>::const_iterator iter =
-             reduced_relative_paths.begin();
-         iter != reduced_relative_paths.end(); ++iter) {
-      if (line.find(*iter) != std::string::npos) {
-        line = line.substr(0, line.find(*iter)) + iter->substr(3) +
-               line.substr(line.find(*iter) + iter->size());
-      }
-    }
-    // switch behavior depending on state
-    if (within_rule_block) {
-      // all remaining lines must be indented. any lack of indentation means the
-      // rule is done
-      if (line.at(0) != ' ') {
-        if (verbose) {
-          std::cout << "content: \"" << raw_content.str()
-                    << "\"; verdict: rule block" << std::endl;
-        }
-        --line_number;
-        // return it to the file
-        input.seekg(input.tellg() -
-                    static_cast<std::ifstream::pos_type>(raw_line.size() + 2));
-        return true;
-      }
-      raw_content << "\n" << line;
-      // use pythonic indentation to flag an arbitrary number of named blocks
-      line_indentation = line.find_first_not_of(" \t");
-      // expose this to user space?
-      if (line_indentation == 4) {
-        // enforce named tag here
-        boost::smatch named_block_tag_result;
-        if (boost::regex_match(line, named_block_tag_result, named_block_tag)) {
-          block_name = named_block_tag_result[1];
-          block_contents = remove_comments_and_docstrings(
-              named_block_tag_result[2], &input, &line_number);
-          // while additional block contents are theoretically available
-          while (input.peek() != EOF) {
-            getline(input, line);
-            raw_line = line;
-            ++line_number;
-            line = remove_comments_and_docstrings(line, &input, &line_number);
-            line_indentation = line.find_first_not_of(" \t");
-            // hackjob nonsense:
-            /*
-              reduce by one level relative paths from within workflow/rules.
-              this is necessary because recursively included files from rules/
-              are flattened by one level when loaded.
-            */
-            for (std::vector<std::string>::const_iterator iter =
-                     reduced_relative_paths.begin();
-                 iter != reduced_relative_paths.end(); ++iter) {
-              if (line.find(*iter) != std::string::npos) {
-                line = line.substr(0, line.find(*iter)) + iter->substr(3) +
-                       line.substr(line.find(*iter) + iter->size());
-              }
-            }
-            // if a line that's not contents is found
-            if (line_indentation < 5) {
-              --line_number;
-              // return it to the file
-              input.seekg(input.tellg() - static_cast<std::ifstream::pos_type>(
-                                              raw_line.size() + 2));
-              // the block is aggregated. add it to the rule block
-              _named_blocks[block_name] = block_contents;
-              // proceed to the next possible block
-              break;
-            } else {
-              // TODO(cpalmer718): deal with entries extending across multiple
-              // lines? aggregate the contents with some formatting
-              raw_content << "\n" << raw_line;
-              block_contents += "\n" + line;
-            }
-          }
-          if (input.peek() == EOF) {
-            if (verbose) std::cout << "file terminating" << std::endl;
-            // catch dangling blocks at the end of files
-            if (_named_blocks.find(block_name) == _named_blocks.end())
-              _named_blocks[block_name] = block_contents;
-            return true;
-          }
-        } else {
-          throw std::runtime_error(
-              "snakemake named block tag not found: file \"" + filename +
-              "\" line " + std::to_string(line_number) + " entry \"" + line +
-              "\"");
-        }
-      }
-    } else {
-      // flag indentation that does not match assumptions
-      raw_content << "\n" << line;
-      if (line.at(0) == ' ') {
-        throw std::runtime_error(
-            "snakemake format error detected: file \"" + filename + "\" line " +
-            std::to_string(line_number) + " entry \"" + line + "\"");
-      }
-      // if the line is a valid rule declaration
-      boost::smatch regex_result;
-      if (boost::regex_match(line, regex_result, standard_rule_declaration)) {
-        set_rule_name(regex_result[1]);
-      } else if (boost::regex_match(line, regex_result,
-                                    derived_rule_declaration)) {
-        set_rule_name(regex_result[2]);
-        // derived rules declare a base rule from which they inherit certain
-        // fields. setting those certain fields must be deferred until all rules
-        // are available.
-        set_base_rule_name(regex_result[1]);
-      } else {
-        // if the entry is not a rule declaration, it is treated as some form
-        // of arbitrary python/snakemake code.
-        _code_chunk.push_back(line);
-        // load any number of successive indented lines
-        while (input.peek() != EOF) {
-          getline(input, line);
-          raw_line = line;
-          ++line_number;
-          line = remove_comments_and_docstrings(line, &input, &line_number);
-          // if after pruning there's nothing here, ignore it
-          if (line.empty()) continue;
-          // hackjob nonsense:
-          /*
-            reduce by one level relative paths from within workflow/rules.
-            this is necessary because recursively included files from rules/
-            are flattened by one level when loaded.
-          */
-          for (std::vector<std::string>::const_iterator iter =
-                   reduced_relative_paths.begin();
-               iter != reduced_relative_paths.end(); ++iter) {
-            if (line.find(*iter) != std::string::npos) {
-              line = line.substr(0, line.find(*iter)) + iter->substr(3) +
-                     line.substr(line.find(*iter) + iter->size());
-            }
-          }
+  }
+  return line;
+}
 
-          line_indentation = line.find_first_not_of(" \t");
-          if (line_indentation > 0) {
-            // this is a continuation of the previous command line, and should
-            // be added
-            _code_chunk.push_back(line);
-            raw_content << "\n" << raw_line;
-          } else {
-            // this is either a different command or a rule block
-            // return it to the file
-            input.seekg(input.tellg() - static_cast<std::ifstream::pos_type>(
-                                            raw_line.size() + 2));
-            --line_number;
-            // parse is complete
-            if (verbose) {
-              std::cout << "content: \"" << raw_content.str()
-                        << "\"; verdict: arbitrary code chunk" << std::endl;
-            }
-            return true;
-          }
-        }
-        // if this is the end of the file, cool. that was the last code block.
-        if (input.peek() == EOF) {
-          if (verbose) {
-            std::cout << "file terminating" << std::endl;
-          }
-          return true;
-        }
-        // if the entry is not a rule declaration, upstream logic has failed
-        throw std::logic_error(
-            "snakemake rule declaration expected but not found: file \"" +
-            filename + "\" line " + std::to_string(line_number) + " entry \"" +
-            line + "\"");
+bool snakemake_unit_tests::rule_block::load_content_block(
+    const std::vector<std::string> &loaded_lines,
+    const boost::filesystem::path &filename, bool verbose,
+    unsigned *current_line) {
+  if (!current_line)
+    throw std::runtime_error(
+        "null pointer for counter passed to load_content_block");
+  // clear out internals, just to be safe
+  clear();
+  // define variables for processing
+  std::string line = "";
+  // define regex patterns for testing
+  const boost::regex standard_rule_declaration("^rule ([^ ]+):.*$");
+  const boost::regex derived_rule_declaration(
+      "^use rule ([^ ]+) as ([^ ]+) with:.*$");
+
+  if (*current_line >= loaded_lines.size()) return false;
+  while (*current_line < loaded_lines.size()) {
+    line = loaded_lines.at(*current_line);
+    ++*current_line;
+    if (verbose) {
+      std::cout << "considering line \"" << line << "\"" << std::endl;
+    }
+    line = remove_comments_and_docstrings(line, loaded_lines, current_line);
+    if (verbose) {
+      std::cout << "line reduced to \"" << line << "\"" << std::endl;
+    }
+    if (line.empty() || line.find_first_not_of(" \t") == std::string::npos)
+      continue;
+    // hack: deal with flattening of some relative paths when snakefiles are
+    // merged
+    line = reduce_relative_paths(line);
+    // if the line is a valid rule declaration
+    boost::smatch regex_result;
+    if (boost::regex_match(line, regex_result, standard_rule_declaration)) {
+      if (verbose) {
+        std::cout << "consuming rule with name \"" << regex_result[1] << "\""
+                  << std::endl;
       }
-      within_rule_block = true;
+      set_rule_name(regex_result[1]);
+      return consume_rule_contents(loaded_lines, filename, verbose,
+                                   current_line);
+    } else if (boost::regex_match(line, regex_result,
+                                  derived_rule_declaration)) {
+      if (verbose) {
+        std::cout << "consuming derived rule with name \"" << regex_result[2]
+                  << "\"" << std::endl;
+      }
+      set_rule_name(regex_result[2]);
+      // derived rules declare a base rule from which they inherit certain
+      // fields. setting those certain fields must be deferred until all rules
+      // are available.
+      set_base_rule_name(regex_result[1]);
+      return consume_rule_contents(loaded_lines, filename, verbose,
+                                   current_line);
+    } else {
+      // new to refactor: this is arbitrary python and we're leaving it like
+      // that
+      std::cout << "adding code chunk \"" << line << "\"" << std::endl;
+      _code_chunk.push_back(line);
+      return true;
     }
   }
   // end of file. probably ok?
-  if (verbose) {
-    std::cout << "content: \"" << raw_content.str() << "\"; verdict: "
-              << (within_rule_block ? "rule block" : "end of file")
-              << std::endl;
-  }
+  return true;
+}
 
-  return within_rule_block;
+bool snakemake_unit_tests::rule_block::consume_rule_contents(
+    const std::vector<std::string> &loaded_lines,
+    const boost::filesystem::path &filename, bool verbose,
+    unsigned *current_line) {
+  const boost::regex named_block_tag("^    ([a-zA-Z_\\-]+):(.*)$");
+  if (!current_line)
+    throw std::runtime_error(
+        "null pointer for counter passed to consume_rule_contents");
+  std::string line = "", block_name = "", block_contents = "";
+  std::string::size_type line_indentation = 0;
+  while (*current_line < loaded_lines.size()) {
+    line = loaded_lines.at(*current_line);
+    ++*current_line;
+    if (verbose) {
+      std::cout << "considering (in block) line \"" << line << "\""
+                << std::endl;
+    }
+    line = remove_comments_and_docstrings(line, loaded_lines, current_line);
+    if (verbose) {
+      std::cout << "line reduced (in block) to \"" << line << "\"" << std::endl;
+    }
+    if (line.empty() || line.find_first_not_of(" \t") == std::string::npos)
+      continue;
+    line = reduce_relative_paths(line);
+
+    // all remaining lines must be indented. any lack of indentation means the
+    // rule is done
+    if (line.at(0) != ' ') {
+      --*current_line;
+      return true;
+    }
+    // use pythonic indentation to flag an arbitrary number of named blocks
+    line_indentation = line.find_first_not_of(" \t");
+    // expose this to user space?
+    if (line_indentation == 4) {
+      // enforce named tag here
+      boost::smatch named_block_tag_result;
+      if (boost::regex_match(line, named_block_tag_result, named_block_tag)) {
+        block_name = named_block_tag_result[1];
+        block_contents = remove_comments_and_docstrings(
+            named_block_tag_result[2], loaded_lines, current_line);
+        // while additional block contents are theoretically available
+        while (*current_line < loaded_lines.size()) {
+          line = loaded_lines.at(*current_line);
+          ++*current_line;
+          line =
+              remove_comments_and_docstrings(line, loaded_lines, current_line);
+          line_indentation = line.find_first_not_of(" \t");
+          line = reduce_relative_paths(line);
+
+          // if a line that's not contents is found
+          if (line_indentation < 5) {
+            --*current_line;
+            if (verbose) {
+              std::cout << "storing a block with name \"" << block_name
+                        << "\" and contents \"" << block_contents << "\""
+                        << std::endl;
+            }
+            // the block is aggregated. add it to the rule block
+            _named_blocks[block_name] = block_contents;
+            // proceed to the next possible block
+            break;
+          } else {
+            // TODO(cpalmer718): deal with entries extending across multiple
+            // lines? aggregate the contents with some formatting
+            block_contents += "\n" + line;
+          }
+        }
+        if (*current_line >= loaded_lines.size()) {
+          // catch dangling blocks at the end of files
+          if (_named_blocks.find(block_name) == _named_blocks.end()) {
+            if (verbose) {
+              std::cout << "storing a terminal block with name \"" << block_name
+                        << "\" and contents \"" << block_contents << "\""
+                        << std::endl;
+            }
+            _named_blocks[block_name] = block_contents;
+          }
+          return true;
+        }
+      } else {
+        throw std::runtime_error(
+            "snakemake named block tag not found: file \"" + filename.string() +
+            "\" line " + std::to_string(*current_line) + " entry \"" + line +
+            "\"");
+      }
+    }
+  }
+  return true;
 }
 
 bool snakemake_unit_tests::rule_block::is_include_directive() const {

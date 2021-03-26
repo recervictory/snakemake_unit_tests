@@ -17,7 +17,7 @@ namespace snakemake_unit_tests {
 /*!
   @brief prune superfluous content from snakemake content line
   @param s line to be pruned down to minimal essential content
-  @param input open file stream from which to pull multiline content, if needed
+  @param loaded_lines currently processed snakemake file lines
   @param line_number counter of line in file, for error reporting
   @return pruned line
 
@@ -29,9 +29,9 @@ namespace snakemake_unit_tests {
 
   - trailing whitespace (tab or space)
  */
-std::string remove_comments_and_docstrings(const std::string &s,
-                                           std::ifstream *input,
-                                           unsigned *line_number);
+std::string remove_comments_and_docstrings(
+    const std::string &s, const std::vector<std::string> &loaded_lines,
+    unsigned *line_number);
 /*!
   @brief take a comma/space delimited list of filenames and break them up into a
   vector

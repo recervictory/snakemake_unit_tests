@@ -9,12 +9,13 @@
 #include "snakemake_unit_tests/utilities.h"
 
 std::string snakemake_unit_tests::remove_comments_and_docstrings(
-    const std::string &s, std::ifstream *input, unsigned *line_number) {
+    const std::string &s, const std::vector<std::string> &loaded_lines,
+    unsigned *line_number) {
   std::string res = s, line = "";
   std::string::size_type loc = 0, cur = 0;
-  if (input && !line_number)
+  if (!line_number)
     throw std::logic_error(
-        "null line counter pointer provided with non-null input stream");
+        "null line counter pointer provided to remove_comments_and_docstrings");
   // remove docstrings: any text embedded between a pair of triple quotes """
   if ((loc = s.find("\"\"\"", cur)) != std::string::npos) {
     res = res.substr(0, loc);
@@ -23,14 +24,15 @@ std::string snakemake_unit_tests::remove_comments_and_docstrings(
       cur = loc + 3;
     } else {
       // allow multiline docstrings
-      if (!input) {
+      if (*line_number >= loaded_lines.size()) {
         throw std::runtime_error(
-            "null input pointer provided while scanning for multiline "
+            "ran out of lines while scanning for multiline "
             "docstring");
       }
       bool found_docstring_terminator = false;
-      while (input->peek() != EOF && !found_docstring_terminator) {
-        getline(*input, line);
+      while (*line_number < loaded_lines.size() &&
+             !found_docstring_terminator) {
+        line = loaded_lines.at(*line_number);
         ++*line_number;
         if (line.find("\"\"\"") != std::string::npos) {
           found_docstring_terminator = true;

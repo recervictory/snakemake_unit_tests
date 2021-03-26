@@ -52,95 +52,135 @@
 
  */
 
-void snakemake_unit_tests::snakemake_file::load_file(
+void snakemake_unit_tests::snakemake_file::load_everything(
     const boost::filesystem::path &filename,
     const boost::filesystem::path &base_dir, bool verbose) {
+  // create a dummy rule block with just a single include directive for this
+  // file
+  boost::shared_ptr<rule_block> ptr(new rule_block);
+  ptr->add_code_chunk("include: \"" + filename.string() + "\"");
+  _blocks.push_back(ptr);
+  std::vector<std::string> loaded_lines;
+  // while any unresolved code chunk is present
+  // TODO(cpalmer718): handle hackjob python interface (not at all trivial lol)
+  bool unresolved = true;
+  while (unresolved) {
+    unresolved = false;
+    for (std::list<boost::shared_ptr<rule_block> >::iterator iter =
+             _blocks.begin();
+         iter != _blocks.end(); ++iter) {
+      if ((*iter)->is_include_directive()) {
+        if (verbose)
+          std::cout << "found include directive, adding \""
+                    << (*iter)->get_recursive_filename() << "\"" << std::endl;
+        // load the included file
+        boost::filesystem::path recursive_path =
+            base_dir / (*iter)->get_recursive_filename();
+        load_lines(recursive_path, &loaded_lines);
+        parse_file(loaded_lines, iter, recursive_path, verbose);
+        unresolved = true;
+        // and now that the include has been performed, do not add the include
+        // statement
+        iter = _blocks.erase(iter);
+      }
+    }
+  }
+
+  // deal with derived rules
+  resolve_derived_rules();
+}
+
+void snakemake_unit_tests::snakemake_file::load_lines(
+    const boost::filesystem::path &filename,
+    std::vector<std::string> *target) const {
+  if (!target) throw std::runtime_error("null pointer to load_lines");
+  target->clear();
   std::ifstream input;
+  std::string line = "";
   try {
-    input.open((base_dir / filename).string().c_str());
+    input.open(filename.string().c_str());
     if (!input.is_open())
       throw std::runtime_error("cannot open snakemake file \"" +
                                filename.string() + "\"");
-    boost::shared_ptr<rule_block> rb(new rule_block);
-    // while valid content is detected in the file
-    std::cout << "starting file \"" << filename.string() << "\" load"
-              << std::endl;
-    while (rb->load_snakemake_rule(input, filename.string(), verbose)) {
-      if (verbose) std::cout << "found a chunk" << std::endl;
-      // determine if this block was actually an include directive
-      if (rb->is_include_directive()) {
-        if (verbose)
-          std::cout << "found include directive, recursing to \""
-                    << rb->get_recursive_filename() << "\"" << std::endl;
-        // load the included file
-        boost::filesystem::path recursive_path =
-            base_dir / rb->get_recursive_filename();
-        load_file(recursive_path.filename(),
-                  recursive_path.remove_trailing_separator().parent_path(),
-                  verbose);
-        // and now that the include has been performed, do not add the include
-        // statement
-      } else {
-        // add the rule block to accumulation
-        _blocks.push_back(rb);
-      }
+    // update: load all lines to memory first
+    while (input.peek() != EOF) {
+      getline(input, line);
+      target->push_back(line);
     }
     input.close();
-    /*
-      for snakemake 6.0 support: handle derived rules
-
-      basically, for each rule, probe it to see if it has a base rule.
-      if so, scan the rule set for that base rule, and then load any missing
-      rule block contents from the base rule into the derived one.
-
-      TODO(cpalmer718): support multiple layers of derived rules
-     */
-    // for each loaded rule
-    for (std::vector<boost::shared_ptr<rule_block> >::iterator iter =
-             _blocks.begin();
-         iter != _blocks.end(); ++iter) {
-      // if it has a base class
-      if (!(*iter)->get_base_rule_name().empty()) {
-        // locate the base class
-        std::vector<boost::shared_ptr<rule_block> >::const_iterator
-            base_rule_finder;
-        for (base_rule_finder = _blocks.begin();
-             base_rule_finder != _blocks.end(); ++base_rule_finder) {
-          if (!(*base_rule_finder)
-                   ->get_rule_name()
-                   .compare((*iter)->get_base_rule_name())) {
-            break;
-          }
-        }
-        // flag if the base rule is not present in loaded data
-        if (base_rule_finder == _blocks.end()) {
-          throw std::runtime_error(
-              "derived rule \"" + (*iter)->get_rule_name() +
-              "\" requested base rule \"" + (*iter)->get_base_rule_name() +
-              "\", which could not be found in available snakefiles");
-        }
-        // for each of the arbitrarily many blocks in the base rule, push the
-        // contents to the derived rule if the derived rule does not already
-        // have a definition
-        for (std::map<std::string, std::string>::const_iterator block_iter =
-                 (*base_rule_finder)->get_named_blocks().begin();
-             block_iter != (*base_rule_finder)->get_named_blocks().end();
-             ++block_iter) {
-          (*iter)->offer_base_rule_contents(
-              (*base_rule_finder)->get_rule_name(), block_iter->first,
-              block_iter->second);
-        }
-      }
-    }
   } catch (...) {
     if (input.is_open()) input.close();
     throw;
   }
 }
 
+void snakemake_unit_tests::snakemake_file::resolve_derived_rules() {
+  /*
+    for snakemake 6.0 support: handle derived rules
+
+    basically, for each rule, probe it to see if it has a base rule.
+    if so, scan the rule set for that base rule, and then load any missing
+    rule block contents from the base rule into the derived one.
+
+    TODO(cpalmer718): support multiple layers of derived rules
+  */
+  // for each loaded rule
+  for (std::list<boost::shared_ptr<rule_block> >::iterator iter =
+           _blocks.begin();
+       iter != _blocks.end(); ++iter) {
+    // if it has a base class
+    if (!(*iter)->get_base_rule_name().empty()) {
+      // locate the base class
+      std::list<boost::shared_ptr<rule_block> >::const_iterator
+          base_rule_finder;
+      for (base_rule_finder = _blocks.begin();
+           base_rule_finder != _blocks.end(); ++base_rule_finder) {
+        if (!(*base_rule_finder)
+                 ->get_rule_name()
+                 .compare((*iter)->get_base_rule_name())) {
+          break;
+        }
+      }
+      // flag if the base rule is not present in loaded data
+      if (base_rule_finder == _blocks.end()) {
+        throw std::runtime_error(
+            "derived rule \"" + (*iter)->get_rule_name() +
+            "\" requested base rule \"" + (*iter)->get_base_rule_name() +
+            "\", which could not be found in available snakefiles");
+      }
+      // for each of the arbitrarily many blocks in the base rule, push the
+      // contents to the derived rule if the derived rule does not already
+      // have a definition
+      for (std::map<std::string, std::string>::const_iterator block_iter =
+               (*base_rule_finder)->get_named_blocks().begin();
+           block_iter != (*base_rule_finder)->get_named_blocks().end();
+           ++block_iter) {
+        (*iter)->offer_base_rule_contents((*base_rule_finder)->get_rule_name(),
+                                          block_iter->first,
+                                          block_iter->second);
+      }
+    }
+  }
+}
+
+void snakemake_unit_tests::snakemake_file::parse_file(
+    const std::vector<std::string> &loaded_lines,
+    std::list<boost::shared_ptr<rule_block> >::iterator insertion_point,
+    const boost::filesystem::path &filename, bool verbose) {
+  // track current line
+  unsigned current_line = 0;
+  while (current_line < loaded_lines.size()) {
+    boost::shared_ptr<rule_block> rb(new rule_block);
+    if (rb->load_content_block(loaded_lines, filename, verbose,
+                               &current_line)) {
+      _blocks.insert(insertion_point, rb);
+    }
+  }
+}
+
 void snakemake_unit_tests::snakemake_file::print_blocks(
     std::ostream &out) const {
-  for (std::vector<boost::shared_ptr<rule_block> >::const_iterator iter =
+  for (std::list<boost::shared_ptr<rule_block> >::const_iterator iter =
            get_blocks().begin();
        iter != get_blocks().end(); ++iter) {
     (*iter)->print_contents(out);
@@ -151,7 +191,7 @@ void snakemake_unit_tests::snakemake_file::report_single_rule(
     const std::string &rule_name, std::ostream &out) const {
   // find the requested rule
   bool found_rule = false;
-  for (std::vector<boost::shared_ptr<rule_block> >::const_iterator iter =
+  for (std::list<boost::shared_ptr<rule_block> >::const_iterator iter =
            get_blocks().begin();
        iter != get_blocks().end(); ++iter) {
     // if this is the rule, that's great
