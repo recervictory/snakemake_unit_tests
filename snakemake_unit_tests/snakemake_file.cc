@@ -77,7 +77,8 @@ void snakemake_unit_tests::snakemake_file::load_everything(
         boost::filesystem::path recursive_path =
             base_dir / (*iter)->get_recursive_filename();
         load_lines(recursive_path, &loaded_lines);
-        parse_file(loaded_lines, iter, recursive_path, verbose);
+        parse_file(loaded_lines, iter, recursive_path,
+                   (*iter)->get_include_depth(), verbose);
         unresolved = true;
         // and now that the include has been performed, do not add the include
         // statement
@@ -166,13 +167,14 @@ void snakemake_unit_tests::snakemake_file::resolve_derived_rules() {
 void snakemake_unit_tests::snakemake_file::parse_file(
     const std::vector<std::string> &loaded_lines,
     std::list<boost::shared_ptr<rule_block> >::iterator insertion_point,
-    const boost::filesystem::path &filename, bool verbose) {
+    const boost::filesystem::path &filename, unsigned global_indentation,
+    bool verbose) {
   // track current line
   unsigned current_line = 0;
   while (current_line < loaded_lines.size()) {
     boost::shared_ptr<rule_block> rb(new rule_block);
-    if (rb->load_content_block(loaded_lines, filename, verbose,
-                               &current_line)) {
+    if (rb->load_content_block(loaded_lines, filename, global_indentation,
+                               verbose, &current_line)) {
       _blocks.insert(insertion_point, rb);
     }
   }
