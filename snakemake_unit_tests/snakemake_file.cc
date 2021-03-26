@@ -342,6 +342,12 @@ void snakemake_unit_tests::snakemake_file::report_single_rule(
     if (!(*iter)->get_rule_name().compare(rule_name) ||
         (*iter)->get_rule_name().empty()) {
       (*iter)->print_contents(out);
+    } else {
+      for (unsigned i = 0; i < (*iter)->get_global_indentation() +
+                                   (*iter)->get_local_indentation();
+           ++i)
+        out << ' ';
+      out << "pass" << std::endl;
     }
   }
   // if the correct rule was never found, complain
