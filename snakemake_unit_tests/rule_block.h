@@ -31,7 +31,11 @@ class rule_block {
   /*!
     @brief default constructor
    */
-  rule_block() : _rule_name(""), _base_rule_name(""), _global_indentation(0) {}
+  rule_block()
+      : _rule_name(""),
+        _base_rule_name(""),
+        _global_indentation(0),
+        _local_indentation(0) {}
   /*!
     @brief copy constructor
     @param obj existing rule block
@@ -41,7 +45,8 @@ class rule_block {
         _base_rule_name(obj._base_rule_name),
         _named_blocks(obj._named_blocks),
         _code_chunk(obj._code_chunk),
-        _global_indentation(obj._global_indentation) {}
+        _global_indentation(obj._global_indentation),
+        _local_indentation(obj._local_indentation) {}
   /*!
     @brief destructor
    */
@@ -179,14 +184,14 @@ class rule_block {
 
   /*!
     @brief return a string containing some number of whitespaces
-    @param bonus extra whitespace to add beyond global default
+    @param bonus extra whitespace to add beyond global and local default
    */
   std::string indentation(unsigned bonus) const;
 
   /*!
     @brief replace embedded newlines in a string with newlines plus indentation
     @param s input string, possibly with embedded newlines
-    @param bonus extra indentation to apply beyond global default
+    @param bonus extra indentation to apply beyond global and local default
     @return reformatted input string
 
     this is intended for use with rule block contents, and as such does
@@ -234,6 +239,13 @@ class rule_block {
     of their include directive.
   */
   unsigned _global_indentation;
+  /*!
+    @brief allow for local indentation of conditionally included rules
+
+    rules included within python blocks should temporarily have escalated
+    indentation, which determines the end of the rule block later in the file
+   */
+  unsigned _local_indentation;
 };
 }  // namespace snakemake_unit_tests
 

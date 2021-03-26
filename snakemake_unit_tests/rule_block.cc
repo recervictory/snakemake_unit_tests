@@ -76,7 +76,7 @@ bool snakemake_unit_tests::rule_block::load_content_block(
                   << std::endl;
       }
       set_rule_name(regex_result[2]);
-      _global_indentation += regex_result[1].str().size();
+      _local_indentation = regex_result[1].str().size();
       return consume_rule_contents(loaded_lines, filename, verbose,
                                    current_line);
     } else if (boost::regex_match(line, regex_result,
@@ -86,7 +86,7 @@ bool snakemake_unit_tests::rule_block::load_content_block(
                   << "\"" << std::endl;
       }
       set_rule_name(regex_result[3]);
-      _global_indentation += regex_result[1].str().size();
+      _local_indentation += regex_result[1].str().size();
       // derived rules declare a base rule from which they inherit certain
       // fields. setting those certain fields must be deferred until all rules
       // are available.
@@ -111,7 +111,9 @@ bool snakemake_unit_tests::rule_block::consume_rule_contents(
     const std::vector<std::string> &loaded_lines,
     const boost::filesystem::path &filename, bool verbose,
     unsigned *current_line) {
-  const boost::regex named_block_tag("^    ([a-zA-Z_\\-]+):(.*)$");
+  std::ostringstream regex_formatter;
+  regex_formatter << "^" << indentation(4) << "([a-zA-Z_\\-]+):(.*)$";
+  const boost::regex named_block_tag(regex_formatter.str());
   if (!current_line)
     throw std::runtime_error(
         "null pointer for counter passed to consume_rule_contents");
@@ -134,14 +136,14 @@ bool snakemake_unit_tests::rule_block::consume_rule_contents(
 
     // all remaining lines must be indented. any lack of indentation means the
     // rule is done
-    if (line.at(0) != ' ') {
+    if (line.find_first_not_of(' ') <= _local_indentation) {
       --*current_line;
       return true;
     }
     // use pythonic indentation to flag an arbitrary number of named blocks
-    line_indentation = line.find_first_not_of(" \t");
+    line_indentation = line.find_first_not_of(" ");
     // expose this to user space?
-    if (line_indentation == 4) {
+    if (line_indentation == _local_indentation + 4) {
       // enforce named tag here
       boost::smatch named_block_tag_result;
       if (boost::regex_match(line, named_block_tag_result, named_block_tag)) {
@@ -154,11 +156,11 @@ bool snakemake_unit_tests::rule_block::consume_rule_contents(
           ++*current_line;
           line =
               remove_comments_and_docstrings(line, loaded_lines, current_line);
-          line_indentation = line.find_first_not_of(" \t");
+          line_indentation = line.find_first_not_of(" ");
           line = reduce_relative_paths(line);
 
           // if a line that's not contents is found
-          if (line_indentation < 5) {
+          if (line_indentation <= _local_indentation) {
             --*current_line;
             if (verbose) {
               std::cout << "storing a block with name \"" << block_name
@@ -326,7 +328,8 @@ void snakemake_unit_tests::rule_block::offer_base_rule_contents(
 std::string snakemake_unit_tests::rule_block::indentation(
     unsigned bonus) const {
   std::ostringstream o;
-  for (unsigned i = 0; i < _global_indentation + bonus; ++i) {
+  for (unsigned i = 0; i < _global_indentation + _local_indentation + bonus;
+       ++i) {
     o << ' ';
   }
   return o.str();
