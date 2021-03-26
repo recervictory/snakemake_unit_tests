@@ -22,8 +22,11 @@
   The complete parse operation is as follows:
 
   1) add the top-level snakefile as a pseudo-include directive to the
-  snakemake_file 2) parse the file, non-recursively 3) while unresolved
-  snakemake rule and include directives remain:
+  snakemake_file
+
+  2) parse the file, non-recursively
+
+  3) while unresolved snakemake rule and include directives remain:
   -- emit a dummy workspace containing a simplified representation of the
   currently loaded data
   ---- include directives and snakemake rules are assigned unique identifiers
