@@ -57,9 +57,14 @@
 
 void snakemake_unit_tests::snakemake_file::load_everything(
     const boost::filesystem::path &filename,
-    const boost::filesystem::path &base_dir, bool verbose) {
+    const boost::filesystem::path &base_dir,
+    std::vector<std::string> *exclude_rules, bool verbose) {
   // create a dummy rule block with just a single include directive for this
   // file
+  if (!exclude_rules)
+    throw std::runtime_error(
+        "null exclude_rules provided to "
+        "load_everything");
   boost::shared_ptr<rule_block> ptr(new rule_block);
   ptr->add_code_chunk("include: \"" + filename.string() + "\"");
   _blocks.push_back(ptr);
@@ -92,13 +97,14 @@ void snakemake_unit_tests::snakemake_file::load_everything(
 
   // placeholder: add screening step to detect known issues/unsupported features
   // TODO(cpalmer718): implement python integration. add checkpoints
-  detect_known_issues();
+  detect_known_issues(exclude_rules);
 
   // deal with derived rules
   resolve_derived_rules();
 }
 
-void snakemake_unit_tests::snakemake_file::detect_known_issues() {
+void snakemake_unit_tests::snakemake_file::detect_known_issues(
+    std::vector<std::string> *exclude_rules) {
   /*
     Known issues as implemented here
 
@@ -112,6 +118,8 @@ void snakemake_unit_tests::snakemake_file::detect_known_issues() {
     3) derived rules where the base rule is not detected for some reason
     (detected during that scan)
    */
+  if (!exclude_rules)
+    throw std::runtime_error("null pointer provided to exclude_rules");
   std::map<std::string, std::vector<boost::shared_ptr<rule_block> > >
       aggregated_rules;
   std::map<std::string, std::vector<boost::shared_ptr<rule_block> > >::iterator
@@ -147,15 +155,27 @@ void snakemake_unit_tests::snakemake_file::detect_known_issues() {
     bool problematic = false;
     for (unsigned i = 1; i < finder->second.size() && !problematic; ++i) {
       if (*finder->second.at(i) != *finder->second.at(0)) {
-        problematic = true;
-        unresolvable_duplicated_rules.push_back(finder->first);
+        bool already_excluded = false;
+        for (std::vector<std::string>::const_iterator viter =
+                 exclude_rules->begin();
+             viter != exclude_rules->end() && !already_excluded; ++viter) {
+          if (!viter->compare(finder->first)) {
+            already_excluded = true;
+          }
+        }
+        if (!already_excluded) {
+          problematic = true;
+          exclude_rules->push_back(finder->first);
+          unresolvable_duplicated_rules.push_back(finder->first);
+        }
       }
     }
   }
   // report results
   std::cout << "snakefile load summary" << std::endl;
   std::cout << "----------------------" << std::endl;
-  std::cout << "total loaded rules: " << aggregated_rules.size() << std::endl;
+  std::cout << "total loaded candidate rules: " << aggregated_rules.size()
+            << std::endl;
   std::cout << "  of those rules, " << duplicated_rules
             << " had multiple entries in unconditional logic" << std::endl;
   if (duplicated_rules) {
@@ -165,7 +185,7 @@ void snakemake_unit_tests::snakemake_file::detect_known_issues() {
               << "infrastructure logic (that feature is planned for later \n"
               << "releases). however, if the conditional logic determines \n"
               << "different definitions of the rule, that will probably \n"
-              << "break all tests. the simplest solution is to always use \n"
+              << "break tests. the simplest solution is to always use \n"
               << "unique rule names, even in mutually-exclusively included \n"
               << "files; or you can wait for a later patch" << std::endl;
   }
@@ -178,15 +198,14 @@ void snakemake_unit_tests::snakemake_file::detect_known_issues() {
          iter != unresolvable_duplicated_rules.end(); ++iter) {
       std::cout << "     " << *iter << std::endl;
     }
-    std::cout << std::endl
-              << "sorry, "
-              << (unresolvable_duplicated_rules.size() == 1 ? "this rule is"
-                                                            : "these rules are")
-              << " unsupported in the current software build. please cancel "
-                 "this run, "
-              << "purge any intermediates, and rerun excluding any offending "
-                 "rules with -e "
-              << "or exclude-files" << std::endl;
+    std::cout
+        << std::endl
+        << "sorry, "
+        << (unresolvable_duplicated_rules.size() == 1 ? "this rule is"
+                                                      : "these rules are")
+        << " unsupported in the current software build. "
+        << "this information will be automatically added to exclude-rules "
+        << "to prevent inconsistent behavior" << std::endl;
   }
   if (!leftover_includes.empty()) {
     std::cout << std::endl

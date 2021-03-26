@@ -46,10 +46,13 @@ class snakemake_file {
     @brief load and parse snakemake pipeline
     @param filename name of top-level snakefile
     @param base_dir directory from which to base relative file paths
+    @param exclude_rules excluded rule set, for communicating problematic
+    rules back upstream
     @param verbose whether to emit verbose logging output
    */
   void load_everything(const boost::filesystem::path &filename,
-                       const boost::filesystem::path &base_dir, bool verbose);
+                       const boost::filesystem::path &base_dir,
+                       std::vector<std::string> *exclude_rules, bool verbose);
 
   /*!
    @brief parse a snakemake file
@@ -76,6 +79,8 @@ class snakemake_file {
 
   /*!
     @brief report on internal discrepancies in the snakefile load results
+    @param exclude_rules excluded rule set, for communicating problematic
+    rules back upstream
 
     this is particularly designed to detect known unsupported features in
     snakemake/python interactions, specifically conditional inclusion of files
@@ -84,7 +89,7 @@ class snakemake_file {
 
     these features are flagged to be correctly supported in a later patch
    */
-  void detect_known_issues();
+  void detect_known_issues(std::vector<std::string> *exclude_rules);
 
   /*!
     @brief populate derived rules with base rule blocks
