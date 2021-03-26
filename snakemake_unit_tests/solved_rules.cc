@@ -59,7 +59,7 @@ void snakemake_unit_tests::solved_rules::load_file(
             rep.set_log(line.substr(9));
           } else if (line.find("    jobid:") == 0 ||
                      line.find("    wildcards:") == 0 ||
-                     line.find("    benchmarks:") == 0 ||
+                     line.find("    benchmark:") == 0 ||
                      line.find("    resources:") == 0) {
             // other recognized solution annotations;
             // for the moment, do nothing with them
