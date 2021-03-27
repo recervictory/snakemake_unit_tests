@@ -117,7 +117,9 @@ void snakemake_unit_tests::solved_rules::emit_tests(
     }
   }
   // emit common.py in the test_parent_path; no modifications needed
-  boost::filesystem::copy(inst_common_py, test_parent_path);
+  boost::filesystem::copy(inst_common_py, test_parent_path,
+                          boost::filesystem::copy_options::overwrite_existing |
+                              boost::filesystem::copy_options::recursive);
 }
 
 void snakemake_unit_tests::solved_rules::create_workspace(
