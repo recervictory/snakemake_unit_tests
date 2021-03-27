@@ -1,6 +1,6 @@
 #!/bin/bash
 
-## Test: simple test of a single snakefile with two rule, in ~/workflow, using CLI
+## Test: only select rules actually present in the log file, in ~/workflow, using CLI
 echo 1..1
 
 TESTNAME="test4"

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-## Test: simple test of a single snakefile with two rule, in ~/workflow, using CLI
+## Test: simple test of a single snakefile with two rules, in ~/workflow, using CLI
 echo 1..1
 
 TESTNAME="test2"

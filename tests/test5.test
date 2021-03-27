@@ -1,6 +1,6 @@
 #!/bin/bash
 
-## Test: simple test of a single snakefile with two rule, in ~/workflow, using CLI
+## Test: remove simple comments with '#' character, in ~/workflow, using CLI
 echo 1..1
 
 TESTNAME="test5"
