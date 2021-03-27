@@ -279,7 +279,7 @@ void snakemake_unit_tests::rule_block::print_contents(std::ostream &out) const {
           high_priority_blocks.end()) {
         if (!(out << indentation(get_global_indentation() +
                                  get_local_indentation() + 4)
-                  << iter->first << ": "
+                  << iter->first << ":"
                   << apply_indentation(iter->second, get_global_indentation())
                   << std::endl))
           throw std::runtime_error("named block printing failure");
@@ -294,7 +294,7 @@ void snakemake_unit_tests::rule_block::print_contents(std::ostream &out) const {
           low_priority_blocks.find(iter->first) == low_priority_blocks.end()) {
         if (!(out << indentation(get_global_indentation() +
                                  get_local_indentation() + 4)
-                  << iter->first << ": "
+                  << iter->first << ":"
                   << apply_indentation(iter->second, get_global_indentation())
                   << std::endl))
           throw std::runtime_error("named block printing failure");
