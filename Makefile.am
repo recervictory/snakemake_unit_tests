@@ -14,5 +14,7 @@ TESTS = tests/test1.test \
 	tests/test3.test \
 	tests/test4.test \
 	tests/test5.test \
-	tests/test6.test
+	tests/test6.test \
+	tests/test7.test \
+	tests/test8.test
 EXTRA_DIST = $(TESTS)
