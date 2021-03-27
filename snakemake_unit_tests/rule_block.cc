@@ -103,8 +103,8 @@ bool snakemake_unit_tests::rule_block::load_content_block(
       return true;
     }
   }
-  // end of file. probably ok?
-  return true;
+  // end of file. return if something actually loaded
+  return !_rule_name.empty() || !_code_chunk.empty();
 }
 
 bool snakemake_unit_tests::rule_block::consume_rule_contents(
@@ -131,7 +131,7 @@ bool snakemake_unit_tests::rule_block::consume_rule_contents(
     if (verbose) {
       std::cout << "line reduced (in block) to \"" << line << "\"" << std::endl;
     }
-    if (line.empty() || line.find_first_not_of(" \t") == std::string::npos)
+    if (line.empty() || line.find_first_not_of(" ") == std::string::npos)
       continue;
     line = reduce_relative_paths(line);
 
@@ -157,6 +157,8 @@ bool snakemake_unit_tests::rule_block::consume_rule_contents(
           ++*current_line;
           line =
               remove_comments_and_docstrings(line, loaded_lines, current_line);
+          if (line.empty() || line.find_first_not_of(" ") == std::string::npos)
+            continue;
           line_indentation = line.find_first_not_of(" ");
           line = reduce_relative_paths(line);
 
@@ -313,6 +315,9 @@ void snakemake_unit_tests::rule_block::print_contents(std::ostream &out) const {
           throw std::runtime_error("named block printing failure");
       }
     }
+    // for snakefmt compatibility: emit two empty lines at the end of a rule
+    if (!(out << std::endl << std::endl))
+      throw std::runtime_error("rule padding printing error");
   }
 }
 

@@ -227,7 +227,7 @@ void snakemake_unit_tests::solved_rules::report_phony_all_target(
       throw std::runtime_error(
           "cannot write phony 'all' outputs to synthetic snakefile");
   }
-  if (!(out << std::endl))
+  if (!(out << std::endl << std::endl))
     throw std::runtime_error(
         "cannot write phony 'all' rule trailing whitespace to synthetic "
         "snakefile");

@@ -347,7 +347,7 @@ void snakemake_unit_tests::snakemake_file::report_single_rule(
                                    (*iter)->get_local_indentation();
            ++i)
         out << ' ';
-      out << "pass" << std::endl << std::endl;
+      out << "pass" << std::endl << std::endl << std::endl;
     }
   }
   // if the correct rule was never found, complain
