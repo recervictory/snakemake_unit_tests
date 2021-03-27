@@ -9,5 +9,5 @@ ACLOCAL_AMFLAGS = -I m4
 ## TAP support
 TEST_LOG_DRIVER = env AM_TAP_AWK='$(AWK)' $(SHELL) \
                   $(top_srcdir)/tap-driver.sh
-TESTS = tests/placeholder.test
+TESTS = tests/test1.test
 EXTRA_DIST = $(TESTS)

@@ -1,0 +1,49 @@
+#!/bin/bash
+
+## Test: simple test of a single snakefile with a single rule, in ~/workflow, using CLI
+echo 1..1
+
+TESTNAME="test1"
+TESTDESCRIPTION="simple rule test"
+INPUTDIR="examples/$TESTNAME/input"
+OUTPUTDIR="examples/$TESTNAME/output"
+EXPECTEDDIR="examples/$TESTNAME/expected"
+
+## just in case, delete existing output from previously failed tests
+rm -Rf "$OUTPUTDIR"
+
+## run test, dumping output into appropriate directory
+../snakemake_unit_tests.out -i ../inst -l "$INPUTDIR/run.log" -o "$OUTPUTDIR" -p "$INPUTDIR" -s "$INPUTDIR/workflow/Snakefile" > /dev/null 2>&1
+
+## compare expected to observed output, ignoring pytest infrastructure
+for file in $(find "$EXPECTEDDIR" -type f \( -name "*" ! -name "*.py" \) -print);
+do
+    actual=$(echo "$file" | sed 's/\/expected\//\/output\//')
+    if [[ ! -f "$actual" ]] ; then
+	echo "not ok - $TESTDESCRIPTION expected file $file not present in results"
+	exit 1
+    else
+	actualdiff=$(diff $file $actual | wc -l)
+	if [[ "$actualdiff" -gt 0 ]] ; then
+	    echo "not ok - $TESTDESCRIPTION expected file $file differs from observed"
+	    exit 2
+	fi
+    fi
+done
+
+## compare obsered to expected output, ignoring pytest infrastructure
+##   flag files present in one absent in other
+for file in $(find "$OUTPUTDIR" -type f \( -name "*" ! -name "*.py" \) -print);
+do
+    expected=$(echo "$file" | sed 's/\/output\//\/expected\//')
+    if [[ ! -f "$expected" ]] ; then
+	echo "not ok - $TESTDESCRIPTION observed file $file not present in expected"
+	exit 3
+    fi
+done
+
+## remove output
+rm -Rf "$OUTPUTDIR"
+
+## report success
+echo "ok - $TESTDESCRIPTION"
