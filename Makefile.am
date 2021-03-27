@@ -11,5 +11,6 @@ TEST_LOG_DRIVER = env AM_TAP_AWK='$(AWK)' $(SHELL) \
                   $(top_srcdir)/tap-driver.sh
 TESTS = tests/test1.test \
 	tests/test2.test \
-	tests/test3.test
+	tests/test3.test \
+	tests/test4.test
 EXTRA_DIST = $(TESTS)
