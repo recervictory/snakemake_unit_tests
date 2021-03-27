@@ -12,5 +12,6 @@ TEST_LOG_DRIVER = env AM_TAP_AWK='$(AWK)' $(SHELL) \
 TESTS = tests/test1.test \
 	tests/test2.test \
 	tests/test3.test \
-	tests/test4.test
+	tests/test4.test \
+	tests/test5.test
 EXTRA_DIST = $(TESTS)

@@ -2,6 +2,7 @@ rule all:
     input:
         "output.txt",
 
+
 rule simple_rule:
     input:
         "input.txt",
@@ -9,3 +10,5 @@ rule simple_rule:
         "output.txt",
     shell:
         "cp {input} {output}"
+
+
