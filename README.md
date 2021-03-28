@@ -51,7 +51,7 @@ When creating pipelines, we often want to be able to do three things:
    - the steps we wanted to change have in fact changed; and
    - the steps we didn't want to change are still working as expected
 
-Unfortunately, in all but the most basic pipelines, these issues can be very challenging
+In all but the most basic pipelines, these issues can be very challenging
 to rigorously evaluate with end-to-end tests. Most commonly, when testing, 
 if our end-to-end test output changes, we have to manually track back those changes 
 step by step until we find the step that has introduced some difference; or just as often, 
@@ -280,10 +280,9 @@ and the names of the options in those different contexts are listed when applica
   - notes: some rules are simply not suitable for unit tests. An example might be a rule that downloads
     50GB of reference sequence data from UCSC. In that case, if the rule is present in the `snakemake-log`
 	and you don't want to remove the rule from that log, you can add the rule name here and
-	`snakemake_unit_tests` will skip over it when emitting tests. 
-	
-	Another common use case for this exclusion is when intermediate files from the pipeline run
-	are not present, most commonly due to removal as temp files. This behavior of [snakemake](https://snakemake.readthedocs.io/en/stable/)
+	`snakemake_unit_tests` will skip over it when emitting tests. Another common use case for this 
+	exclusion is when intermediate files from the pipeline run are not present, most commonly due 
+	to removal as temp files. This behavior of [snakemake](https://snakemake.readthedocs.io/en/stable/)
 	can be disabled with `--notemp`, but if that is not desired or not feasible, impacted rules
 	can be added to the exclusion list. Note that any rule with the missing file as an *input*
 	or an *output* must be excluded for `snakemake_unit_tests` to run successfully.
