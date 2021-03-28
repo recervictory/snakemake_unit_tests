@@ -26,38 +26,14 @@ if [[ "$expected_bad_diff" -gt "0" ]] ; then
 fi
 
 ## compare expected to observed output, ignoring pytest infrastructure
-for file in $(find "$EXPECTEDDIR" -type f \( -name "*" ! -name "*.py" \) -print);
-do
-    actual=$(echo "$file" | sed 's/\/expected\//\/output\//')
-    if [[ ! -f "$actual" ]] ; then
-	echo "not ok - $TESTDESCRIPTION expected file $file not present in results"
-	exit 1
-    else
-	actualdiff=$(diff $file $actual | wc -l)
-	if [[ "$actualdiff" -gt 0 ]] ; then
-	    echo "not ok - $TESTDESCRIPTION expected file $file differs from observed"
-	    exit 2
-	fi
-    fi
-done
-
-## compare obsered to expected output, ignoring pytest infrastructure
-##   flag files present in one absent in other
-for file in $(find "$OUTPUTDIR" -type f \( -name "*" ! -name "*.py" \) -print);
-do
-    expected=$(echo "$file" | sed 's/\/output\//\/expected\//')
-    if [[ ! -f "$expected" ]] ; then
-	echo "not ok - $TESTDESCRIPTION observed file $file not present in expected"
-	exit 3
-    fi
-done
+tests/compare_directories.bash "$EXPECTEDDIR" "$OUTPUTDIR" "$TESTDESCRIPTION"
 
 ## since this is expected pass, enforce pytest functionality as a proxy for pytest configuration
 pytest "$OUTPUTDIR/unit" > /dev/null 2>&1
 
 if [[ "$?" != "0" ]] ; then
     echo "not ok - $TESTDESCRIPTION downstream pytest failed"
-    exit 4
+    exit 0
 fi
 
 ## remove output
