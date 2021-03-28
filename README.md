@@ -256,6 +256,7 @@ and the names of the options in those different contexts are listed when applica
   - argument type: string (multiple values accepted)
   - behavior if multiply specified: all values used
   - description: auxiliary files, outside of dependencies, to install with unit tests
+  - warning: these should be **relative paths from `pipeline-dir`**
   - notes: any file that is required by the pipeline to operate, but isn't explicitly tracked by
     rules' input or output blocks, should be specified here. The most common files falling into this
 	category are a pipeline `config.yaml` file, or an experiment's manifest file.
@@ -265,6 +266,7 @@ and the names of the options in those different contexts are listed when applica
   - argument type: string (multiple values accepted)
   - behavior if multiply specified: all values used
   - description: auxiliary directories, outside of dependencies, to recursively install with unit tests
+  - warning: these should be **relative paths from `pipeline-dir`**
   - notes: any whole directory that is required by the pipeline to operate, but isn't explicitly tracked by
 	rules' input or output blocks, should be specified here. The most common directory falling into this
 	category is a pipeline's `config/` directory. Note however that this should only be used for directories
