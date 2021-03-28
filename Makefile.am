@@ -18,5 +18,6 @@ TESTS = tests/test1.test \
 	tests/test7.test \
 	tests/test8.test \
 	tests/test9.test \
-	tests/test10.test
+	tests/test10.test \
+	tests/test_config_defaults.test
 EXTRA_DIST = $(TESTS)

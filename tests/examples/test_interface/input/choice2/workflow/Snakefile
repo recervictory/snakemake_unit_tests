@@ -1,0 +1,34 @@
+rule simple_rule4:
+    input:
+        "input4.txt",
+    output:
+        "output4.txt",
+    shell:
+        "cp {input} {output}"
+
+
+if True:
+
+    rule simple_rule5:
+        input:
+            "input5.txt",
+        output:
+            "output5.txt",
+        shell:
+            "cp {input} {output}"
+
+
+rule simple_rule6:
+    input:
+        "input6.txt",
+    output:
+        "output6.txt",
+    shell:
+        "cp {input} {output}"
+
+
+rule all:
+    input:
+        "output4.txt",
+        "output5.txt",
+        "output6.txt",
