@@ -16,6 +16,10 @@ rm -Rf "$OUTPUTDIR"
 
 ## run test, dumping output into appropriate directory
 "$SNAKEMAKE_UNIT_TESTS" -i "$INSTDIR" -l "$INPUTDIR/run.log" -o "$OUTPUTDIR" -p "$INPUTDIR" -s "$INPUTDIR/workflow/Snakefile" > /dev/null 2>&1
+if [[ "$?" != "0" ]] ; then
+    echo "not ok - $TESTDESCRIPTION primary run failed"
+    exit 0
+fi
 
 ## compare expected to observed output, ignoring pytest infrastructure
 tests/compare_directories.bash "$EXPECTEDDIR" "$OUTPUTDIR" "$TESTDESCRIPTION"
