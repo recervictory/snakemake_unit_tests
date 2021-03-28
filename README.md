@@ -321,6 +321,56 @@ and the names of the options in those different contexts are listed when applica
 
 TODO(cpalmer718): add more examples
 
+## Contributing
+
+### Adding TAP Tests
+
+Many tests are required to cover both `snakemake_unit_tests` internal functionality,
+and support for `snakemake` features, as well as eventual downstream `pytest` integration.
+
+Here are brief instructions for writing additional tests for TAP/Automake integration:
+
+- run the current tests to see what's being tested already:
+  - `git checkout simple_conditionals`
+  - `make check`
+- pick a single concept to test
+  - can be existing feature that needs confirmed functionality
+  - can also be desired output for currently unsupported feature (e.g. discriminating between multiple rules with the same name but different definitions)
+- write example inputs and outputs that can demonstrate what you want to have happen
+  - see folders under `tests/examples` for minimalist inspiration
+- write a Snakefile representing an example pipeline that contains the feature you're testing
+- **run the Snakefile through `snakefmt`**
+  - program functionality strongly assumes `snakefmt` compliance
+- run the test pipeline, fixing as needed; example:
+  - `snakemake -j1 all > run.log 2>&1`
+  - `rm -Rf .snakemake`
+- write a test script
+  - should be named `{something}.test`
+    - extensions can be changed if desired, requires some configuration
+  - should be placed in `tests/`
+  - existing tests are in bash and defined by shebang
+  - relative paths in the tests are relative to `snakemake_unit_tests`, *not `snakemake_unit_tests/tests`*
+  - TAP syntax as follows:
+    - should emit either at the beginning or end `1..{n}` where `{n}` is the total tests run in the script
+    - language doesn't matter, only cares about formatted screen output
+    - will flag non-zero exit codes as an error in addition to test pass/failure
+    - pass/fail messages optionally have a number after `{ok or not ok}` indicating which of `{n}` tests it is
+    - PASS: `ok - description of test/condition`
+    - FAIL: `not ok - description of failure`
+    - XFAIL: `not ok - description of failure # TODO todo message`
+    - SKIP: `{ok or not ok} - description # SKIP skip reason`
+- make the test script executable
+- (optional) test the test before integration:
+  - `./tests/{something}.test`
+- add the test script to the `TESTS` variable in `Makefile.am`
+- run `make check`
+- (optional) iterate as needed
+- add the files to the repo
+  - in `tests/`, only add the `.test` files, not `.trs` or `.log`
+  - in `tests/examples/`, do not add `.snakemake` directories
+  - remember to add `Makefile.am`
+- commit, referencing issue #18 and optionally the tested feature
+
 ## Version History
 
 28 03 2021: this readme expanded to reflect project design
