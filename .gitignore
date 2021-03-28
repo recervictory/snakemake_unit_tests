@@ -41,5 +41,7 @@ run_*
 tmp*
 doxygen_data*
 results
-tests
+tests/*trs
+tests/*log
+.snakemake
 test-*
