@@ -42,6 +42,8 @@ class OutputChecker:
                     continue
                 if "/logs/" in str(f):
                     continue
+                if "/performance_benchmarks/" in str(f):
+                    continue
                 if str(f).endswith(tuple(exclude_ext)):
                     continue
                 if f in expected_files:

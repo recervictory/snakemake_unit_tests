@@ -1,0 +1,24 @@
+rule all:
+    input:
+        "output7.txt",
+
+
+rule simple_rule1:
+    input:
+        "input1.txt",
+    output:
+        "output7.txt",
+    shell:
+        "echo 'override output' > {output}"
+
+
+if True:
+    pass
+
+
+pass
+
+
+pass
+
+

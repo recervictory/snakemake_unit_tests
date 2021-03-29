@@ -48,7 +48,7 @@ int main(int argc, char **argv) {
   // parse the top-level snakefile and all include files (hopefully)
   snakemake_unit_tests::snakemake_file sf;
   sf.load_everything(p.snakefile.filename(), p.snakefile.parent_path(),
-                     p.verbose);
+                     &p.exclude_rules, p.verbose);
 
   // as a debug step, report the parsed contents of the snakefile
   if (p.verbose) {

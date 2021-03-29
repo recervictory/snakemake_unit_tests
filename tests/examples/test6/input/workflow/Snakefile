@@ -1,0 +1,37 @@
+"""
+What a terrible place to have a docstring
+"""
+
+
+rule simple_rule1:
+    """ This could be a docstring """
+    input:
+        "input1.txt",
+    output:
+        "output1.txt",
+    shell:
+        "cp {input} {output}"
+
+rule simple_rule2:
+    """ This
+    could also be
+
+    one
+    """
+    input:
+        "input2.txt",
+    output:
+        "output2.txt",
+    shell:
+        "cp {input} {output}"
+
+""" Maybe
+
+someone put one here
+"""
+
+rule all:
+    """phony rules are made up"""
+    input:
+        "output1.txt",
+        "output2.txt",

@@ -31,7 +31,11 @@ class rule_block {
   /*!
     @brief default constructor
    */
-  rule_block() : _rule_name(""), _base_rule_name("") {}
+  rule_block()
+      : _rule_name(""),
+        _base_rule_name(""),
+        _global_indentation(0),
+        _local_indentation(0) {}
   /*!
     @brief copy constructor
     @param obj existing rule block
@@ -40,7 +44,9 @@ class rule_block {
       : _rule_name(obj._rule_name),
         _base_rule_name(obj._base_rule_name),
         _named_blocks(obj._named_blocks),
-        _code_chunk(obj._code_chunk) {}
+        _code_chunk(obj._code_chunk),
+        _global_indentation(obj._global_indentation),
+        _local_indentation(obj._local_indentation) {}
   /*!
     @brief destructor
    */
@@ -51,6 +57,10 @@ class rule_block {
     @param loaded_lines vector of snakemake file lines to process
     @param filename name of the loaded snakemake file. only used for
     informative error messages
+    @param global_indentation base indentation for entire file,
+    defaulting to 0 for standard file loads and incrementing by
+    4 for each level of indentation the include directive had
+    within its python block
     @param verbose whether to report verbose logging output
     @param current_line currently probed line tracker
     @return whether a rule was successfully loaded
@@ -59,7 +69,8 @@ class rule_block {
     it is designed to be called until it returns false.
    */
   bool load_content_block(const std::vector<std::string> &loaded_lines,
-                          const boost::filesystem::path &filename, bool verbose,
+                          const boost::filesystem::path &filename,
+                          unsigned global_indentation, bool verbose,
                           unsigned *current_line);
 
   /*!
@@ -108,6 +119,12 @@ class rule_block {
   bool is_include_directive() const;
 
   /*!
+    @brief determine how much indentation an include directive enjoyed
+    @return indentation of include directive, along with inherited global depth
+   */
+  unsigned get_include_depth() const;
+
+  /*!
     @brief if the block is an include directive, get the file that is included
     @return the included filename
    */
@@ -134,6 +151,18 @@ class rule_block {
   }
 
   /*!
+    @brief get global indentation of file
+    @return global indentation of file
+   */
+  unsigned get_global_indentation() const { return _global_indentation; }
+
+  /*!
+    @brief get local indentation of rule block
+    @return local indentation of rule block
+   */
+  unsigned get_local_indentation() const { return _local_indentation; }
+
+  /*!
     @brief provide candidate base rule block definitions for derived rules
     @param provider_name name of candidate base rule providing this information
     @param block_name name of block definition from the base rule
@@ -154,6 +183,36 @@ class rule_block {
    */
   void add_code_chunk(const std::string &s) { _code_chunk.push_back(s); }
 
+  /*!
+    @brief test equality
+    @param obj other rule_block object to compare to
+    @return whether *this and obj contain the same contents
+
+    note that indentation level is irrelevant for this comparison
+   */
+  bool operator==(const rule_block &obj) const {
+    // global and local indentation *do not need to be equal*
+    if (get_rule_name().compare(obj.get_rule_name())) return false;
+    if (get_base_rule_name().compare(obj.get_base_rule_name())) return false;
+    if (get_named_blocks().size() != obj.get_named_blocks().size())
+      return false;
+    if (!std::equal(get_named_blocks().begin(), get_named_blocks().end(),
+                    obj.get_named_blocks().begin()))
+      return false;
+    if (!std::equal(get_code_chunk().begin(), get_code_chunk().end(),
+                    obj.get_code_chunk().begin()))
+      return false;
+    return true;
+  }
+  /*!
+    @brief test inequality
+    @param obj other rule_block object to compare to
+    @return whether *this and obj contain the same contents
+
+    note that indentation level is irrelevant for this comparison
+   */
+  bool operator!=(const rule_block &obj) const { return !(*this == obj); }
+
  private:
   /*!
     @brief apply hackjob nonsense to flatten certain relative paths by one level
@@ -164,6 +223,23 @@ class rule_block {
     TODO(cpalmer718): find any better way of flattening relative include paths
    */
   std::string reduce_relative_paths(const std::string &s) const;
+
+  /*!
+    @brief return a string containing some number of whitespaces
+    @param count total whitespace indentation to apply
+   */
+  std::string indentation(unsigned count) const;
+
+  /*!
+    @brief replace embedded newlines in a string with newlines plus indentation
+    @param s input string, possibly with embedded newlines
+    @param count total whitespace indentation to apply
+    @return reformatted input string
+
+    this is intended for use with rule block contents, and as such does
+    not interact with the implied newline at the end of the string
+   */
+  std::string apply_indentation(const std::string &s, unsigned count) const;
 
   /*!
     @brief clear out internal storage
@@ -198,6 +274,20 @@ class rule_block {
     own copy of this class
    */
   std::vector<std::string> _code_chunk;
+  /*!
+    @brief allow for global indentation of conditionally included files
+
+    files included within python blocks should inherit the base depth
+    of their include directive.
+  */
+  unsigned _global_indentation;
+  /*!
+    @brief allow for local indentation of conditionally included rules
+
+    rules included within python blocks should temporarily have escalated
+    indentation, which determines the end of the rule block later in the file
+   */
+  unsigned _local_indentation;
 };
 }  // namespace snakemake_unit_tests
 

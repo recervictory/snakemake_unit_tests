@@ -46,23 +46,28 @@ class snakemake_file {
     @brief load and parse snakemake pipeline
     @param filename name of top-level snakefile
     @param base_dir directory from which to base relative file paths
+    @param exclude_rules excluded rule set, for communicating problematic
+    rules back upstream
     @param verbose whether to emit verbose logging output
    */
   void load_everything(const boost::filesystem::path &filename,
-                       const boost::filesystem::path &base_dir, bool verbose);
+                       const boost::filesystem::path &base_dir,
+                       std::vector<std::string> *exclude_rules, bool verbose);
 
   /*!
    @brief parse a snakemake file
    @param loaded_lines lines of file to parse
    @param insertion_point list iterator to where to insert content
    @param filename name of file for informative errors
+   @param global_indentation indentation depth of file's include directive
    @param verbose whether to emit verbose
    logging output
   */
   void parse_file(
       const std::vector<std::string> &loaded_lines,
       std::list<boost::shared_ptr<rule_block> >::iterator insertion_point,
-      const boost::filesystem::path &filename, bool verbose);
+      const boost::filesystem::path &filename, unsigned global_indentation,
+      bool verbose);
 
   /*!
     @brief load all lines from a file into memory
@@ -71,6 +76,20 @@ class snakemake_file {
    */
   void load_lines(const boost::filesystem::path &filename,
                   std::vector<std::string> *target) const;
+
+  /*!
+    @brief report on internal discrepancies in the snakefile load results
+    @param exclude_rules excluded rule set, for communicating problematic
+    rules back upstream
+
+    this is particularly designed to detect known unsupported features in
+    snakemake/python interactions, specifically conditional inclusion of files
+    or rules that relies on python logic and/or leads to inconsistent results
+    if not correctly parsed.
+
+    these features are flagged to be correctly supported in a later patch
+   */
+  void detect_known_issues(std::vector<std::string> *exclude_rules);
 
   /*!
     @brief populate derived rules with base rule blocks

@@ -1,6 +1,6 @@
 node_modules
 package*json
-
+.tests*
 .deps
 *~
 *.o
@@ -41,5 +41,8 @@ run_*
 tmp*
 doxygen_data*
 results
-tests
+tests/*trs
+tests/*log
+tests/examples/test*/output
+.snakemake
 test-*

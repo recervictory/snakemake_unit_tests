@@ -1,0 +1,24 @@
+rule all:
+    input:
+        "output2.txt",
+
+
+pass
+
+
+if True:
+    rule simple_rule2:
+        input:
+            "input2.txt",
+        output:
+            "output2.txt",
+        shell:
+            "cp {input} {output}"
+
+
+pass
+
+
+pass
+
+

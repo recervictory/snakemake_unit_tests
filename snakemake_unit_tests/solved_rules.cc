@@ -58,7 +58,9 @@ void snakemake_unit_tests::solved_rules::load_file(
             // an exclusion list.
             rep.set_log(line.substr(9));
           } else if (line.find("    jobid:") == 0 ||
-                     line.find("    wildcards:") == 0) {
+                     line.find("    wildcards:") == 0 ||
+                     line.find("    benchmark:") == 0 ||
+                     line.find("    resources:") == 0) {
             // other recognized solution annotations;
             // for the moment, do nothing with them
           } else {
@@ -115,7 +117,9 @@ void snakemake_unit_tests::solved_rules::emit_tests(
     }
   }
   // emit common.py in the test_parent_path; no modifications needed
-  boost::filesystem::copy(inst_common_py, test_parent_path);
+  boost::filesystem::copy(inst_common_py, test_parent_path,
+                          boost::filesystem::copy_options::overwrite_existing |
+                              boost::filesystem::copy_options::recursive);
 }
 
 void snakemake_unit_tests::solved_rules::create_workspace(
@@ -138,6 +142,9 @@ void snakemake_unit_tests::solved_rules::create_workspace(
   // and if the user didn't want this rule disabled
   if (exclude_rule_lookup.find(rec.get_rule_name()) ==
       exclude_rule_lookup.end()) {
+    std::cout << "emitting test for rule \"" << rec.get_rule_name() << "\""
+              << std::endl;
+
     // create a test output directory that is unique for this rule
     boost::filesystem::path rule_parent_path =
         test_parent_path / rec.get_rule_name();
@@ -220,7 +227,7 @@ void snakemake_unit_tests::solved_rules::report_phony_all_target(
       throw std::runtime_error(
           "cannot write phony 'all' outputs to synthetic snakefile");
   }
-  if (!(out << std::endl))
+  if (!(out << std::endl << std::endl))
     throw std::runtime_error(
         "cannot write phony 'all' rule trailing whitespace to synthetic "
         "snakefile");
