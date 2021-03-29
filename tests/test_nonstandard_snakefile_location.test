@@ -4,22 +4,24 @@
 ## assumes you already know the logfile and output overrides work
 echo 1..1
 
-TESTNAME="test_config_override_snakefile"
-TESTDESCRIPTION="override --snakefile from config"
-CONFIGFILE="tests/examples/test_interface/input/config.defaults.yaml"
-OUTPUTDIR="tests/examples/test_interface/config_override_snakefile/output"
-EXPECTEDDIR="tests/examples/test_interface/config_override_snakefile/expected"
+TESTNAME="test_nonstandard_snakefile_location"
+TESTDESCRIPTION="deal with snakefile not in 'workflow/'"
+CONFIGFILE="tests/examples/test_nonstandard_snakefile_location/input/config.yaml"
+OUTPUTDIR="tests/examples/test_nonstandard_snakefile_location/output"
+EXPECTEDDIR="tests/examples/test_nonstandard_snakefile_location/expected"
 SNAKEMAKE_UNIT_TESTS="./snakemake_unit_tests.out"
-
-## override parameters
-SNAKEFILE="tests/examples/test_interface/input/choice1/Snakefile"
-SNAKEMAKE_LOG="tests/examples/test_interface/input/choice1/run2.log"
 
 ## just in case, delete existing output from previously failed tests
 rm -Rf "$OUTPUTDIR"
 
 ## run test, dumping output into appropriate directory
-"$SNAKEMAKE_UNIT_TESTS" -c "$CONFIGFILE" -o "$OUTPUTDIR" -s "$SNAKEFILE" -l "$SNAKEMAKE_LOG" > /dev/null 2>&1
+"$SNAKEMAKE_UNIT_TESTS" -c "$CONFIGFILE" > /dev/null 2>&1
+
+if [[ ! -f "$OUTPUTDIR/Snakefile" ]] ; then
+    echo "not ok - $TESTDESCRIPTION does not respond to nonstandard snakefile location # TODO move synthetic snakefile dynamically"
+    exit 0
+fi
+
 if [[ "$?" != "0" ]] ; then
     echo "not ok - $TESTDESCRIPTION primary run failed"
     exit 0

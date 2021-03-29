@@ -43,5 +43,6 @@ doxygen_data*
 results
 tests/*trs
 tests/*log
+tests/examples/test*/output
 .snakemake
 test-*
