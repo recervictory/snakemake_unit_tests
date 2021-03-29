@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+
+## Test: override config for snakefile
+## assumes you already know the logfile and output overrides work
+echo 1..1
+
+TESTNAME="test_nonstandard_snakefile_location"
+TESTDESCRIPTION="deal with snakefile not in 'workflow/'"
+CONFIGFILE="tests/examples/test_nonstandard_snakefile_location/input/config.yaml"
+OUTPUTDIR="tests/examples/test_nonstandard_snakefile_location/output"
+EXPECTEDDIR="tests/examples/test_nonstandard_snakefile_location/expected"
+SNAKEMAKE_UNIT_TESTS="./snakemake_unit_tests.out"
+
+## just in case, delete existing output from previously failed tests
+rm -Rf "$OUTPUTDIR"
+
+## run test, dumping output into appropriate directory
+"$SNAKEMAKE_UNIT_TESTS" -c "$CONFIGFILE" > /dev/null 2>&1
+
+if [[ ! -f "$OUTPUTDIR/Snakefile" ]] ; then
+    echo "not ok - $TESTDESCRIPTION does not respond to nonstandard snakefile location # TODO move synthetic snakefile dynamically"
+    exit 0
+fi
+
+if [[ "$?" != "0" ]] ; then
+    echo "not ok - $TESTDESCRIPTION primary run failed"
+    exit 0
+fi
+
+## compare expected to observed output, ignoring pytest infrastructure
+tests/compare_directories.bash "$EXPECTEDDIR" "$OUTPUTDIR" "$TESTDESCRIPTION"
+if [[ "$?" != "0" ]] ; then
+    exit 0
+fi
+
+## since this is expected pass, enforce pytest functionality as a proxy for pytest configuration
+pytest "$OUTPUTDIR/unit" > /dev/null 2>&1
+
+if [[ "$?" != "0" ]] ; then
+    echo "not ok - $TESTDESCRIPTION downstream pytest failed"
+    exit 0
+fi
+
+## remove output
+rm -Rf "$OUTPUTDIR"
+
+## report success
+echo "ok - $TESTDESCRIPTION"

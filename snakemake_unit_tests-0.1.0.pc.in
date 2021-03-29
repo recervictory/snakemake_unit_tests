@@ -4,7 +4,7 @@ libdir=@libdir@
 includedir=@includedir@
 
 Name: snakemake unit tests
-Description: Replicate snakemake --generate-unit-tests functionality with the added benefit of actually working
+Description: Candidate supplement to snakemake --generate-unit-tests with more compatible use cases and flexibility.
 Requires: gcc >= 8.2.0
 Version: @PACKAGE_VERSION@
 Libs: -L${libdir}

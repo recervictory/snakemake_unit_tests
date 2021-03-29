@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+
+## Test: use a include directive on a string variable to load another file
+echo 1..1
+
+TESTNAME="test11"
+TESTDESCRIPTION="include filename stored in variable"
+INPUTDIR="tests/examples/$TESTNAME/input"
+OUTPUTDIR="tests/examples/$TESTNAME/output"
+EXPECTEDDIR="tests/examples/$TESTNAME/expected"
+SNAKEMAKE_UNIT_TESTS="./snakemake_unit_tests.out"
+INSTDIR="inst"
+
+## just in case, delete existing output from previously failed tests
+rm -Rf "$OUTPUTDIR"
+
+## run test, dumping output into appropriate directory
+$("$SNAKEMAKE_UNIT_TESTS" -i "$INSTDIR" -l "$INPUTDIR/run.log" -o "$OUTPUTDIR" -p "$INPUTDIR" -s "$INPUTDIR/workflow/Snakefile" > /dev/null 2>&1)
+if [[ "$?" != "0" ]] ; then
+    ## note this isn't deterministic, exactly
+    echo "not ok - $TESTDESCRIPTION unable to detect variable filename in include directive # TODO implement python integration"
+    exit 0
+fi
+
+## compare expected to observed output, ignoring pytest infrastructure
+tests/compare_directories.bash "$EXPECTEDDIR" "$OUTPUTDIR" "$TESTDESCRIPTION"
+if [[ "$?" != "0" ]] ; then
+    exit 0
+fi
+
+## since this is expected pass, enforce pytest functionality as a proxy for pytest configuration
+pytest "$OUTPUTDIR/unit" > /dev/null 2>&1
+
+if [[ "$?" != "0" ]] ; then
+    echo "not ok - $TESTDESCRIPTION downstream pytest failed"
+    exit 0
+fi
+
+## remove output
+rm -Rf "$OUTPUTDIR"
+
+## report success
+echo "ok - $TESTDESCRIPTION"

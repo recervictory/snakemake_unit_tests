@@ -1,0 +1,33 @@
+#### add lots
+## of weird comments
+
+# around the file
+
+
+rule simple_rule1:
+    ## this comment says something
+    input:
+        "input1.txt",  #so does this one
+    output:
+        "output1.txt",
+    shell:
+        "cp {input} {output}"  # hi mom
+
+
+rule simple_rule2:
+    ## this also says #something
+    input:
+        "input2.txt",  ## weird comment
+    output:
+        "output2.txt",
+    shell:
+        "cp {input} {output}"  # where am I
+
+
+rule all:
+    input:
+        "output1.txt",
+        "output2.txt",
+
+
+## comment goes here

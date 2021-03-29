@@ -11,7 +11,7 @@ general utility functions
 \doxysubsection*{Functions}
 \begin{DoxyCompactItemize}
 \item 
-std\+::string \mbox{\hyperlink{utilities_8h_a19982ae2854f4c8c67861bd69a9e5a19}{snakemake\+\_\+unit\+\_\+tests\+::remove\+\_\+comments\+\_\+and\+\_\+docstrings}} (const std\+::string \&s, std\+::ifstream $\ast$input, unsigned $\ast$line\+\_\+number)
+std\+::string \mbox{\hyperlink{utilities_8h_ae152ef2e05724e0acb176b7d9c7f2f7f}{snakemake\+\_\+unit\+\_\+tests\+::remove\+\_\+comments\+\_\+and\+\_\+docstrings}} (const std\+::string \&s, const std\+::vector$<$ std\+::string $>$ \&loaded\+\_\+lines, unsigned $\ast$line\+\_\+number)
 \begin{DoxyCompactList}\small\item\em prune superfluous content from snakemake content line \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{utilities_8h_a76f0f7dbe28096fdf1a71b74b3e46ff1}{snakemake\+\_\+unit\+\_\+tests\+::split\+\_\+comma\+\_\+list}} (const std\+::string \&s, std\+::vector$<$ std\+::string $>$ $\ast$target)
 \begin{DoxyCompactList}\small\item\em take a comma/space delimited list of filenames and break them up into a vector \end{DoxyCompactList}\end{DoxyCompactItemize}
@@ -29,11 +29,11 @@ Released under the MIT License. Copyright 2021 Cameron Palmer
 
 
 \doxysubsection{Function Documentation}
-\mbox{\Hypertarget{utilities_8h_a19982ae2854f4c8c67861bd69a9e5a19}\label{utilities_8h_a19982ae2854f4c8c67861bd69a9e5a19}} 
+\mbox{\Hypertarget{utilities_8h_ae152ef2e05724e0acb176b7d9c7f2f7f}\label{utilities_8h_ae152ef2e05724e0acb176b7d9c7f2f7f}} 
 \index{utilities.h@{utilities.h}!remove\_comments\_and\_docstrings@{remove\_comments\_and\_docstrings}}
 \index{remove\_comments\_and\_docstrings@{remove\_comments\_and\_docstrings}!utilities.h@{utilities.h}}
 \doxysubsubsection{\texorpdfstring{remove\_comments\_and\_docstrings()}{remove\_comments\_and\_docstrings()}}
-{\footnotesize\ttfamily std\+::string snakemake\+\_\+unit\+\_\+tests\+::remove\+\_\+comments\+\_\+and\+\_\+docstrings (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{s,  }\item[{std\+::ifstream $\ast$}]{input,  }\item[{unsigned $\ast$}]{line\+\_\+number }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily std\+::string snakemake\+\_\+unit\+\_\+tests\+::remove\+\_\+comments\+\_\+and\+\_\+docstrings (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{s,  }\item[{const std\+::vector$<$ std\+::string $>$ \&}]{loaded\+\_\+lines,  }\item[{unsigned $\ast$}]{line\+\_\+number }\end{DoxyParamCaption})}
 
 
 
@@ -43,7 +43,7 @@ prune superfluous content from snakemake content line
 \begin{DoxyParams}{Parameters}
 {\em s} & line to be pruned down to minimal essential content \\
 \hline
-{\em input} & open file stream from which to pull multiline content, if needed \\
+{\em loaded\+\_\+lines} & currently processed snakemake file lines \\
 \hline
 {\em line\+\_\+number} & counter of line in file, for error reporting \\
 \hline

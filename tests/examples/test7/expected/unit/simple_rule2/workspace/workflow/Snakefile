@@ -1,0 +1,26 @@
+rule all:
+    input:
+        "output2.txt",
+
+
+def myfunc():
+    pass
+pass
+
+
+if True:
+    x = 1 + 1
+rule simple_rule2:
+    input:
+        "input2.txt",
+    output:
+        "output2.txt",
+    shell:
+        "cp {input} {output}"
+
+
+if False:
+    print(True)
+pass
+
+

@@ -22,8 +22,11 @@
   The complete parse operation is as follows:
 
   1) add the top-level snakefile as a pseudo-include directive to the
-  snakemake_file 2) parse the file, non-recursively 3) while unresolved
-  snakemake rule and include directives remain:
+  snakemake_file
+
+  2) parse the file, non-recursively
+
+  3) while unresolved snakemake rule and include directives remain:
   -- emit a dummy workspace containing a simplified representation of the
   currently loaded data
   ---- include directives and snakemake rules are assigned unique identifiers
@@ -54,9 +57,14 @@
 
 void snakemake_unit_tests::snakemake_file::load_everything(
     const boost::filesystem::path &filename,
-    const boost::filesystem::path &base_dir, bool verbose) {
+    const boost::filesystem::path &base_dir,
+    std::vector<std::string> *exclude_rules, bool verbose) {
   // create a dummy rule block with just a single include directive for this
   // file
+  if (!exclude_rules)
+    throw std::runtime_error(
+        "null exclude_rules provided to "
+        "load_everything");
   boost::shared_ptr<rule_block> ptr(new rule_block);
   ptr->add_code_chunk("include: \"" + filename.string() + "\"");
   _blocks.push_back(ptr);
@@ -77,7 +85,8 @@ void snakemake_unit_tests::snakemake_file::load_everything(
         boost::filesystem::path recursive_path =
             base_dir / (*iter)->get_recursive_filename();
         load_lines(recursive_path, &loaded_lines);
-        parse_file(loaded_lines, iter, recursive_path, verbose);
+        parse_file(loaded_lines, iter, recursive_path,
+                   (*iter)->get_include_depth(), verbose);
         unresolved = true;
         // and now that the include has been performed, do not add the include
         // statement
@@ -86,8 +95,137 @@ void snakemake_unit_tests::snakemake_file::load_everything(
     }
   }
 
+  // placeholder: add screening step to detect known issues/unsupported features
+  // TODO(cpalmer718): implement python integration. add checkpoints
+  detect_known_issues(exclude_rules);
+
   // deal with derived rules
   resolve_derived_rules();
+}
+
+void snakemake_unit_tests::snakemake_file::detect_known_issues(
+    std::vector<std::string> *exclude_rules) {
+  /*
+    Known issues as implemented here
+
+    1) include directives on variables or in more complicated one line logic
+    statements
+
+    2) conditional rules causing duplicate rules with the same name but
+    different contents to be loaded; snakemake wouldn't care, but this code
+    isn't smart enough to resolve yet
+
+    3) derived rules where the base rule is not detected for some reason
+    (detected during that scan)
+   */
+  if (!exclude_rules)
+    throw std::runtime_error("null pointer provided to exclude_rules");
+  std::map<std::string, std::vector<boost::shared_ptr<rule_block> > >
+      aggregated_rules;
+  std::map<std::string, std::vector<boost::shared_ptr<rule_block> > >::iterator
+      finder;
+  unsigned duplicated_rules = 0;
+  std::vector<std::string> unresolvable_duplicated_rules, leftover_includes;
+  for (std::list<boost::shared_ptr<rule_block> >::iterator iter =
+           _blocks.begin();
+       iter != _blocks.end(); ++iter) {
+    // python code. scan for remaining include directives
+    if (!(*iter)->get_code_chunk().empty()) {
+      std::string::size_type include_location =
+          (*iter)->get_code_chunk().rbegin()->find("include:");
+      if (include_location != std::string::npos) {
+        leftover_includes.push_back((*(*iter)->get_code_chunk().rbegin()));
+      }
+    } else {
+      // rule. aggregate for duplication
+      if ((finder = aggregated_rules.find((*iter)->get_rule_name())) ==
+          aggregated_rules.end()) {
+        finder = aggregated_rules
+                     .insert(std::make_pair(
+                         (*iter)->get_rule_name(),
+                         std::vector<boost::shared_ptr<rule_block> >()))
+                     .first;
+      }
+      finder->second.push_back(*iter);
+    }
+  }
+  for (finder = aggregated_rules.begin(); finder != aggregated_rules.end();
+       ++finder) {
+    if (finder->second.size() > 1) ++duplicated_rules;
+    bool problematic = false;
+    for (unsigned i = 1; i < finder->second.size() && !problematic; ++i) {
+      if (*finder->second.at(i) != *finder->second.at(0)) {
+        bool already_excluded = false;
+        for (std::vector<std::string>::const_iterator viter =
+                 exclude_rules->begin();
+             viter != exclude_rules->end() && !already_excluded; ++viter) {
+          if (!viter->compare(finder->first)) {
+            already_excluded = true;
+          }
+        }
+        if (!already_excluded) {
+          problematic = true;
+          exclude_rules->push_back(finder->first);
+          unresolvable_duplicated_rules.push_back(finder->first);
+        }
+      }
+    }
+  }
+  // report results
+  std::cout << "snakefile load summary" << std::endl;
+  std::cout << "----------------------" << std::endl;
+  std::cout << "total loaded candidate rules: " << aggregated_rules.size()
+            << std::endl;
+  std::cout << "  of those rules, " << duplicated_rules
+            << " had multiple entries in unconditional logic" << std::endl;
+  if (duplicated_rules) {
+    std::cout << std::endl;
+    std::cout << "note that multiple entries in unconditional logic are not \n"
+              << "necessarily problematic: this program does not interpret \n"
+              << "infrastructure logic (that feature is planned for later \n"
+              << "releases). however, if the conditional logic determines \n"
+              << "different definitions of the rule, that will probably \n"
+              << "break tests. the simplest solution is to always use \n"
+              << "unique rule names, even in mutually-exclusively included \n"
+              << "files; or you can wait for a later patch" << std::endl;
+  }
+  if (!unresolvable_duplicated_rules.empty()) {
+    std::cout << "***of these duplicate rules, "
+              << unresolvable_duplicated_rules.size()
+              << " had incompatible duplicate content:" << std::endl;
+    for (std::vector<std::string>::const_iterator iter =
+             unresolvable_duplicated_rules.begin();
+         iter != unresolvable_duplicated_rules.end(); ++iter) {
+      std::cout << "     " << *iter << std::endl;
+    }
+    std::cout
+        << std::endl
+        << "sorry, "
+        << (unresolvable_duplicated_rules.size() == 1 ? "this rule is"
+                                                      : "these rules are")
+        << " unsupported in the current software build. "
+        << "this information will be automatically added to exclude-rules "
+        << "to prevent inconsistent behavior" << std::endl
+        << std::endl;
+  }
+  if (!leftover_includes.empty()) {
+    std::cout << std::endl
+              << "warning: possible unresolved include statements detected:"
+              << std::endl;
+    for (std::vector<std::string>::const_iterator iter =
+             leftover_includes.begin();
+         iter != leftover_includes.end(); ++iter) {
+      std::cout << "  " << *iter << std::endl;
+    }
+    std::cout
+        << "if the above are actual include directives, please file a \n"
+        << "bug report with this information. this is a hard break for \n"
+        << "the current logic (support is planned for a later release). \n"
+        << "the current simplest solution is to make sure that all \n"
+        << "'include:' directives operate directly on strings (as \n"
+        << "opposed to variables) and not wrapped in conditional logic \n"
+        << "on the same line (if/else single line statements)" << std::endl;
+  }
 }
 
 void snakemake_unit_tests::snakemake_file::load_lines(
@@ -166,13 +304,14 @@ void snakemake_unit_tests::snakemake_file::resolve_derived_rules() {
 void snakemake_unit_tests::snakemake_file::parse_file(
     const std::vector<std::string> &loaded_lines,
     std::list<boost::shared_ptr<rule_block> >::iterator insertion_point,
-    const boost::filesystem::path &filename, bool verbose) {
+    const boost::filesystem::path &filename, unsigned global_indentation,
+    bool verbose) {
   // track current line
   unsigned current_line = 0;
   while (current_line < loaded_lines.size()) {
     boost::shared_ptr<rule_block> rb(new rule_block);
-    if (rb->load_content_block(loaded_lines, filename, verbose,
-                               &current_line)) {
+    if (rb->load_content_block(loaded_lines, filename, global_indentation,
+                               verbose, &current_line)) {
       _blocks.insert(insertion_point, rb);
     }
   }
@@ -203,6 +342,12 @@ void snakemake_unit_tests::snakemake_file::report_single_rule(
     if (!(*iter)->get_rule_name().compare(rule_name) ||
         (*iter)->get_rule_name().empty()) {
       (*iter)->print_contents(out);
+    } else {
+      for (unsigned i = 0; i < (*iter)->get_global_indentation() +
+                                   (*iter)->get_local_indentation();
+           ++i)
+        out << ' ';
+      out << "pass" << std::endl << std::endl << std::endl;
     }
   }
   // if the correct rule was never found, complain

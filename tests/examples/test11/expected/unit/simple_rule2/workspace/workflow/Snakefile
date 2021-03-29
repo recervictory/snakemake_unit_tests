@@ -1,0 +1,25 @@
+rule all:
+    input:
+        "output2.txt",
+
+
+pass
+
+
+if True:
+    rule simple_rule2:
+        input:
+            "input2.txt",
+        output:
+            "output2.txt",
+        shell:
+            "cp {input} {output}"
+
+
+include_filename = "rules/subfile.smk"
+pass
+
+
+pass
+
+
