@@ -20,12 +20,14 @@ abstract representation of snakefile as a series of rules and python code chunks
 \mbox{\Hypertarget{classsnakemake__unit__tests_1_1snakemake__file_a75af4c4c7927d70267481cb7915c8198}\label{classsnakemake__unit__tests_1_1snakemake__file_a75af4c4c7927d70267481cb7915c8198}} 
 \mbox{\hyperlink{classsnakemake__unit__tests_1_1snakemake__file_a75af4c4c7927d70267481cb7915c8198}{$\sim$snakemake\+\_\+file}} ()  throw ()
 \begin{DoxyCompactList}\small\item\em destructor \end{DoxyCompactList}\item 
-void \mbox{\hyperlink{classsnakemake__unit__tests_1_1snakemake__file_a0391ff91ad204a6f2b0240f0ee9ed404}{load\+\_\+everything}} (const boost\+::filesystem\+::path \&filename, const boost\+::filesystem\+::path \&base\+\_\+dir, bool verbose)
+void \mbox{\hyperlink{classsnakemake__unit__tests_1_1snakemake__file_ad196d35cc37be2231c854f4e25dd2a4b}{load\+\_\+everything}} (const boost\+::filesystem\+::path \&filename, const boost\+::filesystem\+::path \&base\+\_\+dir, std\+::vector$<$ std\+::string $>$ $\ast$exclude\+\_\+rules, bool verbose)
 \begin{DoxyCompactList}\small\item\em load and parse snakemake pipeline \end{DoxyCompactList}\item 
-void \mbox{\hyperlink{classsnakemake__unit__tests_1_1snakemake__file_aad083e297205df231dd78d2cb93a1afa}{parse\+\_\+file}} (const std\+::vector$<$ std\+::string $>$ \&loaded\+\_\+lines, std\+::list$<$ boost\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block}{rule\+\_\+block}} $>$ $>$\+::iterator insertion\+\_\+point, const boost\+::filesystem\+::path \&filename, bool verbose)
+void \mbox{\hyperlink{classsnakemake__unit__tests_1_1snakemake__file_a5d1ca82114437fff5d248702860c453f}{parse\+\_\+file}} (const std\+::vector$<$ std\+::string $>$ \&loaded\+\_\+lines, std\+::list$<$ boost\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block}{rule\+\_\+block}} $>$ $>$\+::iterator insertion\+\_\+point, const boost\+::filesystem\+::path \&filename, unsigned global\+\_\+indentation, bool verbose)
 \begin{DoxyCompactList}\small\item\em parse a snakemake file \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{classsnakemake__unit__tests_1_1snakemake__file_aaa55fc451f722b94090f0f26f2671594}{load\+\_\+lines}} (const boost\+::filesystem\+::path \&filename, std\+::vector$<$ std\+::string $>$ $\ast$target) const
 \begin{DoxyCompactList}\small\item\em load all lines from a file into memory \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classsnakemake__unit__tests_1_1snakemake__file_aa83a98811e77d7003c311d951946950c}{detect\+\_\+known\+\_\+issues}} (std\+::vector$<$ std\+::string $>$ $\ast$exclude\+\_\+rules)
+\begin{DoxyCompactList}\small\item\em report on internal discrepancies in the snakefile load results \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{classsnakemake__unit__tests_1_1snakemake__file_a79cfa9d4504725992bb3cd6f10168fe2}{resolve\+\_\+derived\+\_\+rules}} ()
 \begin{DoxyCompactList}\small\item\em populate derived rules with base rule blocks \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{classsnakemake__unit__tests_1_1snakemake__file_af59b77d2fd21c3bd0298b7b4cd23bd03}{print\+\_\+blocks}} (std\+::ostream \&out) const
@@ -64,7 +66,24 @@ copy constructor
 
 
 \doxysubsection{Member Function Documentation}
-\mbox{\Hypertarget{classsnakemake__unit__tests_1_1snakemake__file_a549735c89e4885eadbca1571fe5f8ab8}\label{classsnakemake__unit__tests_1_1snakemake__file_a549735c89e4885eadbca1571fe5f8ab8}} 
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1snakemake__file_aa83a98811e77d7003c311d951946950c}\label{classsnakemake__unit__tests_1_1snakemake__file_aa83a98811e77d7003c311d951946950c}} 
+\index{snakemake\_unit\_tests::snakemake\_file@{snakemake\_unit\_tests::snakemake\_file}!detect\_known\_issues@{detect\_known\_issues}}
+\index{detect\_known\_issues@{detect\_known\_issues}!snakemake\_unit\_tests::snakemake\_file@{snakemake\_unit\_tests::snakemake\_file}}
+\doxysubsubsection{\texorpdfstring{detect\_known\_issues()}{detect\_known\_issues()}}
+{\footnotesize\ttfamily void snakemake\+\_\+unit\+\_\+tests\+::snakemake\+\_\+file\+::detect\+\_\+known\+\_\+issues (\begin{DoxyParamCaption}\item[{std\+::vector$<$ std\+::string $>$ $\ast$}]{exclude\+\_\+rules }\end{DoxyParamCaption})}
+
+
+
+report on internal discrepancies in the snakefile load results 
+
+
+\begin{DoxyParams}{Parameters}
+{\em exclude\+\_\+rules} & excluded rule set, for communicating problematic rules back upstream\\
+\hline
+\end{DoxyParams}
+this is particularly designed to detect known unsupported features in snakemake/python interactions, specifically conditional inclusion of files or rules that relies on python logic and/or leads to inconsistent results if not correctly parsed.
+
+these features are flagged to be correctly supported in a later patch \mbox{\Hypertarget{classsnakemake__unit__tests_1_1snakemake__file_a549735c89e4885eadbca1571fe5f8ab8}\label{classsnakemake__unit__tests_1_1snakemake__file_a549735c89e4885eadbca1571fe5f8ab8}} 
 \index{snakemake\_unit\_tests::snakemake\_file@{snakemake\_unit\_tests::snakemake\_file}!get\_blocks@{get\_blocks}}
 \index{get\_blocks@{get\_blocks}!snakemake\_unit\_tests::snakemake\_file@{snakemake\_unit\_tests::snakemake\_file}}
 \doxysubsubsection{\texorpdfstring{get\_blocks()}{get\_blocks()}}
@@ -77,11 +96,11 @@ get const access to internal block representation
 \begin{DoxyReturn}{Returns}
 const reference to internal block list 
 \end{DoxyReturn}
-\mbox{\Hypertarget{classsnakemake__unit__tests_1_1snakemake__file_a0391ff91ad204a6f2b0240f0ee9ed404}\label{classsnakemake__unit__tests_1_1snakemake__file_a0391ff91ad204a6f2b0240f0ee9ed404}} 
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1snakemake__file_ad196d35cc37be2231c854f4e25dd2a4b}\label{classsnakemake__unit__tests_1_1snakemake__file_ad196d35cc37be2231c854f4e25dd2a4b}} 
 \index{snakemake\_unit\_tests::snakemake\_file@{snakemake\_unit\_tests::snakemake\_file}!load\_everything@{load\_everything}}
 \index{load\_everything@{load\_everything}!snakemake\_unit\_tests::snakemake\_file@{snakemake\_unit\_tests::snakemake\_file}}
 \doxysubsubsection{\texorpdfstring{load\_everything()}{load\_everything()}}
-{\footnotesize\ttfamily void snakemake\+\_\+unit\+\_\+tests\+::snakemake\+\_\+file\+::load\+\_\+everything (\begin{DoxyParamCaption}\item[{const boost\+::filesystem\+::path \&}]{filename,  }\item[{const boost\+::filesystem\+::path \&}]{base\+\_\+dir,  }\item[{bool}]{verbose }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily void snakemake\+\_\+unit\+\_\+tests\+::snakemake\+\_\+file\+::load\+\_\+everything (\begin{DoxyParamCaption}\item[{const boost\+::filesystem\+::path \&}]{filename,  }\item[{const boost\+::filesystem\+::path \&}]{base\+\_\+dir,  }\item[{std\+::vector$<$ std\+::string $>$ $\ast$}]{exclude\+\_\+rules,  }\item[{bool}]{verbose }\end{DoxyParamCaption})}
 
 
 
@@ -92,6 +111,8 @@ load and parse snakemake pipeline
 {\em filename} & name of top-\/level snakefile \\
 \hline
 {\em base\+\_\+dir} & directory from which to base relative file paths \\
+\hline
+{\em exclude\+\_\+rules} & excluded rule set, for communicating problematic rules back upstream \\
 \hline
 {\em verbose} & whether to emit verbose logging output \\
 \hline
@@ -113,11 +134,11 @@ load all lines from a file into memory
 {\em target} & where to store the loaded lines \\
 \hline
 \end{DoxyParams}
-\mbox{\Hypertarget{classsnakemake__unit__tests_1_1snakemake__file_aad083e297205df231dd78d2cb93a1afa}\label{classsnakemake__unit__tests_1_1snakemake__file_aad083e297205df231dd78d2cb93a1afa}} 
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1snakemake__file_a5d1ca82114437fff5d248702860c453f}\label{classsnakemake__unit__tests_1_1snakemake__file_a5d1ca82114437fff5d248702860c453f}} 
 \index{snakemake\_unit\_tests::snakemake\_file@{snakemake\_unit\_tests::snakemake\_file}!parse\_file@{parse\_file}}
 \index{parse\_file@{parse\_file}!snakemake\_unit\_tests::snakemake\_file@{snakemake\_unit\_tests::snakemake\_file}}
 \doxysubsubsection{\texorpdfstring{parse\_file()}{parse\_file()}}
-{\footnotesize\ttfamily void snakemake\+\_\+unit\+\_\+tests\+::snakemake\+\_\+file\+::parse\+\_\+file (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ std\+::string $>$ \&}]{loaded\+\_\+lines,  }\item[{std\+::list$<$ boost\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block}{rule\+\_\+block}} $>$ $>$\+::iterator}]{insertion\+\_\+point,  }\item[{const boost\+::filesystem\+::path \&}]{filename,  }\item[{bool}]{verbose }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily void snakemake\+\_\+unit\+\_\+tests\+::snakemake\+\_\+file\+::parse\+\_\+file (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ std\+::string $>$ \&}]{loaded\+\_\+lines,  }\item[{std\+::list$<$ boost\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block}{rule\+\_\+block}} $>$ $>$\+::iterator}]{insertion\+\_\+point,  }\item[{const boost\+::filesystem\+::path \&}]{filename,  }\item[{unsigned}]{global\+\_\+indentation,  }\item[{bool}]{verbose }\end{DoxyParamCaption})}
 
 
 
@@ -130,6 +151,8 @@ parse a snakemake file
 {\em insertion\+\_\+point} & list iterator to where to insert content \\
 \hline
 {\em filename} & name of file for informative errors \\
+\hline
+{\em global\+\_\+indentation} & indentation depth of file\textquotesingle{}s include directive \\
 \hline
 {\em verbose} & whether to emit verbose logging output \\
 \hline

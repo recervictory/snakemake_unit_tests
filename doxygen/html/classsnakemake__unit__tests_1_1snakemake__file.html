@@ -93,15 +93,18 @@ Public Member Functions</h2></td></tr>
 &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1snakemake__file.html#a75af4c4c7927d70267481cb7915c8198">~snakemake_file</a> ()  throw ()</td></tr>
 <tr class="memdesc:a75af4c4c7927d70267481cb7915c8198"><td class="mdescLeft">&#160;</td><td class="mdescRight">destructor <br /></td></tr>
 <tr class="separator:a75af4c4c7927d70267481cb7915c8198"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0391ff91ad204a6f2b0240f0ee9ed404"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1snakemake__file.html#a0391ff91ad204a6f2b0240f0ee9ed404">load_everything</a> (const boost::filesystem::path &amp;filename, const boost::filesystem::path &amp;base_dir, bool verbose)</td></tr>
-<tr class="memdesc:a0391ff91ad204a6f2b0240f0ee9ed404"><td class="mdescLeft">&#160;</td><td class="mdescRight">load and parse snakemake pipeline  <a href="classsnakemake__unit__tests_1_1snakemake__file.html#a0391ff91ad204a6f2b0240f0ee9ed404">More...</a><br /></td></tr>
-<tr class="separator:a0391ff91ad204a6f2b0240f0ee9ed404"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aad083e297205df231dd78d2cb93a1afa"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1snakemake__file.html#aad083e297205df231dd78d2cb93a1afa">parse_file</a> (const std::vector&lt; std::string &gt; &amp;loaded_lines, std::list&lt; boost::shared_ptr&lt; <a class="el" href="classsnakemake__unit__tests_1_1rule__block.html">rule_block</a> &gt; &gt;::iterator insertion_point, const boost::filesystem::path &amp;filename, bool verbose)</td></tr>
-<tr class="memdesc:aad083e297205df231dd78d2cb93a1afa"><td class="mdescLeft">&#160;</td><td class="mdescRight">parse a snakemake file  <a href="classsnakemake__unit__tests_1_1snakemake__file.html#aad083e297205df231dd78d2cb93a1afa">More...</a><br /></td></tr>
-<tr class="separator:aad083e297205df231dd78d2cb93a1afa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad196d35cc37be2231c854f4e25dd2a4b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1snakemake__file.html#ad196d35cc37be2231c854f4e25dd2a4b">load_everything</a> (const boost::filesystem::path &amp;filename, const boost::filesystem::path &amp;base_dir, std::vector&lt; std::string &gt; *exclude_rules, bool verbose)</td></tr>
+<tr class="memdesc:ad196d35cc37be2231c854f4e25dd2a4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">load and parse snakemake pipeline  <a href="classsnakemake__unit__tests_1_1snakemake__file.html#ad196d35cc37be2231c854f4e25dd2a4b">More...</a><br /></td></tr>
+<tr class="separator:ad196d35cc37be2231c854f4e25dd2a4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d1ca82114437fff5d248702860c453f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1snakemake__file.html#a5d1ca82114437fff5d248702860c453f">parse_file</a> (const std::vector&lt; std::string &gt; &amp;loaded_lines, std::list&lt; boost::shared_ptr&lt; <a class="el" href="classsnakemake__unit__tests_1_1rule__block.html">rule_block</a> &gt; &gt;::iterator insertion_point, const boost::filesystem::path &amp;filename, unsigned global_indentation, bool verbose)</td></tr>
+<tr class="memdesc:a5d1ca82114437fff5d248702860c453f"><td class="mdescLeft">&#160;</td><td class="mdescRight">parse a snakemake file  <a href="classsnakemake__unit__tests_1_1snakemake__file.html#a5d1ca82114437fff5d248702860c453f">More...</a><br /></td></tr>
+<tr class="separator:a5d1ca82114437fff5d248702860c453f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaa55fc451f722b94090f0f26f2671594"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1snakemake__file.html#aaa55fc451f722b94090f0f26f2671594">load_lines</a> (const boost::filesystem::path &amp;filename, std::vector&lt; std::string &gt; *target) const</td></tr>
 <tr class="memdesc:aaa55fc451f722b94090f0f26f2671594"><td class="mdescLeft">&#160;</td><td class="mdescRight">load all lines from a file into memory  <a href="classsnakemake__unit__tests_1_1snakemake__file.html#aaa55fc451f722b94090f0f26f2671594">More...</a><br /></td></tr>
 <tr class="separator:aaa55fc451f722b94090f0f26f2671594"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa83a98811e77d7003c311d951946950c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1snakemake__file.html#aa83a98811e77d7003c311d951946950c">detect_known_issues</a> (std::vector&lt; std::string &gt; *exclude_rules)</td></tr>
+<tr class="memdesc:aa83a98811e77d7003c311d951946950c"><td class="mdescLeft">&#160;</td><td class="mdescRight">report on internal discrepancies in the snakefile load results  <a href="classsnakemake__unit__tests_1_1snakemake__file.html#aa83a98811e77d7003c311d951946950c">More...</a><br /></td></tr>
+<tr class="separator:aa83a98811e77d7003c311d951946950c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a79cfa9d4504725992bb3cd6f10168fe2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1snakemake__file.html#a79cfa9d4504725992bb3cd6f10168fe2">resolve_derived_rules</a> ()</td></tr>
 <tr class="memdesc:a79cfa9d4504725992bb3cd6f10168fe2"><td class="mdescLeft">&#160;</td><td class="mdescRight">populate derived rules with base rule blocks  <a href="classsnakemake__unit__tests_1_1snakemake__file.html#a79cfa9d4504725992bb3cd6f10168fe2">More...</a><br /></td></tr>
 <tr class="separator:a79cfa9d4504725992bb3cd6f10168fe2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -160,6 +163,34 @@ std::list&lt; boost::shared_ptr&lt; <a class="el" href="classsnakemake__unit__te
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="aa83a98811e77d7003c311d951946950c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa83a98811e77d7003c311d951946950c">&#9670;&nbsp;</a></span>detect_known_issues()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void snakemake_unit_tests::snakemake_file::detect_known_issues </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; std::string &gt; *&#160;</td>
+          <td class="paramname"><em>exclude_rules</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>report on internal discrepancies in the snakefile load results </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">exclude_rules</td><td>excluded rule set, for communicating problematic rules back upstream</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>this is particularly designed to detect known unsupported features in snakemake/python interactions, specifically conditional inclusion of files or rules that relies on python logic and/or leads to inconsistent results if not correctly parsed.</p>
+<p>these features are flagged to be correctly supported in a later patch </p>
+
+</div>
+</div>
 <a id="a549735c89e4885eadbca1571fe5f8ab8"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a549735c89e4885eadbca1571fe5f8ab8">&#9670;&nbsp;</a></span>get_blocks()</h2>
 
@@ -188,8 +219,8 @@ std::list&lt; boost::shared_ptr&lt; <a class="el" href="classsnakemake__unit__te
 
 </div>
 </div>
-<a id="a0391ff91ad204a6f2b0240f0ee9ed404"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0391ff91ad204a6f2b0240f0ee9ed404">&#9670;&nbsp;</a></span>load_everything()</h2>
+<a id="ad196d35cc37be2231c854f4e25dd2a4b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad196d35cc37be2231c854f4e25dd2a4b">&#9670;&nbsp;</a></span>load_everything()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -205,6 +236,12 @@ std::list&lt; boost::shared_ptr&lt; <a class="el" href="classsnakemake__unit__te
           <td></td>
           <td class="paramtype">const boost::filesystem::path &amp;&#160;</td>
           <td class="paramname"><em>base_dir</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; std::string &gt; *&#160;</td>
+          <td class="paramname"><em>exclude_rules</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -225,6 +262,7 @@ std::list&lt; boost::shared_ptr&lt; <a class="el" href="classsnakemake__unit__te
   <table class="params">
     <tr><td class="paramname">filename</td><td>name of top-level snakefile </td></tr>
     <tr><td class="paramname">base_dir</td><td>directory from which to base relative file paths </td></tr>
+    <tr><td class="paramname">exclude_rules</td><td>excluded rule set, for communicating problematic rules back upstream </td></tr>
     <tr><td class="paramname">verbose</td><td>whether to emit verbose logging output </td></tr>
   </table>
   </dd>
@@ -269,8 +307,8 @@ std::list&lt; boost::shared_ptr&lt; <a class="el" href="classsnakemake__unit__te
 
 </div>
 </div>
-<a id="aad083e297205df231dd78d2cb93a1afa"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aad083e297205df231dd78d2cb93a1afa">&#9670;&nbsp;</a></span>parse_file()</h2>
+<a id="a5d1ca82114437fff5d248702860c453f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d1ca82114437fff5d248702860c453f">&#9670;&nbsp;</a></span>parse_file()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -296,6 +334,12 @@ std::list&lt; boost::shared_ptr&lt; <a class="el" href="classsnakemake__unit__te
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">unsigned&#160;</td>
+          <td class="paramname"><em>global_indentation</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">bool&#160;</td>
           <td class="paramname"><em>verbose</em>&#160;</td>
         </tr>
@@ -313,6 +357,7 @@ std::list&lt; boost::shared_ptr&lt; <a class="el" href="classsnakemake__unit__te
     <tr><td class="paramname">loaded_lines</td><td>lines of file to parse </td></tr>
     <tr><td class="paramname">insertion_point</td><td>list iterator to where to insert content </td></tr>
     <tr><td class="paramname">filename</td><td>name of file for informative errors </td></tr>
+    <tr><td class="paramname">global_indentation</td><td>indentation depth of file's include directive </td></tr>
     <tr><td class="paramname">verbose</td><td>whether to emit verbose logging output </td></tr>
   </table>
   </dd>

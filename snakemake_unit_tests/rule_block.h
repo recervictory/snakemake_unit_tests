@@ -227,6 +227,7 @@ class rule_block {
   /*!
     @brief return a string containing some number of whitespaces
     @param count total whitespace indentation to apply
+    @return formatted indentation whitespace
    */
   std::string indentation(unsigned count) const;
 

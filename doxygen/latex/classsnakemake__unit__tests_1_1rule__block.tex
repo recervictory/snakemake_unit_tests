@@ -20,7 +20,7 @@ command line argument parser using boost\+::program\+\_\+options
 \mbox{\Hypertarget{classsnakemake__unit__tests_1_1rule__block_a0b7e1d766627db4e12d8c570fa6c3aba}\label{classsnakemake__unit__tests_1_1rule__block_a0b7e1d766627db4e12d8c570fa6c3aba}} 
 \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block_a0b7e1d766627db4e12d8c570fa6c3aba}{$\sim$rule\+\_\+block}} ()  throw ()
 \begin{DoxyCompactList}\small\item\em destructor \end{DoxyCompactList}\item 
-bool \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block_ad96a6ee8aa9d2afad7a050cc2d7a1a01}{load\+\_\+content\+\_\+block}} (const std\+::vector$<$ std\+::string $>$ \&loaded\+\_\+lines, const boost\+::filesystem\+::path \&filename, bool verbose, unsigned $\ast$current\+\_\+line)
+bool \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block_aeadfda9cf06ee3429c4ab18f97c91a21}{load\+\_\+content\+\_\+block}} (const std\+::vector$<$ std\+::string $>$ \&loaded\+\_\+lines, const boost\+::filesystem\+::path \&filename, unsigned global\+\_\+indentation, bool verbose, unsigned $\ast$current\+\_\+line)
 \begin{DoxyCompactList}\small\item\em load a rule block or python chunk from a snakemake file vector \end{DoxyCompactList}\item 
 bool \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block_a4decffe2868da5c2b0ea7c233388240c}{consume\+\_\+rule\+\_\+contents}} (const std\+::vector$<$ std\+::string $>$ \&loaded\+\_\+lines, const boost\+::filesystem\+::path \&filename, bool verbose, unsigned $\ast$current\+\_\+line)
 \begin{DoxyCompactList}\small\item\em having found a rule declaration, load its blocks \end{DoxyCompactList}\item 
@@ -34,6 +34,8 @@ const std\+::string \& \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__blo
 \begin{DoxyCompactList}\small\item\em get the name of the base rule for derived rules \end{DoxyCompactList}\item 
 bool \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block_ad665a55afda39722a659d93010c76837}{is\+\_\+include\+\_\+directive}} () const
 \begin{DoxyCompactList}\small\item\em determine whether this block is a snakemake file include directive \end{DoxyCompactList}\item 
+unsigned \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block_adc0e13d780edf9c03a2ddc203f372148}{get\+\_\+include\+\_\+depth}} () const
+\begin{DoxyCompactList}\small\item\em determine how much indentation an include directive enjoyed \end{DoxyCompactList}\item 
 std\+::string \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block_a9eb00c8823aab86a6c7a983364007743}{get\+\_\+recursive\+\_\+filename}} () const
 \begin{DoxyCompactList}\small\item\em if the block is an include directive, get the file that is included \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block_aa3429e0b3dde7eaeb99520dd629d6ba4}{print\+\_\+contents}} (std\+::ostream \&out) const
@@ -42,15 +44,27 @@ const std\+::vector$<$ std\+::string $>$ \& \mbox{\hyperlink{classsnakemake__uni
 \begin{DoxyCompactList}\small\item\em get internal storage of code chunk as const reference \end{DoxyCompactList}\item 
 const std\+::map$<$ std\+::string, std\+::string $>$ \& \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block_a27ad0d8dab3d7390b316781fba25a187}{get\+\_\+named\+\_\+blocks}} () const
 \begin{DoxyCompactList}\small\item\em get named blocks of rule body \end{DoxyCompactList}\item 
+unsigned \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block_a73480255309a0a244c820346db9beb65}{get\+\_\+global\+\_\+indentation}} () const
+\begin{DoxyCompactList}\small\item\em get global indentation of file \end{DoxyCompactList}\item 
+unsigned \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block_a382259a591a1f4c9345523b23de4f478}{get\+\_\+local\+\_\+indentation}} () const
+\begin{DoxyCompactList}\small\item\em get local indentation of rule block \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block_a1fa1be741a981cae72e5975a19d906f9}{offer\+\_\+base\+\_\+rule\+\_\+contents}} (const std\+::string \&provider\+\_\+name, const std\+::string \&block\+\_\+name, const std\+::string \&block\+\_\+values)
 \begin{DoxyCompactList}\small\item\em provide candidate base rule block definitions for derived rules \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block_a087a1519c228e377353bb2f3a1e9e418}{add\+\_\+code\+\_\+chunk}} (const std\+::string \&s)
-\begin{DoxyCompactList}\small\item\em manually inject code into this block \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em manually inject code into this block \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block_a1e2e3182649715cc41e4426d5f80f67f}{operator==}} (const \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block}{rule\+\_\+block}} \&obj) const
+\begin{DoxyCompactList}\small\item\em test equality \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block_ae4472fc8a2403a5ce4503483940542cb}{operator!=}} (const \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block}{rule\+\_\+block}} \&obj) const
+\begin{DoxyCompactList}\small\item\em test inequality \end{DoxyCompactList}\end{DoxyCompactItemize}
 \doxysubsection*{Private Member Functions}
 \begin{DoxyCompactItemize}
 \item 
 std\+::string \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block_a7b3bd3d8a1d72a864e5eaabe2ac41daf}{reduce\+\_\+relative\+\_\+paths}} (const std\+::string \&s) const
 \begin{DoxyCompactList}\small\item\em apply hackjob nonsense to flatten certain relative paths by one level \end{DoxyCompactList}\item 
+std\+::string \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block_a1b706d3d1999c8937faab48c28038545}{indentation}} (unsigned count) const
+\begin{DoxyCompactList}\small\item\em return a string containing some number of whitespaces \end{DoxyCompactList}\item 
+std\+::string \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block_ab90782db2c2213aa8133e6daa478c6c0}{apply\+\_\+indentation}} (const std\+::string \&s, unsigned count) const
+\begin{DoxyCompactList}\small\item\em replace embedded newlines in a string with newlines plus indentation \end{DoxyCompactList}\item 
 \mbox{\Hypertarget{classsnakemake__unit__tests_1_1rule__block_aa24047e29c6cdf6bbb50c7ed6d2f527a}\label{classsnakemake__unit__tests_1_1rule__block_aa24047e29c6cdf6bbb50c7ed6d2f527a}} 
 void \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block_aa24047e29c6cdf6bbb50c7ed6d2f527a}{clear}} ()
 \begin{DoxyCompactList}\small\item\em clear out internal storage \end{DoxyCompactList}\end{DoxyCompactItemize}
@@ -64,7 +78,11 @@ std\+::string \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block_a22523
 std\+::map$<$ std\+::string, std\+::string $>$ \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block_aea2c13d1921d6c5c31d507f346850767}{\+\_\+named\+\_\+blocks}}
 \begin{DoxyCompactList}\small\item\em arbitrary named blocks and their contents \end{DoxyCompactList}\item 
 std\+::vector$<$ std\+::string $>$ \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block_a51a4a75de30ebdd1d00f76990337943e}{\+\_\+code\+\_\+chunk}}
-\begin{DoxyCompactList}\small\item\em arbitrary python code chunk that can exist between rules \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em arbitrary python code chunk that can exist between rules \end{DoxyCompactList}\item 
+unsigned \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block_a28c0874e6f1392e63c6a7c46631adcac}{\+\_\+global\+\_\+indentation}}
+\begin{DoxyCompactList}\small\item\em allow for global indentation of conditionally included files \end{DoxyCompactList}\item 
+unsigned \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block_a695111cc2a3a27df46bb5580625f82cd}{\+\_\+local\+\_\+indentation}}
+\begin{DoxyCompactList}\small\item\em allow for local indentation of conditionally included rules \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \doxysubsection{Detailed Description}
@@ -104,7 +122,27 @@ manually inject code into this block
 {\em s} & code to inject\\
 \hline
 \end{DoxyParams}
-required for the redesign of the parser \mbox{\Hypertarget{classsnakemake__unit__tests_1_1rule__block_a4decffe2868da5c2b0ea7c233388240c}\label{classsnakemake__unit__tests_1_1rule__block_a4decffe2868da5c2b0ea7c233388240c}} 
+required for the redesign of the parser \mbox{\Hypertarget{classsnakemake__unit__tests_1_1rule__block_ab90782db2c2213aa8133e6daa478c6c0}\label{classsnakemake__unit__tests_1_1rule__block_ab90782db2c2213aa8133e6daa478c6c0}} 
+\index{snakemake\_unit\_tests::rule\_block@{snakemake\_unit\_tests::rule\_block}!apply\_indentation@{apply\_indentation}}
+\index{apply\_indentation@{apply\_indentation}!snakemake\_unit\_tests::rule\_block@{snakemake\_unit\_tests::rule\_block}}
+\doxysubsubsection{\texorpdfstring{apply\_indentation()}{apply\_indentation()}}
+{\footnotesize\ttfamily std\+::string snakemake\+\_\+unit\+\_\+tests\+::rule\+\_\+block\+::apply\+\_\+indentation (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{s,  }\item[{unsigned}]{count }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+replace embedded newlines in a string with newlines plus indentation 
+
+
+\begin{DoxyParams}{Parameters}
+{\em s} & input string, possibly with embedded newlines \\
+\hline
+{\em count} & total whitespace indentation to apply \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+reformatted input string
+\end{DoxyReturn}
+this is intended for use with rule block contents, and as such does not interact with the implied newline at the end of the string \mbox{\Hypertarget{classsnakemake__unit__tests_1_1rule__block_a4decffe2868da5c2b0ea7c233388240c}\label{classsnakemake__unit__tests_1_1rule__block_a4decffe2868da5c2b0ea7c233388240c}} 
 \index{snakemake\_unit\_tests::rule\_block@{snakemake\_unit\_tests::rule\_block}!consume\_rule\_contents@{consume\_rule\_contents}}
 \index{consume\_rule\_contents@{consume\_rule\_contents}!snakemake\_unit\_tests::rule\_block@{snakemake\_unit\_tests::rule\_block}}
 \doxysubsubsection{\texorpdfstring{consume\_rule\_contents()}{consume\_rule\_contents()}}
@@ -154,6 +192,45 @@ get internal storage of code chunk as const reference
 \begin{DoxyReturn}{Returns}
 code chunk as const reference 
 \end{DoxyReturn}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1rule__block_a73480255309a0a244c820346db9beb65}\label{classsnakemake__unit__tests_1_1rule__block_a73480255309a0a244c820346db9beb65}} 
+\index{snakemake\_unit\_tests::rule\_block@{snakemake\_unit\_tests::rule\_block}!get\_global\_indentation@{get\_global\_indentation}}
+\index{get\_global\_indentation@{get\_global\_indentation}!snakemake\_unit\_tests::rule\_block@{snakemake\_unit\_tests::rule\_block}}
+\doxysubsubsection{\texorpdfstring{get\_global\_indentation()}{get\_global\_indentation()}}
+{\footnotesize\ttfamily unsigned snakemake\+\_\+unit\+\_\+tests\+::rule\+\_\+block\+::get\+\_\+global\+\_\+indentation (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+get global indentation of file 
+
+\begin{DoxyReturn}{Returns}
+global indentation of file 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1rule__block_adc0e13d780edf9c03a2ddc203f372148}\label{classsnakemake__unit__tests_1_1rule__block_adc0e13d780edf9c03a2ddc203f372148}} 
+\index{snakemake\_unit\_tests::rule\_block@{snakemake\_unit\_tests::rule\_block}!get\_include\_depth@{get\_include\_depth}}
+\index{get\_include\_depth@{get\_include\_depth}!snakemake\_unit\_tests::rule\_block@{snakemake\_unit\_tests::rule\_block}}
+\doxysubsubsection{\texorpdfstring{get\_include\_depth()}{get\_include\_depth()}}
+{\footnotesize\ttfamily unsigned snakemake\+\_\+unit\+\_\+tests\+::rule\+\_\+block\+::get\+\_\+include\+\_\+depth (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+determine how much indentation an include directive enjoyed 
+
+\begin{DoxyReturn}{Returns}
+indentation of include directive, along with inherited global depth 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1rule__block_a382259a591a1f4c9345523b23de4f478}\label{classsnakemake__unit__tests_1_1rule__block_a382259a591a1f4c9345523b23de4f478}} 
+\index{snakemake\_unit\_tests::rule\_block@{snakemake\_unit\_tests::rule\_block}!get\_local\_indentation@{get\_local\_indentation}}
+\index{get\_local\_indentation@{get\_local\_indentation}!snakemake\_unit\_tests::rule\_block@{snakemake\_unit\_tests::rule\_block}}
+\doxysubsubsection{\texorpdfstring{get\_local\_indentation()}{get\_local\_indentation()}}
+{\footnotesize\ttfamily unsigned snakemake\+\_\+unit\+\_\+tests\+::rule\+\_\+block\+::get\+\_\+local\+\_\+indentation (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+get local indentation of rule block 
+
+\begin{DoxyReturn}{Returns}
+local indentation of rule block 
+\end{DoxyReturn}
 \mbox{\Hypertarget{classsnakemake__unit__tests_1_1rule__block_a27ad0d8dab3d7390b316781fba25a187}\label{classsnakemake__unit__tests_1_1rule__block_a27ad0d8dab3d7390b316781fba25a187}} 
 \index{snakemake\_unit\_tests::rule\_block@{snakemake\_unit\_tests::rule\_block}!get\_named\_blocks@{get\_named\_blocks}}
 \index{get\_named\_blocks@{get\_named\_blocks}!snakemake\_unit\_tests::rule\_block@{snakemake\_unit\_tests::rule\_block}}
@@ -196,6 +273,24 @@ the name of the rule
 \begin{DoxyWarning}{Warning}
 regex matching is currently borked, this entry may be garbage 
 \end{DoxyWarning}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1rule__block_a1b706d3d1999c8937faab48c28038545}\label{classsnakemake__unit__tests_1_1rule__block_a1b706d3d1999c8937faab48c28038545}} 
+\index{snakemake\_unit\_tests::rule\_block@{snakemake\_unit\_tests::rule\_block}!indentation@{indentation}}
+\index{indentation@{indentation}!snakemake\_unit\_tests::rule\_block@{snakemake\_unit\_tests::rule\_block}}
+\doxysubsubsection{\texorpdfstring{indentation()}{indentation()}}
+{\footnotesize\ttfamily std\+::string snakemake\+\_\+unit\+\_\+tests\+::rule\+\_\+block\+::indentation (\begin{DoxyParamCaption}\item[{unsigned}]{count }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+return a string containing some number of whitespaces 
+
+
+\begin{DoxyParams}{Parameters}
+{\em count} & total whitespace indentation to apply \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+formatted indentation whitespace 
+\end{DoxyReturn}
 \mbox{\Hypertarget{classsnakemake__unit__tests_1_1rule__block_ad665a55afda39722a659d93010c76837}\label{classsnakemake__unit__tests_1_1rule__block_ad665a55afda39722a659d93010c76837}} 
 \index{snakemake\_unit\_tests::rule\_block@{snakemake\_unit\_tests::rule\_block}!is\_include\_directive@{is\_include\_directive}}
 \index{is\_include\_directive@{is\_include\_directive}!snakemake\_unit\_tests::rule\_block@{snakemake\_unit\_tests::rule\_block}}
@@ -209,11 +304,11 @@ determine whether this block is a snakemake file include directive
 \begin{DoxyReturn}{Returns}
 whether the block is an include directive, hopefully 
 \end{DoxyReturn}
-\mbox{\Hypertarget{classsnakemake__unit__tests_1_1rule__block_ad96a6ee8aa9d2afad7a050cc2d7a1a01}\label{classsnakemake__unit__tests_1_1rule__block_ad96a6ee8aa9d2afad7a050cc2d7a1a01}} 
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1rule__block_aeadfda9cf06ee3429c4ab18f97c91a21}\label{classsnakemake__unit__tests_1_1rule__block_aeadfda9cf06ee3429c4ab18f97c91a21}} 
 \index{snakemake\_unit\_tests::rule\_block@{snakemake\_unit\_tests::rule\_block}!load\_content\_block@{load\_content\_block}}
 \index{load\_content\_block@{load\_content\_block}!snakemake\_unit\_tests::rule\_block@{snakemake\_unit\_tests::rule\_block}}
 \doxysubsubsection{\texorpdfstring{load\_content\_block()}{load\_content\_block()}}
-{\footnotesize\ttfamily bool snakemake\+\_\+unit\+\_\+tests\+::rule\+\_\+block\+::load\+\_\+content\+\_\+block (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ std\+::string $>$ \&}]{loaded\+\_\+lines,  }\item[{const boost\+::filesystem\+::path \&}]{filename,  }\item[{bool}]{verbose,  }\item[{unsigned $\ast$}]{current\+\_\+line }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily bool snakemake\+\_\+unit\+\_\+tests\+::rule\+\_\+block\+::load\+\_\+content\+\_\+block (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ std\+::string $>$ \&}]{loaded\+\_\+lines,  }\item[{const boost\+::filesystem\+::path \&}]{filename,  }\item[{unsigned}]{global\+\_\+indentation,  }\item[{bool}]{verbose,  }\item[{unsigned $\ast$}]{current\+\_\+line }\end{DoxyParamCaption})}
 
 
 
@@ -224,6 +319,8 @@ load a rule block or python chunk from a snakemake file vector
 {\em loaded\+\_\+lines} & vector of snakemake file lines to process \\
 \hline
 {\em filename} & name of the loaded snakemake file. only used for informative error messages \\
+\hline
+{\em global\+\_\+indentation} & base indentation for entire file, defaulting to 0 for standard file loads and incrementing by 4 for each level of indentation the include directive had within its python block \\
 \hline
 {\em verbose} & whether to report verbose logging output \\
 \hline
@@ -252,7 +349,43 @@ provide candidate base rule block definitions for derived rules
 {\em block\+\_\+values} & contents of block from the base rule\\
 \hline
 \end{DoxyParams}
-for safety, the rule will check that such a suggestion is sane, and respond accordingly if not \mbox{\Hypertarget{classsnakemake__unit__tests_1_1rule__block_aa3429e0b3dde7eaeb99520dd629d6ba4}\label{classsnakemake__unit__tests_1_1rule__block_aa3429e0b3dde7eaeb99520dd629d6ba4}} 
+for safety, the rule will check that such a suggestion is sane, and respond accordingly if not \mbox{\Hypertarget{classsnakemake__unit__tests_1_1rule__block_ae4472fc8a2403a5ce4503483940542cb}\label{classsnakemake__unit__tests_1_1rule__block_ae4472fc8a2403a5ce4503483940542cb}} 
+\index{snakemake\_unit\_tests::rule\_block@{snakemake\_unit\_tests::rule\_block}!operator"!=@{operator"!=}}
+\index{operator"!=@{operator"!=}!snakemake\_unit\_tests::rule\_block@{snakemake\_unit\_tests::rule\_block}}
+\doxysubsubsection{\texorpdfstring{operator"!=()}{operator!=()}}
+{\footnotesize\ttfamily bool snakemake\+\_\+unit\+\_\+tests\+::rule\+\_\+block\+::operator!= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block}{rule\+\_\+block}} \&}]{obj }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+test inequality 
+
+
+\begin{DoxyParams}{Parameters}
+{\em obj} & other \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block}{rule\+\_\+block}} object to compare to \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+whether $\ast$this and obj contain the same contents
+\end{DoxyReturn}
+note that indentation level is irrelevant for this comparison \mbox{\Hypertarget{classsnakemake__unit__tests_1_1rule__block_a1e2e3182649715cc41e4426d5f80f67f}\label{classsnakemake__unit__tests_1_1rule__block_a1e2e3182649715cc41e4426d5f80f67f}} 
+\index{snakemake\_unit\_tests::rule\_block@{snakemake\_unit\_tests::rule\_block}!operator==@{operator==}}
+\index{operator==@{operator==}!snakemake\_unit\_tests::rule\_block@{snakemake\_unit\_tests::rule\_block}}
+\doxysubsubsection{\texorpdfstring{operator==()}{operator==()}}
+{\footnotesize\ttfamily bool snakemake\+\_\+unit\+\_\+tests\+::rule\+\_\+block\+::operator== (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block}{rule\+\_\+block}} \&}]{obj }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+test equality 
+
+
+\begin{DoxyParams}{Parameters}
+{\em obj} & other \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block}{rule\+\_\+block}} object to compare to \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+whether $\ast$this and obj contain the same contents
+\end{DoxyReturn}
+note that indentation level is irrelevant for this comparison \mbox{\Hypertarget{classsnakemake__unit__tests_1_1rule__block_aa3429e0b3dde7eaeb99520dd629d6ba4}\label{classsnakemake__unit__tests_1_1rule__block_aa3429e0b3dde7eaeb99520dd629d6ba4}} 
 \index{snakemake\_unit\_tests::rule\_block@{snakemake\_unit\_tests::rule\_block}!print\_contents@{print\_contents}}
 \index{print\_contents@{print\_contents}!snakemake\_unit\_tests::rule\_block@{snakemake\_unit\_tests::rule\_block}}
 \doxysubsubsection{\texorpdfstring{print\_contents()}{print\_contents()}}
@@ -338,7 +471,27 @@ only a snakemake 6.\+0+ feature. for these rules, some entries will be populated
 
 arbitrary python code chunk that can exist between rules 
 
-this wasn\textquotesingle{}t the original intention of this class, but rather than deal with derived classes and other nonsense, since arbitrary code blocks follow the same logic as rule blocks, they can just be stored in their own copy of this class \mbox{\Hypertarget{classsnakemake__unit__tests_1_1rule__block_aea2c13d1921d6c5c31d507f346850767}\label{classsnakemake__unit__tests_1_1rule__block_aea2c13d1921d6c5c31d507f346850767}} 
+this wasn\textquotesingle{}t the original intention of this class, but rather than deal with derived classes and other nonsense, since arbitrary code blocks follow the same logic as rule blocks, they can just be stored in their own copy of this class \mbox{\Hypertarget{classsnakemake__unit__tests_1_1rule__block_a28c0874e6f1392e63c6a7c46631adcac}\label{classsnakemake__unit__tests_1_1rule__block_a28c0874e6f1392e63c6a7c46631adcac}} 
+\index{snakemake\_unit\_tests::rule\_block@{snakemake\_unit\_tests::rule\_block}!\_global\_indentation@{\_global\_indentation}}
+\index{\_global\_indentation@{\_global\_indentation}!snakemake\_unit\_tests::rule\_block@{snakemake\_unit\_tests::rule\_block}}
+\doxysubsubsection{\texorpdfstring{\_global\_indentation}{\_global\_indentation}}
+{\footnotesize\ttfamily unsigned snakemake\+\_\+unit\+\_\+tests\+::rule\+\_\+block\+::\+\_\+global\+\_\+indentation\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+allow for global indentation of conditionally included files 
+
+files included within python blocks should inherit the base depth of their include directive. \mbox{\Hypertarget{classsnakemake__unit__tests_1_1rule__block_a695111cc2a3a27df46bb5580625f82cd}\label{classsnakemake__unit__tests_1_1rule__block_a695111cc2a3a27df46bb5580625f82cd}} 
+\index{snakemake\_unit\_tests::rule\_block@{snakemake\_unit\_tests::rule\_block}!\_local\_indentation@{\_local\_indentation}}
+\index{\_local\_indentation@{\_local\_indentation}!snakemake\_unit\_tests::rule\_block@{snakemake\_unit\_tests::rule\_block}}
+\doxysubsubsection{\texorpdfstring{\_local\_indentation}{\_local\_indentation}}
+{\footnotesize\ttfamily unsigned snakemake\+\_\+unit\+\_\+tests\+::rule\+\_\+block\+::\+\_\+local\+\_\+indentation\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+allow for local indentation of conditionally included rules 
+
+rules included within python blocks should temporarily have escalated indentation, which determines the end of the rule block later in the file \mbox{\Hypertarget{classsnakemake__unit__tests_1_1rule__block_aea2c13d1921d6c5c31d507f346850767}\label{classsnakemake__unit__tests_1_1rule__block_aea2c13d1921d6c5c31d507f346850767}} 
 \index{snakemake\_unit\_tests::rule\_block@{snakemake\_unit\_tests::rule\_block}!\_named\_blocks@{\_named\_blocks}}
 \index{\_named\_blocks@{\_named\_blocks}!snakemake\_unit\_tests::rule\_block@{snakemake\_unit\_tests::rule\_block}}
 \doxysubsubsection{\texorpdfstring{\_named\_blocks}{\_named\_blocks}}
