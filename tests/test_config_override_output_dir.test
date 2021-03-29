@@ -1,21 +1,22 @@
 #!/usr/bin/env bash
 
-## Test: simple test of a single snakefile with two rules, in ~/workflow, using CLI
+## Test: override config for output directory
+## pretty important that this one works, other tests
+## slightly mega break otherwise lol
 echo 1..1
 
-TESTNAME="test2"
-TESTDESCRIPTION="double rule test"
-INPUTDIR="tests/examples/$TESTNAME/input"
-OUTPUTDIR="tests/examples/$TESTNAME/output"
-EXPECTEDDIR="tests/examples/$TESTNAME/expected"
+TESTNAME="test_config_override_output_dir"
+TESTDESCRIPTION="override --output-test-dir from config"
+CONFIGFILE="tests/examples/test_interface/input/config.defaults.yaml"
+OUTPUTDIR="tests/examples/test_interface/config_override_output_dir/output"
+EXPECTEDDIR="tests/examples/test_interface/config_override_output_dir/expected"
 SNAKEMAKE_UNIT_TESTS="./snakemake_unit_tests.out"
-INSTDIR="inst"
 
 ## just in case, delete existing output from previously failed tests
 rm -Rf "$OUTPUTDIR"
 
 ## run test, dumping output into appropriate directory
-"$SNAKEMAKE_UNIT_TESTS" -i "$INSTDIR" -l "$INPUTDIR/run.log" -o "$OUTPUTDIR" -p "$INPUTDIR" -s "$INPUTDIR/workflow/Snakefile" > /dev/null 2>&1
+"$SNAKEMAKE_UNIT_TESTS" -c "$CONFIGFILE" -o "$OUTPUTDIR" > /dev/null 2>&1
 if [[ "$?" != "0" ]] ; then
     echo "not ok - $TESTDESCRIPTION primary run failed"
     exit 0

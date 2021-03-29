@@ -1,21 +1,25 @@
 #!/usr/bin/env bash
 
-## Test: simple test of a single snakefile with two rules, in ~/workflow, using CLI
+## Test: override config for snakefile
+## assumes you already know the logfile and output overrides work
 echo 1..1
 
-TESTNAME="test2"
-TESTDESCRIPTION="double rule test"
-INPUTDIR="tests/examples/$TESTNAME/input"
-OUTPUTDIR="tests/examples/$TESTNAME/output"
-EXPECTEDDIR="tests/examples/$TESTNAME/expected"
+TESTNAME="test_config_override_snakefile"
+TESTDESCRIPTION="override --snakefile from config"
+CONFIGFILE="tests/examples/test_interface/input/config.defaults.yaml"
+OUTPUTDIR="tests/examples/test_interface/config_override_snakefile/output"
+EXPECTEDDIR="tests/examples/test_interface/config_override_snakefile/expected"
 SNAKEMAKE_UNIT_TESTS="./snakemake_unit_tests.out"
-INSTDIR="inst"
+
+## override parameters
+SNAKEFILE="tests/examples/test_interface/input/choice1/Snakefile"
+SNAKEMAKE_LOG="tests/examples/test_interface/input/choice1/run2.log"
 
 ## just in case, delete existing output from previously failed tests
 rm -Rf "$OUTPUTDIR"
 
 ## run test, dumping output into appropriate directory
-"$SNAKEMAKE_UNIT_TESTS" -i "$INSTDIR" -l "$INPUTDIR/run.log" -o "$OUTPUTDIR" -p "$INPUTDIR" -s "$INPUTDIR/workflow/Snakefile" > /dev/null 2>&1
+"$SNAKEMAKE_UNIT_TESTS" -c "$CONFIGFILE" -o "$OUTPUTDIR" -s "$SNAKEFILE" -l "$SNAKEMAKE_LOG" > /dev/null 2>&1
 if [[ "$?" != "0" ]] ; then
     echo "not ok - $TESTDESCRIPTION primary run failed"
     exit 0

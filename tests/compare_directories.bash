@@ -15,12 +15,12 @@ do
     actual=$(echo "$file" | sed 's/\/expected\//\/output\//')
     if [[ ! -f "$actual" ]] ; then
 	echo "not ok - $TESTDESCRIPTION expected file $file not present in results"
-	exit 0
+	exit 2
     else
 	actualdiff=$(diff $file $actual | wc -l)
 	if [[ "$actualdiff" -gt 0 ]] ; then
 	    echo "not ok - $TESTDESCRIPTION expected file $file differs from observed $actual"
-	    exit 0
+	    exit 3
 	fi
     fi
 done
@@ -32,6 +32,6 @@ do
     expected=$(echo "$file" | sed 's/\/output\//\/expected\//')
     if [[ ! -f "$expected" ]] ; then
 	echo "not ok - $TESTDESCRIPTION observed file $file not present in expected"
-	exit 0
+	exit 4
     fi
 done

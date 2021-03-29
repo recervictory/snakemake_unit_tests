@@ -1,0 +1,34 @@
+rule simple_rule1:
+    input:
+        "input1.txt",
+    output:
+        "output7.txt",
+    shell:
+        "echo 'override output' > {output}"
+
+
+if True:
+
+    rule simple_rule2:
+        input:
+            "input2.txt",
+        output:
+            "output8.txt",
+        shell:
+            "echo 'where is the lid' > {output}"
+
+
+rule simple_rule3:
+    input:
+        "input3.txt",
+    output:
+        "output9.txt",
+    shell:
+        "echo 'darmok and jalad at tanagra' > {output}"
+
+
+rule all:
+    input:
+        "output7.txt",
+        "output8.txt",
+        "output9.txt",

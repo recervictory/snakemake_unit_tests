@@ -1,0 +1,24 @@
+rule all:
+    input:
+        "output8.txt",
+
+
+pass
+
+
+if True:
+    rule simple_rule2:
+        input:
+            "input2.txt",
+        output:
+            "output8.txt",
+        shell:
+            "echo 'where is the lid' > {output}"
+
+
+pass
+
+
+pass
+
+
