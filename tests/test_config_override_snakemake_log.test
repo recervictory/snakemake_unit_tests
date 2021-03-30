@@ -18,7 +18,7 @@ SNAKEMAKE_LOG="tests/examples/test_interface/input/choice1/run3.log"
 rm -Rf "$OUTPUTDIR"
 
 ## run test, dumping output into appropriate directory
-"$SNAKEMAKE_UNIT_TESTS" -c "$CONFIGFILE" -o "$OUTPUTDIR" -l "$SNAKEMAKE_LOG" > /dev/null 2>&1
+"$SNAKEMAKE_UNIT_TESTS" --update-all -c "$CONFIGFILE" -o "$OUTPUTDIR" -l "$SNAKEMAKE_LOG" > /dev/null 2>&1
 if [[ "$?" != "0" ]] ; then
     echo "not ok - $TESTDESCRIPTION primary run failed"
     exit 0

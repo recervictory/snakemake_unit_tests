@@ -14,7 +14,7 @@ SNAKEMAKE_UNIT_TESTS="./snakemake_unit_tests.out"
 rm -Rf "$OUTPUTDIR"
 
 ## run test, dumping output into appropriate directory
-"$SNAKEMAKE_UNIT_TESTS" -c "$CONFIGFILE" > /dev/null 2>&1
+"$SNAKEMAKE_UNIT_TESTS" --update-all -c "$CONFIGFILE" > /dev/null 2>&1
 if [[ "$?" != "0" ]] ; then
     echo "not ok - $TESTDESCRIPTION primary run failed"
     exit 0
