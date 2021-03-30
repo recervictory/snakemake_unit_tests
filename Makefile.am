@@ -24,5 +24,6 @@ TESTS = tests/test1.test \
 	tests/test_config_defaults.test \
 	tests/test_config_override_output_dir.test \
 	tests/test_config_override_snakemake_log.test \
-	tests/test_nonstandard_snakefile_location.test
+	tests/test_nonstandard_snakefile_location.test \
+	tests/test_update_snakefile.test
 EXTRA_DIST = $(TESTS)

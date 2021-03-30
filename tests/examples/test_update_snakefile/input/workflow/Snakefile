@@ -1,0 +1,9 @@
+rule simple_rule:
+    input:
+        "input.txt",
+    output:
+        "output.txt",
+    params:
+        memlimit=123,
+    shell:
+        "cp {input} {output}"
