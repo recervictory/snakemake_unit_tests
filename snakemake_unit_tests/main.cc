@@ -61,8 +61,11 @@ int main(int argc, char **argv) {
 
   // iterate over the solved rules, emitting them with modifiers as desired
   // TODO(cpalmer718): refactor this function and clean it up
-  sr.emit_tests(sf, p.output_test_dir, p.pipeline_run_dir, p.inst_dir,
-                p.exclude_rules, p.added_files, p.added_directories);
+  sr.emit_tests(
+      sf, p.output_test_dir, p.pipeline_run_dir, p.inst_dir, p.exclude_rules,
+      p.added_files, p.added_directories, p.update_snakefiles || p.update_all,
+      p.update_added_content || p.update_all, p.update_inputs || p.update_all,
+      p.update_outputs || p.update_all, p.update_pytest || p.update_all);
 
   std::cout << "all done woo!" << std::endl;
   return 0;

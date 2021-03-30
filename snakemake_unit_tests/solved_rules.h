@@ -165,14 +165,23 @@ class solved_rules {
     @param added_files vector of additional files to add to test workspaces
     @param added_directories vector of additional directories to add to test
     workspaces
+    @param update_snakefiles controls whether to print snakefiles
+    @param update_added_content controls whether to copy added files and
+    directories
+    @param update_inputs controls whether to copy rule inputs
+    @param update_outputs controls whether to copy rule outputs
+    @param update_pytest controls whether to copy pytest infrastructure
   */
-  void emit_tests(
-      const snakemake_file &sf, const boost::filesystem::path &output_test_dir,
-      const boost::filesystem::path &pipeline_dir,
-      const boost::filesystem::path &inst_dir,
-      const std::vector<std::string> &exclude_rules,
-      const std::vector<boost::filesystem::path> &added_files,
-      const std::vector<boost::filesystem::path> &added_directories) const;
+  void emit_tests(const snakemake_file &sf,
+                  const boost::filesystem::path &output_test_dir,
+                  const boost::filesystem::path &pipeline_dir,
+                  const boost::filesystem::path &inst_dir,
+                  const std::vector<std::string> &exclude_rules,
+                  const std::vector<boost::filesystem::path> &added_files,
+                  const std::vector<boost::filesystem::path> &added_directories,
+                  bool update_snakefiles, bool update_added_content,
+                  bool update_inputs, bool update_outputs,
+                  bool update_pytest) const;
   /*!
     @brief create a test directory
     @param rec recipe/rule entry for which a workspace should be created
@@ -189,6 +198,12 @@ class solved_rules {
     @param added_files vector of additional files to add to test workspaces
     @param added_directories vector of additional directories to add to test
     workspaces
+    @param update_snakefiles controls whether to print snakefiles
+    @param update_added_content controls whether to copy added files and
+    directories
+    @param update_inputs controls whether to copy rule inputs
+    @param update_outputs controls whether to copy rule outputs
+    @param update_pytest controls whether to copy pytest infrastructure
   */
   void create_workspace(
       const recipe &rec, const snakemake_file &sf,
@@ -198,7 +213,9 @@ class solved_rules {
       const boost::filesystem::path &test_inst_py,
       const std::vector<std::string> &exclude_rules,
       const std::vector<boost::filesystem::path> &added_files,
-      const std::vector<boost::filesystem::path> &added_directories) const;
+      const std::vector<boost::filesystem::path> &added_directories,
+      bool update_snakefiles, bool update_added_content, bool update_inputs,
+      bool update_outputs, bool update_pytest) const;
   /*!
     @brief copy files/folders enumerated in vector to a location
     @param contents files or folders to be copied

@@ -34,7 +34,15 @@ void snakemake_unit_tests::cargs::initialize_options() {
       "will be computed as * assuming --snakefile is */workflow/Snakefile)")(
       "snakefile,s", boost::program_options::value<std::string>(),
       "snakefile used to run target pipeline")(
-      "verbose,v", "emit verbose logging content; useful for debugging");
+      "verbose,v", "emit verbose logging content; useful for debugging")(
+      "update-all",
+      "update all test content: snakefiles, inputs, outputs, added files and "
+      "directories")("update-snakefiles", "update snakefiles in unit tests")(
+      "update-added-content",
+      "update added files and directories in unit tests")(
+      "update-inputs", "update rule inputs in unit tests")(
+      "update-outputs", "update rule outputs in unit test")(
+      "update-pytest", "update pytest infrastructure in output directories");
 }
 
 snakemake_unit_tests::params snakemake_unit_tests::cargs::set_parameters()
@@ -84,6 +92,14 @@ snakemake_unit_tests::params snakemake_unit_tests::cargs::set_parameters()
   // deal with overriding options from the config yaml
   // verbosity: just accept CLI, this shouldn't be a config yaml option
   p.verbose = verbose();
+  // control which content gets updated: just accept CLI version
+  p.update_all = update_all();
+  p.update_snakefiles = update_snakefiles();
+  p.update_added_content = update_added_content();
+  p.update_inputs = update_inputs();
+  p.update_outputs = update_outputs();
+  p.update_pytest = update_pytest();
+
   // output_test_dir: override if specified
   p.output_test_dir =
       override_if_specified(get_output_test_dir(), p.output_test_dir);
