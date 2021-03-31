@@ -223,6 +223,8 @@ std::string snakemake_unit_tests::rule_block::get_recursive_filename() const {
     boost::smatch include_match;
     if (boost::regex_match(*get_code_chunk().begin(), include_match,
                            include_directive)) {
+      // std::cout << "include match is '" << include_match[2].str() <<
+      // std::endl;
       // return include_match[1].str();
       std::string ret = get_code_chunk().begin()->substr(
           get_code_chunk().begin()->find("include") + 8);
@@ -360,4 +362,9 @@ std::string snakemake_unit_tests::rule_block::apply_indentation(
     cur = loc + 1 + indent.size();
   }
   return res;
+}
+
+bool snakemake_unit_tests::rule_block::resolved() const {
+  // TODO(cpalmer718): implement rule block resolved status
+  return true;
 }

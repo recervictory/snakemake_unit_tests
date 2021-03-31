@@ -209,6 +209,27 @@ void snakemake_unit_tests::solved_rules::create_workspace(
   }
 }
 
+void snakemake_unit_tests::solved_rules::create_empty_workspace(
+    const boost::filesystem::path &output_test_dir,
+    const boost::filesystem::path &pipeline_dir,
+    const std::vector<boost::filesystem::path> &added_files,
+    const std::vector<boost::filesystem::path> &added_directories) const {
+  // create test directory, for output from test run
+  boost::filesystem::path workspace_path =
+      output_test_dir / ".snakemake_unit_tests";
+  boost::filesystem::create_directories(workspace_path);
+
+  // copy extra files and directories, if provided, to workspace
+  copy_contents(added_files, pipeline_dir, workspace_path, "added files");
+  copy_contents(added_directories, pipeline_dir, workspace_path,
+                "added directories");
+}
+
+void snakemake_unit_tests::solved_rules::remove_empty_workspace(
+    const boost::filesystem::path &output_test_dir) const {
+  boost::filesystem::remove_all(output_test_dir / ".snakemake_unit_tests");
+}
+
 void snakemake_unit_tests::solved_rules::copy_contents(
     const std::vector<boost::filesystem::path> &contents,
     const boost::filesystem::path &source_prefix,

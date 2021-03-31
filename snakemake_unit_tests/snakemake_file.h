@@ -122,6 +122,22 @@ class snakemake_file {
   void report_single_rule(const std::string &rule_name,
                           std::ostream &out) const;
 
+  /*!
+    @brief whether the object's rules are unambiguously resolved
+    @return whether the object's rules are unambiguously resolved
+
+    this will involve querying the rules for their own diagnosis of
+    their status. this logic is not yet fully clear to me.
+   */
+  bool fully_resolved() const;
+
+  /*!
+    @brief run the current rule set through python once
+    @param workspace top level directory with added files and directories
+    installed
+   */
+  void resolve_with_python(const boost::filesystem::path &workspace);
+
  private:
   /*!
     @brief minimal contents of snakemake file as blocks of code

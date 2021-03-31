@@ -217,6 +217,29 @@ class solved_rules {
       bool update_snakefiles, bool update_added_content, bool update_inputs,
       bool update_outputs, bool update_pytest) const;
   /*!
+    @brief create an empty workspace for python testing
+    @param output_test_dir output directory for tests (e.g. '.tests/')
+    @param pipeline_dir parent directory of snakemake pipeline used to generate
+    corresponding log file (e.g.: X for X/workflow/Snakefile)
+    @param added_files vector of additional files to add to test workspaces
+    @param added_directories vector of additional directories to add to test
+    workspaces
+  */
+  void create_empty_workspace(
+      const boost::filesystem::path &output_test_dir,
+      const boost::filesystem::path &pipeline_dir,
+      const std::vector<boost::filesystem::path> &added_files,
+      const std::vector<boost::filesystem::path> &added_directories) const;
+
+  /*!
+    @brief recursively remove empty workspace after python integration is
+    complete
+    @param output_test_dir output diretory for tests (e.g. '.tests/')
+   */
+  void remove_empty_workspace(
+      const boost::filesystem::path &output_test_dir) const;
+
+  /*!
     @brief copy files/folders enumerated in vector to a location
     @param contents files or folders to be copied
     @param source_prefix parent directory of source files/folders

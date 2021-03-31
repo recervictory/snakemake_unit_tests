@@ -213,6 +213,12 @@ class rule_block {
    */
   bool operator!=(const rule_block &obj) const { return !(*this == obj); }
 
+  /*!
+    @brief whether the object's content needs a python pass to resolve
+    @return whether the object's content needs a python pass to resolve
+   */
+  bool resolved() const;
+
  private:
   /*!
     @brief apply hackjob nonsense to flatten certain relative paths by one level

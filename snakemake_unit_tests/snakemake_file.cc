@@ -356,3 +356,17 @@ void snakemake_unit_tests::snakemake_file::report_single_rule(
         "unable to locate log requested rule in scanned snakefiles: \"" +
         rule_name + "\"");
 }
+
+bool snakemake_unit_tests::snakemake_file::fully_resolved() const {
+  for (std::list<boost::shared_ptr<rule_block> >::const_iterator iter =
+           _blocks.begin();
+       iter != _blocks.end(); ++iter) {
+    if (!(*iter)->resolved()) return false;
+  }
+  return true;
+}
+
+void snakemake_unit_tests::snakemake_file::resolve_with_python(
+    const boost::filesystem::path &workspace) {
+  // TODO(cpalmer718): implement python resolution
+}
