@@ -68,11 +68,12 @@ int main(int argc, char **argv) {
   sr.create_empty_workspace(p.output_test_dir, p.pipeline_run_dir,
                             p.added_files, p.added_directories);
   // do things in this location
-  while (!sf.fully_resolved()) {
+  do {
     sf.resolve_with_python(p.output_test_dir / ".snakemake_unit_tests");
-  }
+  } while (!sf.fully_resolved() && false);
+
   // remove the location
-  sr.remove_empty_workspace(p.output_test_dir);
+  // sr.remove_empty_workspace(p.output_test_dir);
 
   // iterate over the solved rules, emitting them with modifiers as desired
   sr.emit_tests(

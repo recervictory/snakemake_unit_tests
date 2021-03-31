@@ -245,12 +245,24 @@ class rule_block {
 
   /*!
     @brief override the current resolution status based on external logic
+    @param s new value for resolution status
    */
   void set_resolution(block_status s) { _resolution = s; }
   /*!
     @brief set the unique python tag for inclusion tracking
+    @param u new value for unique python tag
    */
   void set_interpreter_tag(unsigned u) { _python_tag = u; }
+  /*!
+    @brief get the unique python tag for inclusion tracking
+    @return the unique python tag for inclusion tracking
+   */
+  unsigned get_interpreter_tag() const { return _python_tag; }
+  /*!
+    @brief emit a python syntax reporting block to dummy file
+    @param out open output stream for reporting
+   */
+  void report_python_logging_code(std::ostream &out) const;
 
  private:
   /*!

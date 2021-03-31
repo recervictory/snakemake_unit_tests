@@ -270,6 +270,53 @@ unsigned snakemake_unit_tests::rule_block::get_include_depth() const {
       "that does not match include directive pattern");
 }
 
+void snakemake_unit_tests::rule_block::report_python_logging_code(
+    std::ostream &out) const {
+  // report contents. may eventually be used for printing to custom snakefile
+  if (!get_code_chunk().empty()) {
+    // if this is an include directive of any kind
+    if (contains_include_directive()) {
+      // it should not under any circumstances be a simple include on a filename
+      if (is_simple_include_directive()) {
+        throw std::logic_error(
+            "report_python_logging_code: unincluded simple inclusion "
+            "suggests parsing pass has not been performed");
+      }
+      // it should not under any circumstances be unresolved
+      if (_resolution != UNRESOLVED) {
+        throw std::logic_error(
+            "report_python_logging_code: resolved complex inclusion "
+            "suggests post-python loading has not been performed");
+      }
+      // report tag along with required expression for evaluation
+      if (!(out << indentation(get_global_indentation() +
+                               get_local_indentation())
+                << "print(\"tag" << get_interpreter_tag() << ": {}\".format("
+                << get_filename_expression() << "))" << std::endl))
+        throw std::runtime_error("complex include printing error");
+    } else {
+      // regardless of resolution, print other code as-is
+      for (std::vector<std::string>::const_iterator iter =
+               get_code_chunk().begin();
+           iter != get_code_chunk().end(); ++iter) {
+        if (!(out << indentation(get_global_indentation()) << *iter
+                  << std::endl))
+          throw std::runtime_error("code chunk printing error");
+      }
+    }
+  } else {  // is a rule
+    // if the rule has not already been flagged as untouched
+    if (_resolution == RESOLVED_INCLUDED || _resolution == UNRESOLVED) {
+      if (!(out << indentation(get_global_indentation() +
+                               get_local_indentation())
+                << "print(\"tag" << get_interpreter_tag() << "\")" << std::endl
+                << std::endl
+                << std::endl))
+        throw std::runtime_error("rule interpreter code printing failure");
+    }
+  }
+}
+
 void snakemake_unit_tests::rule_block::print_contents(std::ostream &out) const {
   // report contents. may eventually be used for printing to custom snakefile
   if (!get_code_chunk().empty()) {

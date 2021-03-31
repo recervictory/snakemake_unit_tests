@@ -324,6 +324,7 @@ void snakemake_unit_tests::snakemake_file::parse_file(
                  !rb->is_simple_include_directive()) {
         // ambiguous include directives need a complicated resolution pass
         rb->set_resolution(UNRESOLVED);
+        rb->set_interpreter_tag(tag_counter);
         ++tag_counter;
       } else {
         // all other contents are good to go, to be handled by interpreter later
@@ -386,4 +387,25 @@ bool snakemake_unit_tests::snakemake_file::fully_resolved() const {
 void snakemake_unit_tests::snakemake_file::resolve_with_python(
     const boost::filesystem::path &workspace) {
   // TODO(cpalmer718): implement python resolution
+  // within a workspace, open a snakefile
+  boost::filesystem::path workflow = workspace / "workflow";
+  boost::filesystem::create_directories(workflow);
+  std::ofstream output;
+  output.open((workflow / "Snakefile.py").string().c_str());
+  if (!output.is_open())
+    throw std::runtime_error(
+        "cannot write interpreter snakefile "
+        "to file \"" +
+        (workflow / "Snakefile.py").string() + "\"");
+  // write python reporting code
+  if (!(output << "#!/usr/bin/env python3" << std::endl))
+    throw std::runtime_error("cannot write shebang to dummy python script \"" +
+                             (workflow / "Snakefile.py").string() + "\"");
+  for (std::list<boost::shared_ptr<rule_block> >::const_iterator iter =
+           get_blocks().begin();
+       iter != get_blocks().end(); ++iter) {
+    // ask the rule to report the python equivalent of its contents
+    (*iter)->report_python_logging_code(output);
+  }
+  output.close();
 }
