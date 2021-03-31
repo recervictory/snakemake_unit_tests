@@ -67,6 +67,7 @@ void snakemake_unit_tests::snakemake_file::load_everything(
         "load_everything");
   boost::shared_ptr<rule_block> ptr(new rule_block);
   ptr->add_code_chunk("include: \"" + filename.string() + "\"");
+  ptr->set_resolution(RESOLVED_INCLUDED);
   _blocks.push_back(ptr);
   std::vector<std::string> loaded_lines;
   // while any unresolved code chunk is present
@@ -77,13 +78,13 @@ void snakemake_unit_tests::snakemake_file::load_everything(
     for (std::list<boost::shared_ptr<rule_block> >::iterator iter =
              _blocks.begin();
          iter != _blocks.end(); ++iter) {
-      if ((*iter)->is_include_directive()) {
+      if ((*iter)->is_simple_include_directive()) {
         if (verbose)
           std::cout << "found include directive, adding \""
-                    << (*iter)->get_recursive_filename() << "\"" << std::endl;
+                    << (*iter)->get_standard_filename() << "\"" << std::endl;
         // load the included file
         boost::filesystem::path recursive_path =
-            base_dir / (*iter)->get_recursive_filename();
+            base_dir / (*iter)->get_standard_filename();
         load_lines(recursive_path, &loaded_lines);
         parse_file(loaded_lines, iter, recursive_path,
                    (*iter)->get_include_depth(), verbose);
@@ -308,10 +309,26 @@ void snakemake_unit_tests::snakemake_file::parse_file(
     bool verbose) {
   // track current line
   unsigned current_line = 0;
+  unsigned tag_counter = 1;
   while (current_line < loaded_lines.size()) {
     boost::shared_ptr<rule_block> rb(new rule_block);
     if (rb->load_content_block(loaded_lines, filename, global_indentation,
                                verbose, &current_line)) {
+      // set python interpreter resolution status
+      // rules should all be set to unresolved before first pass
+      if (!rb->get_rule_name().empty()) {
+        rb->set_resolution(UNRESOLVED);
+        rb->set_interpreter_tag(tag_counter);
+        ++tag_counter;
+      } else if (rb->contains_include_directive() &&
+                 !rb->is_simple_include_directive()) {
+        // ambiguous include directives need a complicated resolution pass
+        rb->set_resolution(UNRESOLVED);
+        ++tag_counter;
+      } else {
+        // all other contents are good to go, to be handled by interpreter later
+        rb->set_resolution(RESOLVED_INCLUDED);
+      }
       _blocks.insert(insertion_point, rb);
     }
   }

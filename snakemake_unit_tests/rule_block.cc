@@ -203,7 +203,33 @@ bool snakemake_unit_tests::rule_block::consume_rule_contents(
   return true;
 }
 
-bool snakemake_unit_tests::rule_block::is_include_directive() const {
+bool snakemake_unit_tests::rule_block::contains_include_directive() const {
+  // what is an include directive?
+  const boost::regex include_directive("^( *)include: *(.*) *$");
+  if (get_code_chunk().size() == 1) {
+    boost::smatch include_match;
+    return boost::regex_match(*get_code_chunk().begin(), include_match,
+                              include_directive);
+  }
+  return false;
+}
+
+std::string snakemake_unit_tests::rule_block::get_filename_expression() const {
+  // what is an include directive?
+  const boost::regex include_directive("^( *)include: *(.*) *$");
+  if (get_code_chunk().size() == 1) {
+    boost::smatch include_match;
+    if (boost::regex_match(*get_code_chunk().begin(), include_match,
+                           include_directive)) {
+      return include_match[2].str();
+    }
+  }
+  throw std::runtime_error(
+      "get_filename_expression() called in code block "
+      "that does not match include directive pattern");
+}
+
+bool snakemake_unit_tests::rule_block::is_simple_include_directive() const {
   // what is an include directive?
   const boost::regex include_directive("^( *)include: *\"(.*)\".*$");
   if (get_code_chunk().size() == 1) {
@@ -214,7 +240,7 @@ bool snakemake_unit_tests::rule_block::is_include_directive() const {
   return false;
 }
 
-std::string snakemake_unit_tests::rule_block::get_recursive_filename() const {
+std::string snakemake_unit_tests::rule_block::get_standard_filename() const {
   // what is an include directive?
   const boost::regex include_directive("^( *)include: *\"(.*)\".*$");
   if (get_code_chunk().size() == 1) {
@@ -225,7 +251,7 @@ std::string snakemake_unit_tests::rule_block::get_recursive_filename() const {
     }
   }
   throw std::runtime_error(
-      "get_recursive_filename() called in code block "
+      "get_standard_filename() called in code block "
       "that does not match include directive pattern");
 }
 
@@ -353,9 +379,4 @@ std::string snakemake_unit_tests::rule_block::apply_indentation(
     cur = loc + 1 + indent.size();
   }
   return res;
-}
-
-bool snakemake_unit_tests::rule_block::resolved() const {
-  // TODO(cpalmer718): implement rule block resolved status
-  return true;
 }

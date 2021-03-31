@@ -23,6 +23,10 @@
 
 namespace snakemake_unit_tests {
 /*!
+  @brief python resolution status of a rule block
+ */
+typedef enum { UNRESOLVED, RESOLVED_INCLUDED, RESOLVED_EXCLUDED } block_status;
+/*!
   @class rule_block
   @brief command line argument parser using boost::program_options
 */
@@ -35,7 +39,9 @@ class rule_block {
       : _rule_name(""),
         _base_rule_name(""),
         _global_indentation(0),
-        _local_indentation(0) {}
+        _local_indentation(0),
+        _resolution(UNRESOLVED),
+        _python_tag(0) {}
   /*!
     @brief copy constructor
     @param obj existing rule block
@@ -46,7 +52,9 @@ class rule_block {
         _named_blocks(obj._named_blocks),
         _code_chunk(obj._code_chunk),
         _global_indentation(obj._global_indentation),
-        _local_indentation(obj._local_indentation) {}
+        _local_indentation(obj._local_indentation),
+        _resolution(obj._resolution),
+        _python_tag(obj._python_tag) {}
   /*!
     @brief destructor
    */
@@ -113,10 +121,26 @@ class rule_block {
   const std::string &get_base_rule_name() const { return _base_rule_name; }
 
   /*!
-    @brief determine whether this block is a snakemake file include directive
-    @return whether the block is an include directive, hopefully
+    @brief determine whether this block is a simple snakemake include directive
+    @return whether the block is a simple include directive, hopefully
    */
-  bool is_include_directive() const;
+  bool is_simple_include_directive() const;
+
+  /*!
+    @brief determine whether this block contains something that looks like
+    an include directive but that doesn't conform to basic include syntax
+    @return whether a non-standard include directive is in effect
+   */
+  bool contains_include_directive() const;
+
+  /*!
+    @brief extract the filename expression from an include statement
+    @return the filename expression from an include statement
+
+    the hope is to extract a python expression that the interpreter
+    can report back on
+   */
+  std::string get_filename_expression() const;
 
   /*!
     @brief determine how much indentation an include directive enjoyed
@@ -128,7 +152,7 @@ class rule_block {
     @brief if the block is an include directive, get the file that is included
     @return the included filename
    */
-  std::string get_recursive_filename() const;
+  std::string get_standard_filename() const;
 
   /*!
     @brief report mildly formatted contents to a stream
@@ -217,7 +241,16 @@ class rule_block {
     @brief whether the object's content needs a python pass to resolve
     @return whether the object's content needs a python pass to resolve
    */
-  bool resolved() const;
+  bool resolved() const { return _resolution != UNRESOLVED; }
+
+  /*!
+    @brief override the current resolution status based on external logic
+   */
+  void set_resolution(block_status s) { _resolution = s; }
+  /*!
+    @brief set the unique python tag for inclusion tracking
+   */
+  void set_interpreter_tag(unsigned u) { _python_tag = u; }
 
  private:
   /*!
@@ -295,6 +328,19 @@ class rule_block {
     indentation, which determines the end of the rule block later in the file
    */
   unsigned _local_indentation;
+  /*!
+    @brief resolution status of block
+
+    this can be: UNRESOLVED, RESOLVED_INCLUDED, RESOLVED_EXCLUDED
+   */
+  block_status _resolution;
+  /*!
+    @brief tag for python interpreter tracking
+
+    this is just a unique number that will be emitted to the python
+    tracking pass
+   */
+  unsigned _python_tag;
 };
 }  // namespace snakemake_unit_tests
 
