@@ -120,7 +120,10 @@ bool snakemake_unit_tests::rule_block::consume_rule_contents(
         "null pointer for counter passed to consume_rule_contents");
   std::string line = "", block_name = "", block_contents = "";
   std::string::size_type line_indentation = 0;
+  unsigned starting_line = 0;
   while (*current_line < loaded_lines.size()) {
+    // deal with reverting multiline consumption of content
+    starting_line = *current_line;
     line = loaded_lines.at(*current_line);
     ++*current_line;
     if (verbose) {
@@ -138,7 +141,7 @@ bool snakemake_unit_tests::rule_block::consume_rule_contents(
     // all remaining lines must be indented. any lack of indentation means the
     // rule is done
     if (line.find_first_not_of(' ') <= get_local_indentation()) {
-      --*current_line;
+      *current_line = starting_line;
       return true;
     }
     // use pythonic indentation to flag an arbitrary number of named blocks
@@ -153,6 +156,8 @@ bool snakemake_unit_tests::rule_block::consume_rule_contents(
             named_block_tag_result[2], loaded_lines, current_line);
         // while additional block contents are theoretically available
         while (*current_line < loaded_lines.size()) {
+          // deal with reverting multiline consumption of content
+          starting_line = *current_line;
           line = loaded_lines.at(*current_line);
           ++*current_line;
           line =
@@ -163,8 +168,8 @@ bool snakemake_unit_tests::rule_block::consume_rule_contents(
           line = reduce_relative_paths(line);
 
           // if a line that's not contents is found
-          if (line_indentation <= get_local_indentation()) {
-            --*current_line;
+          if (line_indentation <= get_local_indentation() + 4) {
+            *current_line = starting_line;
             if (verbose) {
               std::cout << "storing a block with name \"" << block_name
                         << "\" and contents \"" << block_contents << "\""
@@ -299,7 +304,8 @@ void snakemake_unit_tests::rule_block::report_python_logging_code(
       for (std::vector<std::string>::const_iterator iter =
                get_code_chunk().begin();
            iter != get_code_chunk().end(); ++iter) {
-        if (!(out << indentation(get_global_indentation()) << *iter
+        if (!(out << indentation(get_global_indentation())
+                  << apply_indentation(*iter, get_global_indentation())
                   << std::endl))
           throw std::runtime_error("code chunk printing error");
       }
@@ -349,7 +355,9 @@ void snakemake_unit_tests::rule_block::print_contents(std::ostream &out) const {
     for (std::vector<std::string>::const_iterator iter =
              get_code_chunk().begin();
          iter != get_code_chunk().end(); ++iter) {
-      if (!(out << indentation(get_global_indentation()) << *iter << std::endl))
+      if (!(out << indentation(get_global_indentation())
+                << apply_indentation(*iter, get_global_indentation())
+                << std::endl))
         throw std::runtime_error("code chunk printing error");
     }
   } else {
