@@ -40,8 +40,9 @@ std::string snakemake_unit_tests::remove_comments_and_docstrings(
       while (*line_number < loaded_lines.size() &&
              !found_docstring_terminator) {
         res << std::endl << loaded_lines.at(*line_number);
+        found_docstring_terminator =
+            loaded_lines.at(*line_number).find("\"\"\"") != std::string::npos;
         ++*line_number;
-        found_docstring_terminator = line.find("\"\"\"") != std::string::npos;
       }
     }
     return res.str();
@@ -52,9 +53,9 @@ std::string snakemake_unit_tests::remove_comments_and_docstrings(
       // just consume the content, don't bother to aggregate
       while (*line_number < loaded_lines.size() &&
              !found_docstring_terminator) {
-        line = loaded_lines.at(*line_number);
+        found_docstring_terminator =
+            loaded_lines.at(*line_number).find("\"\"\"") != std::string::npos;
         ++*line_number;
-        found_docstring_terminator = line.find("\"\"\"") != std::string::npos;
       }
     }
     return "";
