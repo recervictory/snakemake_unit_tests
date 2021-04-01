@@ -1,0 +1,23 @@
+rule all:
+    input:
+        "output1.txt",
+
+
+pass
+
+
+rule simple_rule1:
+    input:
+        "input1.txt",
+    output:
+        "output1.txt",
+    shell:
+        "cp {input} {output}"
+
+
+pass
+
+
+pass
+
+
