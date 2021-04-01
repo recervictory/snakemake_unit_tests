@@ -71,7 +71,6 @@ void snakemake_unit_tests::snakemake_file::load_everything(
   _blocks.push_back(ptr);
   std::vector<std::string> loaded_lines;
   // while any unresolved code chunk is present
-  // TODO(cpalmer718): handle hackjob python interface (not at all trivial lol)
   bool unresolved = true;
   while (unresolved) {
     unresolved = false;
@@ -86,6 +85,12 @@ void snakemake_unit_tests::snakemake_file::load_everything(
         boost::filesystem::path recursive_path =
             base_dir / (*iter)->get_standard_filename();
         load_lines(recursive_path, &loaded_lines);
+        /*!
+          see elsewhere for more extensive discussion, but this command
+          is expected to fail due to the path flattening issue #13
+
+          TODO(cpalmer718): deal with path flattening #13
+         */
         parse_file(loaded_lines, iter, recursive_path,
                    (*iter)->get_include_depth(), verbose);
         unresolved = true;
@@ -435,22 +440,62 @@ void snakemake_unit_tests::snakemake_file::resolve_with_python(
   // capture the resulting tags for updating completion status
   std::map<std::string, std::string> tag_values;
   capture_python_tag_values(results, &tag_values);
-  // update rule block status based on python report
-  for (std::list<boost::shared_ptr<rule_block> >::iterator iter =
-           _blocks.begin();
-       iter != _blocks.end(); ++iter) {
-    // if the block reports that it was an ambiguous include directive
-    if (!(*iter)->update_resolution(tag_values)) {
-      // it updated itself to an unambiguous include directive. include it.
-      std::vector<std::string> loaded_lines;
-      boost::filesystem::path recursive_path =
-          base_dir / (*iter)->get_standard_filename();
-      load_lines(recursive_path, &loaded_lines);
-      parse_file(loaded_lines, iter, recursive_path,
-                 (*iter)->get_include_depth(), verbose);
-      iter = _blocks.erase(iter);
-      // current logic cannot reliably progress beyond this point
-      break;
+  // while any unresolved simple include statements possibly remain
+  bool unresolved = true;
+  std::vector<std::string> loaded_lines;
+  // allow early termination of rule set
+  std::list<boost::shared_ptr<rule_block> >::iterator dynamic_endpoint =
+      _blocks.end();
+  while (unresolved) {
+    unresolved = false;
+    // update rule block status based on python report
+    for (std::list<boost::shared_ptr<rule_block> >::iterator iter =
+             _blocks.begin();
+         iter != dynamic_endpoint; ++iter) {
+      // if the block reports that it was an ambiguous include directive
+      if (!(*iter)->update_resolution(tag_values)) {
+        // it updated itself to an unambiguous include directive. include it.
+        boost::filesystem::path recursive_path =
+            base_dir / (*iter)->get_standard_filename();
+        load_lines(recursive_path, &loaded_lines);
+        parse_file(loaded_lines, iter, recursive_path,
+                   (*iter)->get_include_depth(), verbose);
+        unresolved = true;
+        iter = _blocks.erase(iter);
+        // current logic cannot reliably progress beyond this point
+        dynamic_endpoint = iter;
+        // note that due to the update in the loop, still must break here
+        break;
+      } else if ((*iter)->is_simple_include_directive()) {
+        // allow simple include statements from recently loaded files
+        /*
+          TODO(cpalmer718): address relative paths in multilevel includes
+
+          note that this code is theoretically designed to handle include
+          statements buried within other included files. however: currently,
+          the inclusion assumes the same working directory used for the original
+          include statement. this is probably false. so this is really
+          a manifestation of #13, path flattening.
+
+          for multilevel includes, the solution is probably for the include
+          statement to track its own working directory.
+         */
+        // load the included file
+        if (verbose)
+          std::cout << "found include directive, adding \""
+                    << (*iter)->get_standard_filename() << "\"" << std::endl;
+        boost::filesystem::path recursive_path =
+            base_dir / (*iter)->get_standard_filename();
+        load_lines(recursive_path, &loaded_lines);
+        parse_file(loaded_lines, iter, recursive_path,
+                   (*iter)->get_include_depth(), verbose);
+        unresolved = true;
+        // and now that the include has been performed, do not add the include
+        // statement
+        iter = _blocks.erase(iter);
+        // but note that since this doesn't block logical progression, so no
+        // endpoint update or break is required
+      }
     }
   }
 }
