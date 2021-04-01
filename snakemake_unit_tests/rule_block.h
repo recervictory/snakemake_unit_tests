@@ -244,6 +244,11 @@ class rule_block {
   bool resolved() const { return _resolution != UNRESOLVED; }
 
   /*!
+    @brief whether the object's contents should be included in the output
+    @return whether the object's contents should be included in the output
+   */
+  bool included() const { return _resolution == RESOLVED_INCLUDED; }
+  /*!
     @brief override the current resolution status based on external logic
     @param s new value for resolution status
    */

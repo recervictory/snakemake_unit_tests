@@ -132,6 +132,8 @@ void snakemake_unit_tests::snakemake_file::detect_known_issues(
   for (std::list<boost::shared_ptr<rule_block> >::iterator iter =
            _blocks.begin();
        iter != _blocks.end(); ++iter) {
+    // new: respect blocks' reports of inclusion status
+    if (!(*iter)->included()) continue;
     // python code. scan for remaining include directives
     if (!(*iter)->get_code_chunk().empty()) {
       std::string::size_type include_location =
@@ -269,6 +271,8 @@ void snakemake_unit_tests::snakemake_file::resolve_derived_rules() {
   for (std::list<boost::shared_ptr<rule_block> >::iterator iter =
            _blocks.begin();
        iter != _blocks.end(); ++iter) {
+    // new: respect unincluded rules
+    if (!(*iter)->included()) continue;
     // if it has a base class
     if (!(*iter)->get_base_rule_name().empty()) {
       // locate the base class
@@ -358,7 +362,8 @@ void snakemake_unit_tests::snakemake_file::report_single_rule(
     }
     // if this is the rule or if it's not a rule at all,
     // report it to the synthetic snakefile
-    if (!(*iter)->get_rule_name().compare(rule_name) ||
+    // new: respect rule's inclusion status
+    if ((!(*iter)->get_rule_name().compare(rule_name) && (*iter)->included()) ||
         (*iter)->get_rule_name().empty()) {
       (*iter)->print_contents(out);
     } else {
