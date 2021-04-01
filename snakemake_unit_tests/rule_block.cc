@@ -326,26 +326,29 @@ void snakemake_unit_tests::rule_block::report_python_logging_code(
 bool snakemake_unit_tests::rule_block::update_resolution(
     const std::map<std::string, std::string> &tag_values) {
   std::map<std::string, std::string>::const_iterator finder;
-  finder = tag_values.find("tag" + std::to_string(get_interpreter_tag()));
-  if (finder != tag_values.end()) {
-    // if the tag is for a rule
-    if (finder->second.empty()) {
-      set_resolution(RESOLVED_INCLUDED);
-      std::cout << "updating rule \"" << get_rule_name()
-                << "\" to included status" << std::endl;
-      return true;
-    } else {
-      // the tag is for an ambiguous include directive
-      set_resolution(RESOLVED_INCLUDED);
-      std::cout << "updating ambiguous include \"" << _code_chunk.at(0)
-                << "\" to \"" << indentation(get_include_depth())
-                << "include: \"" << finder->second << "\"\"" << std::endl;
-      _code_chunk.at(0) = indentation(get_include_depth()) + "include: \"" +
-                          finder->second + "\"";
-      return false;
+  // tag==0 entries are python code that doesn't require inclusion tracking
+  if (get_interpreter_tag()) {
+    finder = tag_values.find("tag" + std::to_string(get_interpreter_tag()));
+    if (finder != tag_values.end()) {
+      // if the tag is for a rule
+      if (finder->second.empty()) {
+        set_resolution(RESOLVED_INCLUDED);
+        std::cout << "updating rule \"" << get_rule_name()
+                  << "\" to included status" << std::endl;
+        return true;
+      } else {
+        // the tag is for an ambiguous include directive
+        set_resolution(RESOLVED_INCLUDED);
+        std::cout << "updating ambiguous include \"" << _code_chunk.at(0)
+                  << "\" to \"" << indentation(get_include_depth())
+                  << "include: \"" << finder->second << "\"\"" << std::endl;
+        _code_chunk.at(0) = indentation(get_include_depth()) + "include: \"" +
+                            finder->second + "\"";
+        return false;
+      }
     }
+    std::cout << "cannot find tag" << get_interpreter_tag() << std::endl;
   }
-  std::cout << "cannot find tag" << get_interpreter_tag() << std::endl;
   return true;
 }
 
