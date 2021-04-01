@@ -455,15 +455,52 @@ std::vector<std::string> snakemake_unit_tests::snakemake_file::exec(
   // https://stackoverflow.com/questions/478898/how-do-i-execute-a-command-and-get-the-output-of-the-command-within-c-using-po
   std::array<char, 128> buffer;
   std::vector<std::string> result;
-  std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd.c_str(), "r"),
-                                                pclose);
+  FILE *pipe = 0;
+  pipe = popen(cmd.c_str(), "r");
   if (!pipe) {
     throw std::runtime_error("popen() failed!");
   }
-  while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
-    result.push_back(std::string(buffer.data()));
+  try {
+    while (fgets(buffer.data(), buffer.size(), pipe) != nullptr) {
+      result.push_back(std::string(buffer.data()));
+    }
+    int status = pclose(pipe);
+    if (status == -1) {
+      throw std::runtime_error(
+          "exec pipe close failed. this exit status is conceptually possible, "
+          "but most likely "
+          "due to system inconsistency or instability, or killing a remote job "
+          "on a cluster "
+          "mid-run. you might consider rerunning with more "
+          "RAM or processes free. otherwise, please consider posting any log "
+          "output from python3 "
+          "to the snakemake_unit_tests repository for feedback.");
+    }
+    if (!WIFEXITED(status)) {
+      throw std::runtime_error(
+          "python subprocess terminated abnormally. this is probably a system "
+          "configuration "
+          "issue, but may be due to a logic failure in snakemake_unit_tests. "
+          "please post "
+          "the preceding log output from python3 to an issue in the "
+          "snakemake_unit_tests "
+          "repository.");
+    }
+    if (WEXITSTATUS(status)) {
+      throw std::runtime_error(
+          "python subprocess returned error exit status. this is most likely "
+          "due to "
+          "a logic error or snakemake feature in your pipeline that is not "
+          "currently "
+          "supported by snakemake_unit_tests. please post the preceding log "
+          "output from "
+          "python3 to an issue in the snakemake_unit_tests repository.");
+    }
+    return result;
+  } catch (...) {
+    if (pipe) pclose(pipe);
+    throw;
   }
-  return result;
 }
 
 void snakemake_unit_tests::snakemake_file::capture_python_tag_values(
