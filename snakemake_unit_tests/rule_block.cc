@@ -304,8 +304,7 @@ void snakemake_unit_tests::rule_block::report_python_logging_code(
       for (std::vector<std::string>::const_iterator iter =
                get_code_chunk().begin();
            iter != get_code_chunk().end(); ++iter) {
-        if (!(out << indentation(get_global_indentation())
-                  << apply_indentation(*iter, get_global_indentation())
+        if (!(out << indentation(get_global_indentation()) << *iter
                   << std::endl))
           throw std::runtime_error("code chunk printing error");
       }
