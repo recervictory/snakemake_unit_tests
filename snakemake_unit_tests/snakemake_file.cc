@@ -95,9 +95,11 @@ void snakemake_unit_tests::snakemake_file::load_everything(
       }
     }
   }
+}
 
+void snakemake_unit_tests::snakemake_file::postflight_checks(
+    std::vector<std::string> *exclude_rules) {
   // placeholder: add screening step to detect known issues/unsupported features
-  // TODO(cpalmer718): implement python integration. add checkpoints
   detect_known_issues(exclude_rules);
 
   // deal with derived rules
@@ -309,7 +311,6 @@ void snakemake_unit_tests::snakemake_file::parse_file(
     bool verbose) {
   // track current line
   unsigned current_line = 0;
-  unsigned tag_counter = 1;
   while (current_line < loaded_lines.size()) {
     boost::shared_ptr<rule_block> rb(new rule_block);
     if (rb->load_content_block(loaded_lines, filename, global_indentation,
@@ -318,14 +319,14 @@ void snakemake_unit_tests::snakemake_file::parse_file(
       // rules should all be set to unresolved before first pass
       if (!rb->get_rule_name().empty()) {
         rb->set_resolution(UNRESOLVED);
-        rb->set_interpreter_tag(tag_counter);
-        ++tag_counter;
+        rb->set_interpreter_tag(_tag_counter);
+        ++_tag_counter;
       } else if (rb->contains_include_directive() &&
                  !rb->is_simple_include_directive()) {
         // ambiguous include directives need a complicated resolution pass
         rb->set_resolution(UNRESOLVED);
-        rb->set_interpreter_tag(tag_counter);
-        ++tag_counter;
+        rb->set_interpreter_tag(_tag_counter);
+        ++_tag_counter;
       } else {
         // all other contents are good to go, to be handled by interpreter later
         rb->set_resolution(RESOLVED_INCLUDED);
@@ -384,8 +385,20 @@ bool snakemake_unit_tests::snakemake_file::fully_resolved() const {
   return true;
 }
 
+bool snakemake_unit_tests::snakemake_file::contains_blockers() const {
+  for (std::list<boost::shared_ptr<rule_block> >::const_iterator iter =
+           _blocks.begin();
+       iter != _blocks.end(); ++iter) {
+    if ((*iter)->contains_include_directive() &&
+        !(*iter)->is_simple_include_directive())
+      return true;
+  }
+  return false;
+}
+
 void snakemake_unit_tests::snakemake_file::resolve_with_python(
-    const boost::filesystem::path &workspace) {
+    const boost::filesystem::path &workspace,
+    const boost::filesystem::path &base_dir, bool verbose) {
   // TODO(cpalmer718): implement python resolution
   // within a workspace, open a snakefile
   boost::filesystem::path workflow = workspace / "workflow";
@@ -398,9 +411,12 @@ void snakemake_unit_tests::snakemake_file::resolve_with_python(
         "to file \"" +
         (workflow / "Snakefile.py").string() + "\"");
   // write python reporting code
-  if (!(output << "#!/usr/bin/env python3" << std::endl))
-    throw std::runtime_error("cannot write shebang to dummy python script \"" +
-                             (workflow / "Snakefile.py").string() + "\"");
+  if (!(output << "#!/usr/bin/env python3" << std::endl
+               << "import os" << std::endl
+               << "os.chdir(\"" << workflow.string() << "\")" << std::endl))
+    throw std::runtime_error(
+        "cannot write header content to dummy python script \"" +
+        (workflow / "Snakefile.py").string() + "\"");
   for (std::list<boost::shared_ptr<rule_block> >::const_iterator iter =
            get_blocks().begin();
        iter != get_blocks().end(); ++iter) {
@@ -408,4 +424,72 @@ void snakemake_unit_tests::snakemake_file::resolve_with_python(
     (*iter)->report_python_logging_code(output);
   }
   output.close();
+  // execute python script and capture output
+  std::vector<std::string> results =
+      exec("python3 " + (workflow / "Snakefile.py").string());
+  // capture the resulting tags for updating completion status
+  std::map<std::string, std::string> tag_values;
+  capture_python_tag_values(results, &tag_values);
+  // update rule block status based on python report
+  for (std::list<boost::shared_ptr<rule_block> >::iterator iter =
+           _blocks.begin();
+       iter != _blocks.end(); ++iter) {
+    // if the block reports that it was an ambiguous include directive
+    if (!(*iter)->update_resolution(tag_values)) {
+      // it updated itself to an unambiguous include directive. include it.
+      std::vector<std::string> loaded_lines;
+      boost::filesystem::path recursive_path =
+          base_dir / (*iter)->get_standard_filename();
+      load_lines(recursive_path, &loaded_lines);
+      parse_file(loaded_lines, iter, recursive_path,
+                 (*iter)->get_include_depth(), verbose);
+      iter = _blocks.erase(iter);
+      // current logic cannot reliably progress beyond this point
+      break;
+    }
+  }
+}
+
+std::vector<std::string> snakemake_unit_tests::snakemake_file::exec(
+    const std::string &cmd) const {
+  // https://stackoverflow.com/questions/478898/how-do-i-execute-a-command-and-get-the-output-of-the-command-within-c-using-po
+  std::array<char, 128> buffer;
+  std::vector<std::string> result;
+  std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd.c_str(), "r"),
+                                                pclose);
+  if (!pipe) {
+    throw std::runtime_error("popen() failed!");
+  }
+  while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
+    result.push_back(std::string(buffer.data()));
+  }
+  return result;
+}
+
+void snakemake_unit_tests::snakemake_file::capture_python_tag_values(
+    const std::vector<std::string> &vec,
+    std::map<std::string, std::string> *target) const {
+  const boost::regex tag_value_pair("^(tag[0-9]+): *(.*) *\n$");
+  const boost::regex tag_alone("^(tag[0-9])+ *\n$");
+  boost::smatch tag_match;
+  if (!target)
+    throw std::runtime_error(
+        "null pointer provided to capture_python_tag_values");
+  // for each line of output
+  for (std::vector<std::string>::const_iterator iter = vec.begin();
+       iter != vec.end(); ++iter) {
+    // match format "tag#: value"
+    if (boost::regex_match(*iter, tag_match, tag_value_pair)) {
+      (*target)[tag_match[1].str()] = tag_match[2].str();
+    } else if (boost::regex_match(*iter, tag_match, tag_alone)) {
+      // match format "tag#"
+      (*target)[tag_match[1].str()] = "";
+    } else {
+      // wtf
+      throw std::runtime_error(
+          "python reporting content did not match "
+          "expected tag/value format: \"" +
+          *iter + "\"");
+    }
+  }
 }

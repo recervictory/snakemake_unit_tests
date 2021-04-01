@@ -68,12 +68,19 @@ int main(int argc, char **argv) {
   sr.create_empty_workspace(p.output_test_dir, p.pipeline_run_dir,
                             p.added_files, p.added_directories);
   // do things in this location
-  do {
-    sf.resolve_with_python(p.output_test_dir / ".snakemake_unit_tests");
-  } while (!sf.fully_resolved() && false);
+  bool continue_python_updates = true;
+  while (continue_python_updates) {
+    // scan the rule set for blockers
+    continue_python_updates = sf.contains_blockers();
+    sf.resolve_with_python(p.output_test_dir / ".snakemake_unit_tests",
+                           p.snakefile.parent_path(), p.verbose);
+  }
 
   // remove the location
-  // sr.remove_empty_workspace(p.output_test_dir);
+  sr.remove_empty_workspace(p.output_test_dir);
+
+  // refactor: move postflight snakefile checks to after the python passes
+  sf.postflight_checks(&p.exclude_rules);
 
   // iterate over the solved rules, emitting them with modifiers as desired
   sr.emit_tests(

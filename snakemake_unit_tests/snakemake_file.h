@@ -12,6 +12,7 @@
 
 #include <list>
 #include <map>
+#include <memory>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -31,12 +32,13 @@ class snakemake_file {
   /*!
     @brief default constructor
    */
-  snakemake_file() {}
+  snakemake_file() : _tag_counter(1) {}
   /*!
     @brief copy constructor
     @param obj existing snakemake_file object
    */
-  snakemake_file(const snakemake_file &obj) : _blocks(obj._blocks) {}
+  snakemake_file(const snakemake_file &obj)
+      : _blocks(obj._blocks), _tag_counter(obj._tag_counter) {}
   /*!
     @brief destructor
    */
@@ -130,19 +132,59 @@ class snakemake_file {
     their status. this logic is not yet fully clear to me.
    */
   bool fully_resolved() const;
+  /*!
+    @brief whether the object's rules contain any unresolved include directives
+    @return whether the object's rules contain any unresolved include directives
+   */
+  bool contains_blockers() const;
 
   /*!
     @brief run the current rule set through python once
     @param workspace top level directory with added files and directories
     installed
+    @param base_dir directory from which to base relative file paths
+    @param verbose whether to provide verbose logging output
    */
-  void resolve_with_python(const boost::filesystem::path &workspace);
+  void resolve_with_python(const boost::filesystem::path &workspace,
+                           const boost::filesystem::path &base_dir,
+                           bool verbose);
+
+  /*!
+    @brief execute a system command and capture its results
+    @param cmd system command to execute
+    @return captured results, line by line
+
+    https://stackoverflow.com/questions/478898/how-do-i-execute-a-command-and-get-the-output-of-the-command-within-c-using-po
+   */
+  std::vector<std::string> exec(const std::string &cmd) const;
+  /*!
+    @brief parse python reporting output to tags or tags and values
+    @param vec captured lines from python output
+    @param target results collector
+
+    null strings in map value corresponds to rule tags
+   */
+  void capture_python_tag_values(
+      const std::vector<std::string> &vec,
+      std::map<std::string, std::string> *target) const;
+  /*!
+    @brief resolve derived rules and check for sanity
+    @param exclude_rules flagged rules to be excluded
+
+    note that more content will be added here presumably once more snakemake
+    features are supported
+   */
+  void postflight_checks(std::vector<std::string> *exclude_rules);
 
  private:
   /*!
     @brief minimal contents of snakemake file as blocks of code
    */
   std::list<boost::shared_ptr<rule_block> > _blocks;
+  /*!
+    @brief internal counter of assigned tags to rules
+   */
+  unsigned _tag_counter;
 };
 }  // namespace snakemake_unit_tests
 

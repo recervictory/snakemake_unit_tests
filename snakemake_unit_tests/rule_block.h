@@ -263,6 +263,12 @@ class rule_block {
     @param out open output stream for reporting
    */
   void report_python_logging_code(std::ostream &out) const;
+  /*!
+    @brief using python tag output, update resolution status
+    @param tag_values loaded key(:value) pairs from python output
+    @return whether the current rule allows downstream logic to continue
+   */
+  bool update_resolution(const std::map<std::string, std::string> &tag_values);
 
  private:
   /*!
