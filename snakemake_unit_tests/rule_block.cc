@@ -51,7 +51,8 @@ bool snakemake_unit_tests::rule_block::load_content_block(
   const boost::regex standard_rule_declaration("^( *)rule ([^ ]+):.*$");
   const boost::regex derived_rule_declaration(
       "^( *)use rule ([^ ]+) as ([^ ]+) with:.*$");
-
+  const boost::regex global_wildcard_constraints(
+      "^( *)wildcard_constraints:.*$");
   if (*current_line >= loaded_lines.size()) return false;
   while (*current_line < loaded_lines.size()) {
     line = loaded_lines.at(*current_line);
@@ -78,7 +79,7 @@ bool snakemake_unit_tests::rule_block::load_content_block(
       set_rule_name(regex_result[2]);
       _local_indentation = regex_result[1].str().size();
       return consume_rule_contents(loaded_lines, filename, verbose,
-                                   current_line);
+                                   current_line, 4);
     } else if (boost::regex_match(line, regex_result,
                                   derived_rule_declaration)) {
       if (verbose) {
@@ -92,7 +93,15 @@ bool snakemake_unit_tests::rule_block::load_content_block(
       // are available.
       set_base_rule_name(regex_result[2]);
       return consume_rule_contents(loaded_lines, filename, verbose,
-                                   current_line);
+                                   current_line, 4);
+    } else if (boost::regex_match(line, regex_result,
+                                  global_wildcard_constraints)) {
+      // global wildcard constraints block, which behaves like an
+      // input/output/etc block within a rule, but has no parent rule it lives
+      // under
+      _local_indentation += regex_result[1].str().size();
+      return consume_rule_contents(loaded_lines, filename, verbose,
+                                   current_line, 0);
     } else {
       // new to refactor: this is arbitrary python and we're leaving it like
       // that
@@ -110,9 +119,10 @@ bool snakemake_unit_tests::rule_block::load_content_block(
 bool snakemake_unit_tests::rule_block::consume_rule_contents(
     const std::vector<std::string> &loaded_lines,
     const boost::filesystem::path &filename, bool verbose,
-    unsigned *current_line) {
+    unsigned *current_line, unsigned block_base_increment) {
   std::ostringstream regex_formatter;
-  regex_formatter << "^" << indentation(get_local_indentation() + 4)
+  regex_formatter << "^"
+                  << indentation(get_local_indentation() + block_base_increment)
                   << "([a-zA-Z_\\-]+):(.*)$";
   const boost::regex named_block_tag(regex_formatter.str());
   if (!current_line)
@@ -309,7 +319,7 @@ void snakemake_unit_tests::rule_block::report_python_logging_code(
           throw std::runtime_error("code chunk printing error");
       }
     }
-  } else {  // is a rule
+  } else if (!get_rule_name().empty()) {  // is a rule
     // if the rule has not already been flagged as untouched
     if (_resolution == RESOLVED_INCLUDED || _resolution == UNRESOLVED) {
       if (!(out << indentation(get_global_indentation() +
@@ -319,6 +329,9 @@ void snakemake_unit_tests::rule_block::report_python_logging_code(
                 << std::endl))
         throw std::runtime_error("rule interpreter code printing failure");
     }
+  } else {  // is a snakemake metacontent block
+    // rule name is empty but blocks are not.
+    // these blocks have no pythonic meaning and need to be excluded
   }
 }
 
@@ -353,7 +366,7 @@ bool snakemake_unit_tests::rule_block::update_resolution(
 
 void snakemake_unit_tests::rule_block::print_contents(std::ostream &out) const {
   // report contents. may eventually be used for printing to custom snakefile
-  if (!get_code_chunk().empty()) {
+  if (!get_code_chunk().empty()) {  // python code
     for (std::vector<std::string>::const_iterator iter =
              get_code_chunk().begin();
          iter != get_code_chunk().end(); ++iter) {
@@ -362,7 +375,7 @@ void snakemake_unit_tests::rule_block::print_contents(std::ostream &out) const {
                 << std::endl))
         throw std::runtime_error("code chunk printing error");
     }
-  } else {
+  } else if (!get_rule_name().empty()) {  // rule
     if (!(out << indentation(get_global_indentation() + get_local_indentation())
               << "rule " << get_rule_name() << ":" << std::endl))
       throw std::runtime_error("rule name printing failure");
@@ -420,6 +433,18 @@ void snakemake_unit_tests::rule_block::print_contents(std::ostream &out) const {
     // for snakefmt compatibility: emit two empty lines at the end of a rule
     if (!(out << std::endl << std::endl))
       throw std::runtime_error("rule padding printing error");
+  } else {
+    // snakemake metacontent block
+    for (std::map<std::string, std::string>::const_iterator iter =
+             get_named_blocks().begin();
+         iter != get_named_blocks().end(); ++iter) {
+      if (!(out << indentation(get_global_indentation() +
+                               get_local_indentation() + 4)
+                << iter->first << ":"
+                << apply_indentation(iter->second, get_global_indentation())
+                << std::endl))
+        throw std::runtime_error("named block printing failure");
+    }
   }
 }
 
