@@ -415,43 +415,27 @@ void snakemake_unit_tests::snakemake_file::resolve_with_python(
   boost::filesystem::path workflow = workspace / "workflow";
   boost::filesystem::create_directories(workflow);
   std::ofstream output;
-  output.open((workflow / "Snakefile.py").string().c_str());
+  output.open((workflow / "Snakefile").string().c_str());
   if (!output.is_open())
     throw std::runtime_error(
         "cannot write interpreter snakefile "
         "to file \"" +
-        (workflow / "Snakefile.py").string() + "\"");
+        (workflow / "Snakefile").string() + "\"");
   // write python reporting code
-  std::vector<std::string> snakemake_imports;
-  snakemake_imports = exec(
-      "grep -E \"^from snakemake\" \"$(pip show snakemake | "
-      "grep \"Location\" | sed 's/^Location: //')/snakemake/__init__.py\"");
-  std::ostringstream formatted_imports;
-  for (std::vector<std::string>::const_iterator iter =
-           snakemake_imports.begin();
-       iter != snakemake_imports.end(); ++iter) {
-    formatted_imports << *iter << std::endl;
-  }
-  if (!(output << "#!/usr/bin/env python3" << std::endl
-               << "import os" << std::endl
-               << "import json" << std::endl
-               << "import yaml" << std::endl
-               << formatted_imports.str() << std::endl
-               << "os.chdir(\"" << workflow.string() << "\")" << std::endl
-               << "config = dict()" << std::endl))
-    throw std::runtime_error(
-        "cannot write header content to dummy python script \"" +
-        (workflow / "Snakefile.py").string() + "\"");
   for (std::list<boost::shared_ptr<rule_block> >::const_iterator iter =
            get_blocks().begin();
        iter != get_blocks().end(); ++iter) {
     // ask the rule to report the python equivalent of its contents
     (*iter)->report_python_logging_code(output);
   }
+  if (!(output << "rule tmp:" << std::endl
+               << "    output: \"tmp.txt\"," << std::endl))
+    throw std::runtime_error("cannot write tmp output rule to python reporter");
   output.close();
   // execute python script and capture output
   std::vector<std::string> results =
-      exec("python3 " + (workflow / "Snakefile.py").string());
+      exec("cd " + workflow.parent_path().string() + " && snakemake -nFs " +
+           (boost::filesystem::path("workflow") / "Snakefile").string());
   // capture the resulting tags for updating completion status
   std::map<std::string, std::string> tag_values;
   capture_python_tag_values(results, &tag_values);
@@ -587,11 +571,8 @@ void snakemake_unit_tests::snakemake_file::capture_python_tag_values(
       // match format "tag#"
       (*target)[tag_match[1].str()] = "";
     } else {
-      // wtf
-      throw std::runtime_error(
-          "python reporting content did not match "
-          "expected tag/value format: \"" +
-          *iter + "\"");
+      // in snakemake interpreter mode, just ignore this
+      continue;
     }
   }
 }

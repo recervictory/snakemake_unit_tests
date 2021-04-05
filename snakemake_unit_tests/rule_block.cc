@@ -341,23 +341,17 @@ void snakemake_unit_tests::rule_block::report_python_logging_code(
     }
   } else {  // is a snakemake metacontent block
     // rule name is empty but blocks are not.
-    // these blocks have no pythonic meaning and need to be excluded.
-    // the exception, for the moment, is the config file, which
-    // requires modification and inclusion, regrettably
-    if (_named_blocks.find("configfile") != _named_blocks.end()) {
-      std::string padding =
-          indentation(get_global_indentation() + get_local_indentation());
-      if (!(out << padding << "try:" << std::endl
-                << padding << "    config = yaml.safe_load(open("
-                << _named_blocks.find("configfile")->second << ", \"r\"))"
-                << std::endl
-                << padding << "except:" << std::endl
-                << padding << "    config = json.load("
-                << _named_blocks.find("configfile")->second << ")"
+    // switching to direct snakemake interpretation, in which case these
+    // need to be included
+    for (std::map<std::string, std::string>::const_iterator iter =
+             get_named_blocks().begin();
+         iter != get_named_blocks().end(); ++iter) {
+      if (!(out << indentation(get_global_indentation() +
+                               get_local_indentation())
+                << iter->first << ":"
+                << apply_indentation(iter->second, get_global_indentation())
                 << std::endl))
-        throw std::runtime_error(
-            "unable to print interpreted config contents to "
-            "python interpreter script");
+        throw std::runtime_error("snakemake directive printing failure");
     }
   }
 }
