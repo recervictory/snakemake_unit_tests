@@ -51,8 +51,7 @@ bool snakemake_unit_tests::rule_block::load_content_block(
   const boost::regex standard_rule_declaration("^( *)rule ([^ ]+):.*$");
   const boost::regex derived_rule_declaration(
       "^( *)use rule ([^ ]+) as ([^ ]+) with:.*$");
-  const boost::regex global_wildcard_constraints(
-      "^( *)wildcard_constraints:.*$");
+  const boost::regex global_snakemake_block("^( *)[a-zA-Z_\\-]+:.*$");
   if (*current_line >= loaded_lines.size()) return false;
   while (*current_line < loaded_lines.size()) {
     line = loaded_lines.at(*current_line);
@@ -94,9 +93,8 @@ bool snakemake_unit_tests::rule_block::load_content_block(
       set_base_rule_name(regex_result[2]);
       return consume_rule_contents(loaded_lines, filename, verbose,
                                    current_line, 4);
-    } else if (boost::regex_match(line, regex_result,
-                                  global_wildcard_constraints)) {
-      // global wildcard constraints block, which behaves like an
+    } else if (boost::regex_match(line, regex_result, global_snakemake_block)) {
+      // global snakemake block, which behaves like an
       // input/output/etc block within a rule, but has no parent rule it lives
       // under
       _local_indentation += regex_result[1].str().size();
@@ -293,7 +291,7 @@ unsigned snakemake_unit_tests::rule_block::get_include_depth() const {
 }
 
 void snakemake_unit_tests::rule_block::report_python_logging_code(
-    std::ostream &out) const {
+    std::ostream &out, const boost::filesystem::path &workdir) const {
   // report contents. may eventually be used for printing to custom snakefile
   if (!get_code_chunk().empty()) {
     // if this is an include directive of any kind
@@ -338,7 +336,28 @@ void snakemake_unit_tests::rule_block::report_python_logging_code(
     }
   } else {  // is a snakemake metacontent block
     // rule name is empty but blocks are not.
-    // these blocks have no pythonic meaning and need to be excluded
+    // these blocks have no pythonic meaning and need to be excluded.
+    // the exception, for the moment, is the config file, which
+    // requires modification and inclusion, regrettably
+    if (_named_blocks.find("configfile") != _named_blocks.end()) {
+      std::string padding =
+          indentation(get_global_indentation() + get_local_indentation());
+      if (!(out << padding << "os.chdir(\""
+                << boost::filesystem::absolute(workdir).parent_path().string()
+                << "\")" << std::endl
+                << padding << "try:" << std::endl
+                << padding << "    config = yaml.safe_load("
+                << _named_blocks.find("configfile")->second << ")" << std::endl
+                << padding << "except:" << std::endl
+                << padding << "    config = json.load("
+                << _named_blocks.find("configfile")->second << ")" << std::endl
+                << padding << "os.chdir(\""
+                << boost::filesystem::absolute(workdir).string() << "\")"
+                << std::endl))
+        throw std::runtime_error(
+            "unable to print interpreted config contents to "
+            "python interpreter script");
+    }
   }
 }
 

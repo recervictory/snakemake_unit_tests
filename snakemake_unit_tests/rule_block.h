@@ -272,8 +272,10 @@ class rule_block {
   /*!
     @brief emit a python syntax reporting block to dummy file
     @param out open output stream for reporting
+    @param workdir working directory of python script
    */
-  void report_python_logging_code(std::ostream &out) const;
+  void report_python_logging_code(std::ostream &out,
+                                  const boost::filesystem::path &workdir) const;
   /*!
     @brief using python tag output, update resolution status
     @param tag_values loaded key(:value) pairs from python output

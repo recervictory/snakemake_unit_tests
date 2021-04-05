@@ -423,7 +423,10 @@ void snakemake_unit_tests::snakemake_file::resolve_with_python(
   // write python reporting code
   if (!(output << "#!/usr/bin/env python3" << std::endl
                << "import os" << std::endl
-               << "os.chdir(\"" << workflow.string() << "\")" << std::endl))
+               << "import json" << std::endl
+               << "import yaml" << std::endl
+               << "os.chdir(\"" << workflow.string() << "\")" << std::endl
+               << "config = dict()" << std::endl))
     throw std::runtime_error(
         "cannot write header content to dummy python script \"" +
         (workflow / "Snakefile.py").string() + "\"");
@@ -431,7 +434,7 @@ void snakemake_unit_tests::snakemake_file::resolve_with_python(
            get_blocks().begin();
        iter != get_blocks().end(); ++iter) {
     // ask the rule to report the python equivalent of its contents
-    (*iter)->report_python_logging_code(output);
+    (*iter)->report_python_logging_code(output, workflow);
   }
   output.close();
   // execute python script and capture output
