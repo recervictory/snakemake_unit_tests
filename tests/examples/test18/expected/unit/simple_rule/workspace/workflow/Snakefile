@@ -10,6 +10,9 @@ rule simple_rule:
     output:
         "output.txt",
     shell:
-        "{input} {output}"
+        "{input} > {output}"
+
+
+pass
 
 
