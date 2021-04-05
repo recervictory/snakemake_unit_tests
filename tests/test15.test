@@ -3,7 +3,7 @@
 ## Test: recognize and handle global snakemake configuration wildcard_constraints
 echo 1..1
 
-TESTNAME="test5"
+TESTNAME="test15"
 TESTDESCRIPTION="handle global 'wildcard_constraints'"
 INPUTDIR="tests/examples/$TESTNAME/input"
 OUTPUTDIR="tests/examples/$TESTNAME/output"

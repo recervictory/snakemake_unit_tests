@@ -100,6 +100,7 @@ bool snakemake_unit_tests::rule_block::load_content_block(
       // input/output/etc block within a rule, but has no parent rule it lives
       // under
       _local_indentation += regex_result[1].str().size();
+      --*current_line;
       return consume_rule_contents(loaded_lines, filename, verbose,
                                    current_line, 0);
     } else {
@@ -150,14 +151,19 @@ bool snakemake_unit_tests::rule_block::consume_rule_contents(
 
     // all remaining lines must be indented. any lack of indentation means the
     // rule is done
-    if (line.find_first_not_of(' ') <= get_local_indentation()) {
+    // note that this now only affects things where block base increment is
+    // nonzero. if it is zero, there is only one block being processed, and it
+    // terminates after that block is consumed
+    if (line.find_first_not_of(' ') <= get_local_indentation() &&
+        (block_base_increment ||
+         (!block_base_increment && !_named_blocks.empty()))) {
       *current_line = starting_line;
       return true;
     }
     // use pythonic indentation to flag an arbitrary number of named blocks
     line_indentation = line.find_first_not_of(" ");
     // expose this to user space?
-    if (line_indentation == get_local_indentation() + 4) {
+    if (line_indentation == get_local_indentation() + block_base_increment) {
       // enforce named tag here
       boost::smatch named_block_tag_result;
       if (boost::regex_match(line, named_block_tag_result, named_block_tag)) {
@@ -178,7 +184,8 @@ bool snakemake_unit_tests::rule_block::consume_rule_contents(
           line = reduce_relative_paths(line);
 
           // if a line that's not contents is found
-          if (line_indentation <= get_local_indentation() + 4) {
+          if (line_indentation <=
+              get_local_indentation() + block_base_increment) {
             *current_line = starting_line;
             if (verbose) {
               std::cout << "storing a block with name \"" << block_name
@@ -439,7 +446,7 @@ void snakemake_unit_tests::rule_block::print_contents(std::ostream &out) const {
              get_named_blocks().begin();
          iter != get_named_blocks().end(); ++iter) {
       if (!(out << indentation(get_global_indentation() +
-                               get_local_indentation() + 4)
+                               get_local_indentation())
                 << iter->first << ":"
                 << apply_indentation(iter->second, get_global_indentation())
                 << std::endl))

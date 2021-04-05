@@ -14,5 +14,3 @@ rule simple_rule:
 
 wildcard_constraints:
     suffix="[put]+",
-
-
