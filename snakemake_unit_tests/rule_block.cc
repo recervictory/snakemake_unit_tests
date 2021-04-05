@@ -380,7 +380,6 @@ bool snakemake_unit_tests::rule_block::update_resolution(
         return false;
       }
     }
-    std::cout << "cannot find tag" << get_interpreter_tag() << std::endl;
   }
   return true;
 }
