@@ -146,8 +146,9 @@ void snakemake_unit_tests::snakemake_file::detect_known_issues(
       if (include_location != std::string::npos) {
         leftover_includes.push_back((*(*iter)->get_code_chunk().rbegin()));
       }
-    } else {
-      // rule. aggregate for duplication
+    } else if (!(*iter)->get_rule_name().empty()) {
+      // allow global snakemake directives with no rulename
+      // otherwise: rule. aggregate for duplication
       if ((finder = aggregated_rules.find((*iter)->get_rule_name())) ==
           aggregated_rules.end()) {
         finder = aggregated_rules
