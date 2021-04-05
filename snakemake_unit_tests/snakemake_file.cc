@@ -556,7 +556,7 @@ void snakemake_unit_tests::snakemake_file::capture_python_tag_values(
     const std::vector<std::string> &vec,
     std::map<std::string, std::string> *target) const {
   const boost::regex tag_value_pair("^(tag[0-9]+): *(.*) *\n$");
-  const boost::regex tag_alone("^(tag[0-9])+ *\n$");
+  const boost::regex tag_alone("^(tag[0-9]+) *\n$");
   boost::smatch tag_match;
   if (!target)
     throw std::runtime_error(
