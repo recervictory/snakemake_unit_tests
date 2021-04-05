@@ -1,0 +1,15 @@
+shell.prefix("cat ")
+
+
+rule simple_rule:
+    input:
+        "input.txt",
+    output:
+        "output.txt",
+    shell:
+        "{input} > {output}"
+
+
+rule all:
+    input:
+        "output.txt",

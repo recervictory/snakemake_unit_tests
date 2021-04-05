@@ -422,10 +422,21 @@ void snakemake_unit_tests::snakemake_file::resolve_with_python(
         "to file \"" +
         (workflow / "Snakefile.py").string() + "\"");
   // write python reporting code
+  std::vector<std::string> snakemake_imports;
+  snakemake_imports = exec(
+      "grep -E \"^from snakemake\" \"$(pip show snakemake | "
+      "grep \"Location\" | sed 's/^Location: //')/snakemake/__init__.py\"");
+  std::ostringstream formatted_imports;
+  for (std::vector<std::string>::const_iterator iter =
+           snakemake_imports.begin();
+       iter != snakemake_imports.end(); ++iter) {
+    formatted_imports << *iter << std::endl;
+  }
   if (!(output << "#!/usr/bin/env python3" << std::endl
                << "import os" << std::endl
                << "import json" << std::endl
                << "import yaml" << std::endl
+               << formatted_imports.str() << std::endl
                << "os.chdir(\"" << workflow.string() << "\")" << std::endl
                << "config = dict()" << std::endl))
     throw std::runtime_error(
@@ -435,7 +446,7 @@ void snakemake_unit_tests::snakemake_file::resolve_with_python(
            get_blocks().begin();
        iter != get_blocks().end(); ++iter) {
     // ask the rule to report the python equivalent of its contents
-    (*iter)->report_python_logging_code(output, workflow);
+    (*iter)->report_python_logging_code(output);
   }
   output.close();
   // execute python script and capture output

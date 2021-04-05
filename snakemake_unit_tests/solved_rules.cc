@@ -223,6 +223,48 @@ void snakemake_unit_tests::solved_rules::create_empty_workspace(
   copy_contents(added_files, pipeline_dir, workspace_path, "added files");
   copy_contents(added_directories, pipeline_dir, workspace_path,
                 "added directories");
+  // TODO(cpalmer718): make a better solution to relative paths
+  boost::filesystem::create_directories(workspace_path / "workflow");
+  for (std::vector<boost::filesystem::path>::const_iterator iter =
+           added_directories.begin();
+       iter != added_directories.end(); ++iter) {
+    if (iter->string().find("workflow/") != std::string::npos ||
+        iter->string().find("workflow\\") != std::string::npos) {
+      boost::filesystem::path target =
+          workspace_path / iter->string().substr(9);
+      boost::filesystem::path source = pipeline_dir / *iter;
+      boost::filesystem::copy(source, target,
+                              boost::filesystem::copy_options::recursive);
+    }
+    if (iter->string().find("workflow/") == std::string::npos &&
+        iter->string().find("workflow\\") == std::string::npos) {
+      boost::filesystem::path target =
+          workspace_path / boost::filesystem::path("workflow") / *iter;
+      boost::filesystem::path source = pipeline_dir / *iter;
+      boost::filesystem::copy(source, target,
+                              boost::filesystem::copy_options::recursive);
+    }
+  }
+  for (std::vector<boost::filesystem::path>::const_iterator iter =
+           added_files.begin();
+       iter != added_files.end(); ++iter) {
+    if (iter->string().find("workflow/") != std::string::npos ||
+        iter->string().find("workflow\\") != std::string::npos) {
+      boost::filesystem::path target =
+          workspace_path / iter->string().substr(9);
+      boost::filesystem::path source = pipeline_dir / *iter;
+      boost::filesystem::copy(source, target,
+                              boost::filesystem::copy_options::recursive);
+    }
+    if (iter->string().find("workflow/") == std::string::npos &&
+        iter->string().find("workflow\\") == std::string::npos) {
+      boost::filesystem::path target =
+          workspace_path / boost::filesystem::path("workflow") / *iter;
+      boost::filesystem::path source = pipeline_dir / *iter;
+      boost::filesystem::copy(source, target,
+                              boost::filesystem::copy_options::recursive);
+    }
+  }
 }
 
 void snakemake_unit_tests::solved_rules::remove_empty_workspace(

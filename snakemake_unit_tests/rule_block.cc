@@ -296,7 +296,7 @@ unsigned snakemake_unit_tests::rule_block::get_include_depth() const {
 }
 
 void snakemake_unit_tests::rule_block::report_python_logging_code(
-    std::ostream &out, const boost::filesystem::path &workdir) const {
+    std::ostream &out) const {
   // report contents. may eventually be used for printing to custom snakefile
   if (!get_code_chunk().empty()) {
     // if this is an include directive of any kind
@@ -347,18 +347,13 @@ void snakemake_unit_tests::rule_block::report_python_logging_code(
     if (_named_blocks.find("configfile") != _named_blocks.end()) {
       std::string padding =
           indentation(get_global_indentation() + get_local_indentation());
-      if (!(out << padding << "os.chdir(\""
-                << boost::filesystem::absolute(workdir).parent_path().string()
-                << "\")" << std::endl
-                << padding << "try:" << std::endl
+      if (!(out << padding << "try:" << std::endl
                 << padding << "    config = yaml.safe_load(open("
                 << _named_blocks.find("configfile")->second << ", \"r\"))"
                 << std::endl
                 << padding << "except:" << std::endl
                 << padding << "    config = json.load("
-                << _named_blocks.find("configfile")->second << ")" << std::endl
-                << padding << "os.chdir(\""
-                << boost::filesystem::absolute(workdir).string() << "\")"
+                << _named_blocks.find("configfile")->second << ")"
                 << std::endl))
         throw std::runtime_error(
             "unable to print interpreted config contents to "
