@@ -33,7 +33,7 @@ class snakemake_file {
    */
   snakemake_file() : _tag_counter(0) {
     _tag_counter.reset(new unsigned);
-    *_tag_counter = 0;
+    *_tag_counter = 1;
   }
   /*!
     @brief construct a snakemake file with

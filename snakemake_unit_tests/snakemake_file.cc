@@ -65,10 +65,7 @@ void snakemake_unit_tests::snakemake_file::load_everything(
     throw std::runtime_error(
         "null exclude_rules provided to "
         "load_everything");
-  boost::shared_ptr<rule_block> ptr(new rule_block);
-  ptr->add_code_chunk("include: \"" + filename.string() + "\"");
-  ptr->set_resolution(RESOLVED_INCLUDED);
-  _blocks.push_back(ptr);
+  _snakefile_relative_path = filename;
   std::vector<std::string> loaded_lines;
   boost::filesystem::path recursive_path = base_dir / filename;
   load_lines(recursive_path, &loaded_lines);
