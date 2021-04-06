@@ -301,14 +301,14 @@ void snakemake_unit_tests::snakemake_file::parse_file(
       // rules should all be set to unresolved before first pass
       if (!rb->get_rule_name().empty()) {
         rb->set_resolution(UNRESOLVED);
-        rb->set_interpreter_tag(_tag_counter);
-        ++_tag_counter;
+        rb->set_interpreter_tag(*_tag_counter);
+        ++*_tag_counter;
       } else if (rb->contains_include_directive() &&
                  !rb->is_simple_include_directive()) {
         // ambiguous include directives need a complicated resolution pass
         rb->set_resolution(UNRESOLVED);
-        rb->set_interpreter_tag(_tag_counter);
-        ++_tag_counter;
+        rb->set_interpreter_tag(*_tag_counter);
+        ++*_tag_counter;
       } else {
         // all other contents are good to go, to be handled by interpreter later
         rb->set_resolution(RESOLVED_INCLUDED);

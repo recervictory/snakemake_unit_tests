@@ -31,7 +31,16 @@ class snakemake_file {
   /*!
     @brief default constructor
    */
-  snakemake_file() : _tag_counter(1) {}
+  snakemake_file() : _tag_counter(0) {
+    _tag_counter.reset(new unsigned);
+    *_tag_counter = 0;
+  }
+  /*!
+    @brief construct a snakemake file with
+    an initialized counter
+   */
+  explicit snakemake_file(boost::shared_ptr<unsigned> ptr)
+      : _tag_counter(ptr) {}
   /*!
     @brief copy constructor
     @param obj existing snakemake_file object
@@ -187,7 +196,7 @@ class snakemake_file {
   /*!
     @brief internal counter of assigned tags to rules
    */
-  unsigned _tag_counter;
+  boost::shared_ptr<unsigned> _tag_counter;
 };
 }  // namespace snakemake_unit_tests
 
