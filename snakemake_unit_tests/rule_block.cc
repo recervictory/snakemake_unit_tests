@@ -271,7 +271,7 @@ void snakemake_unit_tests::rule_block::report_python_logging_code(
     if (contains_include_directive()) {
       // it can be resolved, in which case, it can sometimes be included
       if (_resolution == RESOLVED_INCLUDED) {
-        if (!(out << *get_code_chunk().rbegin()))
+        if (!(out << *get_code_chunk().rbegin() << std::endl))
           throw std::runtime_error("include statement printing error");
       } else if (_resolution == UNRESOLVED) {
         // report tag along with required expression for evaluation
@@ -322,18 +322,16 @@ bool snakemake_unit_tests::rule_block::update_resolution(
       // if the tag is for a rule
       if (finder->second.empty()) {
         set_resolution(RESOLVED_INCLUDED);
-        std::cout << "updating rule \"" << get_rule_name()
-                  << "\" to included status" << std::endl;
         return true;
       } else {
         // the tag is for an ambiguous include directive
         set_resolution(RESOLVED_INCLUDED);
-        std::cout << "updating ambiguous include \"" << _code_chunk.at(0)
-                  << "\" to \"" << indentation(get_include_depth())
-                  << "include: \"" << finder->second << "\"\"" << std::endl;
-        _code_chunk.at(0) = indentation(get_include_depth()) + "include: \"" +
-                            finder->second + "\"";
-        return false;
+        if (_resolved_included_filename.compare(finder->second)) {
+          _resolved_included_filename = finder->second;
+          return false;
+        } else {
+          return true;
+        }
       }
     }
   }

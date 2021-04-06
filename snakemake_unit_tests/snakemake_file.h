@@ -126,6 +126,12 @@ class snakemake_file {
   }
 
   /*!
+    @brief get mutable access to internal block representation
+    @return non-const reference to internal block list
+   */
+  std::list<boost::shared_ptr<rule_block> > &get_blocks() { return _blocks; }
+
+  /*!
     @brief report all code blocks but a single requested rule to file
     @param rule_name string name of requested rule
     @param out open output stream to which to write data
@@ -151,12 +157,35 @@ class snakemake_file {
     @brief run the current rule set through python once
     @param workspace top level directory with added files and directories
     installed
-    @param base_dir directory from which to base relative file paths
+    @param pipeline_run_dir where the actual pipeline was initially installed
     @param verbose whether to provide verbose logging output
+    @param disable_resolution deactivate downstream processing on recursive
+    calls
+
+    this is the top level entry point for a recursion pass through python
+    reporting. this should only be called from the primary caller.
    */
   void resolve_with_python(const boost::filesystem::path &workspace,
-                           const boost::filesystem::path &base_dir,
-                           bool verbose);
+                           const boost::filesystem::path &pipeline_run_dir,
+                           bool verbose, bool disable_resolution);
+
+  /*!
+    @brief run the current rule set through python once
+    @param workspace top level directory with added files and directories
+    installed
+    @param pipeline_run_dir where the actual pipeline was initially installed
+    @param verbose whether to provide verbose logging output
+    @param tag_values reporter data from python pass
+    @param output_name full output path of snakefile
+
+    this is the recursive entry point for a recursion pass through python
+    reporting. this should be called for each file in turn.
+   */
+  bool process_python_results(
+      const boost::filesystem::path &workspace,
+      const boost::filesystem::path &pipeline_run_dir, bool verbose,
+      const std::map<std::string, std::string> &tag_values,
+      const boost::filesystem::path &output_name);
 
   /*!
     @brief execute a system command and capture its results
@@ -207,7 +236,8 @@ class snakemake_file {
   /*!
     @brief included files to report on print statements
    */
-  std::vector<boost::shared_ptr<snakemake_file> > _included_files;
+  std::map<boost::filesystem::path, boost::shared_ptr<snakemake_file> >
+      _included_files;
   /*!
     @brief internal counter of assigned tags to rules
    */

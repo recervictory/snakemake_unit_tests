@@ -300,8 +300,7 @@ void snakemake_unit_tests::snakemake_file::parse_file(
         rb->set_resolution(UNRESOLVED);
         rb->set_interpreter_tag(*_tag_counter);
         ++*_tag_counter;
-      } else if (rb->contains_include_directive() &&
-                 !rb->is_simple_include_directive()) {
+      } else if (rb->contains_include_directive()) {
         // ambiguous include directives need a complicated resolution pass
         rb->set_resolution(UNRESOLVED);
         rb->set_interpreter_tag(*_tag_counter);
@@ -371,18 +370,28 @@ bool snakemake_unit_tests::snakemake_file::contains_blockers() const {
         !(*iter)->is_simple_include_directive())
       return true;
   }
+  for (std::map<boost::filesystem::path,
+                boost::shared_ptr<snakemake_file> >::const_iterator iter =
+           _included_files.begin();
+       iter != _included_files.end(); ++iter) {
+    if (iter->second->contains_blockers()) return true;
+  }
   return false;
 }
 
 void snakemake_unit_tests::snakemake_file::resolve_with_python(
     const boost::filesystem::path &workspace,
-    const boost::filesystem::path &base_dir, bool verbose) {
-  // TODO(cpalmer718): implement python resolution
+    const boost::filesystem::path &pipeline_run_dir, bool verbose,
+    bool disable_resolution) {
   // within a workspace, open a snakefile
-  boost::filesystem::path workflow = workspace / "workflow";
-  boost::filesystem::create_directories(workflow);
   std::ofstream output;
   boost::filesystem::path output_name = workspace / _snakefile_relative_path;
+  // create directory if needed
+  boost::filesystem::create_directories(output_name.parent_path());
+  if (verbose) {
+    std::cout << "\twriting interpreter snakefile " << output_name.string()
+              << std::endl;
+  }
   output.open(output_name.string().c_str());
   if (!output.is_open())
     throw std::runtime_error(
@@ -396,73 +405,105 @@ void snakemake_unit_tests::snakemake_file::resolve_with_python(
     // ask the rule to report the python equivalent of its contents
     (*iter)->report_python_logging_code(output);
   }
-  if (!(output << "rule tmp:" << std::endl
-               << "    output: \"tmp.txt\"," << std::endl))
-    throw std::runtime_error("cannot write tmp output rule to python reporter");
+  // handle recursive reporters
+  for (std::map<boost::filesystem::path,
+                boost::shared_ptr<snakemake_file> >::iterator iter =
+           _included_files.begin();
+       iter != _included_files.end(); ++iter) {
+    if (verbose) {
+      std::cout << "\trecursing in python resolution" << std::endl;
+    }
+    iter->second->resolve_with_python(workspace, pipeline_run_dir, verbose,
+                                      true);
+  }
+  // only from the top-level call, so not during recursion
+  if (!disable_resolution) {
+    if (!(output << "rule tmp:" << std::endl
+                 << "    output: \"tmp.txt\"," << std::endl))
+      throw std::runtime_error(
+          "cannot write tmp output rule to python reporter");
+    // execute python script and capture output
+    std::vector<std::string> results =
+        exec("cd " + workspace.string() + " && snakemake -nFs " +
+             _snakefile_relative_path.string());
+    // capture the resulting tags for updating completion status
+    std::map<std::string, std::string> tag_values;
+    capture_python_tag_values(results, &tag_values);
+    process_python_results(workspace, pipeline_run_dir, verbose, tag_values,
+                           output_name);
+  }
   output.close();
-  // execute python script and capture output
-  std::vector<std::string> results =
-      exec("cd " + workspace.string() + " && snakemake -nFs " +
-           _snakefile_relative_path.string());
-  // capture the resulting tags for updating completion status
-  std::map<std::string, std::string> tag_values;
-  capture_python_tag_values(results, &tag_values);
+}
+
+bool snakemake_unit_tests::snakemake_file::process_python_results(
+    const boost::filesystem::path &workspace,
+    const boost::filesystem::path &pipeline_run_dir, bool verbose,
+    const std::map<std::string, std::string> &tag_values,
+    const boost::filesystem::path &output_name) {
   // while any unresolved simple include statements possibly remain
   bool unresolved = true;
   std::vector<std::string> loaded_lines;
-  // allow early termination of rule set
-  std::list<boost::shared_ptr<rule_block> >::iterator dynamic_endpoint =
-      _blocks.end();
   while (unresolved) {
     unresolved = false;
     // update rule block status based on python report
     for (std::list<boost::shared_ptr<rule_block> >::iterator iter =
              _blocks.begin();
-         iter != dynamic_endpoint; ++iter) {
-      // if the block reports that it was an ambiguous include directive
+         iter != _blocks.end(); ++iter) {
+      // if the block reports that it was an include directive
       if (!(*iter)->update_resolution(tag_values)) {
-        // it updated itself to an unambiguous include directive. include it.
+        if (verbose) {
+          std::cout << "\tfound an include directive during python processing"
+                    << std::endl;
+        }
         boost::filesystem::path recursive_path =
-            base_dir / (*iter)->get_standard_filename();
-        load_lines(recursive_path, &loaded_lines);
-        parse_file(loaded_lines, iter, recursive_path, verbose);
-        unresolved = true;
-        iter = _blocks.erase(iter);
-        // current logic cannot reliably progress beyond this point
-        dynamic_endpoint = iter;
-        // note that due to the update in the loop, still must break here
-        break;
-      } else if ((*iter)->is_simple_include_directive()) {
-        // allow simple include statements from recently loaded files
-        /*
-          TODO(cpalmer718): address relative paths in multilevel includes
+            output_name.parent_path() /
+            (*iter)->get_resolved_included_filename();
+        std::string recursive_str = recursive_path.string();
+        recursive_str =
+            recursive_str.substr(recursive_str.find(workspace.string()) +
+                                 workspace.string().size() + 1);
+        // determine if this was included already
+        std::map<boost::filesystem::path,
+                 boost::shared_ptr<snakemake_file> >::iterator file_finder;
+        if ((file_finder = _included_files.find(boost::filesystem::path(
+                 recursive_str))) != _included_files.end()) {
+          // it was already loaded. recurse into that loaded file
+          if (verbose)
+            std::cout << "\t\tthe file was already loaded, passing python "
+                         "results along to it"
+                      << std::endl;
+          if (!file_finder->second->process_python_results(
+                  workspace, pipeline_run_dir, verbose, tag_values,
+                  recursive_path))
+            return false;
+        } else {
+          // it updated itself to an unambiguous include directive. include it.
+          // need the location in input
+          std::string input_name = output_name.string();
+          input_name =
+              ((pipeline_run_dir / boost::filesystem::path(input_name.substr(
+                                       input_name.find(workspace.string()) +
+                                       workspace.size() + 1)))
+                   .parent_path() /
+               (*iter)->get_resolved_included_filename())
+                  .string();
+          load_lines(input_name, &loaded_lines);
+          if (verbose)
+            std::cout
+                << "\t\tthe file has not been loaded before, loading it now: "
+                << input_name << std::endl;
 
-          note that this code is theoretically designed to handle include
-          statements buried within other included files. however: currently,
-          the inclusion assumes the same working directory used for the original
-          include statement. this is probably false. so this is really
-          a manifestation of #13, path flattening.
-
-          for multilevel includes, the solution is probably for the include
-          statement to track its own working directory.
-         */
-        // load the included file
-        if (verbose)
-          std::cout << "found include directive, adding \""
-                    << (*iter)->get_standard_filename() << "\"" << std::endl;
-        boost::filesystem::path recursive_path =
-            base_dir / (*iter)->get_standard_filename();
-        load_lines(recursive_path, &loaded_lines);
-        parse_file(loaded_lines, iter, recursive_path, verbose);
-        unresolved = true;
-        // and now that the include has been performed, do not add the include
-        // statement
-        iter = _blocks.erase(iter);
-        // but note that since this doesn't block logical progression, so no
-        // endpoint update or break is required
+          boost::shared_ptr<snakemake_file> ptr(new snakemake_file);
+          ptr->parse_file(loaded_lines, ptr->get_blocks().begin(), input_name,
+                          verbose);
+          _included_files[boost::filesystem::path(input_name)] = ptr;
+          unresolved = true;
+          return false;
+        }
       }
     }
   }
+  return true;
 }
 
 std::vector<std::string> snakemake_unit_tests::snakemake_file::exec(

@@ -76,9 +76,13 @@ int main(int argc, char **argv) {
   bool continue_python_updates = true;
   while (continue_python_updates) {
     // scan the rule set for blockers
+    if (p.verbose) {
+      std::cout << "running a python/snakemake logic resolution pass"
+                << std::endl;
+    }
     continue_python_updates = sf.contains_blockers();
     sf.resolve_with_python(p.output_test_dir / ".snakemake_unit_tests",
-                           p.snakefile.parent_path(), p.verbose);
+                           p.pipeline_run_dir, p.verbose, false);
   }
 
   // remove the location

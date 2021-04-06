@@ -52,7 +52,8 @@ class rule_block {
         _code_chunk(obj._code_chunk),
         _local_indentation(obj._local_indentation),
         _resolution(obj._resolution),
-        _python_tag(obj._python_tag) {}
+        _python_tag(obj._python_tag),
+        _resolved_included_filename(obj._resolved_included_filename) {}
   /*!
     @brief destructor
    */
@@ -270,6 +271,13 @@ class rule_block {
     @return whether the current rule allows downstream logic to continue
    */
   bool update_resolution(const std::map<std::string, std::string> &tag_values);
+  /*!
+    @brief for include statements, get actual filename for inclusion
+    @return resolved filename
+   */
+  const boost::filesystem::path &get_resolved_included_filename() const {
+    return _resolved_included_filename;
+  }
 
  private:
   /*!
@@ -343,6 +351,10 @@ class rule_block {
     tracking pass
    */
   unsigned _python_tag;
+  /*!
+    @brief for include directives: resolved name of included file
+   */
+  boost::filesystem::path _resolved_included_filename;
 };
 }  // namespace snakemake_unit_tests
 
