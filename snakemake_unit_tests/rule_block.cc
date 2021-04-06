@@ -269,23 +269,17 @@ void snakemake_unit_tests::rule_block::report_python_logging_code(
   if (!get_code_chunk().empty()) {
     // if this is an include directive of any kind
     if (contains_include_directive()) {
-      // it should not under any circumstances be a simple include on a filename
-      if (is_simple_include_directive()) {
-        throw std::logic_error(
-            "report_python_logging_code: unincluded simple inclusion "
-            "suggests parsing pass has not been performed");
+      // it can be resolved, in which case, it can sometimes be included
+      if (_resolution == RESOLVED_INCLUDED) {
+        if (!(out << *get_code_chunk().rbegin()))
+          throw std::runtime_error("include statement printing error");
+      } else if (_resolution == UNRESOLVED) {
+        // report tag along with required expression for evaluation
+        if (!(out << indentation(get_local_indentation()) << "print(\"tag"
+                  << get_interpreter_tag() << ": {}\".format("
+                  << get_filename_expression() << "))" << std::endl))
+          throw std::runtime_error("complex include printing error");
       }
-      // it should not under any circumstances be unresolved
-      if (_resolution != UNRESOLVED) {
-        throw std::logic_error(
-            "report_python_logging_code: resolved complex inclusion "
-            "suggests post-python loading has not been performed");
-      }
-      // report tag along with required expression for evaluation
-      if (!(out << indentation(get_local_indentation()) << "print(\"tag"
-                << get_interpreter_tag() << ": {}\".format("
-                << get_filename_expression() << "))" << std::endl))
-        throw std::runtime_error("complex include printing error");
     } else {
       // regardless of resolution, print other code as-is
       for (std::vector<std::string>::const_iterator iter =
