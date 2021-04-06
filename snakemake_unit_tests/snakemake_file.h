@@ -135,8 +135,9 @@ class snakemake_file {
     @brief report all code blocks but a single requested rule to file
     @param rule_name string name of requested rule
     @param out open output stream to which to write data
+    @return whether the rule was present in this file
    */
-  void report_single_rule(const std::string &rule_name,
+  bool report_single_rule(const std::string &rule_name,
                           std::ostream &out) const;
 
   /*!
@@ -222,6 +223,11 @@ class snakemake_file {
    */
   const boost::filesystem::path &get_snakefile_relative_path() const {
     return _snakefile_relative_path;
+  }
+
+  const std::map<boost::filesystem::path, boost::shared_ptr<snakemake_file> >
+      &loaded_files() const {
+    return _included_files;
   }
 
  private:

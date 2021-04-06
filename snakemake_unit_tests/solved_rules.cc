@@ -184,23 +184,11 @@ void snakemake_unit_tests::solved_rules::create_workspace(
                     "added directories");
     }
     if (update_snakefiles) {
-      // create parent directories for synthetic snakefile
-      boost::filesystem::create_directories(
-          (workspace_path / sf.get_snakefile_relative_path()).parent_path());
-      // create the synthetic snakefile in workspace
-      std::string output_filename =
-          (workspace_path / sf.get_snakefile_relative_path()).string();
-      std::ofstream output;
-      output.open(output_filename.c_str());
-      if (!output.is_open())
-        throw std::runtime_error("cannot create synthetic snakemake file \"" +
-                                 output_filename + "\"");
-      // before adding anything else: add a single 'all' rule that points at
-      // solved rule output files
-      report_phony_all_target(output, rec.get_outputs());
-      // find the rule from the parsed snakefile(s) and report it to file
-      sf.report_single_rule(rec.get_rule_name(), output);
-      output.close();
+      if (!emit_snakefile(sf, workspace_path, rec, true)) {
+        throw std::runtime_error(
+            "cannot find rule for requested log content \"" +
+            rec.get_rule_name() + "\"");
+      }
     }
     // modify repo inst/test.py into a test runner for this rule
     if (update_pytest) {
@@ -209,6 +197,36 @@ void snakemake_unit_tests::solved_rules::create_workspace(
           sf.get_snakefile_relative_path(), inst_test_py);
     }
   }
+}
+
+bool snakemake_unit_tests::solved_rules::emit_snakefile(
+    const snakemake_file &sf, const boost::filesystem::path &workspace_path,
+    const recipe &rec, bool requires_phony_all) const {
+  // create parent directories for synthetic snakefile
+  boost::filesystem::create_directories(
+      (workspace_path / sf.get_snakefile_relative_path()).parent_path());
+  // create the synthetic snakefile in workspace
+  std::string output_filename =
+      (workspace_path / sf.get_snakefile_relative_path()).string();
+  std::ofstream output;
+  output.open(output_filename.c_str());
+  if (!output.is_open())
+    throw std::runtime_error("cannot create synthetic snakemake file \"" +
+                             output_filename + "\"");
+  // before adding anything else: add a single 'all' rule that points at
+  // solved rule output files
+  // note: only do this at top level
+  if (requires_phony_all) report_phony_all_target(output, rec.get_outputs());
+  // find the rule from the parsed snakefile(s) and report it to file
+  bool res = sf.report_single_rule(rec.get_rule_name(), output);
+  output.close();
+  for (std::map<boost::filesystem::path,
+                boost::shared_ptr<snakemake_file> >::const_iterator mapper =
+           sf.loaded_files().begin();
+       mapper != sf.loaded_files().end(); ++mapper) {
+    res |= emit_snakefile(*mapper->second, workspace_path, rec, false);
+  }
+  return res;
 }
 
 void snakemake_unit_tests::solved_rules::create_empty_workspace(

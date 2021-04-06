@@ -183,6 +183,19 @@ class solved_rules {
                   bool update_inputs, bool update_outputs,
                   bool update_pytest) const;
   /*!
+    @brief emit snakefile from parsed snakemake information
+    @param sf snakemake_file object with rule definitions corresponding
+    to loaded log data
+    @param workspace_path top level of emitted workspace
+    @param rec target rule for emission
+    @param requires_phony_all whether the file needs an all target injected.
+    this should only be included at top level
+    @return whether the rule was found in the snakefile or its dependencies
+  */
+  bool emit_snakefile(const snakemake_file &sf,
+                      const boost::filesystem::path &workspace_path,
+                      const recipe &rec, bool requires_phony_all) const;
+  /*!
     @brief create a test directory
     @param rec recipe/rule entry for which a workspace should be created
     @param sf snakemake_file object with rule definitions corresponding

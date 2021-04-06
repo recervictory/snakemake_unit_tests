@@ -52,6 +52,10 @@ int main(int argc, char **argv) {
   std::string pipeline_str = p.pipeline_run_dir.string();
   snakefile_str = snakefile_str.substr(snakefile_str.find(pipeline_str) +
                                        pipeline_str.size() + 1);
+  if (p.verbose) {
+    std::cout << "computed snakefile is \"" << snakefile_str << "\""
+              << std::endl;
+  }
   sf.load_everything(boost::filesystem::path(snakefile_str), p.pipeline_run_dir,
                      &p.exclude_rules, p.verbose);
 

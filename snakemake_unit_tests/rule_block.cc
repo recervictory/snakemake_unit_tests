@@ -333,6 +333,12 @@ bool snakemake_unit_tests::rule_block::update_resolution(
           return true;
         }
       }
+    } else {
+      // new: if it's not present and nonzero tag, flag as unincluded
+      // however, this can be updated on additional passes; the logic
+      // is that additional passes will keep occurring as long as
+      // some new include directive appears on this next pass
+      set_resolution(RESOLVED_EXCLUDED);
     }
   }
   return true;
