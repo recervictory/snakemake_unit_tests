@@ -1,55 +1,17 @@
 Building DAG of jobs...
-Using shell: /usr/local/bin/bash
-Provided cores: 1 (use --cores to define parallelism)
-Rules claiming more threads will be scaled down.
 Job counts:
 	count	jobs
-	1	all
 	1	simple_rule1
-	1	simple_rule2
-	1	simple_rule3
-	4
-Select jobs to execute...
+	1
 
-[Mon Mar 29 08:13:25 2021]
+[Tue Apr  6 06:24:11 2021]
 rule simple_rule1:
     input: input1.txt
-    output: output7.txt
-    jobid: 1
-
-[Mon Mar 29 08:13:25 2021]
-Finished job 1.
-1 of 4 steps (25%) done
-Select jobs to execute...
-
-[Mon Mar 29 08:13:25 2021]
-rule simple_rule3:
-    input: input3.txt
-    output: output9.txt
-    jobid: 3
-
-[Mon Mar 29 08:13:25 2021]
-Finished job 3.
-2 of 4 steps (50%) done
-Select jobs to execute...
-
-[Mon Mar 29 08:13:25 2021]
-rule simple_rule2:
-    input: input2.txt
-    output: output8.txt
-    jobid: 2
-
-[Mon Mar 29 08:13:25 2021]
-Finished job 2.
-3 of 4 steps (75%) done
-Select jobs to execute...
-
-[Mon Mar 29 08:13:25 2021]
-localrule all:
-    input: output7.txt, output8.txt, output9.txt
+    output: output1.txt
     jobid: 0
 
-[Mon Mar 29 08:13:25 2021]
-Finished job 0.
-4 of 4 steps (100%) done
-Complete log: /Users/palmercd/Development/snakemake_unit_tests/tests/examples/test_nonstandard_snakefile_location/input/.snakemake/log/2021-03-29T081325.027850.snakemake.log
+Job counts:
+	count	jobs
+	1	simple_rule1
+	1
+This was a dry-run (flag -n). The order of jobs does not reflect the order of execution.

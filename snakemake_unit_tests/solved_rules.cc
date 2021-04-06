@@ -204,8 +204,9 @@ void snakemake_unit_tests::solved_rules::create_workspace(
     }
     // modify repo inst/test.py into a test runner for this rule
     if (update_pytest) {
-      report_modified_test_script(test_parent_path, output_test_dir,
-                                  rec.get_rule_name(), inst_test_py);
+      report_modified_test_script(
+          test_parent_path, output_test_dir, rec.get_rule_name(),
+          sf.get_snakefile_relative_path(), inst_test_py);
     }
   }
 }
@@ -280,6 +281,7 @@ void snakemake_unit_tests::solved_rules::report_phony_all_target(
 void snakemake_unit_tests::solved_rules::report_modified_test_script(
     const boost::filesystem::path &parent_dir,
     const boost::filesystem::path &test_dir, const std::string &rule_name,
+    const boost::filesystem::path &snakefile_relative_path,
     const boost::filesystem::path &inst_test_py) const {
   std::ifstream input;
   std::ofstream output;
@@ -290,7 +292,10 @@ void snakemake_unit_tests::solved_rules::report_modified_test_script(
     throw std::runtime_error("cannot write test python file \"" +
                              test_python_file + "\"");
   if (!(output << "#!/usr/bin/env python3\ntestdir='" << test_dir.string()
-               << "'\nrulename='" << rule_name << '\'' << std::endl))
+               << "'" << std::endl
+               << "rulename='" << rule_name << '\'' << std::endl
+               << "snakefile_relative_path='"
+               << snakefile_relative_path.string() << "'" << std::endl))
     throw std::runtime_error(
         "cannot write rulename variable to test python file \"" +
         test_python_file + "\"");

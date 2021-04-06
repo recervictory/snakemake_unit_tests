@@ -34,7 +34,7 @@ def test_function():
                 "--conda-frontend",
                 "mamba",
                 "--snakefile",
-                "{}/workflow/Snakefile".format(rundir),
+                "{}/{}".format(rundir, snakefile_relative_path),
                 "--directory",
                 rundir,
             ]

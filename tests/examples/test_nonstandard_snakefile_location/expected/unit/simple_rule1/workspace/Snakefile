@@ -12,13 +12,6 @@ rule simple_rule1:
         "cp {input} {output}"
 
 
-if True:
-    pass
-
-
-pass
-
-
 pass
 
 
