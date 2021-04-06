@@ -9,30 +9,6 @@
 
 #include "snakemake_unit_tests/rule_block.h"
 
-std::string snakemake_unit_tests::rule_block::reduce_relative_paths(
-    const std::string &s) const {
-  std::vector<std::string> reduced_relative_paths;
-  reduced_relative_paths.push_back("../envs");
-  reduced_relative_paths.push_back("../scripts");
-  reduced_relative_paths.push_back("../report");
-  std::string line = s;
-  // hackjob nonsense:
-  /*
-    reduce by one level relative paths from within workflow/rules.
-    this is necessary because recursively included files from rules/
-    are flattened by one level when loaded.
-  */
-  for (std::vector<std::string>::const_iterator iter =
-           reduced_relative_paths.begin();
-       iter != reduced_relative_paths.end(); ++iter) {
-    if (line.find(*iter) != std::string::npos) {
-      line = line.substr(0, line.find(*iter)) + iter->substr(3) +
-             line.substr(line.find(*iter) + iter->size());
-    }
-  }
-  return line;
-}
-
 bool snakemake_unit_tests::rule_block::load_content_block(
     const std::vector<std::string> &loaded_lines,
     const boost::filesystem::path &filename, bool verbose,
@@ -63,9 +39,6 @@ bool snakemake_unit_tests::rule_block::load_content_block(
     }
     if (line.empty() || line.find_first_not_of(" ") == std::string::npos)
       continue;
-    // hack: deal with flattening of some relative paths when snakefiles are
-    // merged
-    line = reduce_relative_paths(line);
     // if the line is a valid rule declaration
     boost::smatch regex_result;
     if (boost::regex_match(line, regex_result, standard_rule_declaration)) {
@@ -147,7 +120,6 @@ bool snakemake_unit_tests::rule_block::consume_rule_contents(
     }
     if (line.empty() || line.find_first_not_of(" ") == std::string::npos)
       continue;
-    line = reduce_relative_paths(line);
 
     // all remaining lines must be indented. any lack of indentation means the
     // rule is done
@@ -181,7 +153,6 @@ bool snakemake_unit_tests::rule_block::consume_rule_contents(
           if (line.empty() || line.find_first_not_of(" ") == std::string::npos)
             continue;
           line_indentation = line.find_first_not_of(" ");
-          line = reduce_relative_paths(line);
 
           // if a line that's not contents is found
           if (line_indentation <=

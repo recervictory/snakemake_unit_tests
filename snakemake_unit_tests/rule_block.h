@@ -273,16 +273,6 @@ class rule_block {
 
  private:
   /*!
-    @brief apply hackjob nonsense to flatten certain relative paths by one level
-    @param s possible relative path to flatten
-    @return the input line with any changes applied
-
-    this is flagged to be handled some other way
-    TODO(cpalmer718): find any better way of flattening relative include paths
-   */
-  std::string reduce_relative_paths(const std::string &s) const;
-
-  /*!
     @brief return a string containing some number of whitespaces
     @param count total whitespace indentation to apply
     @return formatted indentation whitespace
