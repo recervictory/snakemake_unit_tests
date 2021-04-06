@@ -11,6 +11,7 @@ from pathlib import Path
 
 import pytest
 
+exclude_paths = ["/log/", "/logs/", "/performance_benchmarks/", "temp/", "tmp/"]
 exclude_ext = [".tbi", ".html"]
 # TODO: Read in a list of extensions to exclude from the config.  See issue #16.
 
@@ -38,11 +39,7 @@ class OutputChecker:
                 f = (Path(path) / f).relative_to(self.workdir)
                 if str(f).startswith(".snakemake"):
                     continue
-                if "/log/" in str(f):
-                    continue
-                if "/logs/" in str(f):
-                    continue
-                if "/performance_benchmarks/" in str(f):
+                if any(m in str(f) for m in exclude_paths):
                     continue
                 if str(f).endswith(tuple(exclude_ext)):
                     continue
@@ -50,12 +47,12 @@ class OutputChecker:
                     self.compare_files(self.workdir / f, self.expected_path / f)
                 elif f in input_files:
                     # ignore input files
-                    pass
+                    continue
                 else:
                     unexpected_files.add(f)
         if unexpected_files:
             raise ValueError(
-                "Unexpected files:\n{}".format("\n".join(sorted(map(str, unexpected_files))))
+                "Unexpected files: {}".format(";".join(sorted(map(str, unexpected_files))))
             )
 
     def compare_files(self, generated_file, expected_file):
