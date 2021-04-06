@@ -37,7 +37,9 @@ class snakemake_file {
     @param obj existing snakemake_file object
    */
   snakemake_file(const snakemake_file &obj)
-      : _blocks(obj._blocks), _tag_counter(obj._tag_counter) {}
+      : _blocks(obj._blocks),
+        _included_files(obj._included_files),
+        _tag_counter(obj._tag_counter) {}
   /*!
     @brief destructor
    */
@@ -60,15 +62,13 @@ class snakemake_file {
    @param loaded_lines lines of file to parse
    @param insertion_point list iterator to where to insert content
    @param filename name of file for informative errors
-   @param global_indentation indentation depth of file's include directive
    @param verbose whether to emit verbose
    logging output
   */
   void parse_file(
       const std::vector<std::string> &loaded_lines,
       std::list<boost::shared_ptr<rule_block> >::iterator insertion_point,
-      const boost::filesystem::path &filename, unsigned global_indentation,
-      bool verbose);
+      const boost::filesystem::path &filename, bool verbose);
 
   /*!
     @brief load all lines from a file into memory
@@ -180,6 +180,10 @@ class snakemake_file {
     @brief minimal contents of snakemake file as blocks of code
    */
   std::list<boost::shared_ptr<rule_block> > _blocks;
+  /*!
+    @brief included files to report on print statements
+   */
+  std::vector<boost::shared_ptr<snakemake_file> > _included_files;
   /*!
     @brief internal counter of assigned tags to rules
    */

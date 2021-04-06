@@ -35,16 +35,13 @@ std::string snakemake_unit_tests::rule_block::reduce_relative_paths(
 
 bool snakemake_unit_tests::rule_block::load_content_block(
     const std::vector<std::string> &loaded_lines,
-    const boost::filesystem::path &filename, unsigned global_indentation,
-    bool verbose, unsigned *current_line) {
+    const boost::filesystem::path &filename, bool verbose,
+    unsigned *current_line) {
   if (!current_line)
     throw std::runtime_error(
         "null pointer for counter passed to load_content_block");
   // clear out internals, just to be safe
   clear();
-  // there's nothing to do for global indentation here, only when
-  // content is being reported later; so just store it for now
-  _global_indentation = global_indentation;
   // define variables for processing
   std::string line = "";
   // define regex patterns for testing
@@ -287,7 +284,7 @@ unsigned snakemake_unit_tests::rule_block::get_include_depth() const {
     boost::smatch include_match;
     if (boost::regex_match(*get_code_chunk().begin(), include_match,
                            include_directive)) {
-      return include_match[1].str().size() + get_global_indentation();
+      return include_match[1].str().size();
     }
   }
   throw std::runtime_error(
@@ -314,9 +311,8 @@ void snakemake_unit_tests::rule_block::report_python_logging_code(
             "suggests post-python loading has not been performed");
       }
       // report tag along with required expression for evaluation
-      if (!(out << indentation(get_global_indentation() +
-                               get_local_indentation())
-                << "print(\"tag" << get_interpreter_tag() << ": {}\".format("
+      if (!(out << indentation(get_local_indentation()) << "print(\"tag"
+                << get_interpreter_tag() << ": {}\".format("
                 << get_filename_expression() << "))" << std::endl))
         throw std::runtime_error("complex include printing error");
     } else {
@@ -324,17 +320,15 @@ void snakemake_unit_tests::rule_block::report_python_logging_code(
       for (std::vector<std::string>::const_iterator iter =
                get_code_chunk().begin();
            iter != get_code_chunk().end(); ++iter) {
-        if (!(out << indentation(get_global_indentation()) << *iter
-                  << std::endl))
+        if (!(out << *iter << std::endl))
           throw std::runtime_error("code chunk printing error");
       }
     }
   } else if (!get_rule_name().empty()) {  // is a rule
     // if the rule has not already been flagged as untouched
     if (_resolution == RESOLVED_INCLUDED || _resolution == UNRESOLVED) {
-      if (!(out << indentation(get_global_indentation() +
-                               get_local_indentation())
-                << "print(\"tag" << get_interpreter_tag() << "\")" << std::endl
+      if (!(out << indentation(get_local_indentation()) << "print(\"tag"
+                << get_interpreter_tag() << "\")" << std::endl
                 << std::endl
                 << std::endl))
         throw std::runtime_error("rule interpreter code printing failure");
@@ -346,11 +340,8 @@ void snakemake_unit_tests::rule_block::report_python_logging_code(
     for (std::map<std::string, std::string>::const_iterator iter =
              get_named_blocks().begin();
          iter != get_named_blocks().end(); ++iter) {
-      if (!(out << indentation(get_global_indentation() +
-                               get_local_indentation())
-                << iter->first << ":"
-                << apply_indentation(iter->second, get_global_indentation())
-                << std::endl))
+      if (!(out << indentation(get_local_indentation()) << iter->first << ":"
+                << iter->second << std::endl))
         throw std::runtime_error("snakemake directive printing failure");
     }
   }
@@ -390,14 +381,12 @@ void snakemake_unit_tests::rule_block::print_contents(std::ostream &out) const {
     for (std::vector<std::string>::const_iterator iter =
              get_code_chunk().begin();
          iter != get_code_chunk().end(); ++iter) {
-      if (!(out << indentation(get_global_indentation())
-                << apply_indentation(*iter, get_global_indentation())
-                << std::endl))
+      if (!(out << *iter << std::endl))
         throw std::runtime_error("code chunk printing error");
     }
   } else if (!get_rule_name().empty()) {  // rule
-    if (!(out << indentation(get_global_indentation() + get_local_indentation())
-              << "rule " << get_rule_name() << ":" << std::endl))
+    if (!(out << indentation(get_local_indentation()) << "rule "
+              << get_rule_name() << ":" << std::endl))
       throw std::runtime_error("rule name printing failure");
     // enforce restrictions on block order
     std::map<std::string, bool> high_priority_blocks, low_priority_blocks;
@@ -414,11 +403,8 @@ void snakemake_unit_tests::rule_block::print_contents(std::ostream &out) const {
          iter != get_named_blocks().end(); ++iter) {
       if (high_priority_blocks.find(iter->first) !=
           high_priority_blocks.end()) {
-        if (!(out << indentation(get_global_indentation() +
-                                 get_local_indentation() + 4)
-                  << iter->first << ":"
-                  << apply_indentation(iter->second, get_global_indentation())
-                  << std::endl))
+        if (!(out << indentation(get_local_indentation() + 4) << iter->first
+                  << ":" << iter->second << std::endl))
           throw std::runtime_error("named block printing failure");
       }
     }
@@ -429,11 +415,8 @@ void snakemake_unit_tests::rule_block::print_contents(std::ostream &out) const {
       if (high_priority_blocks.find(iter->first) ==
               high_priority_blocks.end() &&
           low_priority_blocks.find(iter->first) == low_priority_blocks.end()) {
-        if (!(out << indentation(get_global_indentation() +
-                                 get_local_indentation() + 4)
-                  << iter->first << ":"
-                  << apply_indentation(iter->second, get_global_indentation())
-                  << std::endl))
+        if (!(out << indentation(get_local_indentation() + 4) << iter->first
+                  << ":" << iter->second << std::endl))
           throw std::runtime_error("named block printing failure");
       }
     }
@@ -442,11 +425,8 @@ void snakemake_unit_tests::rule_block::print_contents(std::ostream &out) const {
              get_named_blocks().begin();
          iter != get_named_blocks().end(); ++iter) {
       if (low_priority_blocks.find(iter->first) != low_priority_blocks.end()) {
-        if (!(out << indentation(get_global_indentation() +
-                                 get_local_indentation() + 4)
-                  << iter->first << ":"
-                  << apply_indentation(iter->second, get_global_indentation())
-                  << std::endl))
+        if (!(out << indentation(get_local_indentation() + 4) << iter->first
+                  << ":" << iter->second << std::endl))
           throw std::runtime_error("named block printing failure");
       }
     }
@@ -458,11 +438,8 @@ void snakemake_unit_tests::rule_block::print_contents(std::ostream &out) const {
     for (std::map<std::string, std::string>::const_iterator iter =
              get_named_blocks().begin();
          iter != get_named_blocks().end(); ++iter) {
-      if (!(out << indentation(get_global_indentation() +
-                               get_local_indentation())
-                << iter->first << ":"
-                << apply_indentation(iter->second, get_global_indentation())
-                << std::endl))
+      if (!(out << indentation(get_local_indentation()) << iter->first << ":"
+                << iter->second << std::endl))
         throw std::runtime_error("named block printing failure");
     }
   }

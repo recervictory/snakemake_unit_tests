@@ -70,36 +70,9 @@ void snakemake_unit_tests::snakemake_file::load_everything(
   ptr->set_resolution(RESOLVED_INCLUDED);
   _blocks.push_back(ptr);
   std::vector<std::string> loaded_lines;
-  // while any unresolved code chunk is present
-  bool unresolved = true;
-  while (unresolved) {
-    unresolved = false;
-    for (std::list<boost::shared_ptr<rule_block> >::iterator iter =
-             _blocks.begin();
-         iter != _blocks.end(); ++iter) {
-      if ((*iter)->is_simple_include_directive()) {
-        if (verbose)
-          std::cout << "found include directive, adding \""
-                    << (*iter)->get_standard_filename() << "\"" << std::endl;
-        // load the included file
-        boost::filesystem::path recursive_path =
-            base_dir / (*iter)->get_standard_filename();
-        load_lines(recursive_path, &loaded_lines);
-        /*!
-          see elsewhere for more extensive discussion, but this command
-          is expected to fail due to the path flattening issue #13
-
-          TODO(cpalmer718): deal with path flattening #13
-         */
-        parse_file(loaded_lines, iter, recursive_path,
-                   (*iter)->get_include_depth(), verbose);
-        unresolved = true;
-        // and now that the include has been performed, do not add the include
-        // statement
-        iter = _blocks.erase(iter);
-      }
-    }
-  }
+  boost::filesystem::path recursive_path = base_dir / filename;
+  load_lines(recursive_path, &loaded_lines);
+  parse_file(loaded_lines, _blocks.begin(), recursive_path, verbose);
 }
 
 void snakemake_unit_tests::snakemake_file::postflight_checks(
@@ -317,14 +290,13 @@ void snakemake_unit_tests::snakemake_file::resolve_derived_rules() {
 void snakemake_unit_tests::snakemake_file::parse_file(
     const std::vector<std::string> &loaded_lines,
     std::list<boost::shared_ptr<rule_block> >::iterator insertion_point,
-    const boost::filesystem::path &filename, unsigned global_indentation,
-    bool verbose) {
+    const boost::filesystem::path &filename, bool verbose) {
   // track current line
   unsigned current_line = 0;
   while (current_line < loaded_lines.size()) {
     boost::shared_ptr<rule_block> rb(new rule_block);
-    if (rb->load_content_block(loaded_lines, filename, global_indentation,
-                               verbose, &current_line)) {
+    if (rb->load_content_block(loaded_lines, filename, verbose,
+                               &current_line)) {
       // set python interpreter resolution status
       // rules should all be set to unresolved before first pass
       if (!rb->get_rule_name().empty()) {
@@ -373,9 +345,7 @@ void snakemake_unit_tests::snakemake_file::report_single_rule(
         (*iter)->get_rule_name().empty()) {
       (*iter)->print_contents(out);
     } else {
-      for (unsigned i = 0; i < (*iter)->get_global_indentation() +
-                                   (*iter)->get_local_indentation();
-           ++i)
+      for (unsigned i = 0; i < (*iter)->get_local_indentation(); ++i)
         out << ' ';
       out << "pass" << std::endl << std::endl << std::endl;
     }
@@ -457,8 +427,7 @@ void snakemake_unit_tests::snakemake_file::resolve_with_python(
         boost::filesystem::path recursive_path =
             base_dir / (*iter)->get_standard_filename();
         load_lines(recursive_path, &loaded_lines);
-        parse_file(loaded_lines, iter, recursive_path,
-                   (*iter)->get_include_depth(), verbose);
+        parse_file(loaded_lines, iter, recursive_path, verbose);
         unresolved = true;
         iter = _blocks.erase(iter);
         // current logic cannot reliably progress beyond this point
@@ -486,8 +455,7 @@ void snakemake_unit_tests::snakemake_file::resolve_with_python(
         boost::filesystem::path recursive_path =
             base_dir / (*iter)->get_standard_filename();
         load_lines(recursive_path, &loaded_lines);
-        parse_file(loaded_lines, iter, recursive_path,
-                   (*iter)->get_include_depth(), verbose);
+        parse_file(loaded_lines, iter, recursive_path, verbose);
         unresolved = true;
         // and now that the include has been performed, do not add the include
         // statement
