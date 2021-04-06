@@ -47,6 +47,7 @@ class snakemake_file {
    */
   snakemake_file(const snakemake_file &obj)
       : _blocks(obj._blocks),
+        _snakefile_relative_path(obj._snakefile_relative_path),
         _included_files(obj._included_files),
         _tag_counter(obj._tag_counter) {}
   /*!
@@ -56,8 +57,8 @@ class snakemake_file {
 
   /*!
     @brief load and parse snakemake pipeline
-    @param filename name of top-level snakefile
-    @param base_dir directory from which to base relative file paths
+    @param filename name of top-level snakefile, relative to pipeline top level
+    @param base_dir pipeline top level
     @param exclude_rules excluded rule set, for communicating problematic
     rules back upstream
     @param verbose whether to emit verbose logging output
@@ -184,11 +185,25 @@ class snakemake_file {
    */
   void postflight_checks(std::vector<std::string> *exclude_rules);
 
+  /*!
+    @brief report relative path of snakefile this object represents
+    @return relative path of original snakefile
+
+    path is relative to pipeline top level
+   */
+  const boost::filesystem::path &get_snakefile_relative_path() const {
+    return _snakefile_relative_path;
+  }
+
  private:
   /*!
     @brief minimal contents of snakemake file as blocks of code
    */
   std::list<boost::shared_ptr<rule_block> > _blocks;
+  /*!
+    @brief relative path to source snakefile from top level pipeline dir
+   */
+  boost::filesystem::path _snakefile_relative_path;
   /*!
     @brief included files to report on print statements
    */

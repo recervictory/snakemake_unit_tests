@@ -385,12 +385,13 @@ void snakemake_unit_tests::snakemake_file::resolve_with_python(
   boost::filesystem::path workflow = workspace / "workflow";
   boost::filesystem::create_directories(workflow);
   std::ofstream output;
-  output.open((workflow / "Snakefile").string().c_str());
+  boost::filesystem::path output_name = workspace / _snakefile_relative_path;
+  output.open(output_name.string().c_str());
   if (!output.is_open())
     throw std::runtime_error(
         "cannot write interpreter snakefile "
         "to file \"" +
-        (workflow / "Snakefile").string() + "\"");
+        output_name.string() + "\"");
   // write python reporting code
   for (std::list<boost::shared_ptr<rule_block> >::const_iterator iter =
            get_blocks().begin();
@@ -404,8 +405,8 @@ void snakemake_unit_tests::snakemake_file::resolve_with_python(
   output.close();
   // execute python script and capture output
   std::vector<std::string> results =
-      exec("cd " + workflow.parent_path().string() + " && snakemake -nFs " +
-           (boost::filesystem::path("workflow") / "Snakefile").string());
+      exec("cd " + workspace.string() + " && snakemake -nFs " +
+           _snakefile_relative_path.string());
   // capture the resulting tags for updating completion status
   std::map<std::string, std::string> tag_values;
   capture_python_tag_values(results, &tag_values);

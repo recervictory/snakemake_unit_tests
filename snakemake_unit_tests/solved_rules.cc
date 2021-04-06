@@ -185,10 +185,11 @@ void snakemake_unit_tests::solved_rules::create_workspace(
     }
     if (update_snakefiles) {
       // create parent directories for synthetic snakefile
-      boost::filesystem::create_directories(workspace_path / "workflow");
-      // create the synthetic snakefile in workspace/workflow/Snakefile
+      boost::filesystem::create_directories(
+          (workspace_path / sf.get_snakefile_relative_path()).parent_path());
+      // create the synthetic snakefile in workspace
       std::string output_filename =
-          (workspace_path / "workflow" / "Snakefile").string();
+          (workspace_path / sf.get_snakefile_relative_path()).string();
       std::ofstream output;
       output.open(output_filename.c_str());
       if (!output.is_open())
