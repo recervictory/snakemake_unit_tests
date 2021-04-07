@@ -222,7 +222,9 @@ bool snakemake_unit_tests::solved_rules::emit_snakefile(
   // note: only do this at top level
   if (requires_phony_all) report_phony_all_target(output, rec.get_outputs());
   // find the rule from the parsed snakefile(s) and report it to file
-  bool res = sf.report_single_rule(rec.get_rule_name(), output);
+  // new: pass log inputs to reporter for rule. notation in input block
+  bool res =
+      sf.report_single_rule(rec.get_rule_name(), rec.get_inputs(), output);
   output.close();
   for (std::map<boost::filesystem::path,
                 boost::shared_ptr<snakemake_file> >::const_iterator mapper =

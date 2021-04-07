@@ -160,8 +160,11 @@ class rule_block {
   /*!
     @brief report mildly formatted contents to a stream
     @param out an open stream to which to write formatted contents
+    @param recipe_inputs optional vector of solved inputs from log
    */
-  void print_contents(std::ostream &out) const;
+  void print_contents(
+      std::ostream &out,
+      const std::vector<boost::filesystem::path> *recipe_inputs = NULL) const;
 
   /*!
     @brief get internal storage of code chunk as const reference

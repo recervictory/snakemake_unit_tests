@@ -136,11 +136,14 @@ class snakemake_file {
   /*!
     @brief report all code blocks but a single requested rule to file
     @param rule_name string name of requested rule
+    @param recipe_inputs solved input files to target rule from log
     @param out open output stream to which to write data
     @return whether the rule was present in this file
    */
-  bool report_single_rule(const std::string &rule_name,
-                          std::ostream &out) const;
+  bool report_single_rule(
+      const std::string &rule_name,
+      const std::vector<boost::filesystem::path> &recipe_inputs,
+      std::ostream &out) const;
 
   /*!
     @brief whether the object's rules are unambiguously resolved

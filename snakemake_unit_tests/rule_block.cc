@@ -344,7 +344,9 @@ bool snakemake_unit_tests::rule_block::update_resolution(
   return true;
 }
 
-void snakemake_unit_tests::rule_block::print_contents(std::ostream &out) const {
+void snakemake_unit_tests::rule_block::print_contents(
+    std::ostream &out,
+    const std::vector<boost::filesystem::path> *recipe_inputs) const {
   // report contents. may eventually be used for printing to custom snakefile
   if (!get_code_chunk().empty()) {  // python code
     for (std::vector<std::string>::const_iterator iter =
@@ -372,6 +374,24 @@ void snakemake_unit_tests::rule_block::print_contents(std::ostream &out) const {
          iter != get_named_blocks().end(); ++iter) {
       if (high_priority_blocks.find(iter->first) !=
           high_priority_blocks.end()) {
+        // if there are solved inputs from the log
+        if (recipe_inputs && !iter->first.compare("input")) {
+          // new: find 'rules.' input references and override them with solved
+          // output
+          if (iter->second.find("rules.") != std::string::npos) {
+            if (!(out << indentation(get_local_indentation() + 4) << iter->first
+                      << ":" << std::endl))
+              throw std::runtime_error("overridden input printing failure");
+            for (std::vector<boost::filesystem::path>::const_iterator
+                     recipe_iter = recipe_inputs->begin();
+                 recipe_iter != recipe_inputs->end(); ++recipe_iter) {
+              if (!(out << indentation(get_local_indentation() + 8) << "\""
+                        << *recipe_iter << "\"," << std::endl))
+                throw std::runtime_error("overridden input printing failure");
+            }
+            continue;
+          }
+        }
         if (!(out << indentation(get_local_indentation() + 4) << iter->first
                   << ":" << iter->second << std::endl))
           throw std::runtime_error("named block printing failure");
