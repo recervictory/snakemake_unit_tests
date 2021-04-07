@@ -198,7 +198,7 @@ void snakemake_unit_tests::solved_rules::create_workspace(
     if (update_pytest) {
       report_modified_test_script(
           test_parent_path, output_test_dir, rec.get_rule_name(),
-          sf.get_snakefile_relative_path(), inst_test_py);
+          sf.get_snakefile_relative_path(), pipeline_run_dir, inst_test_py);
     }
   }
 }
@@ -311,6 +311,7 @@ void snakemake_unit_tests::solved_rules::report_modified_test_script(
     const boost::filesystem::path &parent_dir,
     const boost::filesystem::path &test_dir, const std::string &rule_name,
     const boost::filesystem::path &snakefile_relative_path,
+    const boost::filesystem::path &pipeline_run_dir,
     const boost::filesystem::path &inst_test_py) const {
   std::ifstream input;
   std::ofstream output;
@@ -324,7 +325,9 @@ void snakemake_unit_tests::solved_rules::report_modified_test_script(
                << "'" << std::endl
                << "rulename='" << rule_name << '\'' << std::endl
                << "snakefile_relative_path='"
-               << snakefile_relative_path.string() << "'" << std::endl))
+               << snakefile_relative_path.string() << "'" << std::endl
+               << "snakemake_exec_path='" << pipeline_run_dir.string() << "'"
+               << std::endl))
     throw std::runtime_error(
         "cannot write rulename variable to test python file \"" +
         test_python_file + "\"");

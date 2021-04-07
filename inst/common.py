@@ -11,7 +11,7 @@ from pathlib import Path
 
 import pytest
 
-exclude_paths = ["/log/", "/logs/", "/performance_benchmarks/", "temp/", "tmp/"]
+exclude_paths = ["/log/", "/logs/", "/performance_benchmarks/", "temp/", "tmp/", ".snakemake/"]
 exclude_ext = [".tbi", ".html", ".log", ".bai"]
 byte_cmp = [".jpg", ".jpeg", ".png", ".bam"]
 # TODO: Read in a list of extensions to exclude from the config.  See issue #16.

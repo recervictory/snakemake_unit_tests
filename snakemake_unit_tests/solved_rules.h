@@ -286,12 +286,14 @@ class solved_rules {
     @param test_dir parent directory of all unit tests for the pipeline
     @param rule_name name of rule whose test is being emitted
     @param snakefile_relative_path relative path of snakefile in pipeline dir
+    @param pipeline_run_dir relative path of snakemake execution within pipeline
     @param inst_test_py snakemake_unit_tests test.py script location
    */
   void report_modified_test_script(
       const boost::filesystem::path &parent_dir,
       const boost::filesystem::path &test_dir, const std::string &rule_name,
       const boost::filesystem::path &snakefile_relative_path,
+      const boost::filesystem::path &pipeline_run_dir,
       const boost::filesystem::path &inst_test_py) const;
 
  private:
