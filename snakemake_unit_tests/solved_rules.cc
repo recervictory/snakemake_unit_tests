@@ -259,6 +259,7 @@ void snakemake_unit_tests::solved_rules::copy_contents(
     const boost::filesystem::path &source_prefix,
     const boost::filesystem::path &target_prefix,
     const std::string &rule_name) const {
+  std::map<boost::filesystem::path, bool> copied_sources;
   for (std::vector<boost::filesystem::path>::const_iterator iter =
            contents.begin();
        iter != contents.end(); ++iter) {
@@ -270,13 +271,19 @@ void snakemake_unit_tests::solved_rules::copy_contents(
       throw std::runtime_error("cannot find file/directory \"" +
                                source_file.string() + "\" for " + rule_name);
     }
-    // create parent directories as needed
-    boost::filesystem::create_directories(target_file.parent_path());
-    // recursive copy
-    boost::filesystem::copy(
-        source_file, target_file,
-        boost::filesystem::copy_options::overwrite_existing |
-            boost::filesystem::copy_options::recursive);
+    // prohibit multiple copies of the same file
+    // don't know why some files are multiply tracked, but
+    // it's seemingly harmless
+    if (copied_sources.find(source_file) == copied_sources.end()) {
+      copied_sources[source_file] = true;
+      // create parent directories as needed
+      boost::filesystem::create_directories(target_file.parent_path());
+      // recursive copy
+      boost::filesystem::copy(
+          source_file, target_file,
+          boost::filesystem::copy_options::overwrite_existing |
+              boost::filesystem::copy_options::recursive);
+    }
   }
 }
 
