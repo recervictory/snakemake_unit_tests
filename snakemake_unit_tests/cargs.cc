@@ -182,21 +182,19 @@ snakemake_unit_tests::params snakemake_unit_tests::cargs::set_parameters()
   // snakemake_log: should exist, be a regular file
   check_nonempty(p.snakemake_log, "snakemake-log");
   check_regular_file(p.snakemake_log, "", "snakemake-log");
-  // added_files: should be regular files, relative to pipeline run dir
+  // added_files: should be regular files, relative to pipeline top dir
   // doesn't have to be specified at all though
   for (std::vector<boost::filesystem::path>::iterator iter =
            p.added_files.begin();
        iter != p.added_files.end(); ++iter) {
-    check_regular_file(*iter, p.pipeline_top_dir / p.pipeline_run_dir,
-                       "added-files");
+    check_regular_file(*iter, p.pipeline_top_dir, "added-files");
   }
-  // added_directories: should be directories, relative to pipeline run dir
+  // added_directories: should be directories, relative to pipeline top dir
   // doesn't have to be specified at all though
   for (std::vector<boost::filesystem::path>::iterator iter =
            p.added_directories.begin();
        iter != p.added_directories.end(); ++iter) {
-    check_and_fix_dir(&(*iter), p.pipeline_top_dir / p.pipeline_run_dir,
-                      "added-directories");
+    check_and_fix_dir(&(*iter), p.pipeline_top_dir, "added-directories");
   }
 
   // in theory, if they've made it this far, parameters are ready to go

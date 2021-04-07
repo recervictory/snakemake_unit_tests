@@ -69,8 +69,8 @@ snakemake-log: ../chip-variant-selection/test.log
 ## one or more files that you want added to test workspaces, so that
 ## the minimal test snakefile can have access to them. an example might
 ## be your manifest file; this is also how config files are propagated.
-## the syntax is the *relative path of the file from the snakemake execution
-## directory for your pipeline*: that is, from 'pipeline-dir'.
+## the syntax is the *relative path of the file from the installation
+## directory for your pipeline*: that is, from 'pipeline-top-dir'.
 ## note that if you specify additional --added-files at the command
 ## line, they will be *added* to this list; they will not replace this list.
 ## if you want that behavior, remove entries from this file.
@@ -82,8 +82,8 @@ added-files:
 ## one or more directories that you want added to test workspaces, so that
 ## the minimal test snakefile can have access to them. an example might
 ## be your config subdirectory, or workflows/envs, or workflows/scripts.
-## the syntax is the *relative path of the directory from the snakemake
-## execution directory for your pipeline*: that is, from 'pipeline-dir'.
+## the syntax is the *relative path of the directory from the installation
+## directory for your pipeline*: that is, from 'pipeline-top-dir'.
 ## note that directory contents are copied recursively. you only need
 ## to use this option for things that are *not explicitly tracked as inputs
 ## or outputs of your rules*
