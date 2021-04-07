@@ -538,6 +538,10 @@ std::vector<std::string> snakemake_unit_tests::snakemake_file::exec(
     }
     int status = pclose(pipe);
     if (status == -1) {
+      for (std::vector<std::string>::const_iterator iter = result.begin();
+           iter != result.end(); ++iter) {
+        std::cerr << *iter;
+      }
       throw std::runtime_error(
           "exec pipe close failed. this exit status is conceptually possible, "
           "but most likely "
@@ -549,6 +553,10 @@ std::vector<std::string> snakemake_unit_tests::snakemake_file::exec(
           "to the snakemake_unit_tests repository for feedback.");
     }
     if (!WIFEXITED(status)) {
+      for (std::vector<std::string>::const_iterator iter = result.begin();
+           iter != result.end(); ++iter) {
+        std::cerr << *iter;
+      }
       throw std::runtime_error(
           "python subprocess terminated abnormally. this is probably a system "
           "configuration "
@@ -559,6 +567,10 @@ std::vector<std::string> snakemake_unit_tests::snakemake_file::exec(
           "repository.");
     }
     if (WEXITSTATUS(status)) {
+      for (std::vector<std::string>::const_iterator iter = result.begin();
+           iter != result.end(); ++iter) {
+        std::cerr << *iter;
+      }
       throw std::runtime_error(
           "python subprocess returned error exit status. this is most likely "
           "due to "
