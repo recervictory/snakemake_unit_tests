@@ -9,7 +9,8 @@ ACLOCAL_AMFLAGS = -I m4
 ## TAP support
 TEST_LOG_DRIVER = env AM_TAP_AWK='$(AWK)' $(SHELL) \
                   $(top_srcdir)/tap-driver.sh
-TESTS = tests/test1.test \
+TESTS = tests/test0.test \
+	tests/test1.test \
 	tests/test2.test \
 	tests/test3.test \
 	tests/test4.test \
@@ -21,6 +22,13 @@ TESTS = tests/test1.test \
 	tests/test10.test \
 	tests/test11.test \
 	tests/test12.test \
+	tests/test13.test \
+	tests/test14.test \
+	tests/test15.test \
+	tests/test16.test \
+	tests/test17.test \
+	tests/test18.test \
+	tests/test19.test \
 	tests/test_config_defaults.test \
 	tests/test_config_override_output_dir.test \
 	tests/test_config_override_snakemake_log.test \

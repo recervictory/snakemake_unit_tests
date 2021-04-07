@@ -31,12 +31,27 @@ class snakemake_file {
   /*!
     @brief default constructor
    */
-  snakemake_file() {}
+  snakemake_file() : _tag_counter(0), _updated_last_round(true) {
+    _tag_counter.reset(new unsigned);
+    *_tag_counter = 1;
+  }
+  /*!
+    @brief construct a snakemake file with
+    an initialized counter
+    @param ptr pre-initialized counter, from root file
+   */
+  explicit snakemake_file(boost::shared_ptr<unsigned> ptr)
+      : _tag_counter(ptr), _updated_last_round(true) {}
   /*!
     @brief copy constructor
     @param obj existing snakemake_file object
    */
-  snakemake_file(const snakemake_file &obj) : _blocks(obj._blocks) {}
+  snakemake_file(const snakemake_file &obj)
+      : _blocks(obj._blocks),
+        _snakefile_relative_path(obj._snakefile_relative_path),
+        _included_files(obj._included_files),
+        _tag_counter(obj._tag_counter),
+        _updated_last_round(obj._updated_last_round) {}
   /*!
     @brief destructor
    */
@@ -44,8 +59,8 @@ class snakemake_file {
 
   /*!
     @brief load and parse snakemake pipeline
-    @param filename name of top-level snakefile
-    @param base_dir directory from which to base relative file paths
+    @param filename name of top-level snakefile, relative to pipeline top level
+    @param base_dir pipeline top level
     @param exclude_rules excluded rule set, for communicating problematic
     rules back upstream
     @param verbose whether to emit verbose logging output
@@ -59,15 +74,13 @@ class snakemake_file {
    @param loaded_lines lines of file to parse
    @param insertion_point list iterator to where to insert content
    @param filename name of file for informative errors
-   @param global_indentation indentation depth of file's include directive
    @param verbose whether to emit verbose
    logging output
   */
   void parse_file(
       const std::vector<std::string> &loaded_lines,
       std::list<boost::shared_ptr<rule_block> >::iterator insertion_point,
-      const boost::filesystem::path &filename, unsigned global_indentation,
-      bool verbose);
+      const boost::filesystem::path &filename, bool verbose);
 
   /*!
     @brief load all lines from a file into memory
@@ -115,18 +128,157 @@ class snakemake_file {
   }
 
   /*!
+    @brief get mutable access to internal block representation
+    @return non-const reference to internal block list
+   */
+  std::list<boost::shared_ptr<rule_block> > &get_blocks() { return _blocks; }
+
+  /*!
     @brief report all code blocks but a single requested rule to file
     @param rule_name string name of requested rule
     @param out open output stream to which to write data
+    @return whether the rule was present in this file
    */
-  void report_single_rule(const std::string &rule_name,
+  bool report_single_rule(const std::string &rule_name,
                           std::ostream &out) const;
+
+  /*!
+    @brief whether the object's rules are unambiguously resolved
+    @return whether the object's rules are unambiguously resolved
+
+    this will involve querying the rules for their own diagnosis of
+    their status. this logic is not yet fully clear to me.
+   */
+  bool fully_resolved() const;
+  /*!
+    @brief whether the object's rules contain any unresolved include directives
+    @return whether the object's rules contain any unresolved include directives
+   */
+  bool contains_blockers() const;
+
+  /*!
+    @brief run the current rule set through python once
+    @param workspace top level directory with added files and directories
+    installed
+    @param pipeline_run_dir where the actual pipeline was initially installed
+    @param verbose whether to provide verbose logging output
+    @param disable_resolution deactivate downstream processing on recursive
+    calls
+
+    this is the top level entry point for a recursion pass through python
+    reporting. this should only be called from the primary caller.
+   */
+  void resolve_with_python(const boost::filesystem::path &workspace,
+                           const boost::filesystem::path &pipeline_run_dir,
+                           bool verbose, bool disable_resolution);
+
+  /*!
+    @brief run the current rule set through python once
+    @param workspace top level directory with added files and directories
+    installed
+    @param pipeline_run_dir where the actual pipeline was initially installed
+    @param verbose whether to provide verbose logging output
+    @param tag_values reporter data from python pass
+    @param output_name full output path of snakefile
+    @return processing status; deprecated, flagged for removal
+
+    this is the recursive entry point for a recursion pass through python
+    reporting. this should be called for each file in turn.
+   */
+  bool process_python_results(
+      const boost::filesystem::path &workspace,
+      const boost::filesystem::path &pipeline_run_dir, bool verbose,
+      const std::map<std::string, std::string> &tag_values,
+      const boost::filesystem::path &output_name);
+
+  /*!
+    @brief execute a system command and capture its results
+    @param cmd system command to execute
+    @return captured results, line by line
+
+    https://stackoverflow.com/questions/478898/how-do-i-execute-a-command-and-get-the-output-of-the-command-within-c-using-po
+   */
+  std::vector<std::string> exec(const std::string &cmd) const;
+  /*!
+    @brief parse python reporting output to tags or tags and values
+    @param vec captured lines from python output
+    @param target results collector
+
+    null strings in map value corresponds to rule tags
+   */
+  void capture_python_tag_values(
+      const std::vector<std::string> &vec,
+      std::map<std::string, std::string> *target) const;
+  /*!
+    @brief resolve derived rules and check for sanity
+    @param exclude_rules flagged rules to be excluded
+
+    note that more content will be added here presumably once more snakemake
+    features are supported
+   */
+  void postflight_checks(std::vector<std::string> *exclude_rules);
+
+  /*!
+    @brief report relative path of snakefile this object represents
+    @return relative path of original snakefile
+
+    path is relative to pipeline top level
+   */
+  const boost::filesystem::path &get_snakefile_relative_path() const {
+    return _snakefile_relative_path;
+  }
+  /*!
+    @brief provide access to loaded file map
+    @return const reference to loaded file map
+   */
+  const std::map<boost::filesystem::path, boost::shared_ptr<snakemake_file> >
+      &loaded_files() const {
+    return _included_files;
+  }
+  /*!
+    @brief override update status in this file and all dependencies
+    @param b new value for update status
+   */
+  void set_update_status(bool b) {
+    _updated_last_round = b;
+    for (std::map<boost::filesystem::path,
+                  boost::shared_ptr<snakemake_file> >::iterator iter =
+             _included_files.begin();
+         iter != _included_files.end(); ++iter) {
+      iter->second->set_update_status(b);
+    }
+  }
+
+  /*!
+    @brief report loaded rules in this file and all dependencies
+    @param aggregated_rules target for reporting
+   */
+  void report_rules(
+      std::map<std::string, std::vector<boost::shared_ptr<rule_block> > >
+          *aggregated_rules) const;
 
  private:
   /*!
     @brief minimal contents of snakemake file as blocks of code
    */
   std::list<boost::shared_ptr<rule_block> > _blocks;
+  /*!
+    @brief relative path to source snakefile from top level pipeline dir
+   */
+  boost::filesystem::path _snakefile_relative_path;
+  /*!
+    @brief included files to report on print statements
+   */
+  std::map<boost::filesystem::path, boost::shared_ptr<snakemake_file> >
+      _included_files;
+  /*!
+    @brief internal counter of assigned tags to rules
+   */
+  boost::shared_ptr<unsigned> _tag_counter;
+  /*!
+    @brief whether any contained block updated its inclusion status last update
+   */
+  bool _updated_last_round;
 };
 }  // namespace snakemake_unit_tests
 

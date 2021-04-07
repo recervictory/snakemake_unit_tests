@@ -47,7 +47,16 @@ int main(int argc, char **argv) {
 
   // parse the top-level snakefile and all include files (hopefully)
   snakemake_unit_tests::snakemake_file sf;
-  sf.load_everything(p.snakefile.filename(), p.snakefile.parent_path(),
+  // express snakefile as path relative to top-level pipeline dir
+  std::string snakefile_str = p.snakefile.string();
+  std::string pipeline_str = p.pipeline_run_dir.string();
+  snakefile_str = snakefile_str.substr(snakefile_str.find(pipeline_str) +
+                                       pipeline_str.size() + 1);
+  if (p.verbose) {
+    std::cout << "computed snakefile is \"" << snakefile_str << "\""
+              << std::endl;
+  }
+  sf.load_everything(boost::filesystem::path(snakefile_str), p.pipeline_run_dir,
                      &p.exclude_rules, p.verbose);
 
   // as a debug step, report the parsed contents of the snakefile
@@ -59,8 +68,32 @@ int main(int argc, char **argv) {
   snakemake_unit_tests::solved_rules sr;
   sr.load_file(p.snakemake_log.string());
 
+  // new feature: python integration to resolve ambiguous rules
+  // create empty workspace for run
+  // should have: added files and directories
+  // should not have: snakefile
+  // TODO(cpalmer718): determine if workspace requires inputs or outputs?
+  //   probably not, as this isn't rule-specific, I hope
+  sr.create_empty_workspace(p.output_test_dir, p.pipeline_run_dir,
+                            p.added_files, p.added_directories);
+  // do things in this location
+  do {
+    // scan the rule set for blockers
+    if (p.verbose) {
+      std::cout << "running a python/snakemake logic resolution pass"
+                << std::endl;
+    }
+    sf.resolve_with_python(p.output_test_dir / ".snakemake_unit_tests",
+                           p.pipeline_run_dir, p.verbose, false);
+  } while (sf.contains_blockers());
+
+  // remove the location
+  sr.remove_empty_workspace(p.output_test_dir);
+
+  // refactor: move postflight snakefile checks to after the python passes
+  sf.postflight_checks(&p.exclude_rules);
+
   // iterate over the solved rules, emitting them with modifiers as desired
-  // TODO(cpalmer718): refactor this function and clean it up
   sr.emit_tests(
       sf, p.output_test_dir, p.pipeline_run_dir, p.inst_dir, p.exclude_rules,
       p.added_files, p.added_directories, p.update_snakefiles || p.update_all,

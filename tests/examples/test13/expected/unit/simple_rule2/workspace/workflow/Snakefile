@@ -1,0 +1,25 @@
+rule all:
+    input:
+        "output2.txt",
+
+
+pass
+
+
+pass
+
+
+if False:
+    pass
+
+
+else:
+    rule simple_rule2:
+        input:
+            "input2.txt",
+        output:
+            "output2.txt",
+        shell:
+            "echo 'fallback handler' > {output}"
+
+

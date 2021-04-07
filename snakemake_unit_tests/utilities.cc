@@ -12,41 +12,55 @@ std::string snakemake_unit_tests::remove_comments_and_docstrings(
     const std::string &s, const std::vector<std::string> &loaded_lines,
     unsigned *line_number) {
   std::string res = s, line = "";
-  std::string::size_type loc = 0, cur = 0;
   if (!line_number)
     throw std::logic_error(
         "null line counter pointer provided to remove_comments_and_docstrings");
-  // remove docstrings: any text embedded between a pair of triple quotes """
-  if ((loc = s.find("\"\"\"", cur)) != std::string::npos) {
-    res = res.substr(0, loc);
-    if (loc != s.rfind("\"\"\"")) {
-      res += s.substr(s.find("\"\"\"", loc + 3) + 3);
-      cur = loc + 3;
-    } else {
-      // allow multiline docstrings
-      if (*line_number >= loaded_lines.size()) {
-        throw std::runtime_error(
-            "ran out of lines while scanning for multiline "
-            "docstring");
-      }
-      bool found_docstring_terminator = false;
+  // interpret string literals in a way that is consistent with python
+  // interpretation
+  /*
+    the problem is as follows: string literals are often considered either
+    docstrings or ignored comments. the exception is when they are assigned to a
+    variable, in which case they are *not* ignored and processed by the
+    interpreter. they can also span multiple lines.
+   */
+  const boost::regex variable_assigned_string_literal("^ *[^=]+ *= *\"\"\".*$");
+  const boost::regex floating_string_literal("^ *\"\"\".*$");
+  boost::smatch string_literal_match;
+  bool found_docstring_terminator = false;
+  // find the beginning of a string literal with variable assignment:
+  //    varname = """...
+  if (boost::regex_match(s, string_literal_match,
+                         variable_assigned_string_literal)) {
+    // this content *must be maintained* and returned to the caller
+    std::ostringstream res;
+    res << s;
+    // if the variable assigned string literal spans multiple lines
+    if (s.find("\"\"\"") == s.rfind("\"\"\"")) {
+      // aggregate the content into a single line
       while (*line_number < loaded_lines.size() &&
              !found_docstring_terminator) {
-        line = loaded_lines.at(*line_number);
+        res << std::endl << loaded_lines.at(*line_number);
+        found_docstring_terminator =
+            loaded_lines.at(*line_number).find("\"\"\"") != std::string::npos;
         ++*line_number;
-        if (line.find("\"\"\"") != std::string::npos) {
-          found_docstring_terminator = true;
-          res += line.substr(line.find("\"\"\"") + 3);
-        }
       }
-      if (!found_docstring_terminator)
-        throw std::runtime_error(
-            "unable to find terminating docstring quotes for docstring "
-            "starting with: \"" +
-            s + "\"");
     }
+    return res.str();
+  } else if (boost::regex_match(s, string_literal_match,
+                                floating_string_literal)) {
+    // if the unassigned string literal spans multiple lines
+    if (s.find("\"\"\"") == s.rfind("\"\"\"")) {
+      // just consume the content, don't bother to aggregate
+      while (*line_number < loaded_lines.size() &&
+             !found_docstring_terminator) {
+        found_docstring_terminator =
+            loaded_lines.at(*line_number).find("\"\"\"") != std::string::npos;
+        ++*line_number;
+      }
+    }
+    return "";
   }
-  cur = 0;
+
   // remove comments: everything after the first unescaped '#', I think
   // need to somewhat improve comment parsing, to handle situations where
   // comment characters are present but not indicating comments
