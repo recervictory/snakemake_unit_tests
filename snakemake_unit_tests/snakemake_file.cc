@@ -415,10 +415,18 @@ void snakemake_unit_tests::snakemake_file::resolve_with_python(
                  << "    output: \"tmp.txt\"," << std::endl))
       throw std::runtime_error(
           "cannot write tmp output rule to python reporter");
+    // adjust snakefile such that it is relative to the run directory
+    boost::filesystem::path complete_run_directory =
+        boost::filesystem::canonical(pipeline_top_dir / pipeline_run_dir);
+    boost::filesystem::path complete_snakefile_loc =
+        boost::filesystem::canonical(pipeline_top_dir /
+                                     _snakefile_relative_path);
+    std::string adjusted_snakefile = complete_snakefile_loc.string().substr(
+        complete_run_directory.string().size() + 1);
     // execute python script and capture output
     std::vector<std::string> results =
         exec("cd " + (workspace / pipeline_run_dir).string() +
-             " && snakemake -nFs " + _snakefile_relative_path.string());
+             " && snakemake -nFs " + adjusted_snakefile);
     // capture the resulting tags for updating completion status
     std::map<std::string, std::string> tag_values;
     capture_python_tag_values(results, &tag_values);
