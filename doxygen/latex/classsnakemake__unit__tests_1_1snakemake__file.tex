@@ -59,7 +59,9 @@ const boost\+::filesystem\+::path \& \mbox{\hyperlink{classsnakemake__unit__test
 const std\+::map$<$ boost\+::filesystem\+::path, boost\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classsnakemake__unit__tests_1_1snakemake__file}{snakemake\+\_\+file}} $>$ $>$ \& \mbox{\hyperlink{classsnakemake__unit__tests_1_1snakemake__file_a3f9559ce24c4f072800c5762b63a64b2}{loaded\+\_\+files}} () const
 \begin{DoxyCompactList}\small\item\em provide access to loaded file map \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{classsnakemake__unit__tests_1_1snakemake__file_a1dae0efed9d265fa1eabab34a3a9623c}{set\+\_\+update\+\_\+status}} (bool b)
-\begin{DoxyCompactList}\small\item\em override update status in this file and all dependencies \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em override update status in this file and all dependencies \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classsnakemake__unit__tests_1_1snakemake__file_ad113a1929bdc2c949d5213e88575f78e}{report\+\_\+rules}} (std\+::map$<$ std\+::string, std\+::vector$<$ boost\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block}{rule\+\_\+block}} $>$ $>$ $>$ $\ast$aggregated\+\_\+rules) const
+\begin{DoxyCompactList}\small\item\em report loaded rules in this file and all dependencies \end{DoxyCompactList}\end{DoxyCompactItemize}
 \doxysubsection*{Private Attributes}
 \begin{DoxyCompactItemize}
 \item 
@@ -362,7 +364,22 @@ run the current rule set through python once
 \begin{DoxyReturn}{Returns}
 processing status; deprecated, flagged for removal
 \end{DoxyReturn}
-this is the recursive entry point for a recursion pass through python reporting. this should be called for each file in turn. \mbox{\Hypertarget{classsnakemake__unit__tests_1_1snakemake__file_a670a12df840072527baf6dd9ca213f2e}\label{classsnakemake__unit__tests_1_1snakemake__file_a670a12df840072527baf6dd9ca213f2e}} 
+this is the recursive entry point for a recursion pass through python reporting. this should be called for each file in turn. \mbox{\Hypertarget{classsnakemake__unit__tests_1_1snakemake__file_ad113a1929bdc2c949d5213e88575f78e}\label{classsnakemake__unit__tests_1_1snakemake__file_ad113a1929bdc2c949d5213e88575f78e}} 
+\index{snakemake\_unit\_tests::snakemake\_file@{snakemake\_unit\_tests::snakemake\_file}!report\_rules@{report\_rules}}
+\index{report\_rules@{report\_rules}!snakemake\_unit\_tests::snakemake\_file@{snakemake\_unit\_tests::snakemake\_file}}
+\doxysubsubsection{\texorpdfstring{report\_rules()}{report\_rules()}}
+{\footnotesize\ttfamily void snakemake\+\_\+unit\+\_\+tests\+::snakemake\+\_\+file\+::report\+\_\+rules (\begin{DoxyParamCaption}\item[{std\+::map$<$ std\+::string, std\+::vector$<$ boost\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block}{rule\+\_\+block}} $>$ $>$ $>$ $\ast$}]{aggregated\+\_\+rules }\end{DoxyParamCaption}) const}
+
+
+
+report loaded rules in this file and all dependencies 
+
+
+\begin{DoxyParams}{Parameters}
+{\em aggregated\+\_\+rules} & target for reporting \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1snakemake__file_a670a12df840072527baf6dd9ca213f2e}\label{classsnakemake__unit__tests_1_1snakemake__file_a670a12df840072527baf6dd9ca213f2e}} 
 \index{snakemake\_unit\_tests::snakemake\_file@{snakemake\_unit\_tests::snakemake\_file}!report\_single\_rule@{report\_single\_rule}}
 \index{report\_single\_rule@{report\_single\_rule}!snakemake\_unit\_tests::snakemake\_file@{snakemake\_unit\_tests::snakemake\_file}}
 \doxysubsubsection{\texorpdfstring{report\_single\_rule()}{report\_single\_rule()}}

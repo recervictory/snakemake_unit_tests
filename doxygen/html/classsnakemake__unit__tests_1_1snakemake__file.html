@@ -153,6 +153,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a1dae0efed9d265fa1eabab34a3a9623c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1snakemake__file.html#a1dae0efed9d265fa1eabab34a3a9623c">set_update_status</a> (bool b)</td></tr>
 <tr class="memdesc:a1dae0efed9d265fa1eabab34a3a9623c"><td class="mdescLeft">&#160;</td><td class="mdescRight">override update status in this file and all dependencies  <a href="classsnakemake__unit__tests_1_1snakemake__file.html#a1dae0efed9d265fa1eabab34a3a9623c">More...</a><br /></td></tr>
 <tr class="separator:a1dae0efed9d265fa1eabab34a3a9623c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad113a1929bdc2c949d5213e88575f78e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1snakemake__file.html#ad113a1929bdc2c949d5213e88575f78e">report_rules</a> (std::map&lt; std::string, std::vector&lt; boost::shared_ptr&lt; <a class="el" href="classsnakemake__unit__tests_1_1rule__block.html">rule_block</a> &gt; &gt; &gt; *aggregated_rules) const</td></tr>
+<tr class="memdesc:ad113a1929bdc2c949d5213e88575f78e"><td class="mdescLeft">&#160;</td><td class="mdescRight">report loaded rules in this file and all dependencies  <a href="classsnakemake__unit__tests_1_1snakemake__file.html#ad113a1929bdc2c949d5213e88575f78e">More...</a><br /></td></tr>
+<tr class="separator:ad113a1929bdc2c949d5213e88575f78e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
@@ -747,6 +750,32 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>processing status; deprecated, flagged for removal</dd></dl>
 <p>this is the recursive entry point for a recursion pass through python reporting. this should be called for each file in turn. </p>
+
+</div>
+</div>
+<a id="ad113a1929bdc2c949d5213e88575f78e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad113a1929bdc2c949d5213e88575f78e">&#9670;&nbsp;</a></span>report_rules()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void snakemake_unit_tests::snakemake_file::report_rules </td>
+          <td>(</td>
+          <td class="paramtype">std::map&lt; std::string, std::vector&lt; boost::shared_ptr&lt; <a class="el" href="classsnakemake__unit__tests_1_1rule__block.html">rule_block</a> &gt; &gt; &gt; *&#160;</td>
+          <td class="paramname"><em>aggregated_rules</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>report loaded rules in this file and all dependencies </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">aggregated_rules</td><td>target for reporting </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
