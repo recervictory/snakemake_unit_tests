@@ -42,6 +42,7 @@ class params {
         config_filename(""),
         output_test_dir(""),
         snakefile(""),
+        pipeline_top_dir(""),
         pipeline_run_dir(""),
         inst_dir(""),
         snakemake_log("") {}
@@ -61,6 +62,7 @@ class params {
         config(obj.config),
         output_test_dir(obj.output_test_dir),
         snakefile(obj.snakefile),
+        pipeline_top_dir(obj.pipeline_top_dir),
         pipeline_run_dir(obj.pipeline_run_dir),
         inst_dir(obj.inst_dir),
         snakemake_log(obj.snakemake_log),
@@ -117,6 +119,11 @@ class params {
   boost::filesystem::path snakefile;
   /*!
     @brief top-level directory of successful pipeline run
+   */
+  boost::filesystem::path pipeline_top_dir;
+  /*!
+    @brief execution directory of pipeline, relative to
+    top level directory of pipeline
    */
   boost::filesystem::path pipeline_run_dir;
   /*!
@@ -242,7 +249,7 @@ class cargs {
   }
 
   /*!
-    @brief get top-level directory under which actual pipeline was run
+    @brief get top-level directory of test pipeline
     @return top-level run directory
 
     this parameter is optional. if not specified, it will be computed
@@ -256,8 +263,20 @@ class cargs {
     directories for non-compliant (but still valid) snakemake configurations,
     such as when the file is in ~/Snakefile instead of ~/workflow/Snakefile.
    */
-  std::string get_pipeline_dir() const {
-    return compute_parameter<std::string>("pipeline-dir", true);
+  std::string get_pipeline_top_dir() const {
+    return compute_parameter<std::string>("pipeline-top-dir", true);
+  }
+  /*!
+    @brief get directory of actual pipeline run, relative to top-level
+    pipeline directory.
+
+    this parameter is optional. if not specified, it will be assumed
+    to be '.'; that is, that the pipeline was run in the top level of
+    the pipeline installation itself. a valid option here might be
+    'workflows/rnaseq' or equivalent.
+   */
+  std::string get_pipeline_run_dir() const {
+    return compute_parameter<std::string>("pipeline-run-dir", true);
   }
 
   /*!

@@ -19,15 +19,24 @@ output-test-dir: .tests.cam
 ## *supercede* the setting in this file.
 snakefile: ../chip-variant-selection/workflow/Snakefile
 
-# pipeline-dir: [arg]
+# pipeline-top-dir: [arg]
 ## installation directory of pipeline for which you want tests. this is needed
 ## to deal with relative paths for directories and files you want added
 ## into the minimal test workspaces. if you do not specify this parameter,
 ## internal logic will set it to [{snakefile directory}/..], assuming
 ## the snakefile is in a one-deep subdirectory of the pipeline.
-## note that if you specify --pipeline-dir at the command line, it will
+## note that if you specify --pipeline-top-dir at the command line, it will
 ## *supercede* the setting in this file.
-pipeline-dir: ../chip-variant-selection
+pipeline-top-dir: ../chip-variant-selection
+
+# pipeline-run-dir: [arg]
+## execution directory of tested pipeline. expressed as a path relative
+## to pipeline-top-dir. so, if you have a pipeline installed in
+## /path/to/pipeline, and you ran the pipeline in /path/to/pipeline/rundir,
+## this should be set to 'rundir'. if you run at top-level, set this to '.'
+## note that if you specify --pipeline-run-dir at the command line, it will
+## *supercede* the setting in this file.
+pipeline-run-dir: .
 
 # inst-dir: [arg]
 ## location on your system of the snakemake_unit_tests subdirectory 'inst'.

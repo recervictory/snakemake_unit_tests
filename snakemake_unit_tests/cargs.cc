@@ -28,10 +28,13 @@ void snakemake_unit_tests::cargs::initialize_options() {
       "snakemake log file for run that needs unit tests")(
       "output-test-dir,o", boost::program_options::value<std::string>(),
       "top-level output directory for all tests")(
-      "pipeline-dir,p", boost::program_options::value<std::string>(),
-      "top-level run directory for actual instance of pipeline (if not "
+      "pipeline-top-dir,p", boost::program_options::value<std::string>(),
+      "top-level pipeline directory for actual instance of pipeline (if not "
       "specified, "
       "will be computed as * assuming --snakefile is */workflow/Snakefile)")(
+      "pipeline-run-dir,r", boost::program_options::value<std::string>(),
+      "directory from which the pipeline was actually run, relative to "
+      "pipeline-top-dir; defaults to '.'")(
       "snakefile,s", boost::program_options::value<std::string>(),
       "snakefile used to run target pipeline")(
       "verbose,v", "emit verbose logging content; useful for debugging")(
@@ -66,8 +69,11 @@ snakemake_unit_tests::params snakemake_unit_tests::cargs::set_parameters()
       if (p.config.query_valid("snakefile")) {
         p.snakefile = p.config.get_entry("snakefile");
       }
-      if (p.config.query_valid("pipeline-dir")) {
-        p.pipeline_run_dir = p.config.get_entry("pipeline-dir");
+      if (p.config.query_valid("pipeline-top-dir")) {
+        p.pipeline_top_dir = p.config.get_entry("pipeline-top-dir");
+      }
+      if (p.config.query_valid("pipeline-run-dir")) {
+        p.pipeline_run_dir = p.config.get_entry("pipeline-run-dir");
       }
       if (p.config.query_valid("inst-dir")) {
         p.inst_dir = p.config.get_entry("inst-dir");
@@ -106,15 +112,20 @@ snakemake_unit_tests::params snakemake_unit_tests::cargs::set_parameters()
   // snakefile: override if specified
   p.snakefile = override_if_specified(get_snakefile(), p.snakefile);
   // pipeline_run_dir: override if specified, but then handle differently
-  p.pipeline_run_dir =
-      override_if_specified(get_pipeline_dir(), p.pipeline_run_dir);
-  if (p.pipeline_run_dir.string().empty()) {
+  p.pipeline_top_dir =
+      override_if_specified(get_pipeline_top_dir(), p.pipeline_top_dir);
+  if (p.pipeline_top_dir.string().empty()) {
     // behavior: if not specified, select it as the directory above
     // wherever the snakefile is installed
     // so we're assuming Snakefile is "something/workflow/Snakefile",
     // and we're setting pipeline_run_dir to "something"
-    p.pipeline_run_dir =
+    p.pipeline_top_dir =
         p.snakefile.remove_trailing_separator().parent_path().parent_path();
+  }
+  if (p.pipeline_run_dir.string().empty()) {
+    // behavior: if not specified, select it as '.', that is,
+    // the same directory as pipeline-top-dir
+    p.pipeline_run_dir = boost::filesystem::path(".");
   }
   // inst_dir: override if specified
   p.inst_dir = override_if_specified(get_inst_dir(), p.inst_dir);
@@ -140,9 +151,16 @@ snakemake_unit_tests::params snakemake_unit_tests::cargs::set_parameters()
   // snakefile: should exist, be regular file
   check_nonempty(p.snakefile, "snakefile");
   check_regular_file(p.snakefile, "", "snakefile");
-  // pipeline_run_dir: should exist, be directory, no trailing separator
-  check_nonempty(p.pipeline_run_dir, "pipeline-dir");
-  check_and_fix_dir(&p.pipeline_run_dir, "", "pipeline-dir");
+  // pipeline_top_dir: should exist, be directory, no trailing separator
+  check_nonempty(p.pipeline_top_dir, "pipeline-top-dir");
+  check_and_fix_dir(&p.pipeline_top_dir, "", "pipeline-topdir");
+  // pipeline_run_dir: should exist, be directory relative to pipeline-top-dir
+  check_nonempty(p.pipeline_run_dir, "pipeline-run-dir");
+  p.pipeline_run_dir = p.pipeline_run_dir.remove_trailing_separator();
+  if (!boost::filesystem::is_directory(p.pipeline_top_dir / p.pipeline_run_dir))
+    throw std::runtime_error(
+        "pipeline run directory \"" + p.pipeline_run_dir.string() +
+        "\" should be a valid path relative to pipeline top directory");
   // inst_dir: should exist, be directory
   check_nonempty(p.inst_dir, "inst-dir");
   check_and_fix_dir(&p.inst_dir, "", "inst-dir");
@@ -169,14 +187,16 @@ snakemake_unit_tests::params snakemake_unit_tests::cargs::set_parameters()
   for (std::vector<boost::filesystem::path>::iterator iter =
            p.added_files.begin();
        iter != p.added_files.end(); ++iter) {
-    check_regular_file(*iter, p.pipeline_run_dir, "added-files");
+    check_regular_file(*iter, p.pipeline_top_dir / p.pipeline_run_dir,
+                       "added-files");
   }
   // added_directories: should be directories, relative to pipeline run dir
   // doesn't have to be specified at all though
   for (std::vector<boost::filesystem::path>::iterator iter =
            p.added_directories.begin();
        iter != p.added_directories.end(); ++iter) {
-    check_and_fix_dir(&(*iter), p.pipeline_run_dir, "added-directories");
+    check_and_fix_dir(&(*iter), p.pipeline_top_dir / p.pipeline_run_dir,
+                      "added-directories");
   }
 
   // in theory, if they've made it this far, parameters are ready to go

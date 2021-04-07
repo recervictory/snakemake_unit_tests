@@ -83,7 +83,8 @@ void snakemake_unit_tests::solved_rules::load_file(
 
 void snakemake_unit_tests::solved_rules::emit_tests(
     const snakemake_file &sf, const boost::filesystem::path &output_test_dir,
-    const boost::filesystem::path &pipeline_dir,
+    const boost::filesystem::path &pipeline_top_dir,
+    const boost::filesystem::path &pipeline_run_dir,
     const boost::filesystem::path &inst_dir,
     const std::vector<std::string> &exclude_rules,
     const std::vector<boost::filesystem::path> &added_files,
@@ -113,10 +114,10 @@ void snakemake_unit_tests::solved_rules::emit_tests(
        iter != _recipes.end(); ++iter) {
     if (test_history.find(iter->get_rule_name()) == test_history.end()) {
       create_workspace(*iter, sf, output_test_dir, test_parent_path,
-                       pipeline_dir, inst_test_py, exclude_rules, added_files,
-                       added_directories, update_snakefiles,
-                       update_added_content, update_inputs, update_outputs,
-                       update_pytest);
+                       pipeline_top_dir, pipeline_run_dir, inst_test_py,
+                       exclude_rules, added_files, added_directories,
+                       update_snakefiles, update_added_content, update_inputs,
+                       update_outputs, update_pytest);
       test_history[iter->get_rule_name()] = true;
     }
   }
@@ -133,7 +134,8 @@ void snakemake_unit_tests::solved_rules::create_workspace(
     const recipe &rec, const snakemake_file &sf,
     const boost::filesystem::path &output_test_dir,
     const boost::filesystem::path &test_parent_path,
-    const boost::filesystem::path &pipeline_dir,
+    const boost::filesystem::path &pipeline_top_dir,
+    const boost::filesystem::path &pipeline_run_dir,
     const boost::filesystem::path &inst_test_py,
     const std::vector<std::string> &exclude_rules,
     const std::vector<boost::filesystem::path> &added_files,
@@ -169,18 +171,19 @@ void snakemake_unit_tests::solved_rules::create_workspace(
     }
     if (update_outputs) {
       // copy *output* to expected path
-      copy_contents(rec.get_outputs(), pipeline_dir, rule_expected_path,
-                    rec.get_rule_name());
+      copy_contents(rec.get_outputs(), pipeline_top_dir / pipeline_run_dir,
+                    rule_expected_path, rec.get_rule_name());
     }
     if (update_inputs) {
       // copy *input* to workspace
-      copy_contents(rec.get_inputs(), pipeline_dir, workspace_path,
-                    rec.get_rule_name());
+      copy_contents(rec.get_inputs(), pipeline_top_dir / pipeline_run_dir,
+                    workspace_path, rec.get_rule_name());
     }
     if (update_added_content) {
       // copy extra files and directories, if provided, to workspace
-      copy_contents(added_files, pipeline_dir, workspace_path, "added files");
-      copy_contents(added_directories, pipeline_dir, workspace_path,
+      copy_contents(added_files, pipeline_top_dir, workspace_path,
+                    "added files");
+      copy_contents(added_directories, pipeline_top_dir, workspace_path,
                     "added directories");
     }
     if (update_snakefiles) {

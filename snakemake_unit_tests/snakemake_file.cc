@@ -360,6 +360,7 @@ bool snakemake_unit_tests::snakemake_file::contains_blockers() const {
 
 void snakemake_unit_tests::snakemake_file::resolve_with_python(
     const boost::filesystem::path &workspace,
+    const boost::filesystem::path &pipeline_top_dir,
     const boost::filesystem::path &pipeline_run_dir, bool verbose,
     bool disable_resolution) {
   // if this is the top-level call
@@ -405,8 +406,8 @@ void snakemake_unit_tests::snakemake_file::resolve_with_python(
     if (verbose) {
       std::cout << "\trecursing in python resolution" << std::endl;
     }
-    iter->second->resolve_with_python(workspace, pipeline_run_dir, verbose,
-                                      true);
+    iter->second->resolve_with_python(workspace, pipeline_top_dir,
+                                      pipeline_run_dir, verbose, true);
   }
   // only from the top-level call, so not during recursion
   if (!disable_resolution) {
@@ -416,18 +417,18 @@ void snakemake_unit_tests::snakemake_file::resolve_with_python(
           "cannot write tmp output rule to python reporter");
     // execute python script and capture output
     std::vector<std::string> results =
-        exec("cd " + workspace.string() + " && snakemake -nFs " +
-             _snakefile_relative_path.string());
+        exec("cd " + (workspace / pipeline_run_dir).string() +
+             " && snakemake -nFs " + _snakefile_relative_path.string());
     // capture the resulting tags for updating completion status
     std::map<std::string, std::string> tag_values;
     capture_python_tag_values(results, &tag_values);
-    process_python_results(workspace, pipeline_run_dir, verbose, tag_values,
+    process_python_results(workspace, pipeline_top_dir, verbose, tag_values,
                            output_name);
     for (std::map<boost::filesystem::path,
                   boost::shared_ptr<snakemake_file> >::iterator mapper =
              _included_files.begin();
          mapper != _included_files.end(); ++mapper) {
-      mapper->second->process_python_results(workspace, pipeline_run_dir,
+      mapper->second->process_python_results(workspace, pipeline_top_dir,
                                              verbose, tag_values, output_name);
     }
   }
@@ -436,7 +437,7 @@ void snakemake_unit_tests::snakemake_file::resolve_with_python(
 
 bool snakemake_unit_tests::snakemake_file::process_python_results(
     const boost::filesystem::path &workspace,
-    const boost::filesystem::path &pipeline_run_dir, bool verbose,
+    const boost::filesystem::path &pipeline_top_dir, bool verbose,
     const std::map<std::string, std::string> &tag_values,
     const boost::filesystem::path &output_name) {
   std::vector<std::string> loaded_lines;
@@ -468,7 +469,7 @@ bool snakemake_unit_tests::snakemake_file::process_python_results(
                                 workspace.size() + 1))
               .parent_path() /
           (*iter)->get_resolved_included_filename();
-      input_name = (pipeline_run_dir / computed_relative_suffix).string();
+      input_name = (pipeline_top_dir / computed_relative_suffix).string();
 
       if ((file_finder = _included_files.find(
                boost::filesystem::path(input_name))) != _included_files.end()) {
@@ -479,7 +480,7 @@ bool snakemake_unit_tests::snakemake_file::process_python_results(
                        "results along to it"
                     << std::endl;
         file_finder->second->process_python_results(
-            workspace, pipeline_run_dir, verbose, tag_values, recursive_path);
+            workspace, pipeline_top_dir, verbose, tag_values, recursive_path);
       } else {
         if (verbose) {
           std::cout << "cannot find tag " << boost::filesystem::path(input_name)
