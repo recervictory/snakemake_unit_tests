@@ -31,7 +31,7 @@ class snakemake_file {
   /*!
     @brief default constructor
    */
-  snakemake_file() : _tag_counter(0) {
+  snakemake_file() : _tag_counter(0), _updated_last_round(true) {
     _tag_counter.reset(new unsigned);
     *_tag_counter = 1;
   }
@@ -40,7 +40,7 @@ class snakemake_file {
     an initialized counter
    */
   explicit snakemake_file(boost::shared_ptr<unsigned> ptr)
-      : _tag_counter(ptr) {}
+      : _tag_counter(ptr), _updated_last_round(true) {}
   /*!
     @brief copy constructor
     @param obj existing snakemake_file object
@@ -49,7 +49,8 @@ class snakemake_file {
       : _blocks(obj._blocks),
         _snakefile_relative_path(obj._snakefile_relative_path),
         _included_files(obj._included_files),
-        _tag_counter(obj._tag_counter) {}
+        _tag_counter(obj._tag_counter),
+        _updated_last_round(obj._updated_last_round) {}
   /*!
     @brief destructor
    */
@@ -224,10 +225,26 @@ class snakemake_file {
   const boost::filesystem::path &get_snakefile_relative_path() const {
     return _snakefile_relative_path;
   }
-
+  /*!
+    @brief provide access to loaded file map
+    @return const reference to loaded file map
+   */
   const std::map<boost::filesystem::path, boost::shared_ptr<snakemake_file> >
       &loaded_files() const {
     return _included_files;
+  }
+  /*!
+    @brief override update status in this file and all dependencies
+    @param b new value for update status
+   */
+  void set_update_status(bool b) {
+    _updated_last_round = b;
+    for (std::map<boost::filesystem::path,
+                  boost::shared_ptr<snakemake_file> >::iterator iter =
+             _included_files.begin();
+         iter != _included_files.end(); ++iter) {
+      iter->second->set_update_status(b);
+    }
   }
 
  private:
@@ -248,6 +265,10 @@ class snakemake_file {
     @brief internal counter of assigned tags to rules
    */
   boost::shared_ptr<unsigned> _tag_counter;
+  /*!
+    @brief whether any contained block updated its inclusion status last update
+   */
+  bool _updated_last_round;
 };
 }  // namespace snakemake_unit_tests
 

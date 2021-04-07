@@ -361,38 +361,25 @@ bool snakemake_unit_tests::snakemake_file::fully_resolved() const {
 }
 
 bool snakemake_unit_tests::snakemake_file::contains_blockers() const {
-  for (std::list<boost::shared_ptr<rule_block> >::const_iterator iter =
-           _blocks.begin();
-       iter != _blocks.end(); ++iter) {
-    if (!(*iter)->resolved() && (*iter)->contains_include_directive()) {
-      std::cout << "\t\tfound a blocker:" << std::endl;
-      if (!(*iter)->get_rule_name().empty()) {
-        std::cout << "rule \"" << (*iter)->get_rule_name() << "\"" << std::endl;
-      } else if (!(*iter)->get_named_blocks().empty()) {
-        std::cout << "\t\t\tsnakemake directive \""
-                  << (*iter)->get_named_blocks().begin()->first << ":"
-                  << (*iter)->get_named_blocks().begin()->second << "\""
-                  << std::endl;
-      } else {
-        std::cout << "\t\t\tcode fragment \""
-                  << *(*iter)->get_code_chunk().begin() << "\"" << std::endl;
-      }
-      return true;
-    }
-  }
+  bool res = _updated_last_round;
   for (std::map<boost::filesystem::path,
                 boost::shared_ptr<snakemake_file> >::const_iterator iter =
            _included_files.begin();
        iter != _included_files.end(); ++iter) {
-    if (iter->second->contains_blockers()) return true;
+    res |= iter->second->contains_blockers();
   }
-  return false;
+  return res;
 }
 
 void snakemake_unit_tests::snakemake_file::resolve_with_python(
     const boost::filesystem::path &workspace,
     const boost::filesystem::path &pipeline_run_dir, bool verbose,
     bool disable_resolution) {
+  // if this is the top-level call
+  if (!disable_resolution) {
+    // set this file and all its dependencies to no update
+    set_update_status(false);
+  }
   // within a workspace, open a snakefile
   std::ofstream output;
   boost::filesystem::path output_name = workspace / _snakefile_relative_path;
@@ -465,91 +452,82 @@ bool snakemake_unit_tests::snakemake_file::process_python_results(
     const boost::filesystem::path &pipeline_run_dir, bool verbose,
     const std::map<std::string, std::string> &tag_values,
     const boost::filesystem::path &output_name) {
-  // while any unresolved simple include statements possibly remain
-  bool unresolved = true;
   std::vector<std::string> loaded_lines;
-  while (unresolved) {
-    unresolved = false;
-    // update rule block status based on python report
-    for (std::list<boost::shared_ptr<rule_block> >::iterator iter =
-             _blocks.begin();
-         iter != _blocks.end(); ++iter) {
-      // if the block reports that it was an include directive
-      if (!(*iter)->update_resolution(tag_values)) {
+  // update rule block status based on python report
+  for (std::list<boost::shared_ptr<rule_block> >::iterator iter =
+           _blocks.begin();
+       iter != _blocks.end(); ++iter) {
+    // if the block reports that it was an include directive
+    (*iter)->update_resolution(tag_values);
+    if ((*iter)->contains_include_directive() &&
+        !(*iter)->get_resolved_included_filename().empty()) {
+      if (verbose) {
+        std::cout << "\tfound an include directive during python processing"
+                  << std::endl;
+      }
+      boost::filesystem::path recursive_path =
+          output_name.parent_path() / (*iter)->get_resolved_included_filename();
+      std::string recursive_str = recursive_path.string();
+      recursive_str =
+          recursive_str.substr(recursive_str.find(workspace.string()) +
+                               workspace.string().size() + 1);
+      // determine if this was included already
+      std::map<boost::filesystem::path,
+               boost::shared_ptr<snakemake_file> >::iterator file_finder;
+      std::string input_name = output_name.string();
+      boost::filesystem::path computed_relative_suffix =
+          boost::filesystem::path(
+              input_name.substr(input_name.find(workspace.string()) +
+                                workspace.size() + 1))
+              .parent_path() /
+          (*iter)->get_resolved_included_filename();
+      input_name = (pipeline_run_dir / computed_relative_suffix).string();
+
+      if ((file_finder = _included_files.find(
+               boost::filesystem::path(input_name))) != _included_files.end()) {
+        // it was already loaded. recurse into that loaded file
+        if (verbose)
+          std::cout << "\t\tthe file \"" << file_finder->first.string()
+                    << "\" was already loaded, passing python "
+                       "results along to it"
+                    << std::endl;
+        file_finder->second->process_python_results(
+            workspace, pipeline_run_dir, verbose, tag_values, recursive_path);
+      } else {
         if (verbose) {
-          std::cout << "\tfound an include directive during python processing"
+          std::cout << "cannot find tag " << boost::filesystem::path(input_name)
+                    << " in already included files" << std::endl;
+          for (std::map<boost::filesystem::path,
+                        boost::shared_ptr<snakemake_file> >::const_iterator
+                   mapper = _included_files.begin();
+               mapper != _included_files.end(); ++mapper) {
+            std::cout << "\tcandidate: " << mapper->first << std::endl;
+          }
+        }
+        // it updated itself to an unambiguous include directive. include it.
+        // need the location in input
+        if (verbose) {
+          std::cout << "\t\toutput name \"" << output_name << "\"" << std::endl
+                    << "\t\tinput name: \"" << input_name << "\"" << std::endl
+                    << "\t\tworkspace: \"" << workspace << "\"" << std::endl
+                    << "\t\tsuffix relative to pipeline dir: \""
+                    << computed_relative_suffix.string() << "\"" << std::endl
+                    << "\t\tresolved inclusion: \""
+                    << (*iter)->get_resolved_included_filename() << "\""
                     << std::endl;
         }
-        boost::filesystem::path recursive_path =
-            output_name.parent_path() /
-            (*iter)->get_resolved_included_filename();
-        std::string recursive_str = recursive_path.string();
-        recursive_str =
-            recursive_str.substr(recursive_str.find(workspace.string()) +
-                                 workspace.string().size() + 1);
-        // determine if this was included already
-        std::map<boost::filesystem::path,
-                 boost::shared_ptr<snakemake_file> >::iterator file_finder;
-        std::string input_name = output_name.string();
-        boost::filesystem::path computed_relative_suffix =
-            boost::filesystem::path(
-                input_name.substr(input_name.find(workspace.string()) +
-                                  workspace.size() + 1))
-                .parent_path() /
-            (*iter)->get_resolved_included_filename();
-        input_name = (pipeline_run_dir / computed_relative_suffix).string();
+        load_lines(input_name, &loaded_lines);
+        if (verbose)
+          std::cout
+              << "\t\tthe file has not been loaded before, loading it now: "
+              << input_name << std::endl;
 
-        if ((file_finder = _included_files.find(boost::filesystem::path(
-                 input_name))) != _included_files.end()) {
-          // it was already loaded. recurse into that loaded file
-          if (verbose)
-            std::cout << "\t\tthe file \"" << file_finder->first.string()
-                      << "\" was already loaded, passing python "
-                         "results along to it"
-                      << std::endl;
-          if (!file_finder->second->process_python_results(
-                  workspace, pipeline_run_dir, verbose, tag_values,
-                  recursive_path))
-            return false;
-        } else {
-          if (verbose) {
-            std::cout << "cannot find tag "
-                      << boost::filesystem::path(input_name)
-                      << " in already included files" << std::endl;
-            for (std::map<boost::filesystem::path,
-                          boost::shared_ptr<snakemake_file> >::const_iterator
-                     mapper = _included_files.begin();
-                 mapper != _included_files.end(); ++mapper) {
-              std::cout << "\tcandidate: " << mapper->first << std::endl;
-            }
-          }
-          // it updated itself to an unambiguous include directive. include it.
-          // need the location in input
-          if (verbose) {
-            std::cout << "\t\toutput name \"" << output_name << "\""
-                      << std::endl
-                      << "\t\tinput name: \"" << input_name << "\"" << std::endl
-                      << "\t\tworkspace: \"" << workspace << "\"" << std::endl
-                      << "\t\tsuffix relative to pipeline dir: \""
-                      << computed_relative_suffix.string() << "\"" << std::endl
-                      << "\t\tresolved inclusion: \""
-                      << (*iter)->get_resolved_included_filename() << "\""
-                      << std::endl;
-          }
-          load_lines(input_name, &loaded_lines);
-          if (verbose)
-            std::cout
-                << "\t\tthe file has not been loaded before, loading it now: "
-                << input_name << std::endl;
-
-          boost::shared_ptr<snakemake_file> ptr(
-              new snakemake_file(_tag_counter));
-          ptr->parse_file(loaded_lines, ptr->get_blocks().begin(),
-                          computed_relative_suffix, verbose);
-          _included_files[boost::filesystem::path(input_name)] = ptr;
-          unresolved = true;
-          return false;
-        }
+        boost::shared_ptr<snakemake_file> ptr(new snakemake_file(_tag_counter));
+        ptr->parse_file(loaded_lines, ptr->get_blocks().begin(),
+                        computed_relative_suffix, verbose);
+        _included_files[boost::filesystem::path(input_name)] = ptr;
+        // always flag as updated when new file is loaded
+        _updated_last_round = true;
       }
     }
   }

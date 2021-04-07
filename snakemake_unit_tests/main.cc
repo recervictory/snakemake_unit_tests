@@ -77,17 +77,15 @@ int main(int argc, char **argv) {
   sr.create_empty_workspace(p.output_test_dir, p.pipeline_run_dir,
                             p.added_files, p.added_directories);
   // do things in this location
-  bool continue_python_updates = true;
-  while (continue_python_updates) {
+  do {
     // scan the rule set for blockers
     if (p.verbose) {
       std::cout << "running a python/snakemake logic resolution pass"
                 << std::endl;
     }
-    continue_python_updates = sf.contains_blockers();
     sf.resolve_with_python(p.output_test_dir / ".snakemake_unit_tests",
                            p.pipeline_run_dir, p.verbose, false);
-  }
+  } while (sf.contains_blockers());
 
   // remove the location
   sr.remove_empty_workspace(p.output_test_dir);

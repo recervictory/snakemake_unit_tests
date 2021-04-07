@@ -251,6 +251,11 @@ class rule_block {
    */
   void set_resolution(block_status s) { _resolution = s; }
   /*!
+    @brief get the current resolution status
+    @return the current resolution status
+  */
+  block_status get_resolution_status() const { return _resolution; }
+  /*!
     @brief set the unique python tag for inclusion tracking
     @param u new value for unique python tag
    */

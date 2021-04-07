@@ -273,13 +273,12 @@ void snakemake_unit_tests::rule_block::report_python_logging_code(
       if (_resolution == RESOLVED_INCLUDED) {
         if (!(out << *get_code_chunk().rbegin() << std::endl))
           throw std::runtime_error("include statement printing error");
-      } else if (_resolution == UNRESOLVED) {
-        // report tag along with required expression for evaluation
-        if (!(out << indentation(get_local_indentation()) << "print(\"tag"
-                  << get_interpreter_tag() << ": {}\".format("
-                  << get_filename_expression() << "))" << std::endl))
-          throw std::runtime_error("complex include printing error");
       }
+      // report tag along with required expression for evaluation
+      if (!(out << indentation(get_local_indentation()) << "print(\"tag"
+                << get_interpreter_tag() << ": {}\".format("
+                << get_filename_expression() << "))" << std::endl))
+        throw std::runtime_error("complex include printing error");
     } else {
       // regardless of resolution, print other code as-is
       for (std::vector<std::string>::const_iterator iter =
@@ -290,14 +289,12 @@ void snakemake_unit_tests::rule_block::report_python_logging_code(
       }
     }
   } else if (!get_rule_name().empty()) {  // is a rule
-    // if the rule has not already been flagged as untouched
-    if (_resolution == RESOLVED_INCLUDED || _resolution == UNRESOLVED) {
-      if (!(out << indentation(get_local_indentation()) << "print(\"tag"
-                << get_interpreter_tag() << "\")" << std::endl
-                << std::endl
-                << std::endl))
-        throw std::runtime_error("rule interpreter code printing failure");
-    }
+    // new logic: must print tag each time, in case status changes later
+    if (!(out << indentation(get_local_indentation()) << "print(\"tag"
+              << get_interpreter_tag() << "\")" << std::endl
+              << std::endl
+              << std::endl))
+      throw std::runtime_error("rule interpreter code printing failure");
   } else {  // is a snakemake metacontent block
     // rule name is empty but blocks are not.
     // switching to direct snakemake interpretation, in which case these
