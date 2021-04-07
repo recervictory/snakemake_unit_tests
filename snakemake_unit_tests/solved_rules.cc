@@ -173,12 +173,12 @@ void snakemake_unit_tests::solved_rules::create_workspace(
     if (update_outputs) {
       // copy *output* to expected path
       copy_contents(rec.get_outputs(), pipeline_top_dir / pipeline_run_dir,
-                    rule_expected_path, rec.get_rule_name());
+                    rule_expected_path / pipeline_run_dir, rec.get_rule_name());
     }
     if (update_inputs) {
       // copy *input* to workspace
       copy_contents(rec.get_inputs(), pipeline_top_dir / pipeline_run_dir,
-                    workspace_path, rec.get_rule_name());
+                    workspace_path / pipeline_run_dir, rec.get_rule_name());
     }
     if (update_added_content) {
       // copy extra files and directories, if provided, to workspace
