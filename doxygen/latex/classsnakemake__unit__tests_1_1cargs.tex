@@ -43,6 +43,18 @@ std\+::vector$<$ std\+::string $>$ \mbox{\hyperlink{classsnakemake__unit__tests_
 \begin{DoxyCompactList}\small\item\em get optional multiple directories (with relative paths) that will be installed alongside each unit test \end{DoxyCompactList}\item 
 std\+::vector$<$ std\+::string $>$ \mbox{\hyperlink{classsnakemake__unit__tests_1_1cargs_a6e83b9c67fc3ee8713435c5978d5b063}{get\+\_\+exclude\+\_\+rules}} () const
 \begin{DoxyCompactList}\small\item\em get optional rule names to exclude from testing \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classsnakemake__unit__tests_1_1cargs_ac89eba739d1cbc9eac095e7989c00d8a}{update\+\_\+all}} () const
+\begin{DoxyCompactList}\small\item\em get user flag for updating all parts of unit tests \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classsnakemake__unit__tests_1_1cargs_a95e6b64164687848fe05bd06b8cd4f07}{update\+\_\+snakefiles}} () const
+\begin{DoxyCompactList}\small\item\em get user flag for updating existing tests in place (snakefiles only) \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classsnakemake__unit__tests_1_1cargs_aecc9bee27294c2cc8ac3423954749964}{update\+\_\+added\+\_\+content}} () const
+\begin{DoxyCompactList}\small\item\em get user flag for updating added files and directories in place \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classsnakemake__unit__tests_1_1cargs_a08a00a9c0db47315111e027b5e43dfce}{update\+\_\+inputs}} () const
+\begin{DoxyCompactList}\small\item\em get user flag for updating unit tests\textquotesingle{} inputs \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classsnakemake__unit__tests_1_1cargs_a48364153c7fe7da02f0a0736107a8634}{update\+\_\+outputs}} () const
+\begin{DoxyCompactList}\small\item\em get user flag for updating unit tests\textquotesingle{} outputs \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classsnakemake__unit__tests_1_1cargs_ac01a5f0457c93e52bac00ec280d61f58}{update\+\_\+pytest}} () const
+\begin{DoxyCompactList}\small\item\em get user flag for updating pytest infrastructure \end{DoxyCompactList}\item 
 bool \mbox{\hyperlink{classsnakemake__unit__tests_1_1cargs_a03a59ceee21f04905a7dc5eb6cf9f63a}{verbose}} () const
 \begin{DoxyCompactList}\small\item\em determine whether the user has requested verbose logging output \end{DoxyCompactList}\item 
 bool \mbox{\hyperlink{classsnakemake__unit__tests_1_1cargs_ad0724bc8922092911d533d126768f71e}{compute\+\_\+flag}} (const std\+::string \&tag) const
@@ -446,7 +458,91 @@ deal with parameter settings, across CLI and config yaml
 \begin{DoxyReturn}{Returns}
 params object containing consistent parameter settings
 \end{DoxyReturn}
-note that this should be called after \mbox{\hyperlink{classsnakemake__unit__tests_1_1cargs_aa6ed23df6e8352dcd2a2607688bb2180}{initialize\+\_\+options()}}, and will have fairly lackluster effects otherwise lol \mbox{\Hypertarget{classsnakemake__unit__tests_1_1cargs_a58251551386f449835aa166dfc788a39}\label{classsnakemake__unit__tests_1_1cargs_a58251551386f449835aa166dfc788a39}} 
+note that this should be called after \mbox{\hyperlink{classsnakemake__unit__tests_1_1cargs_aa6ed23df6e8352dcd2a2607688bb2180}{initialize\+\_\+options()}}, and will have fairly lackluster effects otherwise lol \mbox{\Hypertarget{classsnakemake__unit__tests_1_1cargs_aecc9bee27294c2cc8ac3423954749964}\label{classsnakemake__unit__tests_1_1cargs_aecc9bee27294c2cc8ac3423954749964}} 
+\index{snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}!update\_added\_content@{update\_added\_content}}
+\index{update\_added\_content@{update\_added\_content}!snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}}
+\doxysubsubsection{\texorpdfstring{update\_added\_content()}{update\_added\_content()}}
+{\footnotesize\ttfamily bool snakemake\+\_\+unit\+\_\+tests\+::cargs\+::update\+\_\+added\+\_\+content (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+get user flag for updating added files and directories in place 
+
+\begin{DoxyReturn}{Returns}
+whether the user wants to update existing tests\textquotesingle{} added files and directories 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1cargs_ac89eba739d1cbc9eac095e7989c00d8a}\label{classsnakemake__unit__tests_1_1cargs_ac89eba739d1cbc9eac095e7989c00d8a}} 
+\index{snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}!update\_all@{update\_all}}
+\index{update\_all@{update\_all}!snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}}
+\doxysubsubsection{\texorpdfstring{update\_all()}{update\_all()}}
+{\footnotesize\ttfamily bool snakemake\+\_\+unit\+\_\+tests\+::cargs\+::update\+\_\+all (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+get user flag for updating all parts of unit tests 
+
+\begin{DoxyReturn}{Returns}
+whether the user wants a full replacement of all unit test content 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1cargs_a08a00a9c0db47315111e027b5e43dfce}\label{classsnakemake__unit__tests_1_1cargs_a08a00a9c0db47315111e027b5e43dfce}} 
+\index{snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}!update\_inputs@{update\_inputs}}
+\index{update\_inputs@{update\_inputs}!snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}}
+\doxysubsubsection{\texorpdfstring{update\_inputs()}{update\_inputs()}}
+{\footnotesize\ttfamily bool snakemake\+\_\+unit\+\_\+tests\+::cargs\+::update\+\_\+inputs (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+get user flag for updating unit tests\textquotesingle{} inputs 
+
+\begin{DoxyReturn}{Returns}
+whether the user wants to update existing tests\textquotesingle{} inputs
+\end{DoxyReturn}
+\begin{DoxyWarning}{Warning}
+you probably don\textquotesingle{}t want to do this, unless you\textquotesingle{}re updating everything 
+\end{DoxyWarning}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1cargs_a48364153c7fe7da02f0a0736107a8634}\label{classsnakemake__unit__tests_1_1cargs_a48364153c7fe7da02f0a0736107a8634}} 
+\index{snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}!update\_outputs@{update\_outputs}}
+\index{update\_outputs@{update\_outputs}!snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}}
+\doxysubsubsection{\texorpdfstring{update\_outputs()}{update\_outputs()}}
+{\footnotesize\ttfamily bool snakemake\+\_\+unit\+\_\+tests\+::cargs\+::update\+\_\+outputs (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+get user flag for updating unit tests\textquotesingle{} outputs 
+
+\begin{DoxyReturn}{Returns}
+whether the user wants to update existing tests\textquotesingle{} outputs
+\end{DoxyReturn}
+\begin{DoxyWarning}{Warning}
+you probably don\textquotesingle{}t want to do this, unless you\textquotesingle{}re updating everything 
+\end{DoxyWarning}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1cargs_ac01a5f0457c93e52bac00ec280d61f58}\label{classsnakemake__unit__tests_1_1cargs_ac01a5f0457c93e52bac00ec280d61f58}} 
+\index{snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}!update\_pytest@{update\_pytest}}
+\index{update\_pytest@{update\_pytest}!snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}}
+\doxysubsubsection{\texorpdfstring{update\_pytest()}{update\_pytest()}}
+{\footnotesize\ttfamily bool snakemake\+\_\+unit\+\_\+tests\+::cargs\+::update\+\_\+pytest (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+get user flag for updating pytest infrastructure 
+
+\begin{DoxyReturn}{Returns}
+whether the user wants to update existing tests\textquotesingle{} pytest content 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1cargs_a95e6b64164687848fe05bd06b8cd4f07}\label{classsnakemake__unit__tests_1_1cargs_a95e6b64164687848fe05bd06b8cd4f07}} 
+\index{snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}!update\_snakefiles@{update\_snakefiles}}
+\index{update\_snakefiles@{update\_snakefiles}!snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}}
+\doxysubsubsection{\texorpdfstring{update\_snakefiles()}{update\_snakefiles()}}
+{\footnotesize\ttfamily bool snakemake\+\_\+unit\+\_\+tests\+::cargs\+::update\+\_\+snakefiles (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+get user flag for updating existing tests in place (snakefiles only) 
+
+\begin{DoxyReturn}{Returns}
+whether the user wants to update existing tests\textquotesingle{} snakefiles 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1cargs_a58251551386f449835aa166dfc788a39}\label{classsnakemake__unit__tests_1_1cargs_a58251551386f449835aa166dfc788a39}} 
 \index{snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}!vector\_convert@{vector\_convert}}
 \index{vector\_convert@{vector\_convert}!snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}}
 \doxysubsubsection{\texorpdfstring{vector\_convert()}{vector\_convert()}}

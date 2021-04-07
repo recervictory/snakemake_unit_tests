@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+## initial test: make sure basic dependencies are available
+## this is a helper test to try to clarify that the conda
+## run environment may not be active
+
+echo "1..2"
+
+$(pytest -h > /dev/null 2>&1)
+if [[ "$?" != "0" ]] ; then
+    echo "not ok - pytest not available: did you remember to activate your conda env?"
+else
+    echo "ok - pytest present in working environment"
+fi
+
+$(snakemake -h > /dev/null 2>&1)
+if [[ "$?" != "0" ]] ; then
+    echo "not ok - snakemake not available: did you remember to activate your conda env?"
+else
+    echo "ok - snakemake present in working environment"
+fi

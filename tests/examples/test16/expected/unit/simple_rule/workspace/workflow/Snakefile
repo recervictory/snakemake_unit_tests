@@ -1,0 +1,17 @@
+rule all:
+    input:
+        "output.txt",
+
+
+configfile: "config.yaml"
+rule simple_rule:
+    input:
+        "in{suffix}.txt",
+    output:
+        "out{suffix}.txt",
+    shell:
+        "cp {input} {output}"
+
+
+wildcard_constraints:
+    suffix="[put]+",

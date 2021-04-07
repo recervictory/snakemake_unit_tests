@@ -1,0 +1,19 @@
+rule all:
+    input:
+        "output3.txt",
+
+
+pass
+
+
+if True:
+    pass
+
+
+if True:
+    include: "rules/subfile.smk"
+else:
+    include: "rules/badplace.smk"
+pass
+
+

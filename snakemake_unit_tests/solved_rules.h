@@ -165,14 +165,36 @@ class solved_rules {
     @param added_files vector of additional files to add to test workspaces
     @param added_directories vector of additional directories to add to test
     workspaces
+    @param update_snakefiles controls whether to print snakefiles
+    @param update_added_content controls whether to copy added files and
+    directories
+    @param update_inputs controls whether to copy rule inputs
+    @param update_outputs controls whether to copy rule outputs
+    @param update_pytest controls whether to copy pytest infrastructure
   */
-  void emit_tests(
-      const snakemake_file &sf, const boost::filesystem::path &output_test_dir,
-      const boost::filesystem::path &pipeline_dir,
-      const boost::filesystem::path &inst_dir,
-      const std::vector<std::string> &exclude_rules,
-      const std::vector<boost::filesystem::path> &added_files,
-      const std::vector<boost::filesystem::path> &added_directories) const;
+  void emit_tests(const snakemake_file &sf,
+                  const boost::filesystem::path &output_test_dir,
+                  const boost::filesystem::path &pipeline_dir,
+                  const boost::filesystem::path &inst_dir,
+                  const std::vector<std::string> &exclude_rules,
+                  const std::vector<boost::filesystem::path> &added_files,
+                  const std::vector<boost::filesystem::path> &added_directories,
+                  bool update_snakefiles, bool update_added_content,
+                  bool update_inputs, bool update_outputs,
+                  bool update_pytest) const;
+  /*!
+    @brief emit snakefile from parsed snakemake information
+    @param sf snakemake_file object with rule definitions corresponding
+    to loaded log data
+    @param workspace_path top level of emitted workspace
+    @param rec target rule for emission
+    @param requires_phony_all whether the file needs an all target injected.
+    this should only be included at top level
+    @return whether the rule was found in the snakefile or its dependencies
+  */
+  bool emit_snakefile(const snakemake_file &sf,
+                      const boost::filesystem::path &workspace_path,
+                      const recipe &rec, bool requires_phony_all) const;
   /*!
     @brief create a test directory
     @param rec recipe/rule entry for which a workspace should be created
@@ -189,6 +211,12 @@ class solved_rules {
     @param added_files vector of additional files to add to test workspaces
     @param added_directories vector of additional directories to add to test
     workspaces
+    @param update_snakefiles controls whether to print snakefiles
+    @param update_added_content controls whether to copy added files and
+    directories
+    @param update_inputs controls whether to copy rule inputs
+    @param update_outputs controls whether to copy rule outputs
+    @param update_pytest controls whether to copy pytest infrastructure
   */
   void create_workspace(
       const recipe &rec, const snakemake_file &sf,
@@ -198,7 +226,32 @@ class solved_rules {
       const boost::filesystem::path &test_inst_py,
       const std::vector<std::string> &exclude_rules,
       const std::vector<boost::filesystem::path> &added_files,
+      const std::vector<boost::filesystem::path> &added_directories,
+      bool update_snakefiles, bool update_added_content, bool update_inputs,
+      bool update_outputs, bool update_pytest) const;
+  /*!
+    @brief create an empty workspace for python testing
+    @param output_test_dir output directory for tests (e.g. '.tests/')
+    @param pipeline_dir parent directory of snakemake pipeline used to generate
+    corresponding log file (e.g.: X for X/workflow/Snakefile)
+    @param added_files vector of additional files to add to test workspaces
+    @param added_directories vector of additional directories to add to test
+    workspaces
+  */
+  void create_empty_workspace(
+      const boost::filesystem::path &output_test_dir,
+      const boost::filesystem::path &pipeline_dir,
+      const std::vector<boost::filesystem::path> &added_files,
       const std::vector<boost::filesystem::path> &added_directories) const;
+
+  /*!
+    @brief recursively remove empty workspace after python integration is
+    complete
+    @param output_test_dir output diretory for tests (e.g. '.tests/')
+   */
+  void remove_empty_workspace(
+      const boost::filesystem::path &output_test_dir) const;
+
   /*!
     @brief copy files/folders enumerated in vector to a location
     @param contents files or folders to be copied
@@ -224,11 +277,13 @@ class solved_rules {
     @param parent_dir parent directory of test workspace
     @param test_dir parent directory of all unit tests for the pipeline
     @param rule_name name of rule whose test is being emitted
+    @param snakefile_relative_path relative path of snakefile in pipeline dir
     @param inst_test_py snakemake_unit_tests test.py script location
    */
   void report_modified_test_script(
       const boost::filesystem::path &parent_dir,
       const boost::filesystem::path &test_dir, const std::string &rule_name,
+      const boost::filesystem::path &snakefile_relative_path,
       const boost::filesystem::path &inst_test_py) const;
 
  private:

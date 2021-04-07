@@ -33,6 +33,12 @@ class params {
    */
   params()
       : verbose(false),
+        update_all(false),
+        update_snakefiles(false),
+        update_added_content(false),
+        update_inputs(false),
+        update_outputs(false),
+        update_pytest(false),
         config_filename(""),
         output_test_dir(""),
         snakefile(""),
@@ -45,6 +51,12 @@ class params {
   */
   params(const params &obj)
       : verbose(obj.verbose),
+        update_all(obj.update_all),
+        update_snakefiles(obj.update_snakefiles),
+        update_added_content(obj.update_added_content),
+        update_inputs(obj.update_inputs),
+        update_outputs(obj.update_outputs),
+        update_pytest(obj.update_pytest),
         config_filename(obj.config_filename),
         config(obj.config),
         output_test_dir(obj.output_test_dir),
@@ -63,6 +75,30 @@ class params {
     @brief provide verbose logging output
    */
   bool verbose;
+  /*!
+    @brief update all parts of output unit tests
+   */
+  bool update_all;
+  /*!
+    @brief update snakefiles in unit tests
+   */
+  bool update_snakefiles;
+  /*!
+    @brief update added files and directories in unit tests
+   */
+  bool update_added_content;
+  /*!
+    @brief update rule inputs in unit tests
+   */
+  bool update_inputs;
+  /*!
+    @brief update rule outputs in unit tests
+   */
+  bool update_outputs;
+  /*!
+    @brief update pytest infrastructure in output directories
+   */
+  bool update_pytest;
   /*!
     @brief name of yaml configuration file
    */
@@ -271,6 +307,49 @@ class cargs {
   std::vector<std::string> get_exclude_rules() const {
     return compute_parameter<std::vector<std::string> >("exclude-rules", true);
   }
+
+  /*!
+    @brief get user flag for updating all parts of unit tests
+    @return whether the user wants a full replacement of all unit test content
+   */
+  bool update_all() const { return compute_flag("update-all"); }
+
+  /*!
+    @brief get user flag for updating existing tests in place (snakefiles only)
+    @return whether the user wants to update existing tests' snakefiles
+   */
+  bool update_snakefiles() const { return compute_flag("update-snakefiles"); }
+
+  /*!
+    @brief get user flag for updating added files and directories in place
+    @return whether the user wants to update existing tests' added files and
+    directories
+   */
+  bool update_added_content() const {
+    return compute_flag("update-added-content");
+  }
+  /*!
+    @brief get user flag for updating unit tests' inputs
+    @return whether the user wants to update existing tests' inputs
+
+    @warning you probably don't want to do this, unless you're updating
+    everything
+   */
+  bool update_inputs() const { return compute_flag("update-inputs"); }
+  /*!
+    @brief get user flag for updating unit tests' outputs
+    @return whether the user wants to update existing tests' outputs
+
+    @warning you probably don't want to do this, unless you're updating
+    everything
+   */
+  bool update_outputs() const { return compute_flag("update-outputs"); }
+
+  /*!
+    @brief get user flag for updating pytest infrastructure
+    @return whether the user wants to update existing tests' pytest content
+   */
+  bool update_pytest() const { return compute_flag("update-pytest"); }
 
   /*!
     @brief determine whether the user has requested verbose logging output

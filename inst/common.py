@@ -11,7 +11,9 @@ from pathlib import Path
 
 import pytest
 
-exclude_ext = [".tbi", ".html"]
+exclude_paths = ["/log/", "/logs/", "/performance_benchmarks/", "temp/", "tmp/"]
+exclude_ext = [".tbi", ".html", ".log", ".bai"]
+byte_cmp = [".jpg", ".jpeg", ".png", ".bam"]
 # TODO: Read in a list of extensions to exclude from the config.  See issue #16.
 
 
@@ -38,11 +40,7 @@ class OutputChecker:
                 f = (Path(path) / f).relative_to(self.workdir)
                 if str(f).startswith(".snakemake"):
                     continue
-                if "/log/" in str(f):
-                    continue
-                if "/logs/" in str(f):
-                    continue
-                if "/performance_benchmarks/" in str(f):
+                if any(m in str(f) for m in exclude_paths):
                     continue
                 if str(f).endswith(tuple(exclude_ext)):
                     continue
@@ -50,35 +48,39 @@ class OutputChecker:
                     self.compare_files(self.workdir / f, self.expected_path / f)
                 elif f in input_files:
                     # ignore input files
-                    pass
+                    continue
                 else:
                     unexpected_files.add(f)
         if unexpected_files:
             raise ValueError(
-                "Unexpected files:\n{}".format("\n".join(sorted(map(str, unexpected_files))))
+                "Unexpected files: {}".format(";".join(sorted(map(str, unexpected_files))))
             )
 
     def compare_files(self, generated_file, expected_file):
-        if str(generated_file).lower().endswith((".vcf.gz", ".vcf")):
+        if str(generated_file).lower().endswith(tuple(byte_cmp)):
+            sp.check_output(["cmp", generated_file, expected_file])
+        else:
             gen = process_file(generated_file)
             exp = process_file(expected_file)
             assert gen == exp
-        else:
-            sp.check_output(["cmp", generated_file, expected_file])
 
 
 def process_file(infile):
+    if str(infile).lower().endswith(("vcf", "vcf.gz")):
+        rmv = "##"
+    else:
+        rmv = "#"
     if str(infile).lower().endswith(".gz"):
         with gzip.open(infile, mode="rt") as f:
-            n = remove_headers(f)
+            n = remove_headers(f, rmv)
     else:
         with open(infile, "r") as f:
-            n = remove_headers(f)
+            n = remove_headers(f, rmv)
     return n
 
 
-def remove_headers(f):
+def remove_headers(f, rmv):
     n = []
-    for line in (line for line in f if not line.startswith("##")):
+    for line in (line for line in f if not line.startswith(rmv)):
         n.append(line)
     return n

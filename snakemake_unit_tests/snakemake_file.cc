@@ -65,42 +65,57 @@ void snakemake_unit_tests::snakemake_file::load_everything(
     throw std::runtime_error(
         "null exclude_rules provided to "
         "load_everything");
-  boost::shared_ptr<rule_block> ptr(new rule_block);
-  ptr->add_code_chunk("include: \"" + filename.string() + "\"");
-  _blocks.push_back(ptr);
+  _snakefile_relative_path = filename;
   std::vector<std::string> loaded_lines;
-  // while any unresolved code chunk is present
-  // TODO(cpalmer718): handle hackjob python interface (not at all trivial lol)
-  bool unresolved = true;
-  while (unresolved) {
-    unresolved = false;
-    for (std::list<boost::shared_ptr<rule_block> >::iterator iter =
-             _blocks.begin();
-         iter != _blocks.end(); ++iter) {
-      if ((*iter)->is_include_directive()) {
-        if (verbose)
-          std::cout << "found include directive, adding \""
-                    << (*iter)->get_recursive_filename() << "\"" << std::endl;
-        // load the included file
-        boost::filesystem::path recursive_path =
-            base_dir / (*iter)->get_recursive_filename();
-        load_lines(recursive_path, &loaded_lines);
-        parse_file(loaded_lines, iter, recursive_path,
-                   (*iter)->get_include_depth(), verbose);
-        unresolved = true;
-        // and now that the include has been performed, do not add the include
-        // statement
-        iter = _blocks.erase(iter);
-      }
-    }
-  }
+  boost::filesystem::path recursive_path = base_dir / filename;
+  load_lines(recursive_path, &loaded_lines);
+  parse_file(loaded_lines, _blocks.begin(), filename, verbose);
+}
 
+void snakemake_unit_tests::snakemake_file::postflight_checks(
+    std::vector<std::string> *exclude_rules) {
   // placeholder: add screening step to detect known issues/unsupported features
-  // TODO(cpalmer718): implement python integration. add checkpoints
   detect_known_issues(exclude_rules);
 
   // deal with derived rules
   resolve_derived_rules();
+}
+
+void snakemake_unit_tests::snakemake_file::report_rules(
+    std::map<std::string, std::vector<boost::shared_ptr<rule_block> > >
+        *aggregated_rules) const {
+  if (!aggregated_rules)
+    throw std::runtime_error("null pointer provided to report_rules");
+  std::map<std::string, std::vector<boost::shared_ptr<rule_block> > >::iterator
+      finder;
+  for (std::list<boost::shared_ptr<rule_block> >::const_iterator iter =
+           _blocks.begin();
+       iter != _blocks.end(); ++iter) {
+    // new: respect blocks' reports of inclusion status
+    if (!(*iter)->included()) continue;
+    // python code. scan for remaining include directives
+    if (!(*iter)->get_rule_name().empty()) {
+      // disable reporting of "all" phony target
+      if (!(*iter)->get_rule_name().compare("all")) continue;
+      // allow global snakemake directives with no rulename
+      // otherwise: rule. aggregate for duplication
+      if ((finder = aggregated_rules->find((*iter)->get_rule_name())) ==
+          aggregated_rules->end()) {
+        finder = aggregated_rules
+                     ->insert(std::make_pair(
+                         (*iter)->get_rule_name(),
+                         std::vector<boost::shared_ptr<rule_block> >()))
+                     .first;
+      }
+      finder->second.push_back(*iter);
+    }
+  }
+  for (std::map<boost::filesystem::path,
+                boost::shared_ptr<snakemake_file> >::const_iterator iter =
+           _included_files.begin();
+       iter != _included_files.end(); ++iter) {
+    iter->second->report_rules(aggregated_rules);
+  }
 }
 
 void snakemake_unit_tests::snakemake_file::detect_known_issues(
@@ -125,30 +140,9 @@ void snakemake_unit_tests::snakemake_file::detect_known_issues(
   std::map<std::string, std::vector<boost::shared_ptr<rule_block> > >::iterator
       finder;
   unsigned duplicated_rules = 0;
-  std::vector<std::string> unresolvable_duplicated_rules, leftover_includes;
-  for (std::list<boost::shared_ptr<rule_block> >::iterator iter =
-           _blocks.begin();
-       iter != _blocks.end(); ++iter) {
-    // python code. scan for remaining include directives
-    if (!(*iter)->get_code_chunk().empty()) {
-      std::string::size_type include_location =
-          (*iter)->get_code_chunk().rbegin()->find("include:");
-      if (include_location != std::string::npos) {
-        leftover_includes.push_back((*(*iter)->get_code_chunk().rbegin()));
-      }
-    } else {
-      // rule. aggregate for duplication
-      if ((finder = aggregated_rules.find((*iter)->get_rule_name())) ==
-          aggregated_rules.end()) {
-        finder = aggregated_rules
-                     .insert(std::make_pair(
-                         (*iter)->get_rule_name(),
-                         std::vector<boost::shared_ptr<rule_block> >()))
-                     .first;
-      }
-      finder->second.push_back(*iter);
-    }
-  }
+  std::vector<std::string> unresolvable_duplicated_rules;
+  report_rules(&aggregated_rules);
+
   for (finder = aggregated_rules.begin(); finder != aggregated_rules.end();
        ++finder) {
     if (finder->second.size() > 1) ++duplicated_rules;
@@ -172,23 +166,15 @@ void snakemake_unit_tests::snakemake_file::detect_known_issues(
     }
   }
   // report results
+  // new: suppress messages about multiple definitions and include directives
+  // new format and support means that multiple definitions should be handled,
+  // and include directives are not squashed and thus expected in output.
   std::cout << "snakefile load summary" << std::endl;
   std::cout << "----------------------" << std::endl;
   std::cout << "total loaded candidate rules: " << aggregated_rules.size()
             << std::endl;
   std::cout << "  of those rules, " << duplicated_rules
             << " had multiple entries in unconditional logic" << std::endl;
-  if (duplicated_rules) {
-    std::cout << std::endl;
-    std::cout << "note that multiple entries in unconditional logic are not \n"
-              << "necessarily problematic: this program does not interpret \n"
-              << "infrastructure logic (that feature is planned for later \n"
-              << "releases). however, if the conditional logic determines \n"
-              << "different definitions of the rule, that will probably \n"
-              << "break tests. the simplest solution is to always use \n"
-              << "unique rule names, even in mutually-exclusively included \n"
-              << "files; or you can wait for a later patch" << std::endl;
-  }
   if (!unresolvable_duplicated_rules.empty()) {
     std::cout << "***of these duplicate rules, "
               << unresolvable_duplicated_rules.size()
@@ -207,24 +193,6 @@ void snakemake_unit_tests::snakemake_file::detect_known_issues(
         << "this information will be automatically added to exclude-rules "
         << "to prevent inconsistent behavior" << std::endl
         << std::endl;
-  }
-  if (!leftover_includes.empty()) {
-    std::cout << std::endl
-              << "warning: possible unresolved include statements detected:"
-              << std::endl;
-    for (std::vector<std::string>::const_iterator iter =
-             leftover_includes.begin();
-         iter != leftover_includes.end(); ++iter) {
-      std::cout << "  " << *iter << std::endl;
-    }
-    std::cout
-        << "if the above are actual include directives, please file a \n"
-        << "bug report with this information. this is a hard break for \n"
-        << "the current logic (support is planned for a later release). \n"
-        << "the current simplest solution is to make sure that all \n"
-        << "'include:' directives operate directly on strings (as \n"
-        << "opposed to variables) and not wrapped in conditional logic \n"
-        << "on the same line (if/else single line statements)" << std::endl;
   }
 }
 
@@ -266,6 +234,8 @@ void snakemake_unit_tests::snakemake_file::resolve_derived_rules() {
   for (std::list<boost::shared_ptr<rule_block> >::iterator iter =
            _blocks.begin();
        iter != _blocks.end(); ++iter) {
+    // new: respect unincluded rules
+    if (!(*iter)->included()) continue;
     // if it has a base class
     if (!(*iter)->get_base_rule_name().empty()) {
       // locate the base class
@@ -304,14 +274,29 @@ void snakemake_unit_tests::snakemake_file::resolve_derived_rules() {
 void snakemake_unit_tests::snakemake_file::parse_file(
     const std::vector<std::string> &loaded_lines,
     std::list<boost::shared_ptr<rule_block> >::iterator insertion_point,
-    const boost::filesystem::path &filename, unsigned global_indentation,
-    bool verbose) {
+    const boost::filesystem::path &filename, bool verbose) {
+  _snakefile_relative_path = filename;
   // track current line
   unsigned current_line = 0;
   while (current_line < loaded_lines.size()) {
     boost::shared_ptr<rule_block> rb(new rule_block);
-    if (rb->load_content_block(loaded_lines, filename, global_indentation,
-                               verbose, &current_line)) {
+    if (rb->load_content_block(loaded_lines, filename, verbose,
+                               &current_line)) {
+      // set python interpreter resolution status
+      // rules should all be set to unresolved before first pass
+      if (!rb->get_rule_name().empty()) {
+        rb->set_resolution(UNRESOLVED);
+        rb->set_interpreter_tag(*_tag_counter);
+        ++*_tag_counter;
+      } else if (rb->contains_include_directive()) {
+        // ambiguous include directives need a complicated resolution pass
+        rb->set_resolution(UNRESOLVED);
+        rb->set_interpreter_tag(*_tag_counter);
+        ++*_tag_counter;
+      } else {
+        // all other contents are good to go, to be handled by interpreter later
+        rb->set_resolution(RESOLVED_INCLUDED);
+      }
       _blocks.insert(insertion_point, rb);
     }
   }
@@ -326,7 +311,7 @@ void snakemake_unit_tests::snakemake_file::print_blocks(
   }
 }
 
-void snakemake_unit_tests::snakemake_file::report_single_rule(
+bool snakemake_unit_tests::snakemake_file::report_single_rule(
     const std::string &rule_name, std::ostream &out) const {
   // find the requested rule
   bool found_rule = false;
@@ -339,20 +324,277 @@ void snakemake_unit_tests::snakemake_file::report_single_rule(
     }
     // if this is the rule or if it's not a rule at all,
     // report it to the synthetic snakefile
-    if (!(*iter)->get_rule_name().compare(rule_name) ||
+    // new: respect rule's inclusion status
+    if ((!(*iter)->get_rule_name().compare(rule_name) && (*iter)->included()) ||
         (*iter)->get_rule_name().empty()) {
       (*iter)->print_contents(out);
     } else {
-      for (unsigned i = 0; i < (*iter)->get_global_indentation() +
-                                   (*iter)->get_local_indentation();
-           ++i)
+      for (unsigned i = 0; i < (*iter)->get_local_indentation(); ++i)
         out << ' ';
       out << "pass" << std::endl << std::endl << std::endl;
     }
   }
   // if the correct rule was never found, complain
-  if (!found_rule)
+  return found_rule;
+}
+
+bool snakemake_unit_tests::snakemake_file::fully_resolved() const {
+  for (std::list<boost::shared_ptr<rule_block> >::const_iterator iter =
+           _blocks.begin();
+       iter != _blocks.end(); ++iter) {
+    if (!(*iter)->resolved()) return false;
+  }
+  return true;
+}
+
+bool snakemake_unit_tests::snakemake_file::contains_blockers() const {
+  bool res = _updated_last_round;
+  for (std::map<boost::filesystem::path,
+                boost::shared_ptr<snakemake_file> >::const_iterator iter =
+           _included_files.begin();
+       iter != _included_files.end(); ++iter) {
+    res |= iter->second->contains_blockers();
+  }
+  return res;
+}
+
+void snakemake_unit_tests::snakemake_file::resolve_with_python(
+    const boost::filesystem::path &workspace,
+    const boost::filesystem::path &pipeline_run_dir, bool verbose,
+    bool disable_resolution) {
+  // if this is the top-level call
+  if (!disable_resolution) {
+    // set this file and all its dependencies to no update
+    set_update_status(false);
+  }
+  // within a workspace, open a snakefile
+  std::ofstream output;
+  boost::filesystem::path output_name = workspace / _snakefile_relative_path;
+  if (verbose) {
+    std::cout << "\toutput workspace: \"" << workspace.string() << "\""
+              << std::endl
+              << "\tsnakefile relative path: \""
+              << _snakefile_relative_path.string() << "\"" << std::endl
+              << "\toutput name: \"" << output_name.string() << "\""
+              << std::endl;
+  }
+  // create directory if needed
+  boost::filesystem::create_directories(output_name.parent_path());
+  if (verbose) {
+    std::cout << "\twriting interpreter snakefile " << output_name.string()
+              << std::endl;
+  }
+  output.open(output_name.string().c_str());
+  if (!output.is_open())
     throw std::runtime_error(
-        "unable to locate log requested rule in scanned snakefiles: \"" +
-        rule_name + "\"");
+        "cannot write interpreter snakefile "
+        "to file \"" +
+        output_name.string() + "\"");
+  // write python reporting code
+  for (std::list<boost::shared_ptr<rule_block> >::const_iterator iter =
+           get_blocks().begin();
+       iter != get_blocks().end(); ++iter) {
+    // ask the rule to report the python equivalent of its contents
+    (*iter)->report_python_logging_code(output);
+  }
+  // handle recursive reporters
+  for (std::map<boost::filesystem::path,
+                boost::shared_ptr<snakemake_file> >::iterator iter =
+           _included_files.begin();
+       iter != _included_files.end(); ++iter) {
+    if (verbose) {
+      std::cout << "\trecursing in python resolution" << std::endl;
+    }
+    iter->second->resolve_with_python(workspace, pipeline_run_dir, verbose,
+                                      true);
+  }
+  // only from the top-level call, so not during recursion
+  if (!disable_resolution) {
+    if (!(output << "rule tmp:" << std::endl
+                 << "    output: \"tmp.txt\"," << std::endl))
+      throw std::runtime_error(
+          "cannot write tmp output rule to python reporter");
+    // execute python script and capture output
+    std::vector<std::string> results =
+        exec("cd " + workspace.string() + " && snakemake -nFs " +
+             _snakefile_relative_path.string());
+    // capture the resulting tags for updating completion status
+    std::map<std::string, std::string> tag_values;
+    capture_python_tag_values(results, &tag_values);
+    process_python_results(workspace, pipeline_run_dir, verbose, tag_values,
+                           output_name);
+    for (std::map<boost::filesystem::path,
+                  boost::shared_ptr<snakemake_file> >::iterator mapper =
+             _included_files.begin();
+         mapper != _included_files.end(); ++mapper) {
+      mapper->second->process_python_results(workspace, pipeline_run_dir,
+                                             verbose, tag_values, output_name);
+    }
+  }
+  output.close();
+}
+
+bool snakemake_unit_tests::snakemake_file::process_python_results(
+    const boost::filesystem::path &workspace,
+    const boost::filesystem::path &pipeline_run_dir, bool verbose,
+    const std::map<std::string, std::string> &tag_values,
+    const boost::filesystem::path &output_name) {
+  std::vector<std::string> loaded_lines;
+  // update rule block status based on python report
+  for (std::list<boost::shared_ptr<rule_block> >::iterator iter =
+           _blocks.begin();
+       iter != _blocks.end(); ++iter) {
+    // if the block reports that it was an include directive
+    (*iter)->update_resolution(tag_values);
+    if ((*iter)->contains_include_directive() &&
+        !(*iter)->get_resolved_included_filename().empty()) {
+      if (verbose) {
+        std::cout << "\tfound an include directive during python processing"
+                  << std::endl;
+      }
+      boost::filesystem::path recursive_path =
+          output_name.parent_path() / (*iter)->get_resolved_included_filename();
+      std::string recursive_str = recursive_path.string();
+      recursive_str =
+          recursive_str.substr(recursive_str.find(workspace.string()) +
+                               workspace.string().size() + 1);
+      // determine if this was included already
+      std::map<boost::filesystem::path,
+               boost::shared_ptr<snakemake_file> >::iterator file_finder;
+      std::string input_name = output_name.string();
+      boost::filesystem::path computed_relative_suffix =
+          boost::filesystem::path(
+              input_name.substr(input_name.find(workspace.string()) +
+                                workspace.size() + 1))
+              .parent_path() /
+          (*iter)->get_resolved_included_filename();
+      input_name = (pipeline_run_dir / computed_relative_suffix).string();
+
+      if ((file_finder = _included_files.find(
+               boost::filesystem::path(input_name))) != _included_files.end()) {
+        // it was already loaded. recurse into that loaded file
+        if (verbose)
+          std::cout << "\t\tthe file \"" << file_finder->first.string()
+                    << "\" was already loaded, passing python "
+                       "results along to it"
+                    << std::endl;
+        file_finder->second->process_python_results(
+            workspace, pipeline_run_dir, verbose, tag_values, recursive_path);
+      } else {
+        if (verbose) {
+          std::cout << "cannot find tag " << boost::filesystem::path(input_name)
+                    << " in already included files" << std::endl;
+          for (std::map<boost::filesystem::path,
+                        boost::shared_ptr<snakemake_file> >::const_iterator
+                   mapper = _included_files.begin();
+               mapper != _included_files.end(); ++mapper) {
+            std::cout << "\tcandidate: " << mapper->first << std::endl;
+          }
+        }
+        // it updated itself to an unambiguous include directive. include it.
+        // need the location in input
+        if (verbose) {
+          std::cout << "\t\toutput name \"" << output_name << "\"" << std::endl
+                    << "\t\tinput name: \"" << input_name << "\"" << std::endl
+                    << "\t\tworkspace: \"" << workspace << "\"" << std::endl
+                    << "\t\tsuffix relative to pipeline dir: \""
+                    << computed_relative_suffix.string() << "\"" << std::endl
+                    << "\t\tresolved inclusion: \""
+                    << (*iter)->get_resolved_included_filename() << "\""
+                    << std::endl;
+        }
+        load_lines(input_name, &loaded_lines);
+        if (verbose)
+          std::cout
+              << "\t\tthe file has not been loaded before, loading it now: "
+              << input_name << std::endl;
+
+        boost::shared_ptr<snakemake_file> ptr(new snakemake_file(_tag_counter));
+        ptr->parse_file(loaded_lines, ptr->get_blocks().begin(),
+                        computed_relative_suffix, verbose);
+        _included_files[boost::filesystem::path(input_name)] = ptr;
+        // always flag as updated when new file is loaded
+        _updated_last_round = true;
+      }
+    }
+  }
+  return true;
+}
+
+std::vector<std::string> snakemake_unit_tests::snakemake_file::exec(
+    const std::string &cmd) const {
+  // https://stackoverflow.com/questions/478898/how-do-i-execute-a-command-and-get-the-output-of-the-command-within-c-using-po
+  std::array<char, 128> buffer;
+  std::vector<std::string> result;
+  FILE *pipe = 0;
+  pipe = popen(cmd.c_str(), "r");
+  if (!pipe) {
+    throw std::runtime_error("popen() failed!");
+  }
+  try {
+    while (fgets(buffer.data(), buffer.size(), pipe) != nullptr) {
+      result.push_back(std::string(buffer.data()));
+    }
+    int status = pclose(pipe);
+    if (status == -1) {
+      throw std::runtime_error(
+          "exec pipe close failed. this exit status is conceptually possible, "
+          "but most likely "
+          "due to system inconsistency or instability, or killing a remote job "
+          "on a cluster "
+          "mid-run. you might consider rerunning with more "
+          "RAM or processes free. otherwise, please consider posting any log "
+          "output from python3 "
+          "to the snakemake_unit_tests repository for feedback.");
+    }
+    if (!WIFEXITED(status)) {
+      throw std::runtime_error(
+          "python subprocess terminated abnormally. this is probably a system "
+          "configuration "
+          "issue, but may be due to a logic failure in snakemake_unit_tests. "
+          "please post "
+          "the preceding log output from python3 to an issue in the "
+          "snakemake_unit_tests "
+          "repository.");
+    }
+    if (WEXITSTATUS(status)) {
+      throw std::runtime_error(
+          "python subprocess returned error exit status. this is most likely "
+          "due to "
+          "a logic error or snakemake feature in your pipeline that is not "
+          "currently "
+          "supported by snakemake_unit_tests. please post the preceding log "
+          "output from "
+          "python3 to an issue in the snakemake_unit_tests repository.");
+    }
+    return result;
+  } catch (...) {
+    if (pipe) pclose(pipe);
+    throw;
+  }
+}
+
+void snakemake_unit_tests::snakemake_file::capture_python_tag_values(
+    const std::vector<std::string> &vec,
+    std::map<std::string, std::string> *target) const {
+  const boost::regex tag_value_pair("^(tag[0-9]+): *(.*) *[\r\n]+$");
+  const boost::regex tag_alone("^(tag[0-9]+) *[\r\n]+$");
+  boost::smatch tag_match;
+  if (!target)
+    throw std::runtime_error(
+        "null pointer provided to capture_python_tag_values");
+  // for each line of output
+  for (std::vector<std::string>::const_iterator iter = vec.begin();
+       iter != vec.end(); ++iter) {
+    // match format "tag#: value"
+    if (boost::regex_match(*iter, tag_match, tag_value_pair)) {
+      (*target)[tag_match[1].str()] = tag_match[2].str();
+    } else if (boost::regex_match(*iter, tag_match, tag_alone)) {
+      // match format "tag#"
+      (*target)[tag_match[1].str()] = "";
+    } else {
+      // in snakemake interpreter mode, just ignore this
+      continue;
+    }
+  }
 }

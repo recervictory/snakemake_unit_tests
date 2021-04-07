@@ -1,0 +1,12 @@
+rule all:
+    input:
+        "output3.txt",
+
+
+pass
+
+
+pass
+
+
+include: "level1.smk"

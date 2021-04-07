@@ -1,0 +1,19 @@
+rule all:
+    input:
+        "output.txt",
+
+
+from snakemake.utils import validate
+configfile: "config.yaml"
+validate(config, schema = "../schema/config.schema.yaml")
+rule simple_rule:
+    input:
+        "in{suffix}.txt",
+    output:
+        "out{suffix}.txt",
+    shell:
+        "cp {input} {output}"
+
+
+wildcard_constraints:
+    suffix="[put]+",

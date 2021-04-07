@@ -16,9 +16,7 @@ if True:
     pass
 
 
-pass
-
-
+include: "rules/subfile.smk"
 pass
 
 

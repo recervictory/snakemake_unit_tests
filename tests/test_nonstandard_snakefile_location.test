@@ -15,9 +15,9 @@ SNAKEMAKE_UNIT_TESTS="./snakemake_unit_tests.out"
 rm -Rf "$OUTPUTDIR"
 
 ## run test, dumping output into appropriate directory
-"$SNAKEMAKE_UNIT_TESTS" -c "$CONFIGFILE" > /dev/null 2>&1
+"$SNAKEMAKE_UNIT_TESTS" --update-all -c "$CONFIGFILE" > /dev/null 2>&1
 
-if [[ ! -f "$OUTPUTDIR/Snakefile" ]] ; then
+if [[ ! -f "$OUTPUTDIR/unit/simple_rule1/workspace/Snakefile" ]] ; then
     echo "not ok - $TESTDESCRIPTION does not respond to nonstandard snakefile location # TODO move synthetic snakefile dynamically"
     exit 0
 fi

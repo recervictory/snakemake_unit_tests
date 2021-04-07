@@ -13,6 +13,8 @@
 #include <string>
 #include <vector>
 
+#include "boost/regex.hpp"
+
 namespace snakemake_unit_tests {
 /*!
   @brief prune superfluous content from snakemake content line
