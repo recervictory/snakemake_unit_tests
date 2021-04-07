@@ -249,6 +249,14 @@ class snakemake_file {
     }
   }
 
+  /*!
+    @brief report loaded rules in this file and all dependencies
+    @param aggregated_rules target for reporting
+   */
+  void report_rules(
+      std::map<std::string, std::vector<boost::shared_ptr<rule_block> > >
+          *aggregated_rules) const;
+
  private:
   /*!
     @brief minimal contents of snakemake file as blocks of code

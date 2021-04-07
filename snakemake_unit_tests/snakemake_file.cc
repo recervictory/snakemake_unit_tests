@@ -81,6 +81,43 @@ void snakemake_unit_tests::snakemake_file::postflight_checks(
   resolve_derived_rules();
 }
 
+void snakemake_unit_tests::snakemake_file::report_rules(
+    std::map<std::string, std::vector<boost::shared_ptr<rule_block> > >
+        *aggregated_rules) const {
+  if (!aggregated_rules)
+    throw std::runtime_error("null pointer provided to report_rules");
+  std::map<std::string, std::vector<boost::shared_ptr<rule_block> > >::iterator
+      finder;
+  for (std::list<boost::shared_ptr<rule_block> >::const_iterator iter =
+           _blocks.begin();
+       iter != _blocks.end(); ++iter) {
+    // new: respect blocks' reports of inclusion status
+    if (!(*iter)->included()) continue;
+    // python code. scan for remaining include directives
+    if (!(*iter)->get_rule_name().empty()) {
+      // disable reporting of "all" phony target
+      if (!(*iter)->get_rule_name().compare("all")) continue;
+      // allow global snakemake directives with no rulename
+      // otherwise: rule. aggregate for duplication
+      if ((finder = aggregated_rules->find((*iter)->get_rule_name())) ==
+          aggregated_rules->end()) {
+        finder = aggregated_rules
+                     ->insert(std::make_pair(
+                         (*iter)->get_rule_name(),
+                         std::vector<boost::shared_ptr<rule_block> >()))
+                     .first;
+      }
+      finder->second.push_back(*iter);
+    }
+  }
+  for (std::map<boost::filesystem::path,
+                boost::shared_ptr<snakemake_file> >::const_iterator iter =
+           _included_files.begin();
+       iter != _included_files.end(); ++iter) {
+    iter->second->report_rules(aggregated_rules);
+  }
+}
+
 void snakemake_unit_tests::snakemake_file::detect_known_issues(
     std::vector<std::string> *exclude_rules) {
   /*
@@ -103,33 +140,9 @@ void snakemake_unit_tests::snakemake_file::detect_known_issues(
   std::map<std::string, std::vector<boost::shared_ptr<rule_block> > >::iterator
       finder;
   unsigned duplicated_rules = 0;
-  std::vector<std::string> unresolvable_duplicated_rules, leftover_includes;
-  for (std::list<boost::shared_ptr<rule_block> >::iterator iter =
-           _blocks.begin();
-       iter != _blocks.end(); ++iter) {
-    // new: respect blocks' reports of inclusion status
-    if (!(*iter)->included()) continue;
-    // python code. scan for remaining include directives
-    if (!(*iter)->get_code_chunk().empty()) {
-      std::string::size_type include_location =
-          (*iter)->get_code_chunk().rbegin()->find("include:");
-      if (include_location != std::string::npos) {
-        leftover_includes.push_back((*(*iter)->get_code_chunk().rbegin()));
-      }
-    } else if (!(*iter)->get_rule_name().empty()) {
-      // allow global snakemake directives with no rulename
-      // otherwise: rule. aggregate for duplication
-      if ((finder = aggregated_rules.find((*iter)->get_rule_name())) ==
-          aggregated_rules.end()) {
-        finder = aggregated_rules
-                     .insert(std::make_pair(
-                         (*iter)->get_rule_name(),
-                         std::vector<boost::shared_ptr<rule_block> >()))
-                     .first;
-      }
-      finder->second.push_back(*iter);
-    }
-  }
+  std::vector<std::string> unresolvable_duplicated_rules;
+  report_rules(&aggregated_rules);
+
   for (finder = aggregated_rules.begin(); finder != aggregated_rules.end();
        ++finder) {
     if (finder->second.size() > 1) ++duplicated_rules;
