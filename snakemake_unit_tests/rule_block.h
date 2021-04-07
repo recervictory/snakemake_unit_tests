@@ -38,7 +38,6 @@ class rule_block {
   rule_block()
       : _rule_name(""),
         _base_rule_name(""),
-        _global_indentation(0),
         _local_indentation(0),
         _resolution(UNRESOLVED),
         _python_tag(0) {}
@@ -51,10 +50,10 @@ class rule_block {
         _base_rule_name(obj._base_rule_name),
         _named_blocks(obj._named_blocks),
         _code_chunk(obj._code_chunk),
-        _global_indentation(obj._global_indentation),
         _local_indentation(obj._local_indentation),
         _resolution(obj._resolution),
-        _python_tag(obj._python_tag) {}
+        _python_tag(obj._python_tag),
+        _resolved_included_filename(obj._resolved_included_filename) {}
   /*!
     @brief destructor
    */
@@ -65,7 +64,6 @@ class rule_block {
     @param loaded_lines vector of snakemake file lines to process
     @param filename name of the loaded snakemake file. only used for
     informative error messages
-    @param global_indentation base indentation for entire file,
     defaulting to 0 for standard file loads and incrementing by
     4 for each level of indentation the include directive had
     within its python block
@@ -77,8 +75,7 @@ class rule_block {
     it is designed to be called until it returns false.
    */
   bool load_content_block(const std::vector<std::string> &loaded_lines,
-                          const boost::filesystem::path &filename,
-                          unsigned global_indentation, bool verbose,
+                          const boost::filesystem::path &filename, bool verbose,
                           unsigned *current_line);
 
   /*!
@@ -150,7 +147,7 @@ class rule_block {
 
   /*!
     @brief determine how much indentation an include directive enjoyed
-    @return indentation of include directive, along with inherited global depth
+    @return indentation of include directive
    */
   unsigned get_include_depth() const;
 
@@ -179,12 +176,6 @@ class rule_block {
   const std::map<std::string, std::string> &get_named_blocks() const {
     return _named_blocks;
   }
-
-  /*!
-    @brief get global indentation of file
-    @return global indentation of file
-   */
-  unsigned get_global_indentation() const { return _global_indentation; }
 
   /*!
     @brief get local indentation of rule block
@@ -221,7 +212,7 @@ class rule_block {
     note that indentation level is irrelevant for this comparison
    */
   bool operator==(const rule_block &obj) const {
-    // global and local indentation *do not need to be equal*
+    // local indentation *does not need to be equal*
     if (get_rule_name().compare(obj.get_rule_name())) return false;
     if (get_base_rule_name().compare(obj.get_base_rule_name())) return false;
     if (get_named_blocks().size() != obj.get_named_blocks().size())
@@ -260,6 +251,11 @@ class rule_block {
    */
   void set_resolution(block_status s) { _resolution = s; }
   /*!
+    @brief get the current resolution status
+    @return the current resolution status
+  */
+  block_status get_resolution_status() const { return _resolution; }
+  /*!
     @brief set the unique python tag for inclusion tracking
     @param u new value for unique python tag
    */
@@ -280,18 +276,15 @@ class rule_block {
     @return whether the current rule allows downstream logic to continue
    */
   bool update_resolution(const std::map<std::string, std::string> &tag_values);
+  /*!
+    @brief for include statements, get actual filename for inclusion
+    @return resolved filename
+   */
+  const boost::filesystem::path &get_resolved_included_filename() const {
+    return _resolved_included_filename;
+  }
 
  private:
-  /*!
-    @brief apply hackjob nonsense to flatten certain relative paths by one level
-    @param s possible relative path to flatten
-    @return the input line with any changes applied
-
-    this is flagged to be handled some other way
-    TODO(cpalmer718): find any better way of flattening relative include paths
-   */
-  std::string reduce_relative_paths(const std::string &s) const;
-
   /*!
     @brief return a string containing some number of whitespaces
     @param count total whitespace indentation to apply
@@ -344,13 +337,6 @@ class rule_block {
    */
   std::vector<std::string> _code_chunk;
   /*!
-    @brief allow for global indentation of conditionally included files
-
-    files included within python blocks should inherit the base depth
-    of their include directive.
-  */
-  unsigned _global_indentation;
-  /*!
     @brief allow for local indentation of conditionally included rules
 
     rules included within python blocks should temporarily have escalated
@@ -370,6 +356,10 @@ class rule_block {
     tracking pass
    */
   unsigned _python_tag;
+  /*!
+    @brief for include directives: resolved name of included file
+   */
+  boost::filesystem::path _resolved_included_filename;
 };
 }  // namespace snakemake_unit_tests
 

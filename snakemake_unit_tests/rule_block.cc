@@ -9,42 +9,15 @@
 
 #include "snakemake_unit_tests/rule_block.h"
 
-std::string snakemake_unit_tests::rule_block::reduce_relative_paths(
-    const std::string &s) const {
-  std::vector<std::string> reduced_relative_paths;
-  reduced_relative_paths.push_back("../envs");
-  reduced_relative_paths.push_back("../scripts");
-  reduced_relative_paths.push_back("../report");
-  std::string line = s;
-  // hackjob nonsense:
-  /*
-    reduce by one level relative paths from within workflow/rules.
-    this is necessary because recursively included files from rules/
-    are flattened by one level when loaded.
-  */
-  for (std::vector<std::string>::const_iterator iter =
-           reduced_relative_paths.begin();
-       iter != reduced_relative_paths.end(); ++iter) {
-    if (line.find(*iter) != std::string::npos) {
-      line = line.substr(0, line.find(*iter)) + iter->substr(3) +
-             line.substr(line.find(*iter) + iter->size());
-    }
-  }
-  return line;
-}
-
 bool snakemake_unit_tests::rule_block::load_content_block(
     const std::vector<std::string> &loaded_lines,
-    const boost::filesystem::path &filename, unsigned global_indentation,
-    bool verbose, unsigned *current_line) {
+    const boost::filesystem::path &filename, bool verbose,
+    unsigned *current_line) {
   if (!current_line)
     throw std::runtime_error(
         "null pointer for counter passed to load_content_block");
   // clear out internals, just to be safe
   clear();
-  // there's nothing to do for global indentation here, only when
-  // content is being reported later; so just store it for now
-  _global_indentation = global_indentation;
   // define variables for processing
   std::string line = "";
   // define regex patterns for testing
@@ -66,9 +39,6 @@ bool snakemake_unit_tests::rule_block::load_content_block(
     }
     if (line.empty() || line.find_first_not_of(" ") == std::string::npos)
       continue;
-    // hack: deal with flattening of some relative paths when snakefiles are
-    // merged
-    line = reduce_relative_paths(line);
     // if the line is a valid rule declaration
     boost::smatch regex_result;
     if (boost::regex_match(line, regex_result, standard_rule_declaration)) {
@@ -150,7 +120,6 @@ bool snakemake_unit_tests::rule_block::consume_rule_contents(
     }
     if (line.empty() || line.find_first_not_of(" ") == std::string::npos)
       continue;
-    line = reduce_relative_paths(line);
 
     // all remaining lines must be indented. any lack of indentation means the
     // rule is done
@@ -184,7 +153,6 @@ bool snakemake_unit_tests::rule_block::consume_rule_contents(
           if (line.empty() || line.find_first_not_of(" ") == std::string::npos)
             continue;
           line_indentation = line.find_first_not_of(" ");
-          line = reduce_relative_paths(line);
 
           // if a line that's not contents is found
           if (line_indentation <=
@@ -287,7 +255,7 @@ unsigned snakemake_unit_tests::rule_block::get_include_depth() const {
     boost::smatch include_match;
     if (boost::regex_match(*get_code_chunk().begin(), include_match,
                            include_directive)) {
-      return include_match[1].str().size() + get_global_indentation();
+      return include_match[1].str().size();
     }
   }
   throw std::runtime_error(
@@ -301,22 +269,14 @@ void snakemake_unit_tests::rule_block::report_python_logging_code(
   if (!get_code_chunk().empty()) {
     // if this is an include directive of any kind
     if (contains_include_directive()) {
-      // it should not under any circumstances be a simple include on a filename
-      if (is_simple_include_directive()) {
-        throw std::logic_error(
-            "report_python_logging_code: unincluded simple inclusion "
-            "suggests parsing pass has not been performed");
-      }
-      // it should not under any circumstances be unresolved
-      if (_resolution != UNRESOLVED) {
-        throw std::logic_error(
-            "report_python_logging_code: resolved complex inclusion "
-            "suggests post-python loading has not been performed");
+      // it can be resolved, in which case, it can sometimes be included
+      if (_resolution == RESOLVED_INCLUDED) {
+        if (!(out << *get_code_chunk().rbegin() << std::endl))
+          throw std::runtime_error("include statement printing error");
       }
       // report tag along with required expression for evaluation
-      if (!(out << indentation(get_global_indentation() +
-                               get_local_indentation())
-                << "print(\"tag" << get_interpreter_tag() << ": {}\".format("
+      if (!(out << indentation(get_local_indentation()) << "print(\"tag"
+                << get_interpreter_tag() << ": {}\".format("
                 << get_filename_expression() << "))" << std::endl))
         throw std::runtime_error("complex include printing error");
     } else {
@@ -324,21 +284,17 @@ void snakemake_unit_tests::rule_block::report_python_logging_code(
       for (std::vector<std::string>::const_iterator iter =
                get_code_chunk().begin();
            iter != get_code_chunk().end(); ++iter) {
-        if (!(out << indentation(get_global_indentation()) << *iter
-                  << std::endl))
+        if (!(out << *iter << std::endl))
           throw std::runtime_error("code chunk printing error");
       }
     }
   } else if (!get_rule_name().empty()) {  // is a rule
-    // if the rule has not already been flagged as untouched
-    if (_resolution == RESOLVED_INCLUDED || _resolution == UNRESOLVED) {
-      if (!(out << indentation(get_global_indentation() +
-                               get_local_indentation())
-                << "print(\"tag" << get_interpreter_tag() << "\")" << std::endl
-                << std::endl
-                << std::endl))
-        throw std::runtime_error("rule interpreter code printing failure");
-    }
+    // new logic: must print tag each time, in case status changes later
+    if (!(out << indentation(get_local_indentation()) << "print(\"tag"
+              << get_interpreter_tag() << "\")" << std::endl
+              << std::endl
+              << std::endl))
+      throw std::runtime_error("rule interpreter code printing failure");
   } else {  // is a snakemake metacontent block
     // rule name is empty but blocks are not.
     // switching to direct snakemake interpretation, in which case these
@@ -346,11 +302,8 @@ void snakemake_unit_tests::rule_block::report_python_logging_code(
     for (std::map<std::string, std::string>::const_iterator iter =
              get_named_blocks().begin();
          iter != get_named_blocks().end(); ++iter) {
-      if (!(out << indentation(get_global_indentation() +
-                               get_local_indentation())
-                << iter->first << ":"
-                << apply_indentation(iter->second, get_global_indentation())
-                << std::endl))
+      if (!(out << indentation(get_local_indentation()) << iter->first << ":"
+                << iter->second << std::endl))
         throw std::runtime_error("snakemake directive printing failure");
     }
   }
@@ -366,19 +319,23 @@ bool snakemake_unit_tests::rule_block::update_resolution(
       // if the tag is for a rule
       if (finder->second.empty()) {
         set_resolution(RESOLVED_INCLUDED);
-        std::cout << "updating rule \"" << get_rule_name()
-                  << "\" to included status" << std::endl;
         return true;
       } else {
         // the tag is for an ambiguous include directive
         set_resolution(RESOLVED_INCLUDED);
-        std::cout << "updating ambiguous include \"" << _code_chunk.at(0)
-                  << "\" to \"" << indentation(get_include_depth())
-                  << "include: \"" << finder->second << "\"\"" << std::endl;
-        _code_chunk.at(0) = indentation(get_include_depth()) + "include: \"" +
-                            finder->second + "\"";
-        return false;
+        if (_resolved_included_filename.compare(finder->second)) {
+          _resolved_included_filename = finder->second;
+          return false;
+        } else {
+          return true;
+        }
       }
+    } else {
+      // new: if it's not present and nonzero tag, flag as unincluded
+      // however, this can be updated on additional passes; the logic
+      // is that additional passes will keep occurring as long as
+      // some new include directive appears on this next pass
+      set_resolution(RESOLVED_EXCLUDED);
     }
   }
   return true;
@@ -390,14 +347,12 @@ void snakemake_unit_tests::rule_block::print_contents(std::ostream &out) const {
     for (std::vector<std::string>::const_iterator iter =
              get_code_chunk().begin();
          iter != get_code_chunk().end(); ++iter) {
-      if (!(out << indentation(get_global_indentation())
-                << apply_indentation(*iter, get_global_indentation())
-                << std::endl))
+      if (!(out << *iter << std::endl))
         throw std::runtime_error("code chunk printing error");
     }
   } else if (!get_rule_name().empty()) {  // rule
-    if (!(out << indentation(get_global_indentation() + get_local_indentation())
-              << "rule " << get_rule_name() << ":" << std::endl))
+    if (!(out << indentation(get_local_indentation()) << "rule "
+              << get_rule_name() << ":" << std::endl))
       throw std::runtime_error("rule name printing failure");
     // enforce restrictions on block order
     std::map<std::string, bool> high_priority_blocks, low_priority_blocks;
@@ -414,11 +369,8 @@ void snakemake_unit_tests::rule_block::print_contents(std::ostream &out) const {
          iter != get_named_blocks().end(); ++iter) {
       if (high_priority_blocks.find(iter->first) !=
           high_priority_blocks.end()) {
-        if (!(out << indentation(get_global_indentation() +
-                                 get_local_indentation() + 4)
-                  << iter->first << ":"
-                  << apply_indentation(iter->second, get_global_indentation())
-                  << std::endl))
+        if (!(out << indentation(get_local_indentation() + 4) << iter->first
+                  << ":" << iter->second << std::endl))
           throw std::runtime_error("named block printing failure");
       }
     }
@@ -429,11 +381,8 @@ void snakemake_unit_tests::rule_block::print_contents(std::ostream &out) const {
       if (high_priority_blocks.find(iter->first) ==
               high_priority_blocks.end() &&
           low_priority_blocks.find(iter->first) == low_priority_blocks.end()) {
-        if (!(out << indentation(get_global_indentation() +
-                                 get_local_indentation() + 4)
-                  << iter->first << ":"
-                  << apply_indentation(iter->second, get_global_indentation())
-                  << std::endl))
+        if (!(out << indentation(get_local_indentation() + 4) << iter->first
+                  << ":" << iter->second << std::endl))
           throw std::runtime_error("named block printing failure");
       }
     }
@@ -442,11 +391,8 @@ void snakemake_unit_tests::rule_block::print_contents(std::ostream &out) const {
              get_named_blocks().begin();
          iter != get_named_blocks().end(); ++iter) {
       if (low_priority_blocks.find(iter->first) != low_priority_blocks.end()) {
-        if (!(out << indentation(get_global_indentation() +
-                                 get_local_indentation() + 4)
-                  << iter->first << ":"
-                  << apply_indentation(iter->second, get_global_indentation())
-                  << std::endl))
+        if (!(out << indentation(get_local_indentation() + 4) << iter->first
+                  << ":" << iter->second << std::endl))
           throw std::runtime_error("named block printing failure");
       }
     }
@@ -458,11 +404,8 @@ void snakemake_unit_tests::rule_block::print_contents(std::ostream &out) const {
     for (std::map<std::string, std::string>::const_iterator iter =
              get_named_blocks().begin();
          iter != get_named_blocks().end(); ++iter) {
-      if (!(out << indentation(get_global_indentation() +
-                               get_local_indentation())
-                << iter->first << ":"
-                << apply_indentation(iter->second, get_global_indentation())
-                << std::endl))
+      if (!(out << indentation(get_local_indentation()) << iter->first << ":"
+                << iter->second << std::endl))
         throw std::runtime_error("named block printing failure");
     }
   }

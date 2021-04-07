@@ -15,9 +15,4 @@ rule simple_rule1:
         "cp {input} {output}"
 
 
-pass
-
-
-pass
-
-
+include: "level1.smk"

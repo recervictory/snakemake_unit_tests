@@ -9,15 +9,4 @@ pass
 pass
 
 
-rule simple_rule2:
-    input:
-        "input2.txt",
-    output:
-        "output2.txt",
-    shell:
-        "cp {input} {output}"
-
-
-pass
-
-
+include: "level1.smk"

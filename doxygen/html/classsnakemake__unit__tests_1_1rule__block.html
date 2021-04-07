@@ -94,12 +94,12 @@ Public Member Functions</h2></td></tr>
 &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1rule__block.html#a0b7e1d766627db4e12d8c570fa6c3aba">~rule_block</a> ()  throw ()</td></tr>
 <tr class="memdesc:a0b7e1d766627db4e12d8c570fa6c3aba"><td class="mdescLeft">&#160;</td><td class="mdescRight">destructor <br /></td></tr>
 <tr class="separator:a0b7e1d766627db4e12d8c570fa6c3aba"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeadfda9cf06ee3429c4ab18f97c91a21"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1rule__block.html#aeadfda9cf06ee3429c4ab18f97c91a21">load_content_block</a> (const std::vector&lt; std::string &gt; &amp;loaded_lines, const boost::filesystem::path &amp;filename, unsigned global_indentation, bool verbose, unsigned *current_line)</td></tr>
-<tr class="memdesc:aeadfda9cf06ee3429c4ab18f97c91a21"><td class="mdescLeft">&#160;</td><td class="mdescRight">load a rule block or python chunk from a snakemake file vector  <a href="classsnakemake__unit__tests_1_1rule__block.html#aeadfda9cf06ee3429c4ab18f97c91a21">More...</a><br /></td></tr>
-<tr class="separator:aeadfda9cf06ee3429c4ab18f97c91a21"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4decffe2868da5c2b0ea7c233388240c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1rule__block.html#a4decffe2868da5c2b0ea7c233388240c">consume_rule_contents</a> (const std::vector&lt; std::string &gt; &amp;loaded_lines, const boost::filesystem::path &amp;filename, bool verbose, unsigned *current_line)</td></tr>
-<tr class="memdesc:a4decffe2868da5c2b0ea7c233388240c"><td class="mdescLeft">&#160;</td><td class="mdescRight">having found a rule declaration, load its blocks  <a href="classsnakemake__unit__tests_1_1rule__block.html#a4decffe2868da5c2b0ea7c233388240c">More...</a><br /></td></tr>
-<tr class="separator:a4decffe2868da5c2b0ea7c233388240c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad96a6ee8aa9d2afad7a050cc2d7a1a01"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1rule__block.html#ad96a6ee8aa9d2afad7a050cc2d7a1a01">load_content_block</a> (const std::vector&lt; std::string &gt; &amp;loaded_lines, const boost::filesystem::path &amp;filename, bool verbose, unsigned *current_line)</td></tr>
+<tr class="memdesc:ad96a6ee8aa9d2afad7a050cc2d7a1a01"><td class="mdescLeft">&#160;</td><td class="mdescRight">load a rule block or python chunk from a snakemake file vector  <a href="classsnakemake__unit__tests_1_1rule__block.html#ad96a6ee8aa9d2afad7a050cc2d7a1a01">More...</a><br /></td></tr>
+<tr class="separator:ad96a6ee8aa9d2afad7a050cc2d7a1a01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12e3501a0700e32515aef16647f71753"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1rule__block.html#a12e3501a0700e32515aef16647f71753">consume_rule_contents</a> (const std::vector&lt; std::string &gt; &amp;loaded_lines, const boost::filesystem::path &amp;filename, bool verbose, unsigned *current_line, unsigned block_base_increment)</td></tr>
+<tr class="memdesc:a12e3501a0700e32515aef16647f71753"><td class="mdescLeft">&#160;</td><td class="mdescRight">having found a rule declaration, load its blocks  <a href="classsnakemake__unit__tests_1_1rule__block.html#a12e3501a0700e32515aef16647f71753">More...</a><br /></td></tr>
+<tr class="separator:a12e3501a0700e32515aef16647f71753"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9e39b5aaea4f9b7a7e96cc3d0a5dba50"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1rule__block.html#a9e39b5aaea4f9b7a7e96cc3d0a5dba50">set_rule_name</a> (const std::string &amp;s)</td></tr>
 <tr class="memdesc:a9e39b5aaea4f9b7a7e96cc3d0a5dba50"><td class="mdescLeft">&#160;</td><td class="mdescRight">set the name of the rule  <a href="classsnakemake__unit__tests_1_1rule__block.html#a9e39b5aaea4f9b7a7e96cc3d0a5dba50">More...</a><br /></td></tr>
 <tr class="separator:a9e39b5aaea4f9b7a7e96cc3d0a5dba50"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -112,15 +112,21 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a4c7bfd792416701392f04aa5ddcaa1bc"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1rule__block.html#a4c7bfd792416701392f04aa5ddcaa1bc">get_base_rule_name</a> () const</td></tr>
 <tr class="memdesc:a4c7bfd792416701392f04aa5ddcaa1bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">get the name of the base rule for derived rules  <a href="classsnakemake__unit__tests_1_1rule__block.html#a4c7bfd792416701392f04aa5ddcaa1bc">More...</a><br /></td></tr>
 <tr class="separator:a4c7bfd792416701392f04aa5ddcaa1bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad665a55afda39722a659d93010c76837"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1rule__block.html#ad665a55afda39722a659d93010c76837">is_include_directive</a> () const</td></tr>
-<tr class="memdesc:ad665a55afda39722a659d93010c76837"><td class="mdescLeft">&#160;</td><td class="mdescRight">determine whether this block is a snakemake file include directive  <a href="classsnakemake__unit__tests_1_1rule__block.html#ad665a55afda39722a659d93010c76837">More...</a><br /></td></tr>
-<tr class="separator:ad665a55afda39722a659d93010c76837"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a151f7493f2ecc40227a52812c76f7c5f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1rule__block.html#a151f7493f2ecc40227a52812c76f7c5f">is_simple_include_directive</a> () const</td></tr>
+<tr class="memdesc:a151f7493f2ecc40227a52812c76f7c5f"><td class="mdescLeft">&#160;</td><td class="mdescRight">determine whether this block is a simple snakemake include directive  <a href="classsnakemake__unit__tests_1_1rule__block.html#a151f7493f2ecc40227a52812c76f7c5f">More...</a><br /></td></tr>
+<tr class="separator:a151f7493f2ecc40227a52812c76f7c5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab65f435719bfb7e63869c881b589ded1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1rule__block.html#ab65f435719bfb7e63869c881b589ded1">contains_include_directive</a> () const</td></tr>
+<tr class="memdesc:ab65f435719bfb7e63869c881b589ded1"><td class="mdescLeft">&#160;</td><td class="mdescRight">determine whether this block contains something that looks like an include directive but that doesn't conform to basic include syntax  <a href="classsnakemake__unit__tests_1_1rule__block.html#ab65f435719bfb7e63869c881b589ded1">More...</a><br /></td></tr>
+<tr class="separator:ab65f435719bfb7e63869c881b589ded1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae696927452c2be2a023910739ec846a7"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1rule__block.html#ae696927452c2be2a023910739ec846a7">get_filename_expression</a> () const</td></tr>
+<tr class="memdesc:ae696927452c2be2a023910739ec846a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">extract the filename expression from an include statement  <a href="classsnakemake__unit__tests_1_1rule__block.html#ae696927452c2be2a023910739ec846a7">More...</a><br /></td></tr>
+<tr class="separator:ae696927452c2be2a023910739ec846a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adc0e13d780edf9c03a2ddc203f372148"><td class="memItemLeft" align="right" valign="top">unsigned&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1rule__block.html#adc0e13d780edf9c03a2ddc203f372148">get_include_depth</a> () const</td></tr>
 <tr class="memdesc:adc0e13d780edf9c03a2ddc203f372148"><td class="mdescLeft">&#160;</td><td class="mdescRight">determine how much indentation an include directive enjoyed  <a href="classsnakemake__unit__tests_1_1rule__block.html#adc0e13d780edf9c03a2ddc203f372148">More...</a><br /></td></tr>
 <tr class="separator:adc0e13d780edf9c03a2ddc203f372148"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9eb00c8823aab86a6c7a983364007743"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1rule__block.html#a9eb00c8823aab86a6c7a983364007743">get_recursive_filename</a> () const</td></tr>
-<tr class="memdesc:a9eb00c8823aab86a6c7a983364007743"><td class="mdescLeft">&#160;</td><td class="mdescRight">if the block is an include directive, get the file that is included  <a href="classsnakemake__unit__tests_1_1rule__block.html#a9eb00c8823aab86a6c7a983364007743">More...</a><br /></td></tr>
-<tr class="separator:a9eb00c8823aab86a6c7a983364007743"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a501517c9b7fd13e0e4d716850a5cd04e"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1rule__block.html#a501517c9b7fd13e0e4d716850a5cd04e">get_standard_filename</a> () const</td></tr>
+<tr class="memdesc:a501517c9b7fd13e0e4d716850a5cd04e"><td class="mdescLeft">&#160;</td><td class="mdescRight">if the block is an include directive, get the file that is included  <a href="classsnakemake__unit__tests_1_1rule__block.html#a501517c9b7fd13e0e4d716850a5cd04e">More...</a><br /></td></tr>
+<tr class="separator:a501517c9b7fd13e0e4d716850a5cd04e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa3429e0b3dde7eaeb99520dd629d6ba4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1rule__block.html#aa3429e0b3dde7eaeb99520dd629d6ba4">print_contents</a> (std::ostream &amp;out) const</td></tr>
 <tr class="memdesc:aa3429e0b3dde7eaeb99520dd629d6ba4"><td class="mdescLeft">&#160;</td><td class="mdescRight">report mildly formatted contents to a stream  <a href="classsnakemake__unit__tests_1_1rule__block.html#aa3429e0b3dde7eaeb99520dd629d6ba4">More...</a><br /></td></tr>
 <tr class="separator:aa3429e0b3dde7eaeb99520dd629d6ba4"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -130,9 +136,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a27ad0d8dab3d7390b316781fba25a187"><td class="memItemLeft" align="right" valign="top">const std::map&lt; std::string, std::string &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1rule__block.html#a27ad0d8dab3d7390b316781fba25a187">get_named_blocks</a> () const</td></tr>
 <tr class="memdesc:a27ad0d8dab3d7390b316781fba25a187"><td class="mdescLeft">&#160;</td><td class="mdescRight">get named blocks of rule body  <a href="classsnakemake__unit__tests_1_1rule__block.html#a27ad0d8dab3d7390b316781fba25a187">More...</a><br /></td></tr>
 <tr class="separator:a27ad0d8dab3d7390b316781fba25a187"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a73480255309a0a244c820346db9beb65"><td class="memItemLeft" align="right" valign="top">unsigned&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1rule__block.html#a73480255309a0a244c820346db9beb65">get_global_indentation</a> () const</td></tr>
-<tr class="memdesc:a73480255309a0a244c820346db9beb65"><td class="mdescLeft">&#160;</td><td class="mdescRight">get global indentation of file  <a href="classsnakemake__unit__tests_1_1rule__block.html#a73480255309a0a244c820346db9beb65">More...</a><br /></td></tr>
-<tr class="separator:a73480255309a0a244c820346db9beb65"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a382259a591a1f4c9345523b23de4f478"><td class="memItemLeft" align="right" valign="top">unsigned&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1rule__block.html#a382259a591a1f4c9345523b23de4f478">get_local_indentation</a> () const</td></tr>
 <tr class="memdesc:a382259a591a1f4c9345523b23de4f478"><td class="mdescLeft">&#160;</td><td class="mdescRight">get local indentation of rule block  <a href="classsnakemake__unit__tests_1_1rule__block.html#a382259a591a1f4c9345523b23de4f478">More...</a><br /></td></tr>
 <tr class="separator:a382259a591a1f4c9345523b23de4f478"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -148,12 +151,36 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ae4472fc8a2403a5ce4503483940542cb"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1rule__block.html#ae4472fc8a2403a5ce4503483940542cb">operator!=</a> (const <a class="el" href="classsnakemake__unit__tests_1_1rule__block.html">rule_block</a> &amp;obj) const</td></tr>
 <tr class="memdesc:ae4472fc8a2403a5ce4503483940542cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">test inequality  <a href="classsnakemake__unit__tests_1_1rule__block.html#ae4472fc8a2403a5ce4503483940542cb">More...</a><br /></td></tr>
 <tr class="separator:ae4472fc8a2403a5ce4503483940542cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c8665be055b61187ab36df3b58ec108"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1rule__block.html#a5c8665be055b61187ab36df3b58ec108">resolved</a> () const</td></tr>
+<tr class="memdesc:a5c8665be055b61187ab36df3b58ec108"><td class="mdescLeft">&#160;</td><td class="mdescRight">whether the object's content needs a python pass to resolve  <a href="classsnakemake__unit__tests_1_1rule__block.html#a5c8665be055b61187ab36df3b58ec108">More...</a><br /></td></tr>
+<tr class="separator:a5c8665be055b61187ab36df3b58ec108"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad691440817a7ab6ddc3cc4d9cfc6d0d8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1rule__block.html#ad691440817a7ab6ddc3cc4d9cfc6d0d8">included</a> () const</td></tr>
+<tr class="memdesc:ad691440817a7ab6ddc3cc4d9cfc6d0d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">whether the object's contents should be included in the output  <a href="classsnakemake__unit__tests_1_1rule__block.html#ad691440817a7ab6ddc3cc4d9cfc6d0d8">More...</a><br /></td></tr>
+<tr class="separator:ad691440817a7ab6ddc3cc4d9cfc6d0d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9cf041ce92abfdeb3a4c6e03f0b9abe"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1rule__block.html#ae9cf041ce92abfdeb3a4c6e03f0b9abe">set_resolution</a> (<a class="el" href="rule__block_8h.html#ae5c38f8cbf024e7fde6f4595a34a64e3">block_status</a> s)</td></tr>
+<tr class="memdesc:ae9cf041ce92abfdeb3a4c6e03f0b9abe"><td class="mdescLeft">&#160;</td><td class="mdescRight">override the current resolution status based on external logic  <a href="classsnakemake__unit__tests_1_1rule__block.html#ae9cf041ce92abfdeb3a4c6e03f0b9abe">More...</a><br /></td></tr>
+<tr class="separator:ae9cf041ce92abfdeb3a4c6e03f0b9abe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae85bc99108fc5178100d17d2fcfe6dae"><td class="memItemLeft" align="right" valign="top"><a class="el" href="rule__block_8h.html#ae5c38f8cbf024e7fde6f4595a34a64e3">block_status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1rule__block.html#ae85bc99108fc5178100d17d2fcfe6dae">get_resolution_status</a> () const</td></tr>
+<tr class="memdesc:ae85bc99108fc5178100d17d2fcfe6dae"><td class="mdescLeft">&#160;</td><td class="mdescRight">get the current resolution status  <a href="classsnakemake__unit__tests_1_1rule__block.html#ae85bc99108fc5178100d17d2fcfe6dae">More...</a><br /></td></tr>
+<tr class="separator:ae85bc99108fc5178100d17d2fcfe6dae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac1221b806b4a09c990e0b0e0c41c30d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1rule__block.html#aac1221b806b4a09c990e0b0e0c41c30d">set_interpreter_tag</a> (unsigned u)</td></tr>
+<tr class="memdesc:aac1221b806b4a09c990e0b0e0c41c30d"><td class="mdescLeft">&#160;</td><td class="mdescRight">set the unique python tag for inclusion tracking  <a href="classsnakemake__unit__tests_1_1rule__block.html#aac1221b806b4a09c990e0b0e0c41c30d">More...</a><br /></td></tr>
+<tr class="separator:aac1221b806b4a09c990e0b0e0c41c30d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9a883957b638b6ed42aef5426f62f0e"><td class="memItemLeft" align="right" valign="top">unsigned&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1rule__block.html#ae9a883957b638b6ed42aef5426f62f0e">get_interpreter_tag</a> () const</td></tr>
+<tr class="memdesc:ae9a883957b638b6ed42aef5426f62f0e"><td class="mdescLeft">&#160;</td><td class="mdescRight">get the unique python tag for inclusion tracking  <a href="classsnakemake__unit__tests_1_1rule__block.html#ae9a883957b638b6ed42aef5426f62f0e">More...</a><br /></td></tr>
+<tr class="separator:ae9a883957b638b6ed42aef5426f62f0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aead538d30807b81125b41c734bc1088d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1rule__block.html#aead538d30807b81125b41c734bc1088d">report_python_logging_code</a> (std::ostream &amp;out) const</td></tr>
+<tr class="memdesc:aead538d30807b81125b41c734bc1088d"><td class="mdescLeft">&#160;</td><td class="mdescRight">emit a python syntax reporting block to dummy file  <a href="classsnakemake__unit__tests_1_1rule__block.html#aead538d30807b81125b41c734bc1088d">More...</a><br /></td></tr>
+<tr class="separator:aead538d30807b81125b41c734bc1088d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2601453e4ef166e0ea70926801869504"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1rule__block.html#a2601453e4ef166e0ea70926801869504">update_resolution</a> (const std::map&lt; std::string, std::string &gt; &amp;tag_values)</td></tr>
+<tr class="memdesc:a2601453e4ef166e0ea70926801869504"><td class="mdescLeft">&#160;</td><td class="mdescRight">using python tag output, update resolution status  <a href="classsnakemake__unit__tests_1_1rule__block.html#a2601453e4ef166e0ea70926801869504">More...</a><br /></td></tr>
+<tr class="separator:a2601453e4ef166e0ea70926801869504"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e6433b428c06778b4fb4c9753692b84"><td class="memItemLeft" align="right" valign="top">const boost::filesystem::path &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1rule__block.html#a3e6433b428c06778b4fb4c9753692b84">get_resolved_included_filename</a> () const</td></tr>
+<tr class="memdesc:a3e6433b428c06778b4fb4c9753692b84"><td class="mdescLeft">&#160;</td><td class="mdescRight">for include statements, get actual filename for inclusion  <a href="classsnakemake__unit__tests_1_1rule__block.html#a3e6433b428c06778b4fb4c9753692b84">More...</a><br /></td></tr>
+<tr class="separator:a3e6433b428c06778b4fb4c9753692b84"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
-<tr class="memitem:a7b3bd3d8a1d72a864e5eaabe2ac41daf"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1rule__block.html#a7b3bd3d8a1d72a864e5eaabe2ac41daf">reduce_relative_paths</a> (const std::string &amp;s) const</td></tr>
-<tr class="memdesc:a7b3bd3d8a1d72a864e5eaabe2ac41daf"><td class="mdescLeft">&#160;</td><td class="mdescRight">apply hackjob nonsense to flatten certain relative paths by one level  <a href="classsnakemake__unit__tests_1_1rule__block.html#a7b3bd3d8a1d72a864e5eaabe2ac41daf">More...</a><br /></td></tr>
-<tr class="separator:a7b3bd3d8a1d72a864e5eaabe2ac41daf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1b706d3d1999c8937faab48c28038545"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1rule__block.html#a1b706d3d1999c8937faab48c28038545">indentation</a> (unsigned count) const</td></tr>
 <tr class="memdesc:a1b706d3d1999c8937faab48c28038545"><td class="mdescLeft">&#160;</td><td class="mdescRight">return a string containing some number of whitespaces  <a href="classsnakemake__unit__tests_1_1rule__block.html#a1b706d3d1999c8937faab48c28038545">More...</a><br /></td></tr>
 <tr class="separator:a1b706d3d1999c8937faab48c28038545"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -179,12 +206,19 @@ Private Attributes</h2></td></tr>
 <tr class="memitem:a51a4a75de30ebdd1d00f76990337943e"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1rule__block.html#a51a4a75de30ebdd1d00f76990337943e">_code_chunk</a></td></tr>
 <tr class="memdesc:a51a4a75de30ebdd1d00f76990337943e"><td class="mdescLeft">&#160;</td><td class="mdescRight">arbitrary python code chunk that can exist between rules  <a href="classsnakemake__unit__tests_1_1rule__block.html#a51a4a75de30ebdd1d00f76990337943e">More...</a><br /></td></tr>
 <tr class="separator:a51a4a75de30ebdd1d00f76990337943e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a28c0874e6f1392e63c6a7c46631adcac"><td class="memItemLeft" align="right" valign="top">unsigned&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1rule__block.html#a28c0874e6f1392e63c6a7c46631adcac">_global_indentation</a></td></tr>
-<tr class="memdesc:a28c0874e6f1392e63c6a7c46631adcac"><td class="mdescLeft">&#160;</td><td class="mdescRight">allow for global indentation of conditionally included files  <a href="classsnakemake__unit__tests_1_1rule__block.html#a28c0874e6f1392e63c6a7c46631adcac">More...</a><br /></td></tr>
-<tr class="separator:a28c0874e6f1392e63c6a7c46631adcac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a695111cc2a3a27df46bb5580625f82cd"><td class="memItemLeft" align="right" valign="top">unsigned&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1rule__block.html#a695111cc2a3a27df46bb5580625f82cd">_local_indentation</a></td></tr>
 <tr class="memdesc:a695111cc2a3a27df46bb5580625f82cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">allow for local indentation of conditionally included rules  <a href="classsnakemake__unit__tests_1_1rule__block.html#a695111cc2a3a27df46bb5580625f82cd">More...</a><br /></td></tr>
 <tr class="separator:a695111cc2a3a27df46bb5580625f82cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a621b53c786b813b7610f1c929150b9e0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="rule__block_8h.html#ae5c38f8cbf024e7fde6f4595a34a64e3">block_status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1rule__block.html#a621b53c786b813b7610f1c929150b9e0">_resolution</a></td></tr>
+<tr class="memdesc:a621b53c786b813b7610f1c929150b9e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">resolution status of block  <a href="classsnakemake__unit__tests_1_1rule__block.html#a621b53c786b813b7610f1c929150b9e0">More...</a><br /></td></tr>
+<tr class="separator:a621b53c786b813b7610f1c929150b9e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a785f4c8b6848704f1f93b4df6204ec2a"><td class="memItemLeft" align="right" valign="top">unsigned&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1rule__block.html#a785f4c8b6848704f1f93b4df6204ec2a">_python_tag</a></td></tr>
+<tr class="memdesc:a785f4c8b6848704f1f93b4df6204ec2a"><td class="mdescLeft">&#160;</td><td class="mdescRight">tag for python interpreter tracking  <a href="classsnakemake__unit__tests_1_1rule__block.html#a785f4c8b6848704f1f93b4df6204ec2a">More...</a><br /></td></tr>
+<tr class="separator:a785f4c8b6848704f1f93b4df6204ec2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ac93cfc421edfa61591208fac8a7166"><td class="memItemLeft" align="right" valign="top"><a id="a7ac93cfc421edfa61591208fac8a7166"></a>
+boost::filesystem::path&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1rule__block.html#a7ac93cfc421edfa61591208fac8a7166">_resolved_included_filename</a></td></tr>
+<tr class="memdesc:a7ac93cfc421edfa61591208fac8a7166"><td class="mdescLeft">&#160;</td><td class="mdescRight">for include directives: resolved name of included file <br /></td></tr>
+<tr class="separator:a7ac93cfc421edfa61591208fac8a7166"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>command line argument parser using boost::program_options </p>
@@ -306,8 +340,8 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a4decffe2868da5c2b0ea7c233388240c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4decffe2868da5c2b0ea7c233388240c">&#9670;&nbsp;</a></span>consume_rule_contents()</h2>
+<a id="a12e3501a0700e32515aef16647f71753"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a12e3501a0700e32515aef16647f71753">&#9670;&nbsp;</a></span>consume_rule_contents()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -334,7 +368,13 @@ Private Attributes</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">unsigned *&#160;</td>
-          <td class="paramname"><em>current_line</em>&#160;</td>
+          <td class="paramname"><em>current_line</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned&#160;</td>
+          <td class="paramname"><em>block_base_increment</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -351,10 +391,32 @@ Private Attributes</h2></td></tr>
     <tr><td class="paramname">filename</td><td>name of the loaded snakemake file. only used for informative error messages </td></tr>
     <tr><td class="paramname">verbose</td><td>whether to report verbose logging output </td></tr>
     <tr><td class="paramname">current_line</td><td>currently probed line tracker </td></tr>
+    <tr><td class="paramname">block_base_increment</td><td>indentation of block tag lines relative to parent rule declaration line (default is 4 with snakefmt) </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>whether a rule was successfully loaded </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>whether a rule was successfully loaded</dd></dl>
+<p>block_base_increment added to allow grabbing block-like structures at global scope (e.g. 'wildcard_constraints:') </p>
+
+</div>
+</div>
+<a id="ab65f435719bfb7e63869c881b589ded1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab65f435719bfb7e63869c881b589ded1">&#9670;&nbsp;</a></span>contains_include_directive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool snakemake_unit_tests::rule_block::contains_include_directive </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>determine whether this block contains something that looks like an include directive but that doesn't conform to basic include syntax </p>
+<dl class="section return"><dt>Returns</dt><dd>whether a non-standard include directive is in effect </dd></dl>
 
 </div>
 </div>
@@ -414,31 +476,24 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a73480255309a0a244c820346db9beb65"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a73480255309a0a244c820346db9beb65">&#9670;&nbsp;</a></span>get_global_indentation()</h2>
+<a id="ae696927452c2be2a023910739ec846a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae696927452c2be2a023910739ec846a7">&#9670;&nbsp;</a></span>get_filename_expression()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">unsigned snakemake_unit_tests::rule_block::get_global_indentation </td>
+          <td class="memname">std::string snakemake_unit_tests::rule_block::get_filename_expression </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
-<p>get global indentation of file </p>
-<dl class="section return"><dt>Returns</dt><dd>global indentation of file </dd></dl>
+<p>extract the filename expression from an include statement </p>
+<dl class="section return"><dt>Returns</dt><dd>the filename expression from an include statement</dd></dl>
+<p>the hope is to extract a python expression that the interpreter can report back on </p>
 
 </div>
 </div>
@@ -458,7 +513,35 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>determine how much indentation an include directive enjoyed </p>
-<dl class="section return"><dt>Returns</dt><dd>indentation of include directive, along with inherited global depth </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>indentation of include directive </dd></dl>
+
+</div>
+</div>
+<a id="ae9a883957b638b6ed42aef5426f62f0e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9a883957b638b6ed42aef5426f62f0e">&#9670;&nbsp;</a></span>get_interpreter_tag()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned snakemake_unit_tests::rule_block::get_interpreter_tag </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>get the unique python tag for inclusion tracking </p>
+<dl class="section return"><dt>Returns</dt><dd>the unique python tag for inclusion tracking </dd></dl>
 
 </div>
 </div>
@@ -518,23 +601,59 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a9eb00c8823aab86a6c7a983364007743"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9eb00c8823aab86a6c7a983364007743">&#9670;&nbsp;</a></span>get_recursive_filename()</h2>
+<a id="ae85bc99108fc5178100d17d2fcfe6dae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae85bc99108fc5178100d17d2fcfe6dae">&#9670;&nbsp;</a></span>get_resolution_status()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::string snakemake_unit_tests::rule_block::get_recursive_filename </td>
+          <td class="memname"><a class="el" href="rule__block_8h.html#ae5c38f8cbf024e7fde6f4595a34a64e3">block_status</a> snakemake_unit_tests::rule_block::get_resolution_status </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
-<p>if the block is an include directive, get the file that is included </p>
-<dl class="section return"><dt>Returns</dt><dd>the included filename </dd></dl>
+<p>get the current resolution status </p>
+<dl class="section return"><dt>Returns</dt><dd>the current resolution status </dd></dl>
+
+</div>
+</div>
+<a id="a3e6433b428c06778b4fb4c9753692b84"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e6433b428c06778b4fb4c9753692b84">&#9670;&nbsp;</a></span>get_resolved_included_filename()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const boost::filesystem::path&amp; snakemake_unit_tests::rule_block::get_resolved_included_filename </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>for include statements, get actual filename for inclusion </p>
+<dl class="section return"><dt>Returns</dt><dd>resolved filename </dd></dl>
 
 </div>
 </div>
@@ -564,6 +683,54 @@ Private Attributes</h2></td></tr>
 <p>get the name of the rule </p>
 <dl class="section return"><dt>Returns</dt><dd>the name of the rule</dd></dl>
 <dl class="section warning"><dt>Warning</dt><dd>regex matching is currently borked, this entry may be garbage </dd></dl>
+
+</div>
+</div>
+<a id="a501517c9b7fd13e0e4d716850a5cd04e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a501517c9b7fd13e0e4d716850a5cd04e">&#9670;&nbsp;</a></span>get_standard_filename()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string snakemake_unit_tests::rule_block::get_standard_filename </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>if the block is an include directive, get the file that is included </p>
+<dl class="section return"><dt>Returns</dt><dd>the included filename </dd></dl>
+
+</div>
+</div>
+<a id="ad691440817a7ab6ddc3cc4d9cfc6d0d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad691440817a7ab6ddc3cc4d9cfc6d0d8">&#9670;&nbsp;</a></span>included()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool snakemake_unit_tests::rule_block::included </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>whether the object's contents should be included in the output </p>
+<dl class="section return"><dt>Returns</dt><dd>whether the object's contents should be included in the output </dd></dl>
 
 </div>
 </div>
@@ -602,14 +769,14 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="ad665a55afda39722a659d93010c76837"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad665a55afda39722a659d93010c76837">&#9670;&nbsp;</a></span>is_include_directive()</h2>
+<a id="a151f7493f2ecc40227a52812c76f7c5f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a151f7493f2ecc40227a52812c76f7c5f">&#9670;&nbsp;</a></span>is_simple_include_directive()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">bool snakemake_unit_tests::rule_block::is_include_directive </td>
+          <td class="memname">bool snakemake_unit_tests::rule_block::is_simple_include_directive </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -617,13 +784,13 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>determine whether this block is a snakemake file include directive </p>
-<dl class="section return"><dt>Returns</dt><dd>whether the block is an include directive, hopefully </dd></dl>
+<p>determine whether this block is a simple snakemake include directive </p>
+<dl class="section return"><dt>Returns</dt><dd>whether the block is a simple include directive, hopefully </dd></dl>
 
 </div>
 </div>
-<a id="aeadfda9cf06ee3429c4ab18f97c91a21"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aeadfda9cf06ee3429c4ab18f97c91a21">&#9670;&nbsp;</a></span>load_content_block()</h2>
+<a id="ad96a6ee8aa9d2afad7a050cc2d7a1a01"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad96a6ee8aa9d2afad7a050cc2d7a1a01">&#9670;&nbsp;</a></span>load_content_block()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -639,12 +806,6 @@ Private Attributes</h2></td></tr>
           <td></td>
           <td class="paramtype">const boost::filesystem::path &amp;&#160;</td>
           <td class="paramname"><em>filename</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">unsigned&#160;</td>
-          <td class="paramname"><em>global_indentation</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -670,8 +831,7 @@ Private Attributes</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">loaded_lines</td><td>vector of snakemake file lines to process </td></tr>
-    <tr><td class="paramname">filename</td><td>name of the loaded snakemake file. only used for informative error messages </td></tr>
-    <tr><td class="paramname">global_indentation</td><td>base indentation for entire file, defaulting to 0 for standard file loads and incrementing by 4 for each level of indentation the include directive had within its python block </td></tr>
+    <tr><td class="paramname">filename</td><td>name of the loaded snakemake file. only used for informative error messages defaulting to 0 for standard file loads and incrementing by 4 for each level of indentation the include directive had within its python block </td></tr>
     <tr><td class="paramname">verbose</td><td>whether to report verbose logging output </td></tr>
     <tr><td class="paramname">current_line</td><td>currently probed line tracker </td></tr>
   </table>
@@ -825,8 +985,34 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a7b3bd3d8a1d72a864e5eaabe2ac41daf"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7b3bd3d8a1d72a864e5eaabe2ac41daf">&#9670;&nbsp;</a></span>reduce_relative_paths()</h2>
+<a id="aead538d30807b81125b41c734bc1088d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aead538d30807b81125b41c734bc1088d">&#9670;&nbsp;</a></span>report_python_logging_code()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void snakemake_unit_tests::rule_block::report_python_logging_code </td>
+          <td>(</td>
+          <td class="paramtype">std::ostream &amp;&#160;</td>
+          <td class="paramname"><em>out</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>emit a python syntax reporting block to dummy file </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">out</td><td>open output stream for reporting </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a5c8665be055b61187ab36df3b58ec108"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c8665be055b61187ab36df3b58ec108">&#9670;&nbsp;</a></span>resolved()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -835,29 +1021,21 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::string snakemake_unit_tests::rule_block::reduce_relative_paths </td>
+          <td class="memname">bool snakemake_unit_tests::rule_block::resolved </td>
           <td>(</td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>s</em></td><td>)</td>
+          <td class="paramname"></td><td>)</td>
           <td> const</td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p>apply hackjob nonsense to flatten certain relative paths by one level </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">s</td><td>possible relative path to flatten </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>the input line with any changes applied</dd></dl>
-<p>this is flagged to be handled some other way TODO(cpalmer718): find any better way of flattening relative include paths </p>
+<p>whether the object's content needs a python pass to resolve </p>
+<dl class="section return"><dt>Returns</dt><dd>whether the object's content needs a python pass to resolve </dd></dl>
 
 </div>
 </div>
@@ -895,6 +1073,74 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="aac1221b806b4a09c990e0b0e0c41c30d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac1221b806b4a09c990e0b0e0c41c30d">&#9670;&nbsp;</a></span>set_interpreter_tag()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void snakemake_unit_tests::rule_block::set_interpreter_tag </td>
+          <td>(</td>
+          <td class="paramtype">unsigned&#160;</td>
+          <td class="paramname"><em>u</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>set the unique python tag for inclusion tracking </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">u</td><td>new value for unique python tag </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ae9cf041ce92abfdeb3a4c6e03f0b9abe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9cf041ce92abfdeb3a4c6e03f0b9abe">&#9670;&nbsp;</a></span>set_resolution()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void snakemake_unit_tests::rule_block::set_resolution </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="rule__block_8h.html#ae5c38f8cbf024e7fde6f4595a34a64e3">block_status</a>&#160;</td>
+          <td class="paramname"><em>s</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>override the current resolution status based on external logic </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">s</td><td>new value for resolution status </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a9e39b5aaea4f9b7a7e96cc3d0a5dba50"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9e39b5aaea4f9b7a7e96cc3d0a5dba50">&#9670;&nbsp;</a></span>set_rule_name()</h2>
 
@@ -926,6 +1172,33 @@ Private Attributes</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="a2601453e4ef166e0ea70926801869504"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2601453e4ef166e0ea70926801869504">&#9670;&nbsp;</a></span>update_resolution()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool snakemake_unit_tests::rule_block::update_resolution </td>
+          <td>(</td>
+          <td class="paramtype">const std::map&lt; std::string, std::string &gt; &amp;&#160;</td>
+          <td class="paramname"><em>tag_values</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>using python tag output, update resolution status </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">tag_values</td><td>loaded key(:value) pairs from python output </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>whether the current rule allows downstream logic to continue </dd></dl>
 
 </div>
 </div>
@@ -980,31 +1253,6 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a28c0874e6f1392e63c6a7c46631adcac"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a28c0874e6f1392e63c6a7c46631adcac">&#9670;&nbsp;</a></span>_global_indentation</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">unsigned snakemake_unit_tests::rule_block::_global_indentation</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>allow for global indentation of conditionally included files </p>
-<p>files included within python blocks should inherit the base depth of their include directive. </p>
-
-</div>
-</div>
 <a id="a695111cc2a3a27df46bb5580625f82cd"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a695111cc2a3a27df46bb5580625f82cd">&#9670;&nbsp;</a></span>_local_indentation</h2>
 
@@ -1052,6 +1300,56 @@ Private Attributes</h2></td></tr>
 
 <p>arbitrary named blocks and their contents </p>
 <p>input and output blocks need to be handled specially, but the others can be arbitrarily specified. </p>
+
+</div>
+</div>
+<a id="a785f4c8b6848704f1f93b4df6204ec2a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a785f4c8b6848704f1f93b4df6204ec2a">&#9670;&nbsp;</a></span>_python_tag</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned snakemake_unit_tests::rule_block::_python_tag</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>tag for python interpreter tracking </p>
+<p>this is just a unique number that will be emitted to the python tracking pass </p>
+
+</div>
+</div>
+<a id="a621b53c786b813b7610f1c929150b9e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a621b53c786b813b7610f1c929150b9e0">&#9670;&nbsp;</a></span>_resolution</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="rule__block_8h.html#ae5c38f8cbf024e7fde6f4595a34a64e3">block_status</a> snakemake_unit_tests::rule_block::_resolution</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>resolution status of block </p>
+<p>this can be: UNRESOLVED, RESOLVED_INCLUDED, RESOLVED_EXCLUDED </p>
 
 </div>
 </div>

@@ -47,7 +47,16 @@ int main(int argc, char **argv) {
 
   // parse the top-level snakefile and all include files (hopefully)
   snakemake_unit_tests::snakemake_file sf;
-  sf.load_everything(p.snakefile.filename(), p.snakefile.parent_path(),
+  // express snakefile as path relative to top-level pipeline dir
+  std::string snakefile_str = p.snakefile.string();
+  std::string pipeline_str = p.pipeline_run_dir.string();
+  snakefile_str = snakefile_str.substr(snakefile_str.find(pipeline_str) +
+                                       pipeline_str.size() + 1);
+  if (p.verbose) {
+    std::cout << "computed snakefile is \"" << snakefile_str << "\""
+              << std::endl;
+  }
+  sf.load_everything(boost::filesystem::path(snakefile_str), p.pipeline_run_dir,
                      &p.exclude_rules, p.verbose);
 
   // as a debug step, report the parsed contents of the snakefile
@@ -68,13 +77,15 @@ int main(int argc, char **argv) {
   sr.create_empty_workspace(p.output_test_dir, p.pipeline_run_dir,
                             p.added_files, p.added_directories);
   // do things in this location
-  bool continue_python_updates = true;
-  while (continue_python_updates) {
+  do {
     // scan the rule set for blockers
-    continue_python_updates = sf.contains_blockers();
+    if (p.verbose) {
+      std::cout << "running a python/snakemake logic resolution pass"
+                << std::endl;
+    }
     sf.resolve_with_python(p.output_test_dir / ".snakemake_unit_tests",
-                           p.snakefile.parent_path(), p.verbose);
-  }
+                           p.pipeline_run_dir, p.verbose, false);
+  } while (sf.contains_blockers());
 
   // remove the location
   sr.remove_empty_workspace(p.output_test_dir);
