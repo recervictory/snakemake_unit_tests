@@ -16,9 +16,7 @@ if True:
             "cp {input} {output}"
 
 
-    pass
-
-
+    include: "rules/subfile.smk"
 pass
 
 

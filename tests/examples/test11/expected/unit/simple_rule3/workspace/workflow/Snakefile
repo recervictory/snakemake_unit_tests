@@ -12,8 +12,6 @@ if True:
 
 include_filename = "rules/subfile.smk"
 include: include_filename
-
-
 pass
 
 
