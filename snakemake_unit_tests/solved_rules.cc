@@ -34,7 +34,7 @@ void snakemake_unit_tests::solved_rules::load_file(
         // scan for remaining rule content lines
         while (input.peek() != EOF) {
           getline(input, line);
-          if (line.empty()) break;
+          if (line.empty() || line.at(0) != ' ') break;
           if (line.find("    input:") == 0) {
             // special handler for solved input files
             split_comma_list(line.substr(11), &input_filenames);
