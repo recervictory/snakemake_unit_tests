@@ -275,8 +275,10 @@ void snakemake_unit_tests::rule_block::report_python_logging_code(
           throw std::runtime_error("include statement printing error");
       }
       // report tag along with required expression for evaluation
-      if (!(out << indentation(get_local_indentation()) << "print(\"tag"
-                << get_interpreter_tag() << ": {}\".format("
+      if (!(out << indentation(get_local_indentation())
+                << indentation(
+                       get_code_chunk().rbegin()->find_first_not_of(" "))
+                << "print(\"tag" << get_interpreter_tag() << ": {}\".format("
                 << get_filename_expression() << "))" << std::endl))
         throw std::runtime_error("complex include printing error");
     } else {
