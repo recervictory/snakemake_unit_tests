@@ -385,8 +385,8 @@ void snakemake_unit_tests::rule_block::print_contents(
             for (std::vector<boost::filesystem::path>::const_iterator
                      recipe_iter = recipe_inputs->begin();
                  recipe_iter != recipe_inputs->end(); ++recipe_iter) {
-              if (!(out << indentation(get_local_indentation() + 8) << "\""
-                        << *recipe_iter << "\"," << std::endl))
+              if (!(out << indentation(get_local_indentation() + 8)
+                        << *recipe_iter << std::endl))
                 throw std::runtime_error("overridden input printing failure");
             }
             continue;
