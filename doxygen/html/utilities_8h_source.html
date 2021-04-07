@@ -79,15 +79,17 @@ $(function() {
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &lt;string&gt;</span></div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160; </div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">namespace </span>snakemake_unit_tests {</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;std::string <a class="code" href="utilities_8h.html#ae152ef2e05724e0acb176b7d9c7f2f7f">remove_comments_and_docstrings</a>(</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <span class="keyword">const</span> std::string &amp;s, <span class="keyword">const</span> std::vector&lt;std::string&gt; &amp;loaded_lines,</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="keywordtype">unsigned</span> *line_number);</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="keywordtype">void</span> <a class="code" href="utilities_8h.html#a76f0f7dbe28096fdf1a71b74b3e46ff1">split_comma_list</a>(<span class="keyword">const</span> std::string &amp;s, std::vector&lt;std::string&gt; *target);</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;}  <span class="comment">// namespace snakemake_unit_tests</span></div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160; </div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// SNAKEMAKE_UNIT_TESTS_UTILITIES_H_</span></div>
-<div class="ttc" id="autilities_8h_html_a76f0f7dbe28096fdf1a71b74b3e46ff1"><div class="ttname"><a href="utilities_8h.html#a76f0f7dbe28096fdf1a71b74b3e46ff1">snakemake_unit_tests::split_comma_list</a></div><div class="ttdeci">void split_comma_list(const std::string &amp;s, std::vector&lt; std::string &gt; *target)</div><div class="ttdoc">take a comma/space delimited list of filenames and break them up into a vector</div><div class="ttdef"><b>Definition:</b> utilities.cc:102</div></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;boost/regex.hpp&quot;</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160; </div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">namespace </span>snakemake_unit_tests {</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;std::string <a class="code" href="utilities_8h.html#ae152ef2e05724e0acb176b7d9c7f2f7f">remove_comments_and_docstrings</a>(</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <span class="keyword">const</span> std::string &amp;s, <span class="keyword">const</span> std::vector&lt;std::string&gt; &amp;loaded_lines,</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    <span class="keywordtype">unsigned</span> *line_number);</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="keywordtype">void</span> <a class="code" href="utilities_8h.html#a76f0f7dbe28096fdf1a71b74b3e46ff1">split_comma_list</a>(<span class="keyword">const</span> std::string &amp;s, std::vector&lt;std::string&gt; *target);</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;}  <span class="comment">// namespace snakemake_unit_tests</span></div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160; </div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// SNAKEMAKE_UNIT_TESTS_UTILITIES_H_</span></div>
+<div class="ttc" id="autilities_8h_html_a76f0f7dbe28096fdf1a71b74b3e46ff1"><div class="ttname"><a href="utilities_8h.html#a76f0f7dbe28096fdf1a71b74b3e46ff1">snakemake_unit_tests::split_comma_list</a></div><div class="ttdeci">void split_comma_list(const std::string &amp;s, std::vector&lt; std::string &gt; *target)</div><div class="ttdoc">take a comma/space delimited list of filenames and break them up into a vector</div><div class="ttdef"><b>Definition:</b> utilities.cc:116</div></div>
 <div class="ttc" id="autilities_8h_html_ae152ef2e05724e0acb176b7d9c7f2f7f"><div class="ttname"><a href="utilities_8h.html#ae152ef2e05724e0acb176b7d9c7f2f7f">snakemake_unit_tests::remove_comments_and_docstrings</a></div><div class="ttdeci">std::string remove_comments_and_docstrings(const std::string &amp;s, const std::vector&lt; std::string &gt; &amp;loaded_lines, unsigned *line_number)</div><div class="ttdoc">prune superfluous content from snakemake content line</div><div class="ttdef"><b>Definition:</b> utilities.cc:11</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->

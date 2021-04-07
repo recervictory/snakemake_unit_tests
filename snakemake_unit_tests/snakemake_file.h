@@ -38,6 +38,7 @@ class snakemake_file {
   /*!
     @brief construct a snakemake file with
     an initialized counter
+    @param ptr pre-initialized counter, from root file
    */
   explicit snakemake_file(boost::shared_ptr<unsigned> ptr)
       : _tag_counter(ptr), _updated_last_round(true) {}
@@ -179,6 +180,7 @@ class snakemake_file {
     @param verbose whether to provide verbose logging output
     @param tag_values reporter data from python pass
     @param output_name full output path of snakefile
+    @return processing status; deprecated, flagged for removal
 
     this is the recursive entry point for a recursion pass through python
     reporting. this should be called for each file in turn.
