@@ -1,11 +1,39 @@
 #!/usr/bin/env python
 
+from unittest import mock
+
 import common
 import pytest
 
 
-def test_remove_headers():
-    test_in = ["##header row1", "## header row2", "#CHROM\tPOS\tID\tREF\tALT", "chr1\t123\t.\tA\tT"]
-    test_out = common.remove_headers(test_in)
-    expected_out = ["#CHROM\tPOS\tID\tREF\tALT", "chr1\t123\t.\tA\tT"]
-    assert test_out == expected_out
+@pytest.mark.parametrize(
+    "test_in, test_param, exp_out",
+    [
+        (
+            ["##header row", "#CHROM\tPOS\tID\tREF\tALT", "chr1\t123\t.\tA\tT"],
+            "##",
+            ["#CHROM\tPOS\tID\tREF\tALT", "chr1\t123\t.\tA\tT"],
+        ),
+        (
+            ["##header row", "#CHROM\tPOS\tID\tREF\tALT", "chr1\t123\t.\tA\tT"],
+            "#",
+            ["chr1\t123\t.\tA\tT"],
+        ),
+        (
+            ["CHROM\tPOS\tID\tREF\tALT", "chr1\t123\t.\tA\tT"],
+            "#",
+            ["CHROM\tPOS\tID\tREF\tALT", "chr1\t123\t.\tA\tT"],
+        ),
+    ],
+)
+def test_remove_headers(test_in, test_param, exp_out):
+    assert common.remove_headers(test_in, test_param) == exp_out
+
+
+# @pytest.mark.parametrize("test_in, exp_out", [(), ()])
+# def test_process_file():
+#     m = mock.mock_open(read_data="##head1\n##head2\n#CHROM\nother stuff")
+#     with mock.patch("common.process_file", m):
+#         test_out = common.process_file("file.vcf", True)
+#     exp_out = ["#CHROM", "other stuff"]
+#     assert test_out == exp_out
