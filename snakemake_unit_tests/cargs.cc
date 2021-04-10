@@ -261,28 +261,43 @@ void snakemake_unit_tests::params::report_settings(
   // snakemake-log
   out << YAML::Key << "snakemake-log" << YAML::Value << snakemake_log.string();
   // added-files
-  out << YAML::Key << "added-files" << YAML::Value << YAML::BeginSeq;
-  for (std::vector<boost::filesystem::path>::const_iterator iter =
-           added_files.begin();
-       iter != added_files.end(); ++iter) {
-    out << iter->string();
+  out << YAML::Key << "added-files" << YAML::Value;
+  if (!added_files.empty()) {
+    out << YAML::BeginSeq;
+    for (std::vector<boost::filesystem::path>::const_iterator iter =
+             added_files.begin();
+         iter != added_files.end(); ++iter) {
+      out << iter->string();
+    }
+    out << YAML::EndSeq;
+  } else {
+    out << YAML::Null;
   }
-  out << YAML::EndSeq;
   // added-directories
-  out << YAML::Key << "added-directories" << YAML::Value << YAML::BeginSeq;
-  for (std::vector<boost::filesystem::path>::const_iterator iter =
-           added_directories.begin();
-       iter != added_directories.end(); ++iter) {
-    out << iter->string();
+  out << YAML::Key << "added-directories" << YAML::Value;
+  if (!added_directories.empty()) {
+    out << YAML::BeginSeq;
+    for (std::vector<boost::filesystem::path>::const_iterator iter =
+             added_directories.begin();
+         iter != added_directories.end(); ++iter) {
+      out << iter->string();
+    }
+    out << YAML::EndSeq;
+  } else {
+    out << YAML::Null;
   }
-  out << YAML::EndSeq;
   // exclude-rules
-  out << YAML::Key << "exclude-rules" << YAML::Value << YAML::BeginSeq;
-  for (std::vector<std::string>::const_iterator iter = exclude_rules.begin();
-       iter != exclude_rules.end(); ++iter) {
-    out << *iter;
+  out << YAML::Key << "exclude-rules" << YAML::Value;
+  if (!exclude_rules.empty()) {
+    out << YAML::BeginSeq;
+    for (std::vector<std::string>::const_iterator iter = exclude_rules.begin();
+         iter != exclude_rules.end(); ++iter) {
+      out << *iter;
+    }
+    out << YAML::EndSeq;
+  } else {
+    out << YAML::Null;
   }
-  out << YAML::EndSeq;
   out << YAML::EndMap;
 
   // write to output file
@@ -292,7 +307,7 @@ void snakemake_unit_tests::params::report_settings(
     throw std::runtime_error("cannot write to output config file \"" +
                              filename.string() + "\"");
   try {
-    output << out.c_str();
+    output << out.c_str() << std::endl;
     output.close();
   } catch (...) {
     if (output.is_open()) output.close();
