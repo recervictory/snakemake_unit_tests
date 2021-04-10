@@ -85,7 +85,8 @@ snakemake_unit_tests::params snakemake_unit_tests::cargs::set_parameters()
             p.config.get_sequence("added-directories"));
       }
       if (p.config.query_valid("exclude-rules")) {
-        p.exclude_rules = p.config.get_sequence("exclude-rules");
+        p.exclude_rules =
+            vector_to_map<std::string>(p.config.get_sequence("exclude-rules"));
       }
     }
   }
@@ -131,7 +132,7 @@ snakemake_unit_tests::params snakemake_unit_tests::cargs::set_parameters()
   add_contents<std::string>(get_exclude_rules(), &p.exclude_rules);
   // add "all" to exclusion list, always
   // it's ok if it dups with user specification, it's uniqued later
-  p.exclude_rules.push_back("all");
+  p.exclude_rules["all"] = true;
 
   // consistency checks
   // verbose is fine regardless
@@ -293,9 +294,10 @@ void snakemake_unit_tests::params::report_settings(
   out << YAML::Key << "exclude-rules" << YAML::Value;
   if (!exclude_rules.empty()) {
     out << YAML::BeginSeq;
-    for (std::vector<std::string>::const_iterator iter = exclude_rules.begin();
+    for (std::map<std::string, bool>::const_iterator iter =
+             exclude_rules.begin();
          iter != exclude_rules.end(); ++iter) {
-      out << *iter;
+      out << iter->first;
     }
     out << YAML::EndSeq;
   } else {

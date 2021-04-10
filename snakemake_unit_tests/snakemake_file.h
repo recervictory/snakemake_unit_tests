@@ -14,6 +14,7 @@
 #include <map>
 #include <stdexcept>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "boost/filesystem.hpp"
@@ -67,7 +68,8 @@ class snakemake_file {
    */
   void load_everything(const boost::filesystem::path &filename,
                        const boost::filesystem::path &base_dir,
-                       std::vector<std::string> *exclude_rules, bool verbose);
+                       std::map<std::string, bool> *exclude_rules,
+                       bool verbose);
 
   /*!
    @brief parse a snakemake file
@@ -102,7 +104,7 @@ class snakemake_file {
 
     these features are flagged to be correctly supported in a later patch
    */
-  void detect_known_issues(std::vector<std::string> *exclude_rules);
+  void detect_known_issues(std::map<std::string, bool> *exclude_rules);
 
   /*!
     @brief populate derived rules with base rule blocks
@@ -216,7 +218,7 @@ class snakemake_file {
     note that more content will be added here presumably once more snakemake
     features are supported
    */
-  void postflight_checks(std::vector<std::string> *exclude_rules);
+  void postflight_checks(std::map<std::string, bool> *exclude_rules);
 
   /*!
     @brief report relative path of snakefile this object represents

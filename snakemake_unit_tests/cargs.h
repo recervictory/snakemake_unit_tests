@@ -14,8 +14,10 @@
 #define SNAKEMAKE_UNIT_TESTS_CARGS_H_
 
 #include <fstream>
+#include <map>
 #include <stdexcept>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "boost/filesystem.hpp"
@@ -24,6 +26,23 @@
 #include "yaml-cpp/yaml.h"
 
 namespace snakemake_unit_tests {
+/*!
+  @brief take entries of a vector and fill a map with them as keys
+  @tparam value_type storage type of key
+  @param vec input vector of values
+  @return map with vector values as keys
+
+  all map values are set to true
+ */
+template <class value_type>
+std::map<value_type, bool> vector_to_map(const std::vector<value_type> &vec) {
+  std::map<value_type, bool> res;
+  for (typename std::vector<value_type>::const_iterator iter = vec.begin();
+       iter != vec.end(); ++iter) {
+    res[*iter] = true;
+  }
+  return res;
+}
 /*!
   @class params
   @brief resolved set of parameters to control program operation
@@ -158,7 +177,7 @@ class params {
   /*!
     @brief user-defined rulenames to skip in test generation
    */
-  std::vector<std::string> exclude_rules;
+  std::map<std::string, bool> exclude_rules;
 };
 
 /*!
@@ -469,6 +488,25 @@ class cargs {
     for (std::vector<std::string>::const_iterator iter = cli_entries.begin();
          iter != cli_entries.end(); ++iter) {
       params_entries->push_back(value_type(*iter));
+    }
+  }
+  /*!
+    @brief append any CLI entries for a multitoken parameter to
+    those already found in the config yaml
+    @tparam value_type class to cast command line strings into (can just be
+    strings)
+    @param cli_entries values for the parameter found on the command line
+    @param params_entries values for the parameter found in the config yaml,
+    as keys in a map
+   */
+  template <class value_type>
+  void add_contents(const std::vector<std::string> &cli_entries,
+                    std::map<value_type, bool> *params_entries) const {
+    if (!params_entries)
+      throw std::runtime_error("null pointer to add_contents");
+    for (std::vector<std::string>::const_iterator iter = cli_entries.begin();
+         iter != cli_entries.end(); ++iter) {
+      params_entries->insert(std::make_pair(value_type(*iter), true));
     }
   }
   /*!
