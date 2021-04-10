@@ -1,0 +1,12 @@
+output-test-dir: /Users/palmercd/Development/snakemake_unit_tests/tests/examples/test_interface/config_override_snakemake_log/output
+snakefile: /Users/palmercd/Development/snakemake_unit_tests/tests/examples/test_interface/input/choice1/workflow/Snakefile
+pipeline-dir: /Users/palmercd/Development/snakemake_unit_tests/tests/examples/test_interface/input/choice1
+inst-dir: /Users/palmercd/Development/snakemake_unit_tests/inst
+snakemake-log: /Users/palmercd/Development/snakemake_unit_tests/tests/examples/test_interface/input/choice1/run3.log
+added-files:
+  - dummy_file.txt
+added-directories:
+  - dummy_directory
+exclude-rules:
+  - all
+  - simple_rule3
