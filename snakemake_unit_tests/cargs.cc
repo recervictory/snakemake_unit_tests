@@ -250,16 +250,19 @@ void snakemake_unit_tests::params::report_settings(
   out << YAML::BeginMap;
   // output-test-dir
   out << YAML::Key << "output-test-dir" << YAML::Value
-      << output_test_dir.string();
+      << boost::filesystem::absolute(output_test_dir).string();
   // snakefile
-  out << YAML::Key << "snakefile" << YAML::Value << snakefile.string();
+  out << YAML::Key << "snakefile" << YAML::Value
+      << boost::filesystem::absolute(snakefile).string();
   // pipeline-dir
   out << YAML::Key << "pipeline-dir" << YAML::Value
-      << pipeline_run_dir.string();
+      << boost::filesystem::absolute(pipeline_run_dir).string();
   // inst-dir
-  out << YAML::Key << "inst-dir" << YAML::Value << inst_dir.string();
+  out << YAML::Key << "inst-dir" << YAML::Value
+      << boost::filesystem::absolute(inst_dir).string();
   // snakemake-log
-  out << YAML::Key << "snakemake-log" << YAML::Value << snakemake_log.string();
+  out << YAML::Key << "snakemake-log" << YAML::Value
+      << boost::filesystem::absolute(snakemake_log).string();
   // added-files
   out << YAML::Key << "added-files" << YAML::Value;
   if (!added_files.empty()) {
