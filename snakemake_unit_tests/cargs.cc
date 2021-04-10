@@ -40,6 +40,7 @@ void snakemake_unit_tests::cargs::initialize_options() {
       "directories")("update-snakefiles", "update snakefiles in unit tests")(
       "update-added-content",
       "update added files and directories in unit tests")(
+      "update-config", "update configuration report in unit test output")(
       "update-inputs", "update rule inputs in unit tests")(
       "update-outputs", "update rule outputs in unit test")(
       "update-pytest", "update pytest infrastructure in output directories");
@@ -96,6 +97,7 @@ snakemake_unit_tests::params snakemake_unit_tests::cargs::set_parameters()
   p.update_all = update_all();
   p.update_snakefiles = update_snakefiles();
   p.update_added_content = update_added_content();
+  p.update_config = update_config();
   p.update_inputs = update_inputs();
   p.update_outputs = update_outputs();
   p.update_pytest = update_pytest();
@@ -238,5 +240,62 @@ void snakemake_unit_tests::cargs::check_and_fix_dir(
   if (!boost::filesystem::is_directory(combined)) {
     throw std::logic_error("for \"" + msg + "\", provided path \"" +
                            combined.string() + "\" is not a directory");
+  }
+}
+
+void snakemake_unit_tests::params::report_settings(
+    const boost::filesystem::path &filename) const {
+  // aggregate settings into a YAML stream, then report it in one shot
+  YAML::Emitter out;
+  out << YAML::BeginMap;
+  // output-test-dir
+  out << YAML::Key << "output-test-dir" << YAML::Value
+      << output_test_dir.string();
+  // snakefile
+  out << YAML::Key << "snakefile" << YAML::Value << snakefile.string();
+  // pipeline-dir
+  out << YAML::Key << "pipeline-dir" << YAML::Value
+      << pipeline_run_dir.string();
+  // inst-dir
+  out << YAML::Key << "inst-dir" << YAML::Value << inst_dir.string();
+  // snakemake-log
+  out << YAML::Key << "snakemake-log" << YAML::Value << snakemake_log.string();
+  // added-files
+  out << YAML::Key << "added-files" << YAML::Value << YAML::BeginSeq;
+  for (std::vector<boost::filesystem::path>::const_iterator iter =
+           added_files.begin();
+       iter != added_files.end(); ++iter) {
+    out << iter->string();
+  }
+  out << YAML::EndSeq;
+  // added-directories
+  out << YAML::Key << "added-directories" << YAML::Value << YAML::BeginSeq;
+  for (std::vector<boost::filesystem::path>::const_iterator iter =
+           added_directories.begin();
+       iter != added_directories.end(); ++iter) {
+    out << iter->string();
+  }
+  out << YAML::EndSeq;
+  // exclude-rules
+  out << YAML::Key << "exclude-rules" << YAML::Value << YAML::BeginSeq;
+  for (std::vector<std::string>::const_iterator iter = exclude_rules.begin();
+       iter != exclude_rules.end(); ++iter) {
+    out << *iter;
+  }
+  out << YAML::EndSeq;
+  out << YAML::EndMap;
+
+  // write to output file
+  std::ofstream output;
+  output.open(filename.string().c_str());
+  if (!output.is_open())
+    throw std::runtime_error("cannot write to output config file \"" +
+                             filename.string() + "\"");
+  try {
+    output << out.c_str();
+    output.close();
+  } catch (...) {
+    if (output.is_open()) output.close();
+    throw;
   }
 }

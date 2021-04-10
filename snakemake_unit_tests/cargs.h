@@ -13,6 +13,7 @@
 #ifndef SNAKEMAKE_UNIT_TESTS_CARGS_H_
 #define SNAKEMAKE_UNIT_TESTS_CARGS_H_
 
+#include <fstream>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -20,6 +21,7 @@
 #include "boost/filesystem.hpp"
 #include "boost/program_options.hpp"
 #include "snakemake_unit_tests/yaml_reader.h"
+#include "yaml-cpp/yaml.h"
 
 namespace snakemake_unit_tests {
 /*!
@@ -36,6 +38,7 @@ class params {
         update_all(false),
         update_snakefiles(false),
         update_added_content(false),
+        update_config(false),
         update_inputs(false),
         update_outputs(false),
         update_pytest(false),
@@ -54,6 +57,7 @@ class params {
         update_all(obj.update_all),
         update_snakefiles(obj.update_snakefiles),
         update_added_content(obj.update_added_content),
+        update_config(obj.update_config),
         update_inputs(obj.update_inputs),
         update_outputs(obj.update_outputs),
         update_pytest(obj.update_pytest),
@@ -72,6 +76,17 @@ class params {
    */
   ~params() throw() {}
   /*!
+    @brief report settings to yaml file
+    @param filename name of file to write
+
+    the reported settings will be the result of
+    resolving the input config and any command line flags,
+    but will not report any binary flags
+
+    TODO(cpalmer718): check if BB wants binary flags
+   */
+  void report_settings(const boost::filesystem::path &filename) const;
+  /*!
     @brief provide verbose logging output
    */
   bool verbose;
@@ -87,6 +102,11 @@ class params {
     @brief update added files and directories in unit tests
    */
   bool update_added_content;
+  /*!
+    @brief update configuration report emittd to output unit
+    test directory
+   */
+  bool update_config;
   /*!
     @brief update rule inputs in unit tests
    */
@@ -328,6 +348,16 @@ class cargs {
   bool update_added_content() const {
     return compute_flag("update-added-content");
   }
+  /*!
+    @brief get user flag for updating config report to unit directory top level
+    @return whether the user wants to update run configuration report based on
+    the current settings
+
+    the distinction here is that there are definitely some cases in which
+    the user won't want to update config based on some test or rule subset
+    or different log they're working with for testing purposes
+   */
+  bool update_config() const { return compute_flag("update-config"); }
   /*!
     @brief get user flag for updating unit tests' inputs
     @return whether the user wants to update existing tests' inputs
