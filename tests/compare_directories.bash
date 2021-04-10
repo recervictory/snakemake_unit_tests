@@ -10,7 +10,8 @@ OUTPUTDIR="$2"
 TESTDESCRIPTION="$3"
 
 ## compare expected to observed output, ignoring pytest infrastructure
-for file in $(find "$EXPECTEDDIR" -type f \( -name "*" ! -name "*.py" \) -print);
+## new: ignore config.yaml recordkeeping file's contents
+for file in $(find "$EXPECTEDDIR" -type f \( -name "*" ! -name "*.py"  ! -name "config.yaml" \) -print);
 do
     actual=$(echo "$file" | sed 's/\/expected\//\/output\//')
     if [[ ! -f "$actual" ]] ; then
@@ -27,6 +28,7 @@ done
 
 ## compare obsered to expected output, ignoring pytest infrastructure
 ##   flag files present in one absent in other
+## new: note that we don't ignore config.yaml here: it should be consistent
 for file in $(find "$OUTPUTDIR" -type f \( -name "*" ! -name "*.py" \) -print);
 do
     expected=$(echo "$file" | sed 's/\/output\//\/expected\//')
