@@ -1,7 +1,7 @@
 var searchData=
 [
   ['add_5fcode_5fchunk_20',['add_code_chunk',['../classsnakemake__unit__tests_1_1rule__block.html#a087a1519c228e377353bb2f3a1e9e418',1,'snakemake_unit_tests::rule_block']]],
-  ['add_5fcontents_21',['add_contents',['../classsnakemake__unit__tests_1_1cargs.html#a47b20118f204085dd8f47e4db648c722',1,'snakemake_unit_tests::cargs']]],
+  ['add_5fcontents_21',['add_contents',['../classsnakemake__unit__tests_1_1cargs.html#a47b20118f204085dd8f47e4db648c722',1,'snakemake_unit_tests::cargs::add_contents(const std::vector&lt; std::string &gt; &amp;cli_entries, std::vector&lt; value_type &gt; *params_entries) const'],['../classsnakemake__unit__tests_1_1cargs.html#a7060744899f8b051f68df310592d5a4b',1,'snakemake_unit_tests::cargs::add_contents(const std::vector&lt; std::string &gt; &amp;cli_entries, std::map&lt; value_type, bool &gt; *params_entries) const']]],
   ['add_5finput_22',['add_input',['../classsnakemake__unit__tests_1_1recipe.html#af9e207fbc5a80d981a4752023ba5b51f',1,'snakemake_unit_tests::recipe']]],
   ['add_5foutput_23',['add_output',['../classsnakemake__unit__tests_1_1recipe.html#ac973313588ad85f2a960bc9e1cc6fac7',1,'snakemake_unit_tests::recipe']]],
   ['added_5fdirectories_24',['added_directories',['../classsnakemake__unit__tests_1_1params.html#a1c24443a34c0a3617646f97a73c62141',1,'snakemake_unit_tests::params']]],
