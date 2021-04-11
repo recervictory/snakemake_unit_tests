@@ -285,8 +285,11 @@ void snakemake_unit_tests::params::report_settings(
   // snakefile
   out << YAML::Key << "snakefile" << YAML::Value
       << boost::filesystem::absolute(snakefile).string();
-  // pipeline-dir
-  out << YAML::Key << "pipeline-dir" << YAML::Value
+  // pipeline-top-dir
+  out << YAML::Key << "pipeline-top-dir" << YAML::Value
+      << boost::filesystem::absolute(pipeline_top_dir).string();
+  // pipeline-run-dir
+  out << YAML::Key << "pipeline-run-dir" << YAML::Value
       << boost::filesystem::absolute(pipeline_run_dir).string();
   // inst-dir
   out << YAML::Key << "inst-dir" << YAML::Value
