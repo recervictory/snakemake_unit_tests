@@ -386,7 +386,7 @@ void snakemake_unit_tests::rule_block::print_contents(
                      recipe_iter = recipe_inputs->begin();
                  recipe_iter != recipe_inputs->end(); ++recipe_iter) {
               if (!(out << indentation(get_local_indentation() + 8)
-                        << *recipe_iter << ',' << std::endl))
+                        << *recipe_iter << std::endl))
                 throw std::runtime_error("overridden input printing failure");
             }
             continue;
