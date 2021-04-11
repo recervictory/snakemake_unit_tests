@@ -1,0 +1,16 @@
+rule all:
+    input:
+        "output",
+
+
+rule simple_rule:
+    input:
+        "input.txt",
+    output:
+        directory("output"),
+    shell:
+        "mkdir -p {output} && "
+        "sed 's/input/output-1/' {input} > {output}/output1.txt && "
+        "sed 's/input/output-2/' {input} > {output}/output2.txt"
+
+
