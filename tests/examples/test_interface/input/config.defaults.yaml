@@ -27,7 +27,8 @@ snakefile: tests/examples/test_interface/input/choice1/workflow/Snakefile
 ## the snakefile is in a one-deep subdirectory of the pipeline.
 ## note that if you specify --pipeline-dir at the command line, it will
 ## *supercede* the setting in this file.
-pipeline-dir: tests/examples/test_interface/input/choice1
+pipeline-top-dir: tests/examples/test_interface/input/choice1
+pipeline-run-dir: .
 
 # inst-dir: [arg]
 ## location on your system of the snakemake_unit_tests subdirectory 'inst'.

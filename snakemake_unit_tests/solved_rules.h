@@ -156,8 +156,11 @@ class solved_rules {
     @param sf snakemake_file object with rule definitions corresponding
     to loaded log data
     @param output_test_dir output directory for tests (e.g. '.tests/')
-    @param pipeline_dir parent directory of snakemake pipeline used to generate
-    corresponding log file (e.g.: X for X/workflow/Snakefile)
+    @param pipeline_top_dir parent directory of snakemake pipeline used to
+    generate corresponding log file (e.g.: X for X/workflow/Snakefile)
+    @param pipeline_run_dir directory in which pipeline was run, relative to
+    pipeline_top_dir. if you run the pipeline in the top level directory,
+    this should simply be '.'
     @param inst_dir directory in snakemake_unit_tests repo containing
     installation files (when conda mode is enabled, this will default to
     $CONDA_PREFIX/share/snakemake_unit_tests/inst)
@@ -174,7 +177,8 @@ class solved_rules {
   */
   void emit_tests(const snakemake_file &sf,
                   const boost::filesystem::path &output_test_dir,
-                  const boost::filesystem::path &pipeline_dir,
+                  const boost::filesystem::path &pipeline_top_dir,
+                  const boost::filesystem::path &pipeline_run_dir,
                   const boost::filesystem::path &inst_dir,
                   const std::vector<std::string> &exclude_rules,
                   const std::vector<boost::filesystem::path> &added_files,
@@ -202,8 +206,11 @@ class solved_rules {
     to loaded log data
     @param output_test_dir output directory for tests (e.g. '.tests/')
     @param test_parent_path '.tests/unit' by default
-    @param pipeline_dir parent directory of snakemake pipeline used to generate
-    corresponding log file (e.g.: X for X/workflow/Snakefile)
+    @param pipeline_top_dir parent directory of snakemake pipeline used to
+    generate corresponding log file (e.g.: X for X/workflow/Snakefile)
+    @param pipeline_run_dir directory in which pipeline was run, relative to
+    pipeline_top_dir. if you run the pipeline in the top level directory,
+    this should simply be '.'
     @param test_inst_py snakemake_unit_tests installed test.py script
     installation files (when conda mode is enabled, this will default to
     $CONDA_PREFIX/share/snakemake_unit_tests/inst)
@@ -222,7 +229,8 @@ class solved_rules {
       const recipe &rec, const snakemake_file &sf,
       const boost::filesystem::path &output_test_dir,
       const boost::filesystem::path &test_parent_path,
-      const boost::filesystem::path &pipeline_dir,
+      const boost::filesystem::path &pipeline_top_dir,
+      const boost::filesystem::path &pipeline_run_dir,
       const boost::filesystem::path &test_inst_py,
       const std::vector<std::string> &exclude_rules,
       const std::vector<boost::filesystem::path> &added_files,
@@ -278,12 +286,14 @@ class solved_rules {
     @param test_dir parent directory of all unit tests for the pipeline
     @param rule_name name of rule whose test is being emitted
     @param snakefile_relative_path relative path of snakefile in pipeline dir
+    @param pipeline_run_dir relative path of snakemake execution within pipeline
     @param inst_test_py snakemake_unit_tests test.py script location
    */
   void report_modified_test_script(
       const boost::filesystem::path &parent_dir,
       const boost::filesystem::path &test_dir, const std::string &rule_name,
       const boost::filesystem::path &snakefile_relative_path,
+      const boost::filesystem::path &pipeline_run_dir,
       const boost::filesystem::path &inst_test_py) const;
 
  private:

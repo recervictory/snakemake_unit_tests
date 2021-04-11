@@ -160,7 +160,9 @@ class snakemake_file {
     @brief run the current rule set through python once
     @param workspace top level directory with added files and directories
     installed
-    @param pipeline_run_dir where the actual pipeline was initially installed
+    @param pipeline_top_dir top directory of pipeline installation
+    @param pipeline_run_dir where the actual pipeline was initially run,
+    relative to top level pipeline directory
     @param verbose whether to provide verbose logging output
     @param disable_resolution deactivate downstream processing on recursive
     calls
@@ -169,6 +171,7 @@ class snakemake_file {
     reporting. this should only be called from the primary caller.
    */
   void resolve_with_python(const boost::filesystem::path &workspace,
+                           const boost::filesystem::path &pipeline_top_dir,
                            const boost::filesystem::path &pipeline_run_dir,
                            bool verbose, bool disable_resolution);
 

@@ -186,10 +186,11 @@ bool snakemake_unit_tests::rule_block::consume_rule_contents(
           return true;
         }
       } else {
-        throw std::runtime_error(
-            "snakemake named block tag not found: file \"" + filename.string() +
-            "\" line " + std::to_string(*current_line) + " entry \"" + line +
-            "\"");
+        std::cerr << "warning: in a rule parse, the line \"" << line
+                  << "\" is found floating and is removed. if this behavior "
+                  << "is not what you want, please file a bug report"
+                  << std::endl;
+        continue;
       }
     }
   }
