@@ -107,3 +107,49 @@ exclude-rules:
   - download_ilmnid_rsid_GDA
   - download_ilmnid_rsid_MEGA
   - download_ucsc_rsid_bigbed
+
+# exclude-extensions: [scalar or sequence]
+## optionally exclude file extensions for comparison in downstream
+## pytest infrastructure. this information will be emitted to the
+## tracking config.yaml in {output-test-dir}/unit. this
+## exclusion is useful, for example, for certain types of outputs
+## that contain date/timestamps or that are expected to be different
+## between runs. another way to handle these files would be to
+## create custom handlers for their comparisons; this is scheduled
+## for later patches.
+exclude-extensions:
+  - .tbi
+  - .html
+  - .log
+  - .bai
+
+# exclude-paths: [scalar or sequence]
+## optionally exclude file paths (or fragments of such) for comparison
+## in downstream pytest infrastructure. this information will be emitted
+## to the tracking config.yaml in {output-test-dir}/unit. this exclusion
+## is useful, for example, for log or temporary directories that are
+## expected to have output that is either deliberately untracked or
+## variable between runs. note that for matching fidelity, including
+## path separators (e.g. /) in the patterns will improve the ability
+## to distinguish between things you want excluded, and files that
+## just happen to have the substring "log" in them, for example.
+exclude-paths:
+  - /log/
+  - /logs/
+  - /performance_benchmarks/
+  - temp/
+  - tmp/
+
+# byte-comparisons: [scalar or sequence]
+## optionally flag a set of file extensions for binary (byte) comparison
+## in downstream pytest infrastructure. this is particularly useful for
+## common binary output formats (e.g.: png, jpg, bam) that would fail
+## when interpreted through text loading in pytest/python. additional
+## logic in downstream infrastructure may probe files to determine
+## whether binary reads are appropriate, but if that fails, this can
+## override that behavior.
+byte-comparisons:
+  - .jpg
+  - .jpeg
+  - .png
+  - .bam

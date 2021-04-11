@@ -89,7 +89,10 @@ class params {
         snakemake_log(obj.snakemake_log),
         added_files(obj.added_files),
         added_directories(obj.added_directories),
-        exclude_rules(obj.exclude_rules) {}
+        exclude_rules(obj.exclude_rules),
+        exclude_extensions(obj.exclude_extensions),
+        exclude_paths(obj.exclude_paths),
+        byte_comparisons(obj.byte_comparisons) {}
   /*!
     @brief destructor
    */
@@ -105,6 +108,28 @@ class params {
     TODO(cpalmer718): check if BB wants binary flags
    */
   void report_settings(const boost::filesystem::path &filename) const;
+  /*!
+    @brief emit map contents as key->sequence in a YAML::Map
+    @param out YAML Emitter to which to report YAML content
+    @param data keys for output sequence
+    @param key YAML key corresponding to this sequence
+
+    note that null sequences are emitted as "key: ~" in YAML style
+   */
+  void emit_yaml_map(YAML::Emitter *out,
+                     const std::map<std::string, bool> &data,
+                     const std::string &key) const;
+  /*!
+    @brief emit vector contents as key->sequence in a YAML::Map
+    @param out YAML Emitter to which to report YAML content
+    @param data keys for output sequence
+    @param key YAML key corresponding to this sequence
+
+    note that null sequences are emitted as "key: ~" in YAML style
+   */
+  void emit_yaml_vector(YAML::Emitter *out,
+                        const std::vector<boost::filesystem::path> &data,
+                        const std::string &key) const;
   /*!
     @brief provide verbose logging output
    */
@@ -178,6 +203,18 @@ class params {
     @brief user-defined rulenames to skip in test generation
    */
   std::map<std::string, bool> exclude_rules;
+  /*!
+    @brief user-defined file extensions to exclude from pytest comparison
+   */
+  std::map<std::string, bool> exclude_extensions;
+  /*!
+    @brief user-defined path patterns to exclude from pytest comparison
+   */
+  std::map<std::string, bool> exclude_paths;
+  /*!
+    @brief user-defined file extensions to flag as needing binary comparison
+   */
+  std::map<std::string, bool> byte_comparisons;
 };
 
 /*!

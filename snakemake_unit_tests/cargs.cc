@@ -88,6 +88,18 @@ snakemake_unit_tests::params snakemake_unit_tests::cargs::set_parameters()
         p.exclude_rules =
             vector_to_map<std::string>(p.config.get_sequence("exclude-rules"));
       }
+      if (p.config.query_valid("exclude-extensions")) {
+        p.exclude_extensions = vector_to_map<std::string>(
+            p.config.get_sequence("exclude-extensions"));
+      }
+      if (p.config.query_valid("exclude-paths")) {
+        p.exclude_paths =
+            vector_to_map<std::string>(p.config.get_sequence("exclude-paths"));
+      }
+      if (p.config.query_valid("byte-comparisons")) {
+        p.byte_comparisons = vector_to_map<std::string>(
+            p.config.get_sequence("byte-comparisons"));
+      }
     }
   }
   // load command line options
@@ -265,46 +277,19 @@ void snakemake_unit_tests::params::report_settings(
   out << YAML::Key << "snakemake-log" << YAML::Value
       << boost::filesystem::absolute(snakemake_log).string();
   // added-files
-  out << YAML::Key << "added-files" << YAML::Value;
-  if (!added_files.empty()) {
-    out << YAML::BeginSeq;
-    for (std::vector<boost::filesystem::path>::const_iterator iter =
-             added_files.begin();
-         iter != added_files.end(); ++iter) {
-      out << iter->string();
-    }
-    out << YAML::EndSeq;
-  } else {
-    out << YAML::Null;
-  }
+  emit_yaml_vector(&out, added_files, "added-files");
   // added-directories
-  out << YAML::Key << "added-directories" << YAML::Value;
-  if (!added_directories.empty()) {
-    out << YAML::BeginSeq;
-    for (std::vector<boost::filesystem::path>::const_iterator iter =
-             added_directories.begin();
-         iter != added_directories.end(); ++iter) {
-      out << iter->string();
-    }
-    out << YAML::EndSeq;
-  } else {
-    out << YAML::Null;
-  }
+  emit_yaml_vector(&out, added_directories, "added-directories");
   // exclude-rules
-  out << YAML::Key << "exclude-rules" << YAML::Value;
-  if (!exclude_rules.empty()) {
-    out << YAML::BeginSeq;
-    for (std::map<std::string, bool>::const_iterator iter =
-             exclude_rules.begin();
-         iter != exclude_rules.end(); ++iter) {
-      out << iter->first;
-    }
-    out << YAML::EndSeq;
-  } else {
-    out << YAML::Null;
-  }
+  emit_yaml_map(&out, exclude_rules, "exclude-rules");
+  // exclude-extensions
+  emit_yaml_map(&out, exclude_extensions, "exclude-extensions");
+  // exclude-paths
+  emit_yaml_map(&out, exclude_paths, "exclude-paths");
+  // byte-comparisons
+  emit_yaml_map(&out, byte_comparisons, "byte-comparisons");
+  // end the content
   out << YAML::EndMap;
-
   // write to output file
   std::ofstream output;
   output.open(filename.string().c_str());
@@ -317,5 +302,40 @@ void snakemake_unit_tests::params::report_settings(
   } catch (...) {
     if (output.is_open()) output.close();
     throw;
+  }
+}
+
+void snakemake_unit_tests::params::emit_yaml_map(
+    YAML::Emitter *out, const std::map<std::string, bool> &data,
+    const std::string &key) const {
+  if (!out) throw std::runtime_error("null pointer to emit_yaml_map");
+  *out << YAML::Key << key << YAML::Value;
+  if (!data.empty()) {
+    *out << YAML::BeginSeq;
+    for (std::map<std::string, bool>::const_iterator iter = data.begin();
+         iter != data.end(); ++iter) {
+      *out << iter->first;
+    }
+    *out << YAML::EndSeq;
+  } else {
+    *out << YAML::Null;
+  }
+}
+
+void snakemake_unit_tests::params::emit_yaml_vector(
+    YAML::Emitter *out, const std::vector<boost::filesystem::path> &data,
+    const std::string &key) const {
+  if (!out) throw std::runtime_error("null pointer to emit_yaml_vector");
+  *out << YAML::Key << key << YAML::Value;
+  if (!data.empty()) {
+    *out << YAML::BeginSeq;
+    for (std::vector<boost::filesystem::path>::const_iterator iter =
+             data.begin();
+         iter != data.end(); ++iter) {
+      *out << iter->string();
+    }
+    *out << YAML::EndSeq;
+  } else {
+    *out << YAML::Null;
   }
 }
