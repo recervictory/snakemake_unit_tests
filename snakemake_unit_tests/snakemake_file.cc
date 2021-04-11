@@ -312,9 +312,7 @@ void snakemake_unit_tests::snakemake_file::print_blocks(
 }
 
 bool snakemake_unit_tests::snakemake_file::report_single_rule(
-    const std::string &rule_name,
-    const std::vector<boost::filesystem::path> &recipe_inputs,
-    std::ostream &out) const {
+    const std::string &rule_name, std::ostream &out) const {
   // find the requested rule
   bool found_rule = false;
   for (std::list<boost::shared_ptr<rule_block> >::const_iterator iter =
@@ -329,7 +327,7 @@ bool snakemake_unit_tests::snakemake_file::report_single_rule(
     // new: respect rule's inclusion status
     if ((!(*iter)->get_rule_name().compare(rule_name) && (*iter)->included()) ||
         (*iter)->get_rule_name().empty()) {
-      (*iter)->print_contents(out, &recipe_inputs);
+      (*iter)->print_contents(out);
     } else {
       for (unsigned i = 0; i < (*iter)->get_local_indentation(); ++i)
         out << ' ';
