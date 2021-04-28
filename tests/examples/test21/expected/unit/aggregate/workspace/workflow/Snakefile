@@ -1,0 +1,32 @@
+rule all:
+    input:
+        "aggregated/b.txt",
+
+
+pass
+
+
+pass
+
+
+pass
+
+
+pass
+
+
+def aggregate_input(wildcards):
+    with checkpoints.somestep.get(sample=wildcards.sample).output[0].open() as f:
+        if f.read().strip() == "a":
+            return "post/{sample}.txt"
+        else:
+            return "alt/{sample}.txt"
+rule aggregate:
+    input:
+        aggregate_input,
+    output:
+        "aggregated/{sample}.txt",
+    shell:
+        "touch {output}"
+
+

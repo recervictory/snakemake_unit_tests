@@ -14,6 +14,7 @@ void snakemake_unit_tests::solved_rules::load_file(
   std::string line = "";
   std::vector<std::string> input_filenames, output_filenames;
   const boost::regex standard_rule_declaration("^rule ([^ ]+):.*$");
+  const boost::regex checkpoint_declaration("^checkpoint ([^ ]+):.*$");
   boost::smatch regex_result;
   try {
     // open log file
@@ -25,7 +26,8 @@ void snakemake_unit_tests::solved_rules::load_file(
     while (input.peek() != EOF) {
       getline(input, line);
       // if the line is a valid rule declaration
-      if (boost::regex_match(line, regex_result, standard_rule_declaration)) {
+      if (boost::regex_match(line, regex_result, standard_rule_declaration) ||
+          boost::regex_match(line, regex_result, checkpoint_declaration)) {
         // set apparent rule name
         // for magical reasons, this regex seems to be working where
         // the include directive one wasn't; has to do with '/'?
@@ -37,6 +39,15 @@ void snakemake_unit_tests::solved_rules::load_file(
           if (line.empty() || line.at(0) != ' ') break;
           if (line.find("    input:") == 0) {
             // special handler for solved input files
+            // new: detect unresolved checkpoint inputs
+            if (line.find("<TBD>") != std::string::npos) {
+              throw std::logic_error(
+                  "in log entry \"" + regex_result[1] +
+                  "\": "
+                  "apparent unresolved checkpoint input; "
+                  "logs for pipelines with checkpoints *cannot* "
+                  "be created with --dryrun active");
+            }
             split_comma_list(line.substr(11), &input_filenames);
             for (std::vector<std::string>::const_iterator iter =
                      input_filenames.begin();

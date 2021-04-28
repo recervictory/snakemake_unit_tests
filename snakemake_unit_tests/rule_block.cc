@@ -22,6 +22,7 @@ bool snakemake_unit_tests::rule_block::load_content_block(
   std::string line = "";
   // define regex patterns for testing
   const boost::regex standard_rule_declaration("^( *)rule ([^ ]+):.*$");
+  const boost::regex checkpoint_rule_declaration("^( *)checkpoint ([^ ]+):.*$");
   const boost::regex derived_rule_declaration(
       "^( *)use rule ([^ ]+) as ([^ ]+) with:.*$");
   const boost::regex wildcard_constraints("^( *)wildcard_constraints:.*$");
@@ -41,7 +42,8 @@ bool snakemake_unit_tests::rule_block::load_content_block(
       continue;
     // if the line is a valid rule declaration
     boost::smatch regex_result;
-    if (boost::regex_match(line, regex_result, standard_rule_declaration)) {
+    if (boost::regex_match(line, regex_result, standard_rule_declaration) ||
+        boost::regex_match(line, regex_result, checkpoint_rule_declaration)) {
       if (verbose) {
         std::cout << "consuming rule with name \"" << regex_result[2] << "\""
                   << std::endl;
