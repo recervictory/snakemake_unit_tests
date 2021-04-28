@@ -15,7 +15,7 @@ import pytest
 # import yaml
 
 
-exclude_paths = ["/log/", "/logs/", "/performance_benchmarks/", "temp/", "tmp/"]
+exclude_paths = ["/log/", "/logs/", "/performance_benchmarks/", "temp/", "tmp/", ".snakemake/"]
 exclude_ext = [".tbi", ".html", ".log", ".bai", ".idx"]
 # TODO: Read in a list of extensions to exclude from the config.  See issue #16.
 

@@ -68,7 +68,8 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Data Structures</a>  </div>
+<a href="#nested-classes">Data Structures</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">cargs.h File Reference</div>  </div>
 </div><!--header-->
@@ -76,12 +77,16 @@ $(function() {
 
 <p>command line argument handling  
 <a href="#details">More...</a></p>
-<div class="textblock"><code>#include &lt;stdexcept&gt;</code><br />
+<div class="textblock"><code>#include &lt;fstream&gt;</code><br />
+<code>#include &lt;map&gt;</code><br />
+<code>#include &lt;stdexcept&gt;</code><br />
 <code>#include &lt;string&gt;</code><br />
+<code>#include &lt;utility&gt;</code><br />
 <code>#include &lt;vector&gt;</code><br />
 <code>#include &quot;boost/filesystem.hpp&quot;</code><br />
 <code>#include &quot;boost/program_options.hpp&quot;</code><br />
 <code>#include &quot;<a class="el" href="yaml__reader_8h_source.html">snakemake_unit_tests/yaml_reader.h</a>&quot;</code><br />
+<code>#include &quot;yaml-cpp/yaml.h&quot;</code><br />
 </div>
 <p><a href="cargs_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -93,6 +98,13 @@ Data Structures</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1cargs.html">snakemake_unit_tests::cargs</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">command line argument parser using boost::program_options  <a href="classsnakemake__unit__tests_1_1cargs.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a929249a2c160ad127be6db3bcc8d04b2"><td class="memTemplParams" colspan="2">template&lt;class value_type &gt; </td></tr>
+<tr class="memitem:a929249a2c160ad127be6db3bcc8d04b2"><td class="memTemplItemLeft" align="right" valign="top">std::map&lt; value_type, bool &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="cargs_8h.html#a929249a2c160ad127be6db3bcc8d04b2">snakemake_unit_tests::vector_to_map</a> (const std::vector&lt; value_type &gt; &amp;vec)</td></tr>
+<tr class="memdesc:a929249a2c160ad127be6db3bcc8d04b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">take entries of a vector and fill a map with them as keys  <a href="cargs_8h.html#a929249a2c160ad127be6db3bcc8d04b2">More...</a><br /></td></tr>
+<tr class="separator:a929249a2c160ad127be6db3bcc8d04b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>command line argument handling </p>
@@ -100,7 +112,44 @@ Data Structures</h2></td></tr>
 <dl class="section note"><dt>Note</dt><dd>requires boost::program_options library + headers </dd></dl>
 <dl class="section copyright"><dt>Copyright</dt><dd>Released under the MIT License. Copyright 2021 Cameron Palmer</dd></dl>
 <p>Thanks to <a href="https://www.boost.org/doc/libs/1_70_0/doc/html/program_options/tutorial.html#id-1.3.32.4.3">https://www.boost.org/doc/libs/1_70_0/doc/html/program_options/tutorial.html#id-1.3.32.4.3</a> </p>
-</div></div><!-- contents -->
+</div><h2 class="groupheader">Function Documentation</h2>
+<a id="a929249a2c160ad127be6db3bcc8d04b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a929249a2c160ad127be6db3bcc8d04b2">&#9670;&nbsp;</a></span>vector_to_map()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class value_type &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">std::map&lt;value_type, bool&gt; snakemake_unit_tests::vector_to_map </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; value_type &gt; &amp;&#160;</td>
+          <td class="paramname"><em>vec</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>take entries of a vector and fill a map with them as keys </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">value_type</td><td>storage type of key </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">vec</td><td>input vector of values </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>map with vector values as keys</dd></dl>
+<p>all map values are set to true </p>
+
+</div>
+</div>
+</div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1

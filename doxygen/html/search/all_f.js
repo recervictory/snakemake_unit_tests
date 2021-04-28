@@ -7,11 +7,12 @@ var searchData=
   ['report_5fphony_5fall_5ftarget_113',['report_phony_all_target',['../classsnakemake__unit__tests_1_1solved__rules.html#a62290fa558f3ad0c6e95baacd75eb53e',1,'snakemake_unit_tests::solved_rules']]],
   ['report_5fpython_5flogging_5fcode_114',['report_python_logging_code',['../classsnakemake__unit__tests_1_1rule__block.html#aead538d30807b81125b41c734bc1088d',1,'snakemake_unit_tests::rule_block']]],
   ['report_5frules_115',['report_rules',['../classsnakemake__unit__tests_1_1snakemake__file.html#ad113a1929bdc2c949d5213e88575f78e',1,'snakemake_unit_tests::snakemake_file']]],
-  ['report_5fsingle_5frule_116',['report_single_rule',['../classsnakemake__unit__tests_1_1snakemake__file.html#a670a12df840072527baf6dd9ca213f2e',1,'snakemake_unit_tests::snakemake_file']]],
-  ['resolve_5fderived_5frules_117',['resolve_derived_rules',['../classsnakemake__unit__tests_1_1snakemake__file.html#a79cfa9d4504725992bb3cd6f10168fe2',1,'snakemake_unit_tests::snakemake_file']]],
-  ['resolve_5fwith_5fpython_118',['resolve_with_python',['../classsnakemake__unit__tests_1_1snakemake__file.html#ad1515c0faa892aa1e1b66a98d81f43f6',1,'snakemake_unit_tests::snakemake_file']]],
-  ['resolved_119',['resolved',['../classsnakemake__unit__tests_1_1rule__block.html#a5c8665be055b61187ab36df3b58ec108',1,'snakemake_unit_tests::rule_block']]],
-  ['rule_5fblock_120',['rule_block',['../classsnakemake__unit__tests_1_1rule__block.html#a677876bfc5c03953f8b888368b1c068a',1,'snakemake_unit_tests::rule_block::rule_block()'],['../classsnakemake__unit__tests_1_1rule__block.html#a2122be784b8ecf4651a76a653b0306ea',1,'snakemake_unit_tests::rule_block::rule_block(const rule_block &amp;obj)'],['../classsnakemake__unit__tests_1_1rule__block.html',1,'snakemake_unit_tests::rule_block']]],
-  ['rule_5fblock_2ecc_121',['rule_block.cc',['../rule__block_8cc.html',1,'']]],
-  ['rule_5fblock_2eh_122',['rule_block.h',['../rule__block_8h.html',1,'']]]
+  ['report_5fsettings_116',['report_settings',['../classsnakemake__unit__tests_1_1params.html#a6ce20944d655fa30eb734eb9d87ade18',1,'snakemake_unit_tests::params']]],
+  ['report_5fsingle_5frule_117',['report_single_rule',['../classsnakemake__unit__tests_1_1snakemake__file.html#a670a12df840072527baf6dd9ca213f2e',1,'snakemake_unit_tests::snakemake_file']]],
+  ['resolve_5fderived_5frules_118',['resolve_derived_rules',['../classsnakemake__unit__tests_1_1snakemake__file.html#a79cfa9d4504725992bb3cd6f10168fe2',1,'snakemake_unit_tests::snakemake_file']]],
+  ['resolve_5fwith_5fpython_119',['resolve_with_python',['../classsnakemake__unit__tests_1_1snakemake__file.html#ad1515c0faa892aa1e1b66a98d81f43f6',1,'snakemake_unit_tests::snakemake_file']]],
+  ['resolved_120',['resolved',['../classsnakemake__unit__tests_1_1rule__block.html#a5c8665be055b61187ab36df3b58ec108',1,'snakemake_unit_tests::rule_block']]],
+  ['rule_5fblock_121',['rule_block',['../classsnakemake__unit__tests_1_1rule__block.html#a677876bfc5c03953f8b888368b1c068a',1,'snakemake_unit_tests::rule_block::rule_block()'],['../classsnakemake__unit__tests_1_1rule__block.html#a2122be784b8ecf4651a76a653b0306ea',1,'snakemake_unit_tests::rule_block::rule_block(const rule_block &amp;obj)'],['../classsnakemake__unit__tests_1_1rule__block.html',1,'snakemake_unit_tests::rule_block']]],
+  ['rule_5fblock_2ecc_122',['rule_block.cc',['../rule__block_8cc.html',1,'']]],
+  ['rule_5fblock_2eh_123',['rule_block.h',['../rule__block_8h.html',1,'']]]
 ];

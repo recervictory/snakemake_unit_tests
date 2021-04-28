@@ -19,15 +19,24 @@ output-test-dir: .tests.cam
 ## *supercede* the setting in this file.
 snakefile: ../chip-variant-selection/workflow/Snakefile
 
-# pipeline-dir: [arg]
+# pipeline-top-dir: [arg]
 ## installation directory of pipeline for which you want tests. this is needed
 ## to deal with relative paths for directories and files you want added
 ## into the minimal test workspaces. if you do not specify this parameter,
 ## internal logic will set it to [{snakefile directory}/..], assuming
 ## the snakefile is in a one-deep subdirectory of the pipeline.
-## note that if you specify --pipeline-dir at the command line, it will
+## note that if you specify --pipeline-top-dir at the command line, it will
 ## *supercede* the setting in this file.
-pipeline-dir: ../chip-variant-selection
+pipeline-top-dir: ../chip-variant-selection
+
+# pipeline-run-dir: [arg]
+## execution directory of tested pipeline. expressed as a path relative
+## to pipeline-top-dir. so, if you have a pipeline installed in
+## /path/to/pipeline, and you ran the pipeline in /path/to/pipeline/rundir,
+## this should be set to 'rundir'. if you run at top-level, set this to '.'
+## note that if you specify --pipeline-run-dir at the command line, it will
+## *supercede* the setting in this file.
+pipeline-run-dir: .
 
 # inst-dir: [arg]
 ## location on your system of the snakemake_unit_tests subdirectory 'inst'.
@@ -60,8 +69,8 @@ snakemake-log: ../chip-variant-selection/test.log
 ## one or more files that you want added to test workspaces, so that
 ## the minimal test snakefile can have access to them. an example might
 ## be your manifest file; this is also how config files are propagated.
-## the syntax is the *relative path of the file from the snakemake execution
-## directory for your pipeline*: that is, from 'pipeline-dir'.
+## the syntax is the *relative path of the file from the installation
+## directory for your pipeline*: that is, from 'pipeline-top-dir'.
 ## note that if you specify additional --added-files at the command
 ## line, they will be *added* to this list; they will not replace this list.
 ## if you want that behavior, remove entries from this file.
@@ -73,8 +82,8 @@ added-files:
 ## one or more directories that you want added to test workspaces, so that
 ## the minimal test snakefile can have access to them. an example might
 ## be your config subdirectory, or workflows/envs, or workflows/scripts.
-## the syntax is the *relative path of the directory from the snakemake
-## execution directory for your pipeline*: that is, from 'pipeline-dir'.
+## the syntax is the *relative path of the directory from the installation
+## directory for your pipeline*: that is, from 'pipeline-top-dir'.
 ## note that directory contents are copied recursively. you only need
 ## to use this option for things that are *not explicitly tracked as inputs
 ## or outputs of your rules*
@@ -107,3 +116,49 @@ exclude-rules:
   - download_ilmnid_rsid_GDA
   - download_ilmnid_rsid_MEGA
   - download_ucsc_rsid_bigbed
+
+# exclude-extensions: [scalar or sequence]
+## optionally exclude file extensions for comparison in downstream
+## pytest infrastructure. this information will be emitted to the
+## tracking config.yaml in {output-test-dir}/unit. this
+## exclusion is useful, for example, for certain types of outputs
+## that contain date/timestamps or that are expected to be different
+## between runs. another way to handle these files would be to
+## create custom handlers for their comparisons; this is scheduled
+## for later patches.
+exclude-extensions:
+  - .tbi
+  - .html
+  - .log
+  - .bai
+
+# exclude-paths: [scalar or sequence]
+## optionally exclude file paths (or fragments of such) for comparison
+## in downstream pytest infrastructure. this information will be emitted
+## to the tracking config.yaml in {output-test-dir}/unit. this exclusion
+## is useful, for example, for log or temporary directories that are
+## expected to have output that is either deliberately untracked or
+## variable between runs. note that for matching fidelity, including
+## path separators (e.g. /) in the patterns will improve the ability
+## to distinguish between things you want excluded, and files that
+## just happen to have the substring "log" in them, for example.
+exclude-paths:
+  - /log/
+  - /logs/
+  - /performance_benchmarks/
+  - temp/
+  - tmp/
+
+# byte-comparisons: [scalar or sequence]
+## optionally flag a set of file extensions for binary (byte) comparison
+## in downstream pytest infrastructure. this is particularly useful for
+## common binary output formats (e.g.: png, jpg, bam) that would fail
+## when interpreted through text loading in pytest/python. additional
+## logic in downstream infrastructure may probe files to determine
+## whether binary reads are appropriate, but if that fails, this can
+## override that behavior.
+byte-comparisons:
+  - .jpg
+  - .jpeg
+  - .png
+  - .bam

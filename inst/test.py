@@ -39,7 +39,7 @@ def test_function():
                 "--snakefile",
                 "{}/{}".format(rundir, snakefile_relative_path),
                 "--directory",
-                rundir,
+                "{}/{}".format(rundir, snakemake_exec_path),
             ]
         )
 

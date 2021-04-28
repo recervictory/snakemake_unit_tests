@@ -49,14 +49,14 @@ int main(int argc, char **argv) {
   snakemake_unit_tests::snakemake_file sf;
   // express snakefile as path relative to top-level pipeline dir
   std::string snakefile_str = p.snakefile.string();
-  std::string pipeline_str = p.pipeline_run_dir.string();
+  std::string pipeline_str = p.pipeline_top_dir.string();
   snakefile_str = snakefile_str.substr(snakefile_str.find(pipeline_str) +
                                        pipeline_str.size() + 1);
   if (p.verbose) {
     std::cout << "computed snakefile is \"" << snakefile_str << "\""
               << std::endl;
   }
-  sf.load_everything(boost::filesystem::path(snakefile_str), p.pipeline_run_dir,
+  sf.load_everything(boost::filesystem::path(snakefile_str), p.pipeline_top_dir,
                      &p.exclude_rules, p.verbose);
 
   // as a debug step, report the parsed contents of the snakefile
@@ -74,7 +74,7 @@ int main(int argc, char **argv) {
   // should not have: snakefile
   // TODO(cpalmer718): determine if workspace requires inputs or outputs?
   //   probably not, as this isn't rule-specific, I hope
-  sr.create_empty_workspace(p.output_test_dir, p.pipeline_run_dir,
+  sr.create_empty_workspace(p.output_test_dir, p.pipeline_top_dir,
                             p.added_files, p.added_directories);
   // do things in this location
   do {
@@ -84,7 +84,8 @@ int main(int argc, char **argv) {
                 << std::endl;
     }
     sf.resolve_with_python(p.output_test_dir / ".snakemake_unit_tests",
-                           p.pipeline_run_dir, p.verbose, false);
+                           p.pipeline_top_dir, p.pipeline_run_dir, p.verbose,
+                           false);
   } while (sf.contains_blockers());
 
   // remove the location
@@ -95,11 +96,16 @@ int main(int argc, char **argv) {
 
   // iterate over the solved rules, emitting them with modifiers as desired
   sr.emit_tests(
-      sf, p.output_test_dir, p.pipeline_run_dir, p.inst_dir, p.exclude_rules,
-      p.added_files, p.added_directories, p.update_snakefiles || p.update_all,
+      sf, p.output_test_dir, p.pipeline_top_dir, p.pipeline_run_dir, p.inst_dir,
+      p.exclude_rules, p.added_files, p.added_directories,
+      p.update_snakefiles || p.update_all,
       p.update_added_content || p.update_all, p.update_inputs || p.update_all,
       p.update_outputs || p.update_all, p.update_pytest || p.update_all);
 
+  // if requested, report final configuration settings to test directory
+  if (p.update_config || p.update_all) {
+    p.report_settings(p.output_test_dir / "unit" / "config.yaml");
+  }
   std::cout << "all done woo!" << std::endl;
   return 0;
 }

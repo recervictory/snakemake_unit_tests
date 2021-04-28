@@ -34,7 +34,7 @@ void snakemake_unit_tests::solved_rules::load_file(
         // scan for remaining rule content lines
         while (input.peek() != EOF) {
           getline(input, line);
-          if (line.empty()) break;
+          if (line.empty() || line.at(0) != ' ') break;
           if (line.find("    input:") == 0) {
             // special handler for solved input files
             split_comma_list(line.substr(11), &input_filenames);
@@ -60,7 +60,8 @@ void snakemake_unit_tests::solved_rules::load_file(
           } else if (line.find("    jobid:") == 0 ||
                      line.find("    wildcards:") == 0 ||
                      line.find("    benchmark:") == 0 ||
-                     line.find("    resources:") == 0) {
+                     line.find("    resources:") == 0 ||
+                     line.find("    threads:") == 0) {
             // other recognized solution annotations;
             // for the moment, do nothing with them
           } else {
@@ -83,9 +84,10 @@ void snakemake_unit_tests::solved_rules::load_file(
 
 void snakemake_unit_tests::solved_rules::emit_tests(
     const snakemake_file &sf, const boost::filesystem::path &output_test_dir,
-    const boost::filesystem::path &pipeline_dir,
+    const boost::filesystem::path &pipeline_top_dir,
+    const boost::filesystem::path &pipeline_run_dir,
     const boost::filesystem::path &inst_dir,
-    const std::vector<std::string> &exclude_rules,
+    const std::map<std::string, bool> &exclude_rules,
     const std::vector<boost::filesystem::path> &added_files,
     const std::vector<boost::filesystem::path> &added_directories,
     bool update_snakefiles, bool update_added_content, bool update_inputs,
@@ -113,10 +115,10 @@ void snakemake_unit_tests::solved_rules::emit_tests(
        iter != _recipes.end(); ++iter) {
     if (test_history.find(iter->get_rule_name()) == test_history.end()) {
       create_workspace(*iter, sf, output_test_dir, test_parent_path,
-                       pipeline_dir, inst_test_py, exclude_rules, added_files,
-                       added_directories, update_snakefiles,
-                       update_added_content, update_inputs, update_outputs,
-                       update_pytest);
+                       pipeline_top_dir, pipeline_run_dir, inst_test_py,
+                       exclude_rules, added_files, added_directories,
+                       update_snakefiles, update_added_content, update_inputs,
+                       update_outputs, update_pytest);
       test_history[iter->get_rule_name()] = true;
     }
   }
@@ -133,24 +135,17 @@ void snakemake_unit_tests::solved_rules::create_workspace(
     const recipe &rec, const snakemake_file &sf,
     const boost::filesystem::path &output_test_dir,
     const boost::filesystem::path &test_parent_path,
-    const boost::filesystem::path &pipeline_dir,
+    const boost::filesystem::path &pipeline_top_dir,
+    const boost::filesystem::path &pipeline_run_dir,
     const boost::filesystem::path &inst_test_py,
-    const std::vector<std::string> &exclude_rules,
+    const std::map<std::string, bool> &exclude_rules,
     const std::vector<boost::filesystem::path> &added_files,
     const std::vector<boost::filesystem::path> &added_directories,
     bool update_snakefiles, bool update_added_content, bool update_inputs,
     bool update_outputs, bool update_pytest) const {
-  // create an excluded rule lookup, for filtering things the user
-  // wants skipped
-  std::map<std::string, bool> exclude_rule_lookup;
-  for (std::vector<std::string>::const_iterator iter = exclude_rules.begin();
-       iter != exclude_rules.end(); ++iter) {
-    exclude_rule_lookup[*iter] = true;
-  }
   // only create output if the rule has not already been hit,
   // and if the user didn't want this rule disabled
-  if (exclude_rule_lookup.find(rec.get_rule_name()) ==
-      exclude_rule_lookup.end()) {
+  if (exclude_rules.find(rec.get_rule_name()) == exclude_rules.end()) {
     std::cout << "emitting test for rule \"" << rec.get_rule_name() << "\""
               << std::endl;
 
@@ -169,18 +164,19 @@ void snakemake_unit_tests::solved_rules::create_workspace(
     }
     if (update_outputs) {
       // copy *output* to expected path
-      copy_contents(rec.get_outputs(), pipeline_dir, rule_expected_path,
-                    rec.get_rule_name());
+      copy_contents(rec.get_outputs(), pipeline_top_dir / pipeline_run_dir,
+                    rule_expected_path / pipeline_run_dir, rec.get_rule_name());
     }
     if (update_inputs) {
       // copy *input* to workspace
-      copy_contents(rec.get_inputs(), pipeline_dir, workspace_path,
-                    rec.get_rule_name());
+      copy_contents(rec.get_inputs(), pipeline_top_dir / pipeline_run_dir,
+                    workspace_path / pipeline_run_dir, rec.get_rule_name());
     }
     if (update_added_content) {
       // copy extra files and directories, if provided, to workspace
-      copy_contents(added_files, pipeline_dir, workspace_path, "added files");
-      copy_contents(added_directories, pipeline_dir, workspace_path,
+      copy_contents(added_files, pipeline_top_dir, workspace_path,
+                    "added files");
+      copy_contents(added_directories, pipeline_top_dir, workspace_path,
                     "added directories");
     }
     if (update_snakefiles) {
@@ -194,7 +190,7 @@ void snakemake_unit_tests::solved_rules::create_workspace(
     if (update_pytest) {
       report_modified_test_script(
           test_parent_path, output_test_dir, rec.get_rule_name(),
-          sf.get_snakefile_relative_path(), inst_test_py);
+          sf.get_snakefile_relative_path(), pipeline_run_dir, inst_test_py);
     }
   }
 }
@@ -255,6 +251,7 @@ void snakemake_unit_tests::solved_rules::copy_contents(
     const boost::filesystem::path &source_prefix,
     const boost::filesystem::path &target_prefix,
     const std::string &rule_name) const {
+  std::map<boost::filesystem::path, bool> copied_sources;
   for (std::vector<boost::filesystem::path>::const_iterator iter =
            contents.begin();
        iter != contents.end(); ++iter) {
@@ -266,13 +263,19 @@ void snakemake_unit_tests::solved_rules::copy_contents(
       throw std::runtime_error("cannot find file/directory \"" +
                                source_file.string() + "\" for " + rule_name);
     }
-    // create parent directories as needed
-    boost::filesystem::create_directories(target_file.parent_path());
-    // recursive copy
-    boost::filesystem::copy(
-        source_file, target_file,
-        boost::filesystem::copy_options::overwrite_existing |
-            boost::filesystem::copy_options::recursive);
+    // prohibit multiple copies of the same file
+    // don't know why some files are multiply tracked, but
+    // it's seemingly harmless
+    if (copied_sources.find(source_file) == copied_sources.end()) {
+      copied_sources[source_file] = true;
+      // create parent directories as needed
+      boost::filesystem::create_directories(target_file.parent_path());
+      // recursive copy
+      boost::filesystem::copy(
+          source_file, target_file,
+          boost::filesystem::copy_options::overwrite_existing |
+              boost::filesystem::copy_options::recursive);
+    }
   }
 }
 
@@ -300,6 +303,7 @@ void snakemake_unit_tests::solved_rules::report_modified_test_script(
     const boost::filesystem::path &parent_dir,
     const boost::filesystem::path &test_dir, const std::string &rule_name,
     const boost::filesystem::path &snakefile_relative_path,
+    const boost::filesystem::path &pipeline_run_dir,
     const boost::filesystem::path &inst_test_py) const {
   std::ifstream input;
   std::ofstream output;
@@ -313,7 +317,9 @@ void snakemake_unit_tests::solved_rules::report_modified_test_script(
                << "'" << std::endl
                << "rulename='" << rule_name << '\'' << std::endl
                << "snakefile_relative_path='"
-               << snakefile_relative_path.string() << "'" << std::endl))
+               << snakefile_relative_path.string() << "'" << std::endl
+               << "snakemake_exec_path='" << pipeline_run_dir.string() << "'"
+               << std::endl))
     throw std::runtime_error(
         "cannot write rulename variable to test python file \"" +
         test_python_file + "\"");

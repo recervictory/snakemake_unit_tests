@@ -93,6 +93,9 @@ Public Member Functions</h2></td></tr>
 &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1params.html#af45bdc3d5ec2829ddad8bec1978431db">~params</a> ()  throw ()</td></tr>
 <tr class="memdesc:af45bdc3d5ec2829ddad8bec1978431db"><td class="mdescLeft">&#160;</td><td class="mdescRight">destructor <br /></td></tr>
 <tr class="separator:af45bdc3d5ec2829ddad8bec1978431db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ce20944d655fa30eb734eb9d87ade18"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1params.html#a6ce20944d655fa30eb734eb9d87ade18">report_settings</a> (const boost::filesystem::path &amp;filename) const</td></tr>
+<tr class="memdesc:a6ce20944d655fa30eb734eb9d87ade18"><td class="mdescLeft">&#160;</td><td class="mdescRight">report settings to yaml file  <a href="classsnakemake__unit__tests_1_1params.html#a6ce20944d655fa30eb734eb9d87ade18">More...</a><br /></td></tr>
+<tr class="separator:a6ce20944d655fa30eb734eb9d87ade18"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Data Fields</h2></td></tr>
@@ -112,6 +115,10 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1params.html#a119e6ca27b62458066c583a6ca4a666c">update_added_content</a></td></tr>
 <tr class="memdesc:a119e6ca27b62458066c583a6ca4a666c"><td class="mdescLeft">&#160;</td><td class="mdescRight">update added files and directories in unit tests <br /></td></tr>
 <tr class="separator:a119e6ca27b62458066c583a6ca4a666c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d21275660e342bc7820fbd0f7e95e6c"><td class="memItemLeft" align="right" valign="top"><a id="a7d21275660e342bc7820fbd0f7e95e6c"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1params.html#a7d21275660e342bc7820fbd0f7e95e6c">update_config</a></td></tr>
+<tr class="memdesc:a7d21275660e342bc7820fbd0f7e95e6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">update configuration report emittd to output unit test directory <br /></td></tr>
+<tr class="separator:a7d21275660e342bc7820fbd0f7e95e6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac5d783fd9057cfb2ead5b01dd49b9873"><td class="memItemLeft" align="right" valign="top"><a id="ac5d783fd9057cfb2ead5b01dd49b9873"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1params.html#ac5d783fd9057cfb2ead5b01dd49b9873">update_inputs</a></td></tr>
 <tr class="memdesc:ac5d783fd9057cfb2ead5b01dd49b9873"><td class="mdescLeft">&#160;</td><td class="mdescRight">update rule inputs in unit tests <br /></td></tr>
@@ -160,10 +167,10 @@ std::vector&lt; boost::filesystem::path &gt;&#160;</td><td class="memItemRight" 
 std::vector&lt; boost::filesystem::path &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1params.html#a1c24443a34c0a3617646f97a73c62141">added_directories</a></td></tr>
 <tr class="memdesc:a1c24443a34c0a3617646f97a73c62141"><td class="mdescLeft">&#160;</td><td class="mdescRight">user-defined directories to recursively place in test workspaces <br /></td></tr>
 <tr class="separator:a1c24443a34c0a3617646f97a73c62141"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae52e4cb75d760ed878074ecfa5cd6f0c"><td class="memItemLeft" align="right" valign="top"><a id="ae52e4cb75d760ed878074ecfa5cd6f0c"></a>
-std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1params.html#ae52e4cb75d760ed878074ecfa5cd6f0c">exclude_rules</a></td></tr>
-<tr class="memdesc:ae52e4cb75d760ed878074ecfa5cd6f0c"><td class="mdescLeft">&#160;</td><td class="mdescRight">user-defined rulenames to skip in test generation <br /></td></tr>
-<tr class="separator:ae52e4cb75d760ed878074ecfa5cd6f0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c9887a0206ec5b8eeab31aac1a43ce9"><td class="memItemLeft" align="right" valign="top"><a id="a5c9887a0206ec5b8eeab31aac1a43ce9"></a>
+std::map&lt; std::string, bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1params.html#a5c9887a0206ec5b8eeab31aac1a43ce9">exclude_rules</a></td></tr>
+<tr class="memdesc:a5c9887a0206ec5b8eeab31aac1a43ce9"><td class="mdescLeft">&#160;</td><td class="mdescRight">user-defined rulenames to skip in test generation <br /></td></tr>
+<tr class="separator:a5c9887a0206ec5b8eeab31aac1a43ce9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>resolved set of parameters to control program operation </p>
@@ -202,8 +209,38 @@ std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bott
 
 </div>
 </div>
-<hr/>The documentation for this class was generated from the following file:<ul>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a6ce20944d655fa30eb734eb9d87ade18"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ce20944d655fa30eb734eb9d87ade18">&#9670;&nbsp;</a></span>report_settings()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void snakemake_unit_tests::params::report_settings </td>
+          <td>(</td>
+          <td class="paramtype">const boost::filesystem::path &amp;&#160;</td>
+          <td class="paramname"><em>filename</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>report settings to yaml file </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">filename</td><td>name of file to write</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>the reported settings will be the result of resolving the input config and any command line flags, but will not report any binary flags</p>
+<p>TODO(cpalmer718): check if BB wants binary flags </p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
 <li>snakemake_unit_tests/<a class="el" href="cargs_8h_source.html">cargs.h</a></li>
+<li>snakemake_unit_tests/<a class="el" href="cargs_8cc.html">cargs.cc</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

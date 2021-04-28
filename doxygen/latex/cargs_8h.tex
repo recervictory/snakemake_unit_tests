@@ -5,12 +5,16 @@
 command line argument handling  
 
 
+{\ttfamily \#include $<$fstream$>$}\newline
+{\ttfamily \#include $<$map$>$}\newline
 {\ttfamily \#include $<$stdexcept$>$}\newline
 {\ttfamily \#include $<$string$>$}\newline
+{\ttfamily \#include $<$utility$>$}\newline
 {\ttfamily \#include $<$vector$>$}\newline
 {\ttfamily \#include \char`\"{}boost/filesystem.\+hpp\char`\"{}}\newline
 {\ttfamily \#include \char`\"{}boost/program\+\_\+options.\+hpp\char`\"{}}\newline
 {\ttfamily \#include \char`\"{}snakemake\+\_\+unit\+\_\+tests/yaml\+\_\+reader.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}yaml-\/cpp/yaml.\+h\char`\"{}}\newline
 \doxysubsection*{Data Structures}
 \begin{DoxyCompactItemize}
 \item 
@@ -18,6 +22,11 @@ class \mbox{\hyperlink{classsnakemake__unit__tests_1_1params}{snakemake\+\_\+uni
 \begin{DoxyCompactList}\small\item\em resolved set of parameters to control program operation \end{DoxyCompactList}\item 
 class \mbox{\hyperlink{classsnakemake__unit__tests_1_1cargs}{snakemake\+\_\+unit\+\_\+tests\+::cargs}}
 \begin{DoxyCompactList}\small\item\em command line argument parser using boost\+::program\+\_\+options \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$class value\+\_\+type $>$ }\\std\+::map$<$ value\+\_\+type, bool $>$ \mbox{\hyperlink{cargs_8h_a929249a2c160ad127be6db3bcc8d04b2}{snakemake\+\_\+unit\+\_\+tests\+::vector\+\_\+to\+\_\+map}} (const std\+::vector$<$ value\+\_\+type $>$ \&vec)
+\begin{DoxyCompactList}\small\item\em take entries of a vector and fill a map with them as keys \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \doxysubsection{Detailed Description}
@@ -33,3 +42,30 @@ requires boost\+::program\+\_\+options library + headers
 Released under the MIT License. Copyright 2021 Cameron Palmer
 \end{DoxyCopyright}
 Thanks to \href{https://www.boost.org/doc/libs/1_70_0/doc/html/program_options/tutorial.html\#id-1.3.32.4.3}{\texttt{ https\+://www.\+boost.\+org/doc/libs/1\+\_\+70\+\_\+0/doc/html/program\+\_\+options/tutorial.\+html\#id-\/1.\+3.\+32.\+4.\+3}} 
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{cargs_8h_a929249a2c160ad127be6db3bcc8d04b2}\label{cargs_8h_a929249a2c160ad127be6db3bcc8d04b2}} 
+\index{cargs.h@{cargs.h}!vector\_to\_map@{vector\_to\_map}}
+\index{vector\_to\_map@{vector\_to\_map}!cargs.h@{cargs.h}}
+\doxysubsubsection{\texorpdfstring{vector\_to\_map()}{vector\_to\_map()}}
+{\footnotesize\ttfamily template$<$class value\+\_\+type $>$ \\
+std\+::map$<$value\+\_\+type, bool$>$ snakemake\+\_\+unit\+\_\+tests\+::vector\+\_\+to\+\_\+map (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ value\+\_\+type $>$ \&}]{vec }\end{DoxyParamCaption})}
+
+
+
+take entries of a vector and fill a map with them as keys 
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em value\+\_\+type} & storage type of key \\
+\hline
+\end{DoxyTemplParams}
+
+\begin{DoxyParams}{Parameters}
+{\em vec} & input vector of values \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+map with vector values as keys
+\end{DoxyReturn}
+all map values are set to true 
