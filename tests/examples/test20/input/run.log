@@ -1,0 +1,17 @@
+Building DAG of jobs...
+Job counts:
+	count	jobs
+	1	simple_rule
+	1
+
+[Sun Apr 11 14:49:47 2021]
+rule simple_rule:
+    input: input.txt
+    output: output
+    jobid: 0
+
+Job counts:
+	count	jobs
+	1	simple_rule
+	1
+This was a dry-run (flag -n). The order of jobs does not reflect the order of execution.

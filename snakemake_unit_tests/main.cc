@@ -102,6 +102,10 @@ int main(int argc, char **argv) {
       p.update_added_content || p.update_all, p.update_inputs || p.update_all,
       p.update_outputs || p.update_all, p.update_pytest || p.update_all);
 
+  // if requested, report final configuration settings to test directory
+  if (p.update_config || p.update_all) {
+    p.report_settings(p.output_test_dir / "unit" / "config.yaml");
+  }
   std::cout << "all done woo!" << std::endl;
   return 0;
 }

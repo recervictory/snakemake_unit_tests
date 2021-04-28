@@ -164,7 +164,7 @@ class solved_rules {
     @param inst_dir directory in snakemake_unit_tests repo containing
     installation files (when conda mode is enabled, this will default to
     $CONDA_PREFIX/share/snakemake_unit_tests/inst)
-    @param exclude_rules vector of rules to skip tests for
+    @param exclude_rules map of rules to skip tests for
     @param added_files vector of additional files to add to test workspaces
     @param added_directories vector of additional directories to add to test
     workspaces
@@ -180,7 +180,7 @@ class solved_rules {
                   const boost::filesystem::path &pipeline_top_dir,
                   const boost::filesystem::path &pipeline_run_dir,
                   const boost::filesystem::path &inst_dir,
-                  const std::vector<std::string> &exclude_rules,
+                  const std::map<std::string, bool> &exclude_rules,
                   const std::vector<boost::filesystem::path> &added_files,
                   const std::vector<boost::filesystem::path> &added_directories,
                   bool update_snakefiles, bool update_added_content,
@@ -214,7 +214,7 @@ class solved_rules {
     @param test_inst_py snakemake_unit_tests installed test.py script
     installation files (when conda mode is enabled, this will default to
     $CONDA_PREFIX/share/snakemake_unit_tests/inst)
-    @param exclude_rules vector of rules to skip tests for
+    @param exclude_rules map of rules to skip tests for
     @param added_files vector of additional files to add to test workspaces
     @param added_directories vector of additional directories to add to test
     workspaces
@@ -232,7 +232,7 @@ class solved_rules {
       const boost::filesystem::path &pipeline_top_dir,
       const boost::filesystem::path &pipeline_run_dir,
       const boost::filesystem::path &test_inst_py,
-      const std::vector<std::string> &exclude_rules,
+      const std::map<std::string, bool> &exclude_rules,
       const std::vector<boost::filesystem::path> &added_files,
       const std::vector<boost::filesystem::path> &added_directories,
       bool update_snakefiles, bool update_added_content, bool update_inputs,

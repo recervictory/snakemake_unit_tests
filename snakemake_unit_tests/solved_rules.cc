@@ -87,7 +87,7 @@ void snakemake_unit_tests::solved_rules::emit_tests(
     const boost::filesystem::path &pipeline_top_dir,
     const boost::filesystem::path &pipeline_run_dir,
     const boost::filesystem::path &inst_dir,
-    const std::vector<std::string> &exclude_rules,
+    const std::map<std::string, bool> &exclude_rules,
     const std::vector<boost::filesystem::path> &added_files,
     const std::vector<boost::filesystem::path> &added_directories,
     bool update_snakefiles, bool update_added_content, bool update_inputs,
@@ -138,22 +138,14 @@ void snakemake_unit_tests::solved_rules::create_workspace(
     const boost::filesystem::path &pipeline_top_dir,
     const boost::filesystem::path &pipeline_run_dir,
     const boost::filesystem::path &inst_test_py,
-    const std::vector<std::string> &exclude_rules,
+    const std::map<std::string, bool> &exclude_rules,
     const std::vector<boost::filesystem::path> &added_files,
     const std::vector<boost::filesystem::path> &added_directories,
     bool update_snakefiles, bool update_added_content, bool update_inputs,
     bool update_outputs, bool update_pytest) const {
-  // create an excluded rule lookup, for filtering things the user
-  // wants skipped
-  std::map<std::string, bool> exclude_rule_lookup;
-  for (std::vector<std::string>::const_iterator iter = exclude_rules.begin();
-       iter != exclude_rules.end(); ++iter) {
-    exclude_rule_lookup[*iter] = true;
-  }
   // only create output if the rule has not already been hit,
   // and if the user didn't want this rule disabled
-  if (exclude_rule_lookup.find(rec.get_rule_name()) ==
-      exclude_rule_lookup.end()) {
+  if (exclude_rules.find(rec.get_rule_name()) == exclude_rules.end()) {
     std::cout << "emitting test for rule \"" << rec.get_rule_name() << "\""
               << std::endl;
 

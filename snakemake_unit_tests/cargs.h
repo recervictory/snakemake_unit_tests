@@ -13,15 +13,36 @@
 #ifndef SNAKEMAKE_UNIT_TESTS_CARGS_H_
 #define SNAKEMAKE_UNIT_TESTS_CARGS_H_
 
+#include <fstream>
+#include <map>
 #include <stdexcept>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "boost/filesystem.hpp"
 #include "boost/program_options.hpp"
 #include "snakemake_unit_tests/yaml_reader.h"
+#include "yaml-cpp/yaml.h"
 
 namespace snakemake_unit_tests {
+/*!
+  @brief take entries of a vector and fill a map with them as keys
+  @tparam value_type storage type of key
+  @param vec input vector of values
+  @return map with vector values as keys
+
+  all map values are set to true
+ */
+template <class value_type>
+std::map<value_type, bool> vector_to_map(const std::vector<value_type> &vec) {
+  std::map<value_type, bool> res;
+  for (typename std::vector<value_type>::const_iterator iter = vec.begin();
+       iter != vec.end(); ++iter) {
+    res[*iter] = true;
+  }
+  return res;
+}
 /*!
   @class params
   @brief resolved set of parameters to control program operation
@@ -36,6 +57,7 @@ class params {
         update_all(false),
         update_snakefiles(false),
         update_added_content(false),
+        update_config(false),
         update_inputs(false),
         update_outputs(false),
         update_pytest(false),
@@ -55,6 +77,7 @@ class params {
         update_all(obj.update_all),
         update_snakefiles(obj.update_snakefiles),
         update_added_content(obj.update_added_content),
+        update_config(obj.update_config),
         update_inputs(obj.update_inputs),
         update_outputs(obj.update_outputs),
         update_pytest(obj.update_pytest),
@@ -68,11 +91,47 @@ class params {
         snakemake_log(obj.snakemake_log),
         added_files(obj.added_files),
         added_directories(obj.added_directories),
-        exclude_rules(obj.exclude_rules) {}
+        exclude_rules(obj.exclude_rules),
+        exclude_extensions(obj.exclude_extensions),
+        exclude_paths(obj.exclude_paths),
+        byte_comparisons(obj.byte_comparisons) {}
   /*!
     @brief destructor
    */
   ~params() throw() {}
+  /*!
+    @brief report settings to yaml file
+    @param filename name of file to write
+
+    the reported settings will be the result of
+    resolving the input config and any command line flags,
+    but will not report any binary flags
+
+    TODO(cpalmer718): check if BB wants binary flags
+   */
+  void report_settings(const boost::filesystem::path &filename) const;
+  /*!
+    @brief emit map contents as key->sequence in a YAML::Map
+    @param out YAML Emitter to which to report YAML content
+    @param data keys for output sequence
+    @param key YAML key corresponding to this sequence
+
+    note that null sequences are emitted as "key: ~" in YAML style
+   */
+  void emit_yaml_map(YAML::Emitter *out,
+                     const std::map<std::string, bool> &data,
+                     const std::string &key) const;
+  /*!
+    @brief emit vector contents as key->sequence in a YAML::Map
+    @param out YAML Emitter to which to report YAML content
+    @param data keys for output sequence
+    @param key YAML key corresponding to this sequence
+
+    note that null sequences are emitted as "key: ~" in YAML style
+   */
+  void emit_yaml_vector(YAML::Emitter *out,
+                        const std::vector<boost::filesystem::path> &data,
+                        const std::string &key) const;
   /*!
     @brief provide verbose logging output
    */
@@ -89,6 +148,11 @@ class params {
     @brief update added files and directories in unit tests
    */
   bool update_added_content;
+  /*!
+    @brief update configuration report emittd to output unit
+    test directory
+   */
+  bool update_config;
   /*!
     @brief update rule inputs in unit tests
    */
@@ -145,7 +209,19 @@ class params {
   /*!
     @brief user-defined rulenames to skip in test generation
    */
-  std::vector<std::string> exclude_rules;
+  std::map<std::string, bool> exclude_rules;
+  /*!
+    @brief user-defined file extensions to exclude from pytest comparison
+   */
+  std::map<std::string, bool> exclude_extensions;
+  /*!
+    @brief user-defined path patterns to exclude from pytest comparison
+   */
+  std::map<std::string, bool> exclude_paths;
+  /*!
+    @brief user-defined file extensions to flag as needing binary comparison
+   */
+  std::map<std::string, bool> byte_comparisons;
 };
 
 /*!
@@ -348,6 +424,16 @@ class cargs {
     return compute_flag("update-added-content");
   }
   /*!
+    @brief get user flag for updating config report to unit directory top level
+    @return whether the user wants to update run configuration report based on
+    the current settings
+
+    the distinction here is that there are definitely some cases in which
+    the user won't want to update config based on some test or rule subset
+    or different log they're working with for testing purposes
+   */
+  bool update_config() const { return compute_flag("update-config"); }
+  /*!
     @brief get user flag for updating unit tests' inputs
     @return whether the user wants to update existing tests' inputs
 
@@ -458,6 +544,25 @@ class cargs {
     for (std::vector<std::string>::const_iterator iter = cli_entries.begin();
          iter != cli_entries.end(); ++iter) {
       params_entries->push_back(value_type(*iter));
+    }
+  }
+  /*!
+    @brief append any CLI entries for a multitoken parameter to
+    those already found in the config yaml
+    @tparam value_type class to cast command line strings into (can just be
+    strings)
+    @param cli_entries values for the parameter found on the command line
+    @param params_entries values for the parameter found in the config yaml,
+    as keys in a map
+   */
+  template <class value_type>
+  void add_contents(const std::vector<std::string> &cli_entries,
+                    std::map<value_type, bool> *params_entries) const {
+    if (!params_entries)
+      throw std::runtime_error("null pointer to add_contents");
+    for (std::vector<std::string>::const_iterator iter = cli_entries.begin();
+         iter != cli_entries.end(); ++iter) {
+      params_entries->insert(std::make_pair(value_type(*iter), true));
     }
   }
   /*!

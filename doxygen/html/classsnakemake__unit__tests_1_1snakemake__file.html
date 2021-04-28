@@ -96,18 +96,18 @@ Public Member Functions</h2></td></tr>
 &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1snakemake__file.html#a75af4c4c7927d70267481cb7915c8198">~snakemake_file</a> ()  throw ()</td></tr>
 <tr class="memdesc:a75af4c4c7927d70267481cb7915c8198"><td class="mdescLeft">&#160;</td><td class="mdescRight">destructor <br /></td></tr>
 <tr class="separator:a75af4c4c7927d70267481cb7915c8198"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad196d35cc37be2231c854f4e25dd2a4b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1snakemake__file.html#ad196d35cc37be2231c854f4e25dd2a4b">load_everything</a> (const boost::filesystem::path &amp;filename, const boost::filesystem::path &amp;base_dir, std::vector&lt; std::string &gt; *exclude_rules, bool verbose)</td></tr>
-<tr class="memdesc:ad196d35cc37be2231c854f4e25dd2a4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">load and parse snakemake pipeline  <a href="classsnakemake__unit__tests_1_1snakemake__file.html#ad196d35cc37be2231c854f4e25dd2a4b">More...</a><br /></td></tr>
-<tr class="separator:ad196d35cc37be2231c854f4e25dd2a4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae1eb72bbdb5f08d16c576aac78f621c0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1snakemake__file.html#ae1eb72bbdb5f08d16c576aac78f621c0">load_everything</a> (const boost::filesystem::path &amp;filename, const boost::filesystem::path &amp;base_dir, std::map&lt; std::string, bool &gt; *exclude_rules, bool verbose)</td></tr>
+<tr class="memdesc:ae1eb72bbdb5f08d16c576aac78f621c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">load and parse snakemake pipeline  <a href="classsnakemake__unit__tests_1_1snakemake__file.html#ae1eb72bbdb5f08d16c576aac78f621c0">More...</a><br /></td></tr>
+<tr class="separator:ae1eb72bbdb5f08d16c576aac78f621c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aad083e297205df231dd78d2cb93a1afa"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1snakemake__file.html#aad083e297205df231dd78d2cb93a1afa">parse_file</a> (const std::vector&lt; std::string &gt; &amp;loaded_lines, std::list&lt; boost::shared_ptr&lt; <a class="el" href="classsnakemake__unit__tests_1_1rule__block.html">rule_block</a> &gt; &gt;::iterator insertion_point, const boost::filesystem::path &amp;filename, bool verbose)</td></tr>
 <tr class="memdesc:aad083e297205df231dd78d2cb93a1afa"><td class="mdescLeft">&#160;</td><td class="mdescRight">parse a snakemake file  <a href="classsnakemake__unit__tests_1_1snakemake__file.html#aad083e297205df231dd78d2cb93a1afa">More...</a><br /></td></tr>
 <tr class="separator:aad083e297205df231dd78d2cb93a1afa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaa55fc451f722b94090f0f26f2671594"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1snakemake__file.html#aaa55fc451f722b94090f0f26f2671594">load_lines</a> (const boost::filesystem::path &amp;filename, std::vector&lt; std::string &gt; *target) const</td></tr>
 <tr class="memdesc:aaa55fc451f722b94090f0f26f2671594"><td class="mdescLeft">&#160;</td><td class="mdescRight">load all lines from a file into memory  <a href="classsnakemake__unit__tests_1_1snakemake__file.html#aaa55fc451f722b94090f0f26f2671594">More...</a><br /></td></tr>
 <tr class="separator:aaa55fc451f722b94090f0f26f2671594"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa83a98811e77d7003c311d951946950c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1snakemake__file.html#aa83a98811e77d7003c311d951946950c">detect_known_issues</a> (std::vector&lt; std::string &gt; *exclude_rules)</td></tr>
-<tr class="memdesc:aa83a98811e77d7003c311d951946950c"><td class="mdescLeft">&#160;</td><td class="mdescRight">report on internal discrepancies in the snakefile load results  <a href="classsnakemake__unit__tests_1_1snakemake__file.html#aa83a98811e77d7003c311d951946950c">More...</a><br /></td></tr>
-<tr class="separator:aa83a98811e77d7003c311d951946950c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56f7c6a5fb4499edbbfd70df2a4bce3b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1snakemake__file.html#a56f7c6a5fb4499edbbfd70df2a4bce3b">detect_known_issues</a> (std::map&lt; std::string, bool &gt; *exclude_rules)</td></tr>
+<tr class="memdesc:a56f7c6a5fb4499edbbfd70df2a4bce3b"><td class="mdescLeft">&#160;</td><td class="mdescRight">report on internal discrepancies in the snakefile load results  <a href="classsnakemake__unit__tests_1_1snakemake__file.html#a56f7c6a5fb4499edbbfd70df2a4bce3b">More...</a><br /></td></tr>
+<tr class="separator:a56f7c6a5fb4499edbbfd70df2a4bce3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a79cfa9d4504725992bb3cd6f10168fe2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1snakemake__file.html#a79cfa9d4504725992bb3cd6f10168fe2">resolve_derived_rules</a> ()</td></tr>
 <tr class="memdesc:a79cfa9d4504725992bb3cd6f10168fe2"><td class="mdescLeft">&#160;</td><td class="mdescRight">populate derived rules with base rule blocks  <a href="classsnakemake__unit__tests_1_1snakemake__file.html#a79cfa9d4504725992bb3cd6f10168fe2">More...</a><br /></td></tr>
 <tr class="separator:a79cfa9d4504725992bb3cd6f10168fe2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -141,9 +141,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a0bd43a8c7637e1d19e65fc75368b2088"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1snakemake__file.html#a0bd43a8c7637e1d19e65fc75368b2088">capture_python_tag_values</a> (const std::vector&lt; std::string &gt; &amp;vec, std::map&lt; std::string, std::string &gt; *target) const</td></tr>
 <tr class="memdesc:a0bd43a8c7637e1d19e65fc75368b2088"><td class="mdescLeft">&#160;</td><td class="mdescRight">parse python reporting output to tags or tags and values  <a href="classsnakemake__unit__tests_1_1snakemake__file.html#a0bd43a8c7637e1d19e65fc75368b2088">More...</a><br /></td></tr>
 <tr class="separator:a0bd43a8c7637e1d19e65fc75368b2088"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a21015caf99559ef153c3e62f50a8139b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1snakemake__file.html#a21015caf99559ef153c3e62f50a8139b">postflight_checks</a> (std::vector&lt; std::string &gt; *exclude_rules)</td></tr>
-<tr class="memdesc:a21015caf99559ef153c3e62f50a8139b"><td class="mdescLeft">&#160;</td><td class="mdescRight">resolve derived rules and check for sanity  <a href="classsnakemake__unit__tests_1_1snakemake__file.html#a21015caf99559ef153c3e62f50a8139b">More...</a><br /></td></tr>
-<tr class="separator:a21015caf99559ef153c3e62f50a8139b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88ecdbd849fa3368e289b7da77da54fc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1snakemake__file.html#a88ecdbd849fa3368e289b7da77da54fc">postflight_checks</a> (std::map&lt; std::string, bool &gt; *exclude_rules)</td></tr>
+<tr class="memdesc:a88ecdbd849fa3368e289b7da77da54fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">resolve derived rules and check for sanity  <a href="classsnakemake__unit__tests_1_1snakemake__file.html#a88ecdbd849fa3368e289b7da77da54fc">More...</a><br /></td></tr>
+<tr class="separator:a88ecdbd849fa3368e289b7da77da54fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aad6662987a0751bc55b04b5c7fd7444b"><td class="memItemLeft" align="right" valign="top">const boost::filesystem::path &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1snakemake__file.html#aad6662987a0751bc55b04b5c7fd7444b">get_snakefile_relative_path</a> () const</td></tr>
 <tr class="memdesc:aad6662987a0751bc55b04b5c7fd7444b"><td class="mdescLeft">&#160;</td><td class="mdescRight">report relative path of snakefile this object represents  <a href="classsnakemake__unit__tests_1_1snakemake__file.html#aad6662987a0751bc55b04b5c7fd7444b">More...</a><br /></td></tr>
 <tr class="separator:aad6662987a0751bc55b04b5c7fd7444b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -310,8 +310,8 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
-<a id="aa83a98811e77d7003c311d951946950c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa83a98811e77d7003c311d951946950c">&#9670;&nbsp;</a></span>detect_known_issues()</h2>
+<a id="a56f7c6a5fb4499edbbfd70df2a4bce3b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a56f7c6a5fb4499edbbfd70df2a4bce3b">&#9670;&nbsp;</a></span>detect_known_issues()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -319,7 +319,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
         <tr>
           <td class="memname">void snakemake_unit_tests::snakemake_file::detect_known_issues </td>
           <td>(</td>
-          <td class="paramtype">std::vector&lt; std::string &gt; *&#160;</td>
+          <td class="paramtype">std::map&lt; std::string, bool &gt; *&#160;</td>
           <td class="paramname"><em>exclude_rules</em></td><td>)</td>
           <td></td>
         </tr>
@@ -472,8 +472,8 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
-<a id="ad196d35cc37be2231c854f4e25dd2a4b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad196d35cc37be2231c854f4e25dd2a4b">&#9670;&nbsp;</a></span>load_everything()</h2>
+<a id="ae1eb72bbdb5f08d16c576aac78f621c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae1eb72bbdb5f08d16c576aac78f621c0">&#9670;&nbsp;</a></span>load_everything()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -493,7 +493,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::vector&lt; std::string &gt; *&#160;</td>
+          <td class="paramtype">std::map&lt; std::string, bool &gt; *&#160;</td>
           <td class="paramname"><em>exclude_rules</em>, </td>
         </tr>
         <tr>
@@ -639,8 +639,8 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
-<a id="a21015caf99559ef153c3e62f50a8139b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a21015caf99559ef153c3e62f50a8139b">&#9670;&nbsp;</a></span>postflight_checks()</h2>
+<a id="a88ecdbd849fa3368e289b7da77da54fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a88ecdbd849fa3368e289b7da77da54fc">&#9670;&nbsp;</a></span>postflight_checks()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -648,7 +648,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
         <tr>
           <td class="memname">void snakemake_unit_tests::snakemake_file::postflight_checks </td>
           <td>(</td>
-          <td class="paramtype">std::vector&lt; std::string &gt; *&#160;</td>
+          <td class="paramtype">std::map&lt; std::string, bool &gt; *&#160;</td>
           <td class="paramname"><em>exclude_rules</em></td><td>)</td>
           <td></td>
         </tr>

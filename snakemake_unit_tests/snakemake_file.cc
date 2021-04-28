@@ -58,7 +58,7 @@
 void snakemake_unit_tests::snakemake_file::load_everything(
     const boost::filesystem::path &filename,
     const boost::filesystem::path &base_dir,
-    std::vector<std::string> *exclude_rules, bool verbose) {
+    std::map<std::string, bool> *exclude_rules, bool verbose) {
   // create a dummy rule block with just a single include directive for this
   // file
   if (!exclude_rules)
@@ -73,7 +73,7 @@ void snakemake_unit_tests::snakemake_file::load_everything(
 }
 
 void snakemake_unit_tests::snakemake_file::postflight_checks(
-    std::vector<std::string> *exclude_rules) {
+    std::map<std::string, bool> *exclude_rules) {
   // placeholder: add screening step to detect known issues/unsupported features
   detect_known_issues(exclude_rules);
 
@@ -119,7 +119,7 @@ void snakemake_unit_tests::snakemake_file::report_rules(
 }
 
 void snakemake_unit_tests::snakemake_file::detect_known_issues(
-    std::vector<std::string> *exclude_rules) {
+    std::map<std::string, bool> *exclude_rules) {
   /*
     Known issues as implemented here
 
@@ -150,16 +150,16 @@ void snakemake_unit_tests::snakemake_file::detect_known_issues(
     for (unsigned i = 1; i < finder->second.size() && !problematic; ++i) {
       if (*finder->second.at(i) != *finder->second.at(0)) {
         bool already_excluded = false;
-        for (std::vector<std::string>::const_iterator viter =
+        for (std::map<std::string, bool>::const_iterator miter =
                  exclude_rules->begin();
-             viter != exclude_rules->end() && !already_excluded; ++viter) {
-          if (!viter->compare(finder->first)) {
+             miter != exclude_rules->end() && !already_excluded; ++miter) {
+          if (!miter->first.compare(finder->first)) {
             already_excluded = true;
           }
         }
         if (!already_excluded) {
           problematic = true;
-          exclude_rules->push_back(finder->first);
+          exclude_rules->insert(std::make_pair(finder->first, false));
           unresolvable_duplicated_rules.push_back(finder->first);
         }
       }

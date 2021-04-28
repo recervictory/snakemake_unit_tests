@@ -138,6 +138,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aecc9bee27294c2cc8ac3423954749964"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1cargs.html#aecc9bee27294c2cc8ac3423954749964">update_added_content</a> () const</td></tr>
 <tr class="memdesc:aecc9bee27294c2cc8ac3423954749964"><td class="mdescLeft">&#160;</td><td class="mdescRight">get user flag for updating added files and directories in place  <a href="classsnakemake__unit__tests_1_1cargs.html#aecc9bee27294c2cc8ac3423954749964">More...</a><br /></td></tr>
 <tr class="separator:aecc9bee27294c2cc8ac3423954749964"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7af6754b82a6bcd815d1522d87aaddc9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1cargs.html#a7af6754b82a6bcd815d1522d87aaddc9">update_config</a> () const</td></tr>
+<tr class="memdesc:a7af6754b82a6bcd815d1522d87aaddc9"><td class="mdescLeft">&#160;</td><td class="mdescRight">get user flag for updating config report to unit directory top level  <a href="classsnakemake__unit__tests_1_1cargs.html#a7af6754b82a6bcd815d1522d87aaddc9">More...</a><br /></td></tr>
+<tr class="separator:a7af6754b82a6bcd815d1522d87aaddc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a08a00a9c0db47315111e027b5e43dfce"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1cargs.html#a08a00a9c0db47315111e027b5e43dfce">update_inputs</a> () const</td></tr>
 <tr class="memdesc:a08a00a9c0db47315111e027b5e43dfce"><td class="mdescLeft">&#160;</td><td class="mdescRight">get user flag for updating unit tests' inputs  <a href="classsnakemake__unit__tests_1_1cargs.html#a08a00a9c0db47315111e027b5e43dfce">More...</a><br /></td></tr>
 <tr class="separator:a08a00a9c0db47315111e027b5e43dfce"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -173,6 +176,10 @@ Private Member Functions</h2></td></tr>
 <tr class="memitem:a47b20118f204085dd8f47e4db648c722"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1cargs.html#a47b20118f204085dd8f47e4db648c722">add_contents</a> (const std::vector&lt; std::string &gt; &amp;cli_entries, std::vector&lt; value_type &gt; *params_entries) const</td></tr>
 <tr class="memdesc:a47b20118f204085dd8f47e4db648c722"><td class="mdescLeft">&#160;</td><td class="mdescRight">append any CLI entries for a multitoken parameter to those already found in the config yaml  <a href="classsnakemake__unit__tests_1_1cargs.html#a47b20118f204085dd8f47e4db648c722">More...</a><br /></td></tr>
 <tr class="separator:a47b20118f204085dd8f47e4db648c722"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7060744899f8b051f68df310592d5a4b"><td class="memTemplParams" colspan="2">template&lt;class value_type &gt; </td></tr>
+<tr class="memitem:a7060744899f8b051f68df310592d5a4b"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1cargs.html#a7060744899f8b051f68df310592d5a4b">add_contents</a> (const std::vector&lt; std::string &gt; &amp;cli_entries, std::map&lt; value_type, bool &gt; *params_entries) const</td></tr>
+<tr class="memdesc:a7060744899f8b051f68df310592d5a4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">append any CLI entries for a multitoken parameter to those already found in the config yaml  <a href="classsnakemake__unit__tests_1_1cargs.html#a7060744899f8b051f68df310592d5a4b">More...</a><br /></td></tr>
+<tr class="separator:a7060744899f8b051f68df310592d5a4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a01412612909d772f3dc8f0cbc5832365"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1cargs.html#a01412612909d772f3dc8f0cbc5832365">check_nonempty</a> (const boost::filesystem::path &amp;p, const std::string &amp;msg) const</td></tr>
 <tr class="memdesc:a01412612909d772f3dc8f0cbc5832365"><td class="mdescLeft">&#160;</td><td class="mdescRight">make sure a path isn't just an empty string  <a href="classsnakemake__unit__tests_1_1cargs.html#a01412612909d772f3dc8f0cbc5832365">More...</a><br /></td></tr>
 <tr class="separator:a01412612909d772f3dc8f0cbc5832365"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -309,8 +316,61 @@ boost::program_options::variables_map&#160;</td><td class="memItemRight" valign=
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="a7060744899f8b051f68df310592d5a4b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7060744899f8b051f68df310592d5a4b">&#9670;&nbsp;</a></span>add_contents() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class value_type &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void snakemake_unit_tests::cargs::add_contents </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramname"><em>cli_entries</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::map&lt; value_type, bool &gt; *&#160;</td>
+          <td class="paramname"><em>params_entries</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>append any CLI entries for a multitoken parameter to those already found in the config yaml </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">value_type</td><td>class to cast command line strings into (can just be strings) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cli_entries</td><td>values for the parameter found on the command line </td></tr>
+    <tr><td class="paramname">params_entries</td><td>values for the parameter found in the config yaml, as keys in a map </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a47b20118f204085dd8f47e4db648c722"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a47b20118f204085dd8f47e4db648c722">&#9670;&nbsp;</a></span>add_contents()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a47b20118f204085dd8f47e4db648c722">&#9670;&nbsp;</a></span>add_contents() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1066,6 +1126,35 @@ template&lt;class value_type &gt; </div>
 
 <p>get user flag for updating all parts of unit tests </p>
 <dl class="section return"><dt>Returns</dt><dd>whether the user wants a full replacement of all unit test content </dd></dl>
+
+</div>
+</div>
+<a id="a7af6754b82a6bcd815d1522d87aaddc9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7af6754b82a6bcd815d1522d87aaddc9">&#9670;&nbsp;</a></span>update_config()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool snakemake_unit_tests::cargs::update_config </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>get user flag for updating config report to unit directory top level </p>
+<dl class="section return"><dt>Returns</dt><dd>whether the user wants to update run configuration report based on the current settings</dd></dl>
+<p>the distinction here is that there are definitely some cases in which the user won't want to update config based on some test or rule subset or different log they're working with for testing purposes </p>
 
 </div>
 </div>

@@ -43,6 +43,7 @@ void snakemake_unit_tests::cargs::initialize_options() {
       "directories")("update-snakefiles", "update snakefiles in unit tests")(
       "update-added-content",
       "update added files and directories in unit tests")(
+      "update-config", "update configuration report in unit test output")(
       "update-inputs", "update rule inputs in unit tests")(
       "update-outputs", "update rule outputs in unit test")(
       "update-pytest", "update pytest infrastructure in output directories");
@@ -90,7 +91,20 @@ snakemake_unit_tests::params snakemake_unit_tests::cargs::set_parameters()
             p.config.get_sequence("added-directories"));
       }
       if (p.config.query_valid("exclude-rules")) {
-        p.exclude_rules = p.config.get_sequence("exclude-rules");
+        p.exclude_rules =
+            vector_to_map<std::string>(p.config.get_sequence("exclude-rules"));
+      }
+      if (p.config.query_valid("exclude-extensions")) {
+        p.exclude_extensions = vector_to_map<std::string>(
+            p.config.get_sequence("exclude-extensions"));
+      }
+      if (p.config.query_valid("exclude-paths")) {
+        p.exclude_paths =
+            vector_to_map<std::string>(p.config.get_sequence("exclude-paths"));
+      }
+      if (p.config.query_valid("byte-comparisons")) {
+        p.byte_comparisons = vector_to_map<std::string>(
+            p.config.get_sequence("byte-comparisons"));
       }
     }
   }
@@ -102,6 +116,7 @@ snakemake_unit_tests::params snakemake_unit_tests::cargs::set_parameters()
   p.update_all = update_all();
   p.update_snakefiles = update_snakefiles();
   p.update_added_content = update_added_content();
+  p.update_config = update_config();
   p.update_inputs = update_inputs();
   p.update_outputs = update_outputs();
   p.update_pytest = update_pytest();
@@ -140,7 +155,7 @@ snakemake_unit_tests::params snakemake_unit_tests::cargs::set_parameters()
   add_contents<std::string>(get_exclude_rules(), &p.exclude_rules);
   // add "all" to exclusion list, always
   // it's ok if it dups with user specification, it's uniqued later
-  p.exclude_rules.push_back("all");
+  p.exclude_rules["all"] = true;
 
   // consistency checks
   // verbose is fine regardless
@@ -256,5 +271,92 @@ void snakemake_unit_tests::cargs::check_and_fix_dir(
   if (!boost::filesystem::is_directory(combined)) {
     throw std::logic_error("for \"" + msg + "\", provided path \"" +
                            combined.string() + "\" is not a directory");
+  }
+}
+
+void snakemake_unit_tests::params::report_settings(
+    const boost::filesystem::path &filename) const {
+  // aggregate settings into a YAML stream, then report it in one shot
+  YAML::Emitter out;
+  out << YAML::BeginMap;
+  // output-test-dir
+  out << YAML::Key << "output-test-dir" << YAML::Value
+      << boost::filesystem::absolute(output_test_dir).string();
+  // snakefile
+  out << YAML::Key << "snakefile" << YAML::Value
+      << boost::filesystem::absolute(snakefile).string();
+  // pipeline-top-dir
+  out << YAML::Key << "pipeline-top-dir" << YAML::Value
+      << boost::filesystem::absolute(pipeline_top_dir).string();
+  // pipeline-run-dir
+  out << YAML::Key << "pipeline-run-dir" << YAML::Value
+      << boost::filesystem::absolute(pipeline_run_dir).string();
+  // inst-dir
+  out << YAML::Key << "inst-dir" << YAML::Value
+      << boost::filesystem::absolute(inst_dir).string();
+  // snakemake-log
+  out << YAML::Key << "snakemake-log" << YAML::Value
+      << boost::filesystem::absolute(snakemake_log).string();
+  // added-files
+  emit_yaml_vector(&out, added_files, "added-files");
+  // added-directories
+  emit_yaml_vector(&out, added_directories, "added-directories");
+  // exclude-rules
+  emit_yaml_map(&out, exclude_rules, "exclude-rules");
+  // exclude-extensions
+  emit_yaml_map(&out, exclude_extensions, "exclude-extensions");
+  // exclude-paths
+  emit_yaml_map(&out, exclude_paths, "exclude-paths");
+  // byte-comparisons
+  emit_yaml_map(&out, byte_comparisons, "byte-comparisons");
+  // end the content
+  out << YAML::EndMap;
+  // write to output file
+  std::ofstream output;
+  output.open(filename.string().c_str());
+  if (!output.is_open())
+    throw std::runtime_error("cannot write to output config file \"" +
+                             filename.string() + "\"");
+  try {
+    output << out.c_str() << std::endl;
+    output.close();
+  } catch (...) {
+    if (output.is_open()) output.close();
+    throw;
+  }
+}
+
+void snakemake_unit_tests::params::emit_yaml_map(
+    YAML::Emitter *out, const std::map<std::string, bool> &data,
+    const std::string &key) const {
+  if (!out) throw std::runtime_error("null pointer to emit_yaml_map");
+  *out << YAML::Key << key << YAML::Value;
+  if (!data.empty()) {
+    *out << YAML::BeginSeq;
+    for (std::map<std::string, bool>::const_iterator iter = data.begin();
+         iter != data.end(); ++iter) {
+      *out << iter->first;
+    }
+    *out << YAML::EndSeq;
+  } else {
+    *out << YAML::Null;
+  }
+}
+
+void snakemake_unit_tests::params::emit_yaml_vector(
+    YAML::Emitter *out, const std::vector<boost::filesystem::path> &data,
+    const std::string &key) const {
+  if (!out) throw std::runtime_error("null pointer to emit_yaml_vector");
+  *out << YAML::Key << key << YAML::Value;
+  if (!data.empty()) {
+    *out << YAML::BeginSeq;
+    for (std::vector<boost::filesystem::path>::const_iterator iter =
+             data.begin();
+         iter != data.end(); ++iter) {
+      *out << iter->string();
+    }
+    *out << YAML::EndSeq;
+  } else {
+    *out << YAML::Null;
   }
 }
