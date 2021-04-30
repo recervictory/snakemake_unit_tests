@@ -6,7 +6,7 @@ rule all:
 pass
 
 
-rule somestep:
+checkpoint somestep:
     input:
         "samples/{sample}.txt",
     output:

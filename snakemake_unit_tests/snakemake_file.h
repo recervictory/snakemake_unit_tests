@@ -10,6 +10,7 @@
 #ifndef SNAKEMAKE_UNIT_TESTS_SNAKEMAKE_FILE_H_
 #define SNAKEMAKE_UNIT_TESTS_SNAKEMAKE_FILE_H_
 
+#include <deque>
 #include <list>
 #include <map>
 #include <stdexcept>
@@ -51,6 +52,7 @@ class snakemake_file {
       : _blocks(obj._blocks),
         _snakefile_relative_path(obj._snakefile_relative_path),
         _included_files(obj._included_files),
+        _rulesdot(obj._rulesdot),
         _tag_counter(obj._tag_counter),
         _updated_last_round(obj._updated_last_round) {}
   /*!
@@ -137,11 +139,11 @@ class snakemake_file {
 
   /*!
     @brief report all code blocks but a single requested rule to file
-    @param rule_name string name of requested rule
+    @param rule_names string names of requested rules
     @param out open output stream to which to write data
     @return whether the rule was present in this file
    */
-  bool report_single_rule(const std::string &rule_name,
+  bool report_single_rule(const std::map<std::string, bool> &rule_names,
                           std::ostream &out) const;
 
   /*!
@@ -262,6 +264,37 @@ class snakemake_file {
       std::map<std::string, std::vector<boost::shared_ptr<rule_block> > >
           *aggregated_rules) const;
 
+  /*!
+    @brief query rule for whether it's a checkpoint
+    @param rule_name name of rule to query
+    @param target where to store checkpoint status
+    @return whether the rule was found
+   */
+  bool query_rule_checkpoint(const std::string &rule_name, bool *target) const;
+
+  /*!
+    @brief collect 'rules.' dependency data for all loaded rules
+   */
+  void aggregate_rulesdot();
+
+  /*!
+    @brief query rule for any 'rules.' references, including those
+    of dependencies pulled in by 'rules.'
+    @param rule_name name of rule to query
+    @param target where to store detected 'rules.' rulenames
+   */
+  void recursively_query_rulesdot(const std::string &rule_name,
+                                  std::map<std::string, bool> *target) const;
+
+  /*!
+    @brief for a single rule, get 'rules.' dependencies
+    @param name name of rule to query
+    @param target where to store detected 'rules.' rulenames
+    @return whether the rule was found
+   */
+  bool get_rulesdot(const std::string &name,
+                    std::vector<std::string> *target) const;
+
  private:
   /*!
     @brief minimal contents of snakemake file as blocks of code
@@ -276,6 +309,10 @@ class snakemake_file {
    */
   std::map<boost::filesystem::path, boost::shared_ptr<snakemake_file> >
       _included_files;
+  /*!
+    @brief report of the 'rules.' dependencies of each rule
+   */
+  std::map<std::string, std::vector<std::string> > _rulesdot;
   /*!
     @brief internal counter of assigned tags to rules
    */

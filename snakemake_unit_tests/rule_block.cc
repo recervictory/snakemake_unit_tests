@@ -49,6 +49,9 @@ bool snakemake_unit_tests::rule_block::load_content_block(
                   << std::endl;
       }
       set_rule_name(regex_result[2]);
+      if (line.find_first_not_of(" ") == line.find("checkpoint")) {
+        set_checkpoint(true);
+      }
       _local_indentation = regex_result[1].str().size();
       return consume_rule_contents(loaded_lines, filename, verbose,
                                    current_line, 4);
@@ -356,8 +359,9 @@ void snakemake_unit_tests::rule_block::print_contents(std::ostream &out) const {
         throw std::runtime_error("code chunk printing error");
     }
   } else if (!get_rule_name().empty()) {  // rule
-    if (!(out << indentation(get_local_indentation()) << "rule "
-              << get_rule_name() << ":" << std::endl))
+    if (!(out << indentation(get_local_indentation())
+              << (is_checkpoint() ? "checkpoint " : "rule ") << get_rule_name()
+              << ":" << std::endl))
       throw std::runtime_error("rule name printing failure");
     // enforce restrictions on block order
     std::map<std::string, bool> high_priority_blocks, low_priority_blocks;
@@ -455,4 +459,29 @@ std::string snakemake_unit_tests::rule_block::apply_indentation(
     cur = loc + 1 + indent.size();
   }
   return res;
+}
+
+void snakemake_unit_tests::rule_block::report_rulesdot_rules(
+    std::map<std::string, bool> *target) const {
+  if (!target)
+    throw std::runtime_error("null pointer provided to report_rulesdot_rules");
+  boost::regex pattern("rules\\.([^\\.]+)\\.");
+  boost::sregex_token_iterator end;
+  // scan both code chunk and block contents
+  for (std::map<std::string, std::string>::const_iterator iter =
+           _named_blocks.begin();
+       iter != _named_blocks.end(); ++iter) {
+    boost::sregex_token_iterator finder(iter->second.begin(),
+                                        iter->second.end(), pattern, 0);
+    for (; finder != end; ++finder) {
+      (*target)[finder->str().substr(6, finder->str().size() - 7)] = true;
+    }
+  }
+  for (std::vector<std::string>::const_iterator iter = _code_chunk.begin();
+       iter != _code_chunk.end(); ++iter) {
+    boost::sregex_token_iterator finder(iter->begin(), iter->end(), pattern, 0);
+    for (; finder != end; ++finder) {
+      (*target)[finder->str().substr(6, finder->str().size() - 7)] = true;
+    }
+  }
 }

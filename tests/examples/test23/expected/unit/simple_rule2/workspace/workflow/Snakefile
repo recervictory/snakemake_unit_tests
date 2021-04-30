@@ -1,0 +1,23 @@
+rule all:
+    input:
+        "output2.txt",
+
+
+rule simple_rule1:
+    input:
+        "input1.txt",
+    output:
+        "output1.txt",
+    shell:
+        "cp {input} {output}"
+
+
+rule simple_rule2:
+    input:
+        rules.simple_rule1.output,
+    output:
+        "output2.txt",
+    shell:
+        "cp {input} {output}"
+
+

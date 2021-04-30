@@ -1,0 +1,35 @@
+rule all:
+    input:
+        "somestep/b.txt",
+
+
+pass
+
+
+pass
+
+
+checkpoint somestep:
+    input:
+        "samples/{sample}.txt",
+    output:
+        "somestep/{sample}.txt",
+    shell:
+        "echo {wildcards.sample} > somestep/{wildcards.sample}.txt"
+
+
+pass
+
+
+pass
+
+
+def aggregate_input(wildcards):
+    with checkpoints.somestep.get(sample=wildcards.sample).output[0].open() as f:
+        if f.read().strip() == "a":
+            return "post/{sample}.txt"
+        else:
+            return "alt/{sample}.txt"
+pass
+
+
