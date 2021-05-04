@@ -26,7 +26,7 @@ do
     fi
 done
 
-## compare obsered to expected output, ignoring pytest infrastructure
+## compare observed to expected output, ignoring pytest infrastructure
 ##   flag files present in one absent in other
 ## new: note that we don't ignore config.yaml here: it should be consistent
 for file in $(find "$OUTPUTDIR" -type f \( -name "*" ! -name "*.py" \) -print);

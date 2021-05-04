@@ -114,9 +114,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a278b41f5ea298bdf6ab55ce8826db360"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1cargs.html#a278b41f5ea298bdf6ab55ce8826db360">get_output_test_dir</a> () const</td></tr>
 <tr class="memdesc:a278b41f5ea298bdf6ab55ce8826db360"><td class="mdescLeft">&#160;</td><td class="mdescRight">get top-level directory under which tests should be installed  <a href="classsnakemake__unit__tests_1_1cargs.html#a278b41f5ea298bdf6ab55ce8826db360">More...</a><br /></td></tr>
 <tr class="separator:a278b41f5ea298bdf6ab55ce8826db360"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a56029082ac7b6294d67859c666d9e498"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1cargs.html#a56029082ac7b6294d67859c666d9e498">get_pipeline_dir</a> () const</td></tr>
-<tr class="memdesc:a56029082ac7b6294d67859c666d9e498"><td class="mdescLeft">&#160;</td><td class="mdescRight">get top-level directory under which actual pipeline was run  <a href="classsnakemake__unit__tests_1_1cargs.html#a56029082ac7b6294d67859c666d9e498">More...</a><br /></td></tr>
-<tr class="separator:a56029082ac7b6294d67859c666d9e498"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf7b31ac69a8bb310a258cb2a1a07959"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1cargs.html#acf7b31ac69a8bb310a258cb2a1a07959">get_pipeline_top_dir</a> () const</td></tr>
+<tr class="memdesc:acf7b31ac69a8bb310a258cb2a1a07959"><td class="mdescLeft">&#160;</td><td class="mdescRight">get top-level directory of test pipeline  <a href="classsnakemake__unit__tests_1_1cargs.html#acf7b31ac69a8bb310a258cb2a1a07959">More...</a><br /></td></tr>
+<tr class="separator:acf7b31ac69a8bb310a258cb2a1a07959"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a144442a32454acb9f09676f81ae7515d"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1cargs.html#a144442a32454acb9f09676f81ae7515d">get_pipeline_run_dir</a> () const</td></tr>
+<tr class="memdesc:a144442a32454acb9f09676f81ae7515d"><td class="mdescLeft">&#160;</td><td class="mdescRight">get directory of actual pipeline run, relative to top-level pipeline directory.  <a href="classsnakemake__unit__tests_1_1cargs.html#a144442a32454acb9f09676f81ae7515d">More...</a><br /></td></tr>
+<tr class="separator:a144442a32454acb9f09676f81ae7515d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6a443bcd3356618fb16f508da84b7654"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1cargs.html#a6a443bcd3356618fb16f508da84b7654">get_inst_dir</a> () const</td></tr>
 <tr class="memdesc:a6a443bcd3356618fb16f508da84b7654"><td class="mdescLeft">&#160;</td><td class="mdescRight">get path to inst directory for this copy of snakemake_unit_tests  <a href="classsnakemake__unit__tests_1_1cargs.html#a6a443bcd3356618fb16f508da84b7654">More...</a><br /></td></tr>
 <tr class="separator:a6a443bcd3356618fb16f508da84b7654"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -834,8 +837,8 @@ template&lt;class value_type &gt; </div>
 
 </div>
 </div>
-<a id="a56029082ac7b6294d67859c666d9e498"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a56029082ac7b6294d67859c666d9e498">&#9670;&nbsp;</a></span>get_pipeline_dir()</h2>
+<a id="a144442a32454acb9f09676f81ae7515d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a144442a32454acb9f09676f81ae7515d">&#9670;&nbsp;</a></span>get_pipeline_run_dir()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -844,7 +847,7 @@ template&lt;class value_type &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::string snakemake_unit_tests::cargs::get_pipeline_dir </td>
+          <td class="memname">std::string snakemake_unit_tests::cargs::get_pipeline_run_dir </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -857,7 +860,36 @@ template&lt;class value_type &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>get top-level directory under which actual pipeline was run </p>
+<p>get directory of actual pipeline run, relative to top-level pipeline directory. </p>
+<dl class="section return"><dt>Returns</dt><dd>directory of actual pipeline run relative to top-level pipeline directory.</dd></dl>
+<p>this parameter is optional. if not specified, it will be assumed to be '.'; that is, that the pipeline was run in the top level of the pipeline installation itself. a valid option here might be 'workflows/rnaseq' or equivalent. </p>
+
+</div>
+</div>
+<a id="acf7b31ac69a8bb310a258cb2a1a07959"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf7b31ac69a8bb310a258cb2a1a07959">&#9670;&nbsp;</a></span>get_pipeline_top_dir()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string snakemake_unit_tests::cargs::get_pipeline_top_dir </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>get top-level directory of test pipeline </p>
 <dl class="section return"><dt>Returns</dt><dd>top-level run directory</dd></dl>
 <p>this parameter is optional. if not specified, it will be computed as the directory above the one the Snakefile (specified from &ndash;snakefile). this assumes therefore that the pipeline is configured such that the top-level snakefile is installed in ~/workflow.</p>
 <p>if specified, be cautious to ensure that this directory and the snakefile are provided from corresponding pipeline installations, or undefined behaviors may occur. but you can use this to provide base pipeline directories for non-compliant (but still valid) snakemake configurations, such as when the file is in ~/Snakefile instead of ~/workflow/Snakefile. </p>

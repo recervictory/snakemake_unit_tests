@@ -24,6 +24,14 @@ const std\+::string \& \mbox{\hyperlink{classsnakemake__unit__tests_1_1recipe_ac
 \begin{DoxyCompactList}\small\item\em access rule name \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{classsnakemake__unit__tests_1_1recipe_ac2b5f81d576bad7beaf89aed428d4249}{set\+\_\+rule\+\_\+name}} (const std\+::string \&s)
 \begin{DoxyCompactList}\small\item\em set rule name \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classsnakemake__unit__tests_1_1recipe_a38af52775d9903a2e5a6ee2285d4553f}{is\+\_\+checkpoint}} () const
+\begin{DoxyCompactList}\small\item\em if this rule is a checkpoint \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classsnakemake__unit__tests_1_1recipe_a4e43a9a9b37a104993d01ff2b1648c5c}{set\+\_\+checkpoint}} (bool b)
+\begin{DoxyCompactList}\small\item\em set checkpoint status \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classsnakemake__unit__tests_1_1recipe_af7d0d497e445dcf0bd263db997b59cad}{is\+\_\+checkpoint\+\_\+update}} () const
+\begin{DoxyCompactList}\small\item\em if this rule is affected by a checkpoint \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classsnakemake__unit__tests_1_1recipe_a194bf6577e035c27d04a0adc70dc5b7c}{set\+\_\+checkpoint\+\_\+update}} (bool b)
+\begin{DoxyCompactList}\small\item\em set checkpoint affectedness status \end{DoxyCompactList}\item 
 const std\+::vector$<$ boost\+::filesystem\+::path $>$ \& \mbox{\hyperlink{classsnakemake__unit__tests_1_1recipe_a8e42d3c977f9b7260139c9937f4e4baf}{get\+\_\+inputs}} () const
 \begin{DoxyCompactList}\small\item\em access list of input files \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{classsnakemake__unit__tests_1_1recipe_af9e207fbc5a80d981a4752023ba5b51f}{add\+\_\+input}} (const std\+::string \&s)
@@ -45,6 +53,10 @@ void \mbox{\hyperlink{classsnakemake__unit__tests_1_1recipe_ad19f9fc4e090d4067d8
 \mbox{\Hypertarget{classsnakemake__unit__tests_1_1recipe_a151f0dc265eb7f3827e2359947004d15}\label{classsnakemake__unit__tests_1_1recipe_a151f0dc265eb7f3827e2359947004d15}} 
 std\+::string \mbox{\hyperlink{classsnakemake__unit__tests_1_1recipe_a151f0dc265eb7f3827e2359947004d15}{\+\_\+rule\+\_\+name}}
 \begin{DoxyCompactList}\small\item\em extracted name of rule from log file \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classsnakemake__unit__tests_1_1recipe_a4c9e37401d8bdbbdfa5b9f8f73fedd72}{\+\_\+rule\+\_\+is\+\_\+checkpoint}}
+\begin{DoxyCompactList}\small\item\em whether the rule is a checkpoint \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classsnakemake__unit__tests_1_1recipe_aa20704376630a05f13e37268ea9ac8a0}{\+\_\+checkpoint\+\_\+update}}
+\begin{DoxyCompactList}\small\item\em whether this rule is affected by upstream checkpoints \end{DoxyCompactList}\item 
 std\+::vector$<$ boost\+::filesystem\+::path $>$ \mbox{\hyperlink{classsnakemake__unit__tests_1_1recipe_ae69dc4956077c25b07f7a5c9ac2e8464}{\+\_\+inputs}}
 \begin{DoxyCompactList}\small\item\em snakemake solved input files to rule \end{DoxyCompactList}\item 
 std\+::vector$<$ boost\+::filesystem\+::path $>$ \mbox{\hyperlink{classsnakemake__unit__tests_1_1recipe_a671ae064b9d5e91d0b6d73e848f9877c}{\+\_\+outputs}}
@@ -157,6 +169,62 @@ access rule name
 \begin{DoxyReturn}{Returns}
 rule name 
 \end{DoxyReturn}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1recipe_a38af52775d9903a2e5a6ee2285d4553f}\label{classsnakemake__unit__tests_1_1recipe_a38af52775d9903a2e5a6ee2285d4553f}} 
+\index{snakemake\_unit\_tests::recipe@{snakemake\_unit\_tests::recipe}!is\_checkpoint@{is\_checkpoint}}
+\index{is\_checkpoint@{is\_checkpoint}!snakemake\_unit\_tests::recipe@{snakemake\_unit\_tests::recipe}}
+\doxysubsubsection{\texorpdfstring{is\_checkpoint()}{is\_checkpoint()}}
+{\footnotesize\ttfamily bool snakemake\+\_\+unit\+\_\+tests\+::recipe\+::is\+\_\+checkpoint (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+if this rule is a checkpoint 
+
+\begin{DoxyReturn}{Returns}
+if this rule is a checkpoint 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1recipe_af7d0d497e445dcf0bd263db997b59cad}\label{classsnakemake__unit__tests_1_1recipe_af7d0d497e445dcf0bd263db997b59cad}} 
+\index{snakemake\_unit\_tests::recipe@{snakemake\_unit\_tests::recipe}!is\_checkpoint\_update@{is\_checkpoint\_update}}
+\index{is\_checkpoint\_update@{is\_checkpoint\_update}!snakemake\_unit\_tests::recipe@{snakemake\_unit\_tests::recipe}}
+\doxysubsubsection{\texorpdfstring{is\_checkpoint\_update()}{is\_checkpoint\_update()}}
+{\footnotesize\ttfamily bool snakemake\+\_\+unit\+\_\+tests\+::recipe\+::is\+\_\+checkpoint\+\_\+update (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+if this rule is affected by a checkpoint 
+
+\begin{DoxyReturn}{Returns}
+if this rule is affected by a checkpoint 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1recipe_a4e43a9a9b37a104993d01ff2b1648c5c}\label{classsnakemake__unit__tests_1_1recipe_a4e43a9a9b37a104993d01ff2b1648c5c}} 
+\index{snakemake\_unit\_tests::recipe@{snakemake\_unit\_tests::recipe}!set\_checkpoint@{set\_checkpoint}}
+\index{set\_checkpoint@{set\_checkpoint}!snakemake\_unit\_tests::recipe@{snakemake\_unit\_tests::recipe}}
+\doxysubsubsection{\texorpdfstring{set\_checkpoint()}{set\_checkpoint()}}
+{\footnotesize\ttfamily void snakemake\+\_\+unit\+\_\+tests\+::recipe\+::set\+\_\+checkpoint (\begin{DoxyParamCaption}\item[{bool}]{b }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+set checkpoint status 
+
+
+\begin{DoxyParams}{Parameters}
+{\em b} & new setting for checkpoint indicator \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1recipe_a194bf6577e035c27d04a0adc70dc5b7c}\label{classsnakemake__unit__tests_1_1recipe_a194bf6577e035c27d04a0adc70dc5b7c}} 
+\index{snakemake\_unit\_tests::recipe@{snakemake\_unit\_tests::recipe}!set\_checkpoint\_update@{set\_checkpoint\_update}}
+\index{set\_checkpoint\_update@{set\_checkpoint\_update}!snakemake\_unit\_tests::recipe@{snakemake\_unit\_tests::recipe}}
+\doxysubsubsection{\texorpdfstring{set\_checkpoint\_update()}{set\_checkpoint\_update()}}
+{\footnotesize\ttfamily void snakemake\+\_\+unit\+\_\+tests\+::recipe\+::set\+\_\+checkpoint\+\_\+update (\begin{DoxyParamCaption}\item[{bool}]{b }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+set checkpoint affectedness status 
+
+
+\begin{DoxyParams}{Parameters}
+{\em b} & new setting for checkpoint affectedness indicator \\
+\hline
+\end{DoxyParams}
 \mbox{\Hypertarget{classsnakemake__unit__tests_1_1recipe_a6bafa6c1798a9aba6fa16f154ceec277}\label{classsnakemake__unit__tests_1_1recipe_a6bafa6c1798a9aba6fa16f154ceec277}} 
 \index{snakemake\_unit\_tests::recipe@{snakemake\_unit\_tests::recipe}!set\_log@{set\_log}}
 \index{set\_log@{set\_log}!snakemake\_unit\_tests::recipe@{snakemake\_unit\_tests::recipe}}
@@ -190,7 +258,17 @@ set rule name
 
 
 \doxysubsection{Field Documentation}
-\mbox{\Hypertarget{classsnakemake__unit__tests_1_1recipe_ae69dc4956077c25b07f7a5c9ac2e8464}\label{classsnakemake__unit__tests_1_1recipe_ae69dc4956077c25b07f7a5c9ac2e8464}} 
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1recipe_aa20704376630a05f13e37268ea9ac8a0}\label{classsnakemake__unit__tests_1_1recipe_aa20704376630a05f13e37268ea9ac8a0}} 
+\index{snakemake\_unit\_tests::recipe@{snakemake\_unit\_tests::recipe}!\_checkpoint\_update@{\_checkpoint\_update}}
+\index{\_checkpoint\_update@{\_checkpoint\_update}!snakemake\_unit\_tests::recipe@{snakemake\_unit\_tests::recipe}}
+\doxysubsubsection{\texorpdfstring{\_checkpoint\_update}{\_checkpoint\_update}}
+{\footnotesize\ttfamily bool snakemake\+\_\+unit\+\_\+tests\+::recipe\+::\+\_\+checkpoint\+\_\+update\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+whether this rule is affected by upstream checkpoints 
+
+this is part of the snakemake logging system, but unfortunately doesn\textquotesingle{}t exactly define what step(s) are implicated upstream \mbox{\Hypertarget{classsnakemake__unit__tests_1_1recipe_ae69dc4956077c25b07f7a5c9ac2e8464}\label{classsnakemake__unit__tests_1_1recipe_ae69dc4956077c25b07f7a5c9ac2e8464}} 
 \index{snakemake\_unit\_tests::recipe@{snakemake\_unit\_tests::recipe}!\_inputs@{\_inputs}}
 \index{\_inputs@{\_inputs}!snakemake\_unit\_tests::recipe@{snakemake\_unit\_tests::recipe}}
 \doxysubsubsection{\texorpdfstring{\_inputs}{\_inputs}}
@@ -220,7 +298,17 @@ only exists if rule has log block, and nothing is currently done with this infor
 
 snakemake solved output files to rule 
 
-parsed from \char`\"{}, \char`\"{} delimited list from log output 
+parsed from \char`\"{}, \char`\"{} delimited list from log output \mbox{\Hypertarget{classsnakemake__unit__tests_1_1recipe_a4c9e37401d8bdbbdfa5b9f8f73fedd72}\label{classsnakemake__unit__tests_1_1recipe_a4c9e37401d8bdbbdfa5b9f8f73fedd72}} 
+\index{snakemake\_unit\_tests::recipe@{snakemake\_unit\_tests::recipe}!\_rule\_is\_checkpoint@{\_rule\_is\_checkpoint}}
+\index{\_rule\_is\_checkpoint@{\_rule\_is\_checkpoint}!snakemake\_unit\_tests::recipe@{snakemake\_unit\_tests::recipe}}
+\doxysubsubsection{\texorpdfstring{\_rule\_is\_checkpoint}{\_rule\_is\_checkpoint}}
+{\footnotesize\ttfamily bool snakemake\+\_\+unit\+\_\+tests\+::recipe\+::\+\_\+rule\+\_\+is\+\_\+checkpoint\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+whether the rule is a checkpoint 
+
+note that there are indications (28 Apr 2021) of checkpoints not functioning on cluster systems, so their use is somewhat dubious 
 
 The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
 \item 

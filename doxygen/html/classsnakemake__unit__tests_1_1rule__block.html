@@ -178,6 +178,15 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a3e6433b428c06778b4fb4c9753692b84"><td class="memItemLeft" align="right" valign="top">const boost::filesystem::path &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1rule__block.html#a3e6433b428c06778b4fb4c9753692b84">get_resolved_included_filename</a> () const</td></tr>
 <tr class="memdesc:a3e6433b428c06778b4fb4c9753692b84"><td class="mdescLeft">&#160;</td><td class="mdescRight">for include statements, get actual filename for inclusion  <a href="classsnakemake__unit__tests_1_1rule__block.html#a3e6433b428c06778b4fb4c9753692b84">More...</a><br /></td></tr>
 <tr class="separator:a3e6433b428c06778b4fb4c9753692b84"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a05007968bfd8f9ea3c634d4a51e2f72b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1rule__block.html#a05007968bfd8f9ea3c634d4a51e2f72b">is_checkpoint</a> () const</td></tr>
+<tr class="memdesc:a05007968bfd8f9ea3c634d4a51e2f72b"><td class="mdescLeft">&#160;</td><td class="mdescRight">if this is a rule, is it a checkpoint  <a href="classsnakemake__unit__tests_1_1rule__block.html#a05007968bfd8f9ea3c634d4a51e2f72b">More...</a><br /></td></tr>
+<tr class="separator:a05007968bfd8f9ea3c634d4a51e2f72b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac8ba1d14788e7c063420302f4974642f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1rule__block.html#ac8ba1d14788e7c063420302f4974642f">set_checkpoint</a> (bool b)</td></tr>
+<tr class="memdesc:ac8ba1d14788e7c063420302f4974642f"><td class="mdescLeft">&#160;</td><td class="mdescRight">set checkpoint status  <a href="classsnakemake__unit__tests_1_1rule__block.html#ac8ba1d14788e7c063420302f4974642f">More...</a><br /></td></tr>
+<tr class="separator:ac8ba1d14788e7c063420302f4974642f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18f1e8b82df2cf9fafdbbf0a6146f343"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1rule__block.html#a18f1e8b82df2cf9fafdbbf0a6146f343">report_rulesdot_rules</a> (std::map&lt; std::string, bool &gt; *target) const</td></tr>
+<tr class="memdesc:a18f1e8b82df2cf9fafdbbf0a6146f343"><td class="mdescLeft">&#160;</td><td class="mdescRight">scan block contents for 'rules.' calls and report implicated rulenames  <a href="classsnakemake__unit__tests_1_1rule__block.html#a18f1e8b82df2cf9fafdbbf0a6146f343">More...</a><br /></td></tr>
+<tr class="separator:a18f1e8b82df2cf9fafdbbf0a6146f343"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
@@ -200,6 +209,9 @@ Private Attributes</h2></td></tr>
 <tr class="memitem:a22523a1aa4fa7a7675ee64129b1e1ce2"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1rule__block.html#a22523a1aa4fa7a7675ee64129b1e1ce2">_base_rule_name</a></td></tr>
 <tr class="memdesc:a22523a1aa4fa7a7675ee64129b1e1ce2"><td class="mdescLeft">&#160;</td><td class="mdescRight">name of base rule for derived rules  <a href="classsnakemake__unit__tests_1_1rule__block.html#a22523a1aa4fa7a7675ee64129b1e1ce2">More...</a><br /></td></tr>
 <tr class="separator:a22523a1aa4fa7a7675ee64129b1e1ce2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f6a9af37f46cac139f3c3ebb6579af7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1rule__block.html#a9f6a9af37f46cac139f3c3ebb6579af7">_rule_is_checkpoint</a></td></tr>
+<tr class="memdesc:a9f6a9af37f46cac139f3c3ebb6579af7"><td class="mdescLeft">&#160;</td><td class="mdescRight">if the chunk is a rule, whether the rule is a checkpoint  <a href="classsnakemake__unit__tests_1_1rule__block.html#a9f6a9af37f46cac139f3c3ebb6579af7">More...</a><br /></td></tr>
+<tr class="separator:a9f6a9af37f46cac139f3c3ebb6579af7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aea2c13d1921d6c5c31d507f346850767"><td class="memItemLeft" align="right" valign="top">std::map&lt; std::string, std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1rule__block.html#aea2c13d1921d6c5c31d507f346850767">_named_blocks</a></td></tr>
 <tr class="memdesc:aea2c13d1921d6c5c31d507f346850767"><td class="mdescLeft">&#160;</td><td class="mdescRight">arbitrary named blocks and their contents  <a href="classsnakemake__unit__tests_1_1rule__block.html#aea2c13d1921d6c5c31d507f346850767">More...</a><br /></td></tr>
 <tr class="separator:aea2c13d1921d6c5c31d507f346850767"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -769,6 +781,35 @@ boost::filesystem::path&#160;</td><td class="memItemRight" valign="bottom"><a cl
 
 </div>
 </div>
+<a id="a05007968bfd8f9ea3c634d4a51e2f72b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a05007968bfd8f9ea3c634d4a51e2f72b">&#9670;&nbsp;</a></span>is_checkpoint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool snakemake_unit_tests::rule_block::is_checkpoint </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>if this is a rule, is it a checkpoint </p>
+<dl class="section return"><dt>Returns</dt><dd>whether, if a rule, this is a checkpoint</dd></dl>
+<p>uninterpretable if not a rule </p>
+
+</div>
+</div>
 <a id="a151f7493f2ecc40227a52812c76f7c5f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a151f7493f2ecc40227a52812c76f7c5f">&#9670;&nbsp;</a></span>is_simple_include_directive()</h2>
 
@@ -1011,6 +1052,32 @@ boost::filesystem::path&#160;</td><td class="memItemRight" valign="bottom"><a cl
 
 </div>
 </div>
+<a id="a18f1e8b82df2cf9fafdbbf0a6146f343"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18f1e8b82df2cf9fafdbbf0a6146f343">&#9670;&nbsp;</a></span>report_rulesdot_rules()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void snakemake_unit_tests::rule_block::report_rulesdot_rules </td>
+          <td>(</td>
+          <td class="paramtype">std::map&lt; std::string, bool &gt; *&#160;</td>
+          <td class="paramname"><em>target</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>scan block contents for 'rules.' calls and report implicated rulenames </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">target</td><td>where to store any detected rules </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a5c8665be055b61187ab36df3b58ec108"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a5c8665be055b61187ab36df3b58ec108">&#9670;&nbsp;</a></span>resolved()</h2>
 
@@ -1070,6 +1137,41 @@ boost::filesystem::path&#160;</td><td class="memItemRight" valign="bottom"><a cl
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="ac8ba1d14788e7c063420302f4974642f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac8ba1d14788e7c063420302f4974642f">&#9670;&nbsp;</a></span>set_checkpoint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void snakemake_unit_tests::rule_block::set_checkpoint </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>b</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>set checkpoint status </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">b</td><td>new setting for checkpoint indicator</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>uninterpretable if not a rule </p>
 
 </div>
 </div>
@@ -1350,6 +1452,31 @@ boost::filesystem::path&#160;</td><td class="memItemRight" valign="bottom"><a cl
 
 <p>resolution status of block </p>
 <p>this can be: UNRESOLVED, RESOLVED_INCLUDED, RESOLVED_EXCLUDED </p>
+
+</div>
+</div>
+<a id="a9f6a9af37f46cac139f3c3ebb6579af7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9f6a9af37f46cac139f3c3ebb6579af7">&#9670;&nbsp;</a></span>_rule_is_checkpoint</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool snakemake_unit_tests::rule_block::_rule_is_checkpoint</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>if the chunk is a rule, whether the rule is a checkpoint </p>
+<p>note that there are indications (28 Apr 2021) of checkpoints not functioning on cluster systems, so their use is somewhat dubious </p>
 
 </div>
 </div>

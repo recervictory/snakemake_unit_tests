@@ -1,0 +1,25 @@
+rule all:
+    input:
+        "gathered/all.txt",
+
+
+scattergather:
+    split=8
+pass
+
+
+pass
+
+
+pass
+
+
+rule gather:
+    input:
+        gather.split("splitted/{scatteritem}.post.txt")
+    output:
+        "gathered/all.txt"
+    shell:
+        "cat {input} > {output}"
+
+
