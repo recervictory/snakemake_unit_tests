@@ -217,6 +217,8 @@ class solved_rules {
     @param update_inputs controls whether to copy rule inputs
     @param update_outputs controls whether to copy rule outputs
     @param update_pytest controls whether to copy pytest infrastructure
+    @param include_entire_dag controls whether to override default
+    behavior and emit all rules, instead of just the target
   */
   void emit_tests(const snakemake_file &sf,
                   const boost::filesystem::path &output_test_dir,
@@ -227,8 +229,8 @@ class solved_rules {
                   const std::vector<boost::filesystem::path> &added_files,
                   const std::vector<boost::filesystem::path> &added_directories,
                   bool update_snakefiles, bool update_added_content,
-                  bool update_inputs, bool update_outputs,
-                  bool update_pytest) const;
+                  bool update_inputs, bool update_outputs, bool update_pytest,
+                  bool include_entire_dag) const;
   /*!
     @brief emit snakefile from parsed snakemake information
     @param sf snakemake_file object with rule definitions corresponding
@@ -271,6 +273,8 @@ class solved_rules {
     @param update_inputs controls whether to copy rule inputs
     @param update_outputs controls whether to copy rule outputs
     @param update_pytest controls whether to copy pytest infrastructure
+    @param include_entire_dag controls whether to override default
+    behavior and emit all rules, instead of just the target
   */
   void create_workspace(
       const boost::shared_ptr<recipe> &rec, const snakemake_file &sf,
@@ -283,7 +287,7 @@ class solved_rules {
       const std::vector<boost::filesystem::path> &added_files,
       const std::vector<boost::filesystem::path> &added_directories,
       bool update_snakefiles, bool update_added_content, bool update_inputs,
-      bool update_outputs, bool update_pytest) const;
+      bool update_outputs, bool update_pytest, bool include_entire_dag) const;
   /*!
     @brief create an empty workspace for python testing
     @param output_test_dir output directory for tests (e.g. '.tests/')
@@ -347,19 +351,24 @@ class solved_rules {
     @brief determine unavoidable dependencies for query rule
     @param sf snakemake top level file with all rules
     @param rec query rule
+    @param include_entire_dag controls whether to override default
+    behavior and emit all rules, instead of just the target
     @param target full set of unavoidable dependencies
    */
   void aggregate_dependencies(
       const snakemake_file &sf, const boost::shared_ptr<recipe> &rec,
+      bool include_entire_dag,
       std::map<boost::shared_ptr<recipe>, bool> *target) const;
   /*!
     @brief add rules and all dependencies starting from a particular leaf
     @param rec leaf to start adding things from
+    @param include_entire_dag controls whether to override default
+    behavior and emit all rules, instead of just the target
     @param already_added tracker for nodes already searched
     @param target storage for included nodes
    */
   void add_dag_from_leaf(
-      const boost::shared_ptr<recipe> &rec,
+      const boost::shared_ptr<recipe> &rec, bool include_entire_dag,
       std::map<boost::shared_ptr<recipe>, bool> *already_added,
       std::map<boost::shared_ptr<recipe>, bool> *target) const;
   /*!

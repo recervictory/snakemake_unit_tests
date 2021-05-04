@@ -126,7 +126,7 @@ void snakemake_unit_tests::solved_rules::emit_tests(
     const std::vector<boost::filesystem::path> &added_files,
     const std::vector<boost::filesystem::path> &added_directories,
     bool update_snakefiles, bool update_added_content, bool update_inputs,
-    bool update_outputs, bool update_pytest) const {
+    bool update_outputs, bool update_pytest, bool include_entire_dag) const {
   // create unit test output directory
   // by default, this looks like `.tests/unit`
   // but will be overridden as `output_test_dir/unit`
@@ -154,7 +154,7 @@ void snakemake_unit_tests::solved_rules::emit_tests(
                        pipeline_top_dir, pipeline_run_dir, inst_test_py,
                        exclude_rules, added_files, added_directories,
                        update_snakefiles, update_added_content, update_inputs,
-                       update_outputs, update_pytest);
+                       update_outputs, update_pytest, include_entire_dag);
       test_history[(*iter)->get_rule_name()] = true;
     }
   }
@@ -169,12 +169,13 @@ void snakemake_unit_tests::solved_rules::emit_tests(
 
 void snakemake_unit_tests::solved_rules::aggregate_dependencies(
     const snakemake_file &sf, const boost::shared_ptr<recipe> &rec,
+    bool include_entire_dag,
     std::map<boost::shared_ptr<recipe>, bool> *target) const {
   // what makes an input dependency unavoidable?
   // - it is called in the input block as 'rules.rulename.whatever'
   // - it is a checkpoint
   // for each output, find the generating rule
-  bool pull_entire_dag = rec->is_checkpoint_update();
+  bool pull_entire_dag = rec->is_checkpoint_update() || include_entire_dag;
   // 'rules.' notation
   std::map<std::string, bool> rulesdot_names;
   sf.recursively_query_rulesdot(rec->get_rule_name(), &rulesdot_names);
@@ -212,7 +213,8 @@ void snakemake_unit_tests::solved_rules::aggregate_dependencies(
                                        &dependencies_contain_checkpoints);
       }
     }
-    add_dag_from_leaf(rec, &dependencies_contain_checkpoints, target);
+    add_dag_from_leaf(rec, include_entire_dag,
+                      &dependencies_contain_checkpoints, target);
   }
 }
 
@@ -249,7 +251,7 @@ void snakemake_unit_tests::solved_rules::compute_dependency_checkpoints(
 }
 
 void snakemake_unit_tests::solved_rules::add_dag_from_leaf(
-    const boost::shared_ptr<recipe> &rec,
+    const boost::shared_ptr<recipe> &rec, bool include_entire_dag,
     std::map<boost::shared_ptr<recipe>, bool> *dependencies_contain_checkpoints,
     std::map<boost::shared_ptr<recipe>, bool> *target) const {
   if (!target || !dependencies_contain_checkpoints)
@@ -267,9 +269,9 @@ void snakemake_unit_tests::solved_rules::add_dag_from_leaf(
         throw std::logic_error(
             "unable to find dependency tracker content for rule, which should "
             "be impossible");
-      } else if (dependency_finder->second) {
-        add_dag_from_leaf(finder->second, dependencies_contain_checkpoints,
-                          target);
+      } else if (dependency_finder->second || include_entire_dag) {
+        add_dag_from_leaf(finder->second, include_entire_dag,
+                          dependencies_contain_checkpoints, target);
       }
     }
   }
@@ -286,7 +288,7 @@ void snakemake_unit_tests::solved_rules::create_workspace(
     const std::vector<boost::filesystem::path> &added_files,
     const std::vector<boost::filesystem::path> &added_directories,
     bool update_snakefiles, bool update_added_content, bool update_inputs,
-    bool update_outputs, bool update_pytest) const {
+    bool update_outputs, bool update_pytest, bool include_entire_dag) const {
   // new: deal with rule structures that drag a certain number of upstream
   // recipes with them:
   //  - rules.
@@ -295,7 +297,7 @@ void snakemake_unit_tests::solved_rules::create_workspace(
   std::map<boost::shared_ptr<recipe>, bool> dependent_recipes;
   std::map<std::string, bool> dependent_rulenames;
   dependent_recipes[rec] = true;
-  aggregate_dependencies(sf, rec, &dependent_recipes);
+  aggregate_dependencies(sf, rec, include_entire_dag, &dependent_recipes);
   for (std::map<boost::shared_ptr<recipe>, bool>::const_iterator iter =
            dependent_recipes.begin();
        iter != dependent_recipes.end(); ++iter) {

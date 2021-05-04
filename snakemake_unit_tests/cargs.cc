@@ -46,7 +46,10 @@ void snakemake_unit_tests::cargs::initialize_options() {
       "update-config", "update configuration report in unit test output")(
       "update-inputs", "update rule inputs in unit tests")(
       "update-outputs", "update rule outputs in unit test")(
-      "update-pytest", "update pytest infrastructure in output directories");
+      "update-pytest", "update pytest infrastructure in output directories")(
+      "include-entire-dag",
+      "add entire DAG to test snakefiles, instead of choosing target rules "
+      "only (not recommended)");
 }
 
 snakemake_unit_tests::params snakemake_unit_tests::cargs::set_parameters()
@@ -120,6 +123,7 @@ snakemake_unit_tests::params snakemake_unit_tests::cargs::set_parameters()
   p.update_inputs = update_inputs();
   p.update_outputs = update_outputs();
   p.update_pytest = update_pytest();
+  p.include_entire_dag = include_entire_dag();
 
   // output_test_dir: override if specified
   p.output_test_dir =

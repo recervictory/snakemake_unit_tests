@@ -99,12 +99,13 @@ int main(int argc, char **argv) {
   sf.aggregate_rulesdot();
 
   // iterate over the solved rules, emitting them with modifiers as desired
-  sr.emit_tests(
-      sf, p.output_test_dir, p.pipeline_top_dir, p.pipeline_run_dir, p.inst_dir,
-      p.exclude_rules, p.added_files, p.added_directories,
-      p.update_snakefiles || p.update_all,
-      p.update_added_content || p.update_all, p.update_inputs || p.update_all,
-      p.update_outputs || p.update_all, p.update_pytest || p.update_all);
+  sr.emit_tests(sf, p.output_test_dir, p.pipeline_top_dir, p.pipeline_run_dir,
+                p.inst_dir, p.exclude_rules, p.added_files, p.added_directories,
+                p.update_snakefiles || p.update_all,
+                p.update_added_content || p.update_all,
+                p.update_inputs || p.update_all,
+                p.update_outputs || p.update_all,
+                p.update_pytest || p.update_all, p.include_entire_dag);
 
   // if requested, report final configuration settings to test directory
   if (p.update_config || p.update_all) {

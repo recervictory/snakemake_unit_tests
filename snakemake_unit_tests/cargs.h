@@ -61,6 +61,7 @@ class params {
         update_inputs(false),
         update_outputs(false),
         update_pytest(false),
+        include_entire_dag(false),
         config_filename(""),
         output_test_dir(""),
         snakefile(""),
@@ -81,6 +82,7 @@ class params {
         update_inputs(obj.update_inputs),
         update_outputs(obj.update_outputs),
         update_pytest(obj.update_pytest),
+        include_entire_dag(obj.include_entire_dag),
         config_filename(obj.config_filename),
         config(obj.config),
         output_test_dir(obj.output_test_dir),
@@ -165,6 +167,15 @@ class params {
     @brief update pytest infrastructure in output directories
    */
   bool update_pytest;
+  /*!
+    @brief spike entire dag into each output snakefile, instead of
+   just the rule(s) being tested
+
+   designed as a last ditch solution for unsupported calls to `rules.`.
+   will cause significant performance degradation while running the
+   actual tests.
+   */
+  bool include_entire_dag;
   /*!
     @brief name of yaml configuration file
    */
@@ -404,6 +415,18 @@ class cargs {
   std::vector<std::string> get_exclude_rules() const {
     return compute_parameter<std::vector<std::string> >("exclude-rules", true);
   }
+
+  /*!
+    @brief get user flag for overriding default behavior and adding entire DAG
+    to synthetic snakefiles
+    @return whether the user wants the full DAG
+
+    the user should only activate this when default `rules.` detection has
+    failed due to wrapping `rules.` calls under defined function blocks or
+    other infrastructure. this will potentially massively slow down execution,
+    and should only be used for individual problematic rules.
+   */
+  bool include_entire_dag() const { return compute_flag("include-entire-dag"); }
 
   /*!
     @brief get user flag for updating all parts of unit tests
