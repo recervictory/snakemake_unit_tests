@@ -21,7 +21,11 @@ resolved set of parameters to control program operation
 \mbox{\hyperlink{classsnakemake__unit__tests_1_1params_af45bdc3d5ec2829ddad8bec1978431db}{$\sim$params}} ()  throw ()
 \begin{DoxyCompactList}\small\item\em destructor \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{classsnakemake__unit__tests_1_1params_a6ce20944d655fa30eb734eb9d87ade18}{report\+\_\+settings}} (const boost\+::filesystem\+::path \&filename) const
-\begin{DoxyCompactList}\small\item\em report settings to yaml file \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em report settings to yaml file \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classsnakemake__unit__tests_1_1params_aae282a6469aa70b9f2d60f29fa96776f}{emit\+\_\+yaml\+\_\+map}} (YAML\+::\+Emitter $\ast$out, const std\+::map$<$ std\+::string, bool $>$ \&data, const std\+::string \&key) const
+\begin{DoxyCompactList}\small\item\em emit map contents as key-\/$>$sequence in a YAML\+::\+Map \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classsnakemake__unit__tests_1_1params_ae41922f86d26acc540023660bb5a0fcd}{emit\+\_\+yaml\+\_\+vector}} (YAML\+::\+Emitter $\ast$out, const std\+::vector$<$ boost\+::filesystem\+::path $>$ \&data, const std\+::string \&key) const
+\begin{DoxyCompactList}\small\item\em emit vector contents as key-\/$>$sequence in a YAML\+::\+Map \end{DoxyCompactList}\end{DoxyCompactItemize}
 \doxysubsection*{Data Fields}
 \begin{DoxyCompactItemize}
 \item 
@@ -61,9 +65,12 @@ boost\+::filesystem\+::path \mbox{\hyperlink{classsnakemake__unit__tests_1_1para
 \mbox{\Hypertarget{classsnakemake__unit__tests_1_1params_ae4c5f396936d4c429329368ec0a03862}\label{classsnakemake__unit__tests_1_1params_ae4c5f396936d4c429329368ec0a03862}} 
 boost\+::filesystem\+::path \mbox{\hyperlink{classsnakemake__unit__tests_1_1params_ae4c5f396936d4c429329368ec0a03862}{snakefile}}
 \begin{DoxyCompactList}\small\item\em top-\/level snakefile for successful pipeline run \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1params_ab37945fba40a3597961e203de9166b53}\label{classsnakemake__unit__tests_1_1params_ab37945fba40a3597961e203de9166b53}} 
+boost\+::filesystem\+::path \mbox{\hyperlink{classsnakemake__unit__tests_1_1params_ab37945fba40a3597961e203de9166b53}{pipeline\+\_\+top\+\_\+dir}}
+\begin{DoxyCompactList}\small\item\em top-\/level directory of successful pipeline run \end{DoxyCompactList}\item 
 \mbox{\Hypertarget{classsnakemake__unit__tests_1_1params_afe202184b17cc2b8787c2dd27e87a8b1}\label{classsnakemake__unit__tests_1_1params_afe202184b17cc2b8787c2dd27e87a8b1}} 
 boost\+::filesystem\+::path \mbox{\hyperlink{classsnakemake__unit__tests_1_1params_afe202184b17cc2b8787c2dd27e87a8b1}{pipeline\+\_\+run\+\_\+dir}}
-\begin{DoxyCompactList}\small\item\em top-\/level directory of successful pipeline run \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em execution directory of pipeline, relative to top level directory of pipeline \end{DoxyCompactList}\item 
 \mbox{\Hypertarget{classsnakemake__unit__tests_1_1params_a11f4c6a00d77edd76e976b35224e1fa6}\label{classsnakemake__unit__tests_1_1params_a11f4c6a00d77edd76e976b35224e1fa6}} 
 boost\+::filesystem\+::path \mbox{\hyperlink{classsnakemake__unit__tests_1_1params_a11f4c6a00d77edd76e976b35224e1fa6}{inst\+\_\+dir}}
 \begin{DoxyCompactList}\small\item\em path to inst directory of snakemake\+\_\+unit\+\_\+tests \end{DoxyCompactList}\item 
@@ -78,7 +85,16 @@ std\+::vector$<$ boost\+::filesystem\+::path $>$ \mbox{\hyperlink{classsnakemake
 \begin{DoxyCompactList}\small\item\em user-\/defined directories to recursively place in test workspaces \end{DoxyCompactList}\item 
 \mbox{\Hypertarget{classsnakemake__unit__tests_1_1params_a5c9887a0206ec5b8eeab31aac1a43ce9}\label{classsnakemake__unit__tests_1_1params_a5c9887a0206ec5b8eeab31aac1a43ce9}} 
 std\+::map$<$ std\+::string, bool $>$ \mbox{\hyperlink{classsnakemake__unit__tests_1_1params_a5c9887a0206ec5b8eeab31aac1a43ce9}{exclude\+\_\+rules}}
-\begin{DoxyCompactList}\small\item\em user-\/defined rulenames to skip in test generation \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em user-\/defined rulenames to skip in test generation \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1params_acbb1e1ec604101a2c35c485708c3854d}\label{classsnakemake__unit__tests_1_1params_acbb1e1ec604101a2c35c485708c3854d}} 
+std\+::map$<$ std\+::string, bool $>$ \mbox{\hyperlink{classsnakemake__unit__tests_1_1params_acbb1e1ec604101a2c35c485708c3854d}{exclude\+\_\+extensions}}
+\begin{DoxyCompactList}\small\item\em user-\/defined file extensions to exclude from pytest comparison \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1params_a57c4178344e2c9a8f3383122c7ca673a}\label{classsnakemake__unit__tests_1_1params_a57c4178344e2c9a8f3383122c7ca673a}} 
+std\+::map$<$ std\+::string, bool $>$ \mbox{\hyperlink{classsnakemake__unit__tests_1_1params_a57c4178344e2c9a8f3383122c7ca673a}{exclude\+\_\+paths}}
+\begin{DoxyCompactList}\small\item\em user-\/defined path patterns to exclude from pytest comparison \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1params_ab83a40b5bab6f094762d981033502fe8}\label{classsnakemake__unit__tests_1_1params_ab83a40b5bab6f094762d981033502fe8}} 
+std\+::map$<$ std\+::string, bool $>$ \mbox{\hyperlink{classsnakemake__unit__tests_1_1params_ab83a40b5bab6f094762d981033502fe8}{byte\+\_\+comparisons}}
+\begin{DoxyCompactList}\small\item\em user-\/defined file extensions to flag as needing binary comparison \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \doxysubsection{Detailed Description}
@@ -103,7 +119,45 @@ copy constructor
 
 
 \doxysubsection{Member Function Documentation}
-\mbox{\Hypertarget{classsnakemake__unit__tests_1_1params_a6ce20944d655fa30eb734eb9d87ade18}\label{classsnakemake__unit__tests_1_1params_a6ce20944d655fa30eb734eb9d87ade18}} 
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1params_aae282a6469aa70b9f2d60f29fa96776f}\label{classsnakemake__unit__tests_1_1params_aae282a6469aa70b9f2d60f29fa96776f}} 
+\index{snakemake\_unit\_tests::params@{snakemake\_unit\_tests::params}!emit\_yaml\_map@{emit\_yaml\_map}}
+\index{emit\_yaml\_map@{emit\_yaml\_map}!snakemake\_unit\_tests::params@{snakemake\_unit\_tests::params}}
+\doxysubsubsection{\texorpdfstring{emit\_yaml\_map()}{emit\_yaml\_map()}}
+{\footnotesize\ttfamily void snakemake\+\_\+unit\+\_\+tests\+::params\+::emit\+\_\+yaml\+\_\+map (\begin{DoxyParamCaption}\item[{YAML\+::\+Emitter $\ast$}]{out,  }\item[{const std\+::map$<$ std\+::string, bool $>$ \&}]{data,  }\item[{const std\+::string \&}]{key }\end{DoxyParamCaption}) const}
+
+
+
+emit map contents as key-\/$>$sequence in a YAML\+::\+Map 
+
+
+\begin{DoxyParams}{Parameters}
+{\em out} & YAML Emitter to which to report YAML content \\
+\hline
+{\em data} & keys for output sequence \\
+\hline
+{\em key} & YAML key corresponding to this sequence\\
+\hline
+\end{DoxyParams}
+note that null sequences are emitted as \char`\"{}key\+: $\sim$\char`\"{} in YAML style \mbox{\Hypertarget{classsnakemake__unit__tests_1_1params_ae41922f86d26acc540023660bb5a0fcd}\label{classsnakemake__unit__tests_1_1params_ae41922f86d26acc540023660bb5a0fcd}} 
+\index{snakemake\_unit\_tests::params@{snakemake\_unit\_tests::params}!emit\_yaml\_vector@{emit\_yaml\_vector}}
+\index{emit\_yaml\_vector@{emit\_yaml\_vector}!snakemake\_unit\_tests::params@{snakemake\_unit\_tests::params}}
+\doxysubsubsection{\texorpdfstring{emit\_yaml\_vector()}{emit\_yaml\_vector()}}
+{\footnotesize\ttfamily void snakemake\+\_\+unit\+\_\+tests\+::params\+::emit\+\_\+yaml\+\_\+vector (\begin{DoxyParamCaption}\item[{YAML\+::\+Emitter $\ast$}]{out,  }\item[{const std\+::vector$<$ boost\+::filesystem\+::path $>$ \&}]{data,  }\item[{const std\+::string \&}]{key }\end{DoxyParamCaption}) const}
+
+
+
+emit vector contents as key-\/$>$sequence in a YAML\+::\+Map 
+
+
+\begin{DoxyParams}{Parameters}
+{\em out} & YAML Emitter to which to report YAML content \\
+\hline
+{\em data} & keys for output sequence \\
+\hline
+{\em key} & YAML key corresponding to this sequence\\
+\hline
+\end{DoxyParams}
+note that null sequences are emitted as \char`\"{}key\+: $\sim$\char`\"{} in YAML style \mbox{\Hypertarget{classsnakemake__unit__tests_1_1params_a6ce20944d655fa30eb734eb9d87ade18}\label{classsnakemake__unit__tests_1_1params_a6ce20944d655fa30eb734eb9d87ade18}} 
 \index{snakemake\_unit\_tests::params@{snakemake\_unit\_tests::params}!report\_settings@{report\_settings}}
 \index{report\_settings@{report\_settings}!snakemake\_unit\_tests::params@{snakemake\_unit\_tests::params}}
 \doxysubsubsection{\texorpdfstring{report\_settings()}{report\_settings()}}

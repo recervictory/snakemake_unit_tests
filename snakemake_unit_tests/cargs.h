@@ -345,6 +345,8 @@ class cargs {
   /*!
     @brief get directory of actual pipeline run, relative to top-level
     pipeline directory.
+    @return directory of actual pipeline run relative to top-level
+    pipeline directory.
 
     this parameter is optional. if not specified, it will be assumed
     to be '.'; that is, that the pipeline was run in the top level of

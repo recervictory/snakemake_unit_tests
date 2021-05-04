@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['output_5ftest_5fdir_328',['output_test_dir',['../classsnakemake__unit__tests_1_1params.html#aec1d1519774e646c6c20e3fa51af683a',1,'snakemake_unit_tests::params']]]
+  ['inst_5fdir_372',['inst_dir',['../classsnakemake__unit__tests_1_1params.html#a11f4c6a00d77edd76e976b35224e1fa6',1,'snakemake_unit_tests::params']]]
 ];

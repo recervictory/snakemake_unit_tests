@@ -75,7 +75,13 @@ void \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block_aead538d30807b8
 bool \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block_a2601453e4ef166e0ea70926801869504}{update\+\_\+resolution}} (const std\+::map$<$ std\+::string, std\+::string $>$ \&tag\+\_\+values)
 \begin{DoxyCompactList}\small\item\em using python tag output, update resolution status \end{DoxyCompactList}\item 
 const boost\+::filesystem\+::path \& \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block_a3e6433b428c06778b4fb4c9753692b84}{get\+\_\+resolved\+\_\+included\+\_\+filename}} () const
-\begin{DoxyCompactList}\small\item\em for include statements, get actual filename for inclusion \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em for include statements, get actual filename for inclusion \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block_a05007968bfd8f9ea3c634d4a51e2f72b}{is\+\_\+checkpoint}} () const
+\begin{DoxyCompactList}\small\item\em if this is a rule, is it a checkpoint \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block_ac8ba1d14788e7c063420302f4974642f}{set\+\_\+checkpoint}} (bool b)
+\begin{DoxyCompactList}\small\item\em set checkpoint status \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block_a18f1e8b82df2cf9fafdbbf0a6146f343}{report\+\_\+rulesdot\+\_\+rules}} (std\+::map$<$ std\+::string, bool $>$ $\ast$target) const
+\begin{DoxyCompactList}\small\item\em scan block contents for \textquotesingle{}rules.\textquotesingle{} calls and report implicated rulenames \end{DoxyCompactList}\end{DoxyCompactItemize}
 \doxysubsection*{Private Member Functions}
 \begin{DoxyCompactItemize}
 \item 
@@ -93,6 +99,8 @@ std\+::string \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block_a2c3d5
 \begin{DoxyCompactList}\small\item\em declared rule name \end{DoxyCompactList}\item 
 std\+::string \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block_a22523a1aa4fa7a7675ee64129b1e1ce2}{\+\_\+base\+\_\+rule\+\_\+name}}
 \begin{DoxyCompactList}\small\item\em name of base rule for derived rules \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block_a9f6a9af37f46cac139f3c3ebb6579af7}{\+\_\+rule\+\_\+is\+\_\+checkpoint}}
+\begin{DoxyCompactList}\small\item\em if the chunk is a rule, whether the rule is a checkpoint \end{DoxyCompactList}\item 
 std\+::map$<$ std\+::string, std\+::string $>$ \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block_aea2c13d1921d6c5c31d507f346850767}{\+\_\+named\+\_\+blocks}}
 \begin{DoxyCompactList}\small\item\em arbitrary named blocks and their contents \end{DoxyCompactList}\item 
 std\+::vector$<$ std\+::string $>$ \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block_a51a4a75de30ebdd1d00f76990337943e}{\+\_\+code\+\_\+chunk}}
@@ -381,7 +389,20 @@ return a string containing some number of whitespaces
 \begin{DoxyReturn}{Returns}
 formatted indentation whitespace 
 \end{DoxyReturn}
-\mbox{\Hypertarget{classsnakemake__unit__tests_1_1rule__block_a151f7493f2ecc40227a52812c76f7c5f}\label{classsnakemake__unit__tests_1_1rule__block_a151f7493f2ecc40227a52812c76f7c5f}} 
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1rule__block_a05007968bfd8f9ea3c634d4a51e2f72b}\label{classsnakemake__unit__tests_1_1rule__block_a05007968bfd8f9ea3c634d4a51e2f72b}} 
+\index{snakemake\_unit\_tests::rule\_block@{snakemake\_unit\_tests::rule\_block}!is\_checkpoint@{is\_checkpoint}}
+\index{is\_checkpoint@{is\_checkpoint}!snakemake\_unit\_tests::rule\_block@{snakemake\_unit\_tests::rule\_block}}
+\doxysubsubsection{\texorpdfstring{is\_checkpoint()}{is\_checkpoint()}}
+{\footnotesize\ttfamily bool snakemake\+\_\+unit\+\_\+tests\+::rule\+\_\+block\+::is\+\_\+checkpoint (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+if this is a rule, is it a checkpoint 
+
+\begin{DoxyReturn}{Returns}
+whether, if a rule, this is a checkpoint
+\end{DoxyReturn}
+uninterpretable if not a rule \mbox{\Hypertarget{classsnakemake__unit__tests_1_1rule__block_a151f7493f2ecc40227a52812c76f7c5f}\label{classsnakemake__unit__tests_1_1rule__block_a151f7493f2ecc40227a52812c76f7c5f}} 
 \index{snakemake\_unit\_tests::rule\_block@{snakemake\_unit\_tests::rule\_block}!is\_simple\_include\_directive@{is\_simple\_include\_directive}}
 \index{is\_simple\_include\_directive@{is\_simple\_include\_directive}!snakemake\_unit\_tests::rule\_block@{snakemake\_unit\_tests::rule\_block}}
 \doxysubsubsection{\texorpdfstring{is\_simple\_include\_directive()}{is\_simple\_include\_directive()}}
@@ -503,6 +524,21 @@ emit a python syntax reporting block to dummy file
 {\em out} & open output stream for reporting \\
 \hline
 \end{DoxyParams}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1rule__block_a18f1e8b82df2cf9fafdbbf0a6146f343}\label{classsnakemake__unit__tests_1_1rule__block_a18f1e8b82df2cf9fafdbbf0a6146f343}} 
+\index{snakemake\_unit\_tests::rule\_block@{snakemake\_unit\_tests::rule\_block}!report\_rulesdot\_rules@{report\_rulesdot\_rules}}
+\index{report\_rulesdot\_rules@{report\_rulesdot\_rules}!snakemake\_unit\_tests::rule\_block@{snakemake\_unit\_tests::rule\_block}}
+\doxysubsubsection{\texorpdfstring{report\_rulesdot\_rules()}{report\_rulesdot\_rules()}}
+{\footnotesize\ttfamily void snakemake\+\_\+unit\+\_\+tests\+::rule\+\_\+block\+::report\+\_\+rulesdot\+\_\+rules (\begin{DoxyParamCaption}\item[{std\+::map$<$ std\+::string, bool $>$ $\ast$}]{target }\end{DoxyParamCaption}) const}
+
+
+
+scan block contents for \textquotesingle{}rules.\textquotesingle{} calls and report implicated rulenames 
+
+
+\begin{DoxyParams}{Parameters}
+{\em target} & where to store any detected rules \\
+\hline
+\end{DoxyParams}
 \mbox{\Hypertarget{classsnakemake__unit__tests_1_1rule__block_a5c8665be055b61187ab36df3b58ec108}\label{classsnakemake__unit__tests_1_1rule__block_a5c8665be055b61187ab36df3b58ec108}} 
 \index{snakemake\_unit\_tests::rule\_block@{snakemake\_unit\_tests::rule\_block}!resolved@{resolved}}
 \index{resolved@{resolved}!snakemake\_unit\_tests::rule\_block@{snakemake\_unit\_tests::rule\_block}}
@@ -531,7 +567,22 @@ set the name of the base rule for derived rules
 {\em s} & new name of base rule \\
 \hline
 \end{DoxyParams}
-\mbox{\Hypertarget{classsnakemake__unit__tests_1_1rule__block_aac1221b806b4a09c990e0b0e0c41c30d}\label{classsnakemake__unit__tests_1_1rule__block_aac1221b806b4a09c990e0b0e0c41c30d}} 
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1rule__block_ac8ba1d14788e7c063420302f4974642f}\label{classsnakemake__unit__tests_1_1rule__block_ac8ba1d14788e7c063420302f4974642f}} 
+\index{snakemake\_unit\_tests::rule\_block@{snakemake\_unit\_tests::rule\_block}!set\_checkpoint@{set\_checkpoint}}
+\index{set\_checkpoint@{set\_checkpoint}!snakemake\_unit\_tests::rule\_block@{snakemake\_unit\_tests::rule\_block}}
+\doxysubsubsection{\texorpdfstring{set\_checkpoint()}{set\_checkpoint()}}
+{\footnotesize\ttfamily void snakemake\+\_\+unit\+\_\+tests\+::rule\+\_\+block\+::set\+\_\+checkpoint (\begin{DoxyParamCaption}\item[{bool}]{b }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+set checkpoint status 
+
+
+\begin{DoxyParams}{Parameters}
+{\em b} & new setting for checkpoint indicator\\
+\hline
+\end{DoxyParams}
+uninterpretable if not a rule \mbox{\Hypertarget{classsnakemake__unit__tests_1_1rule__block_aac1221b806b4a09c990e0b0e0c41c30d}\label{classsnakemake__unit__tests_1_1rule__block_aac1221b806b4a09c990e0b0e0c41c30d}} 
 \index{snakemake\_unit\_tests::rule\_block@{snakemake\_unit\_tests::rule\_block}!set\_interpreter\_tag@{set\_interpreter\_tag}}
 \index{set\_interpreter\_tag@{set\_interpreter\_tag}!snakemake\_unit\_tests::rule\_block@{snakemake\_unit\_tests::rule\_block}}
 \doxysubsubsection{\texorpdfstring{set\_interpreter\_tag()}{set\_interpreter\_tag()}}
@@ -657,7 +708,17 @@ this is just a unique number that will be emitted to the python tracking pass \m
 
 resolution status of block 
 
-this can be\+: UNRESOLVED, RESOLVED\+\_\+\+INCLUDED, RESOLVED\+\_\+\+EXCLUDED \mbox{\Hypertarget{classsnakemake__unit__tests_1_1rule__block_a2c3d50d1780b52a0189047637fed8dd0}\label{classsnakemake__unit__tests_1_1rule__block_a2c3d50d1780b52a0189047637fed8dd0}} 
+this can be\+: UNRESOLVED, RESOLVED\+\_\+\+INCLUDED, RESOLVED\+\_\+\+EXCLUDED \mbox{\Hypertarget{classsnakemake__unit__tests_1_1rule__block_a9f6a9af37f46cac139f3c3ebb6579af7}\label{classsnakemake__unit__tests_1_1rule__block_a9f6a9af37f46cac139f3c3ebb6579af7}} 
+\index{snakemake\_unit\_tests::rule\_block@{snakemake\_unit\_tests::rule\_block}!\_rule\_is\_checkpoint@{\_rule\_is\_checkpoint}}
+\index{\_rule\_is\_checkpoint@{\_rule\_is\_checkpoint}!snakemake\_unit\_tests::rule\_block@{snakemake\_unit\_tests::rule\_block}}
+\doxysubsubsection{\texorpdfstring{\_rule\_is\_checkpoint}{\_rule\_is\_checkpoint}}
+{\footnotesize\ttfamily bool snakemake\+\_\+unit\+\_\+tests\+::rule\+\_\+block\+::\+\_\+rule\+\_\+is\+\_\+checkpoint\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+if the chunk is a rule, whether the rule is a checkpoint 
+
+note that there are indications (28 Apr 2021) of checkpoints not functioning on cluster systems, so their use is somewhat dubious \mbox{\Hypertarget{classsnakemake__unit__tests_1_1rule__block_a2c3d50d1780b52a0189047637fed8dd0}\label{classsnakemake__unit__tests_1_1rule__block_a2c3d50d1780b52a0189047637fed8dd0}} 
 \index{snakemake\_unit\_tests::rule\_block@{snakemake\_unit\_tests::rule\_block}!\_rule\_name@{\_rule\_name}}
 \index{\_rule\_name@{\_rule\_name}!snakemake\_unit\_tests::rule\_block@{snakemake\_unit\_tests::rule\_block}}
 \doxysubsubsection{\texorpdfstring{\_rule\_name}{\_rule\_name}}

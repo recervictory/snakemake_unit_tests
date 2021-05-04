@@ -96,6 +96,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a6ce20944d655fa30eb734eb9d87ade18"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1params.html#a6ce20944d655fa30eb734eb9d87ade18">report_settings</a> (const boost::filesystem::path &amp;filename) const</td></tr>
 <tr class="memdesc:a6ce20944d655fa30eb734eb9d87ade18"><td class="mdescLeft">&#160;</td><td class="mdescRight">report settings to yaml file  <a href="classsnakemake__unit__tests_1_1params.html#a6ce20944d655fa30eb734eb9d87ade18">More...</a><br /></td></tr>
 <tr class="separator:a6ce20944d655fa30eb734eb9d87ade18"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae282a6469aa70b9f2d60f29fa96776f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1params.html#aae282a6469aa70b9f2d60f29fa96776f">emit_yaml_map</a> (YAML::Emitter *out, const std::map&lt; std::string, bool &gt; &amp;data, const std::string &amp;key) const</td></tr>
+<tr class="memdesc:aae282a6469aa70b9f2d60f29fa96776f"><td class="mdescLeft">&#160;</td><td class="mdescRight">emit map contents as key-&gt;sequence in a YAML::Map  <a href="classsnakemake__unit__tests_1_1params.html#aae282a6469aa70b9f2d60f29fa96776f">More...</a><br /></td></tr>
+<tr class="separator:aae282a6469aa70b9f2d60f29fa96776f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae41922f86d26acc540023660bb5a0fcd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1params.html#ae41922f86d26acc540023660bb5a0fcd">emit_yaml_vector</a> (YAML::Emitter *out, const std::vector&lt; boost::filesystem::path &gt; &amp;data, const std::string &amp;key) const</td></tr>
+<tr class="memdesc:ae41922f86d26acc540023660bb5a0fcd"><td class="mdescLeft">&#160;</td><td class="mdescRight">emit vector contents as key-&gt;sequence in a YAML::Map  <a href="classsnakemake__unit__tests_1_1params.html#ae41922f86d26acc540023660bb5a0fcd">More...</a><br /></td></tr>
+<tr class="separator:ae41922f86d26acc540023660bb5a0fcd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Data Fields</h2></td></tr>
@@ -147,9 +153,13 @@ boost::filesystem::path&#160;</td><td class="memItemRight" valign="bottom"><a cl
 boost::filesystem::path&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1params.html#ae4c5f396936d4c429329368ec0a03862">snakefile</a></td></tr>
 <tr class="memdesc:ae4c5f396936d4c429329368ec0a03862"><td class="mdescLeft">&#160;</td><td class="mdescRight">top-level snakefile for successful pipeline run <br /></td></tr>
 <tr class="separator:ae4c5f396936d4c429329368ec0a03862"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab37945fba40a3597961e203de9166b53"><td class="memItemLeft" align="right" valign="top"><a id="ab37945fba40a3597961e203de9166b53"></a>
+boost::filesystem::path&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1params.html#ab37945fba40a3597961e203de9166b53">pipeline_top_dir</a></td></tr>
+<tr class="memdesc:ab37945fba40a3597961e203de9166b53"><td class="mdescLeft">&#160;</td><td class="mdescRight">top-level directory of successful pipeline run <br /></td></tr>
+<tr class="separator:ab37945fba40a3597961e203de9166b53"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afe202184b17cc2b8787c2dd27e87a8b1"><td class="memItemLeft" align="right" valign="top"><a id="afe202184b17cc2b8787c2dd27e87a8b1"></a>
 boost::filesystem::path&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1params.html#afe202184b17cc2b8787c2dd27e87a8b1">pipeline_run_dir</a></td></tr>
-<tr class="memdesc:afe202184b17cc2b8787c2dd27e87a8b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">top-level directory of successful pipeline run <br /></td></tr>
+<tr class="memdesc:afe202184b17cc2b8787c2dd27e87a8b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">execution directory of pipeline, relative to top level directory of pipeline <br /></td></tr>
 <tr class="separator:afe202184b17cc2b8787c2dd27e87a8b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a11f4c6a00d77edd76e976b35224e1fa6"><td class="memItemLeft" align="right" valign="top"><a id="a11f4c6a00d77edd76e976b35224e1fa6"></a>
 boost::filesystem::path&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1params.html#a11f4c6a00d77edd76e976b35224e1fa6">inst_dir</a></td></tr>
@@ -171,6 +181,18 @@ std::vector&lt; boost::filesystem::path &gt;&#160;</td><td class="memItemRight" 
 std::map&lt; std::string, bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1params.html#a5c9887a0206ec5b8eeab31aac1a43ce9">exclude_rules</a></td></tr>
 <tr class="memdesc:a5c9887a0206ec5b8eeab31aac1a43ce9"><td class="mdescLeft">&#160;</td><td class="mdescRight">user-defined rulenames to skip in test generation <br /></td></tr>
 <tr class="separator:a5c9887a0206ec5b8eeab31aac1a43ce9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acbb1e1ec604101a2c35c485708c3854d"><td class="memItemLeft" align="right" valign="top"><a id="acbb1e1ec604101a2c35c485708c3854d"></a>
+std::map&lt; std::string, bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1params.html#acbb1e1ec604101a2c35c485708c3854d">exclude_extensions</a></td></tr>
+<tr class="memdesc:acbb1e1ec604101a2c35c485708c3854d"><td class="mdescLeft">&#160;</td><td class="mdescRight">user-defined file extensions to exclude from pytest comparison <br /></td></tr>
+<tr class="separator:acbb1e1ec604101a2c35c485708c3854d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57c4178344e2c9a8f3383122c7ca673a"><td class="memItemLeft" align="right" valign="top"><a id="a57c4178344e2c9a8f3383122c7ca673a"></a>
+std::map&lt; std::string, bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1params.html#a57c4178344e2c9a8f3383122c7ca673a">exclude_paths</a></td></tr>
+<tr class="memdesc:a57c4178344e2c9a8f3383122c7ca673a"><td class="mdescLeft">&#160;</td><td class="mdescRight">user-defined path patterns to exclude from pytest comparison <br /></td></tr>
+<tr class="separator:a57c4178344e2c9a8f3383122c7ca673a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab83a40b5bab6f094762d981033502fe8"><td class="memItemLeft" align="right" valign="top"><a id="ab83a40b5bab6f094762d981033502fe8"></a>
+std::map&lt; std::string, bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1params.html#ab83a40b5bab6f094762d981033502fe8">byte_comparisons</a></td></tr>
+<tr class="memdesc:ab83a40b5bab6f094762d981033502fe8"><td class="mdescLeft">&#160;</td><td class="mdescRight">user-defined file extensions to flag as needing binary comparison <br /></td></tr>
+<tr class="separator:ab83a40b5bab6f094762d981033502fe8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>resolved set of parameters to control program operation </p>
@@ -210,6 +232,96 @@ std::map&lt; std::string, bool &gt;&#160;</td><td class="memItemRight" valign="b
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="aae282a6469aa70b9f2d60f29fa96776f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aae282a6469aa70b9f2d60f29fa96776f">&#9670;&nbsp;</a></span>emit_yaml_map()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void snakemake_unit_tests::params::emit_yaml_map </td>
+          <td>(</td>
+          <td class="paramtype">YAML::Emitter *&#160;</td>
+          <td class="paramname"><em>out</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::map&lt; std::string, bool &gt; &amp;&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>key</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>emit map contents as key-&gt;sequence in a YAML::Map </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">out</td><td>YAML Emitter to which to report YAML content </td></tr>
+    <tr><td class="paramname">data</td><td>keys for output sequence </td></tr>
+    <tr><td class="paramname">key</td><td>YAML key corresponding to this sequence</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>note that null sequences are emitted as "key: ~" in YAML style </p>
+
+</div>
+</div>
+<a id="ae41922f86d26acc540023660bb5a0fcd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae41922f86d26acc540023660bb5a0fcd">&#9670;&nbsp;</a></span>emit_yaml_vector()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void snakemake_unit_tests::params::emit_yaml_vector </td>
+          <td>(</td>
+          <td class="paramtype">YAML::Emitter *&#160;</td>
+          <td class="paramname"><em>out</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; boost::filesystem::path &gt; &amp;&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>key</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>emit vector contents as key-&gt;sequence in a YAML::Map </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">out</td><td>YAML Emitter to which to report YAML content </td></tr>
+    <tr><td class="paramname">data</td><td>keys for output sequence </td></tr>
+    <tr><td class="paramname">key</td><td>YAML key corresponding to this sequence</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>note that null sequences are emitted as "key: ~" in YAML style </p>
+
+</div>
+</div>
 <a id="a6ce20944d655fa30eb734eb9d87ade18"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6ce20944d655fa30eb734eb9d87ade18">&#9670;&nbsp;</a></span>report_settings()</h2>
 

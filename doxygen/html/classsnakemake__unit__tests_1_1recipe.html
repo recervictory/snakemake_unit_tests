@@ -99,6 +99,18 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ac2b5f81d576bad7beaf89aed428d4249"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1recipe.html#ac2b5f81d576bad7beaf89aed428d4249">set_rule_name</a> (const std::string &amp;s)</td></tr>
 <tr class="memdesc:ac2b5f81d576bad7beaf89aed428d4249"><td class="mdescLeft">&#160;</td><td class="mdescRight">set rule name  <a href="classsnakemake__unit__tests_1_1recipe.html#ac2b5f81d576bad7beaf89aed428d4249">More...</a><br /></td></tr>
 <tr class="separator:ac2b5f81d576bad7beaf89aed428d4249"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a38af52775d9903a2e5a6ee2285d4553f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1recipe.html#a38af52775d9903a2e5a6ee2285d4553f">is_checkpoint</a> () const</td></tr>
+<tr class="memdesc:a38af52775d9903a2e5a6ee2285d4553f"><td class="mdescLeft">&#160;</td><td class="mdescRight">if this rule is a checkpoint  <a href="classsnakemake__unit__tests_1_1recipe.html#a38af52775d9903a2e5a6ee2285d4553f">More...</a><br /></td></tr>
+<tr class="separator:a38af52775d9903a2e5a6ee2285d4553f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e43a9a9b37a104993d01ff2b1648c5c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1recipe.html#a4e43a9a9b37a104993d01ff2b1648c5c">set_checkpoint</a> (bool b)</td></tr>
+<tr class="memdesc:a4e43a9a9b37a104993d01ff2b1648c5c"><td class="mdescLeft">&#160;</td><td class="mdescRight">set checkpoint status  <a href="classsnakemake__unit__tests_1_1recipe.html#a4e43a9a9b37a104993d01ff2b1648c5c">More...</a><br /></td></tr>
+<tr class="separator:a4e43a9a9b37a104993d01ff2b1648c5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af7d0d497e445dcf0bd263db997b59cad"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1recipe.html#af7d0d497e445dcf0bd263db997b59cad">is_checkpoint_update</a> () const</td></tr>
+<tr class="memdesc:af7d0d497e445dcf0bd263db997b59cad"><td class="mdescLeft">&#160;</td><td class="mdescRight">if this rule is affected by a checkpoint  <a href="classsnakemake__unit__tests_1_1recipe.html#af7d0d497e445dcf0bd263db997b59cad">More...</a><br /></td></tr>
+<tr class="separator:af7d0d497e445dcf0bd263db997b59cad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a194bf6577e035c27d04a0adc70dc5b7c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1recipe.html#a194bf6577e035c27d04a0adc70dc5b7c">set_checkpoint_update</a> (bool b)</td></tr>
+<tr class="memdesc:a194bf6577e035c27d04a0adc70dc5b7c"><td class="mdescLeft">&#160;</td><td class="mdescRight">set checkpoint affectedness status  <a href="classsnakemake__unit__tests_1_1recipe.html#a194bf6577e035c27d04a0adc70dc5b7c">More...</a><br /></td></tr>
+<tr class="separator:a194bf6577e035c27d04a0adc70dc5b7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8e42d3c977f9b7260139c9937f4e4baf"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; boost::filesystem::path &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1recipe.html#a8e42d3c977f9b7260139c9937f4e4baf">get_inputs</a> () const</td></tr>
 <tr class="memdesc:a8e42d3c977f9b7260139c9937f4e4baf"><td class="mdescLeft">&#160;</td><td class="mdescRight">access list of input files  <a href="classsnakemake__unit__tests_1_1recipe.html#a8e42d3c977f9b7260139c9937f4e4baf">More...</a><br /></td></tr>
 <tr class="separator:a8e42d3c977f9b7260139c9937f4e4baf"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -128,6 +140,12 @@ Private Attributes</h2></td></tr>
 std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1recipe.html#a151f0dc265eb7f3827e2359947004d15">_rule_name</a></td></tr>
 <tr class="memdesc:a151f0dc265eb7f3827e2359947004d15"><td class="mdescLeft">&#160;</td><td class="mdescRight">extracted name of rule from log file <br /></td></tr>
 <tr class="separator:a151f0dc265eb7f3827e2359947004d15"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c9e37401d8bdbbdfa5b9f8f73fedd72"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1recipe.html#a4c9e37401d8bdbbdfa5b9f8f73fedd72">_rule_is_checkpoint</a></td></tr>
+<tr class="memdesc:a4c9e37401d8bdbbdfa5b9f8f73fedd72"><td class="mdescLeft">&#160;</td><td class="mdescRight">whether the rule is a checkpoint  <a href="classsnakemake__unit__tests_1_1recipe.html#a4c9e37401d8bdbbdfa5b9f8f73fedd72">More...</a><br /></td></tr>
+<tr class="separator:a4c9e37401d8bdbbdfa5b9f8f73fedd72"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa20704376630a05f13e37268ea9ac8a0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1recipe.html#aa20704376630a05f13e37268ea9ac8a0">_checkpoint_update</a></td></tr>
+<tr class="memdesc:aa20704376630a05f13e37268ea9ac8a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">whether this rule is affected by upstream checkpoints  <a href="classsnakemake__unit__tests_1_1recipe.html#aa20704376630a05f13e37268ea9ac8a0">More...</a><br /></td></tr>
+<tr class="separator:aa20704376630a05f13e37268ea9ac8a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae69dc4956077c25b07f7a5c9ac2e8464"><td class="memItemLeft" align="right" valign="top">std::vector&lt; boost::filesystem::path &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1recipe.html#ae69dc4956077c25b07f7a5c9ac2e8464">_inputs</a></td></tr>
 <tr class="memdesc:ae69dc4956077c25b07f7a5c9ac2e8464"><td class="mdescLeft">&#160;</td><td class="mdescRight">snakemake solved input files to rule  <a href="classsnakemake__unit__tests_1_1recipe.html#ae69dc4956077c25b07f7a5c9ac2e8464">More...</a><br /></td></tr>
 <tr class="separator:ae69dc4956077c25b07f7a5c9ac2e8464"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -356,6 +374,130 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 
 </div>
 </div>
+<a id="a38af52775d9903a2e5a6ee2285d4553f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a38af52775d9903a2e5a6ee2285d4553f">&#9670;&nbsp;</a></span>is_checkpoint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool snakemake_unit_tests::recipe::is_checkpoint </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>if this rule is a checkpoint </p>
+<dl class="section return"><dt>Returns</dt><dd>if this rule is a checkpoint </dd></dl>
+
+</div>
+</div>
+<a id="af7d0d497e445dcf0bd263db997b59cad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af7d0d497e445dcf0bd263db997b59cad">&#9670;&nbsp;</a></span>is_checkpoint_update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool snakemake_unit_tests::recipe::is_checkpoint_update </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>if this rule is affected by a checkpoint </p>
+<dl class="section return"><dt>Returns</dt><dd>if this rule is affected by a checkpoint </dd></dl>
+
+</div>
+</div>
+<a id="a4e43a9a9b37a104993d01ff2b1648c5c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e43a9a9b37a104993d01ff2b1648c5c">&#9670;&nbsp;</a></span>set_checkpoint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void snakemake_unit_tests::recipe::set_checkpoint </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>b</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>set checkpoint status </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">b</td><td>new setting for checkpoint indicator </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a194bf6577e035c27d04a0adc70dc5b7c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a194bf6577e035c27d04a0adc70dc5b7c">&#9670;&nbsp;</a></span>set_checkpoint_update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void snakemake_unit_tests::recipe::set_checkpoint_update </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>b</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>set checkpoint affectedness status </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">b</td><td>new setting for checkpoint affectedness indicator </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a6bafa6c1798a9aba6fa16f154ceec277"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6bafa6c1798a9aba6fa16f154ceec277">&#9670;&nbsp;</a></span>set_log()</h2>
 
@@ -425,6 +567,31 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </div>
 </div>
 <h2 class="groupheader">Field Documentation</h2>
+<a id="aa20704376630a05f13e37268ea9ac8a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa20704376630a05f13e37268ea9ac8a0">&#9670;&nbsp;</a></span>_checkpoint_update</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool snakemake_unit_tests::recipe::_checkpoint_update</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>whether this rule is affected by upstream checkpoints </p>
+<p>this is part of the snakemake logging system, but unfortunately doesn't exactly define what step(s) are implicated upstream </p>
+
+</div>
+</div>
 <a id="ae69dc4956077c25b07f7a5c9ac2e8464"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae69dc4956077c25b07f7a5c9ac2e8464">&#9670;&nbsp;</a></span>_inputs</h2>
 
@@ -497,6 +664,31 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 
 <p>snakemake solved output files to rule </p>
 <p>parsed from ", " delimited list from log output </p>
+
+</div>
+</div>
+<a id="a4c9e37401d8bdbbdfa5b9f8f73fedd72"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c9e37401d8bdbbdfa5b9f8f73fedd72">&#9670;&nbsp;</a></span>_rule_is_checkpoint</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool snakemake_unit_tests::recipe::_rule_is_checkpoint</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>whether the rule is a checkpoint </p>
+<p>note that there are indications (28 Apr 2021) of checkpoints not functioning on cluster systems, so their use is somewhat dubious </p>
 
 </div>
 </div>
