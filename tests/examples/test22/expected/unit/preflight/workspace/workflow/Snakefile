@@ -1,0 +1,35 @@
+rule all:
+    input:
+        "samples/b.txt",
+
+
+pass
+
+
+rule preflight:
+    input:
+        "presample/b.txt",
+    output:
+        "samples/b.txt",
+    shell:
+        "cp {input} {output}"
+
+
+pass
+
+
+pass
+
+
+pass
+
+
+def aggregate_input(wildcards):
+    with checkpoints.somestep.get(sample=wildcards.sample).output[0].open() as f:
+        if f.read().strip() == "a":
+            return "post/{sample}.txt"
+        else:
+            return "alt/{sample}.txt"
+pass
+
+

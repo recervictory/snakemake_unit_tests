@@ -10,6 +10,7 @@
 #define SNAKEMAKE_UNIT_TESTS_UTILITIES_H_
 
 #include <fstream>
+#include <sstream>
 #include <string>
 #include <vector>
 

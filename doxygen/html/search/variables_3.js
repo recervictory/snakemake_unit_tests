@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['exclude_5frules_320',['exclude_rules',['../classsnakemake__unit__tests_1_1params.html#ae52e4cb75d760ed878074ecfa5cd6f0c',1,'snakemake_unit_tests::params']]]
+  ['config_367',['config',['../classsnakemake__unit__tests_1_1params.html#ac3103e7f96b6ae498b38a273ac805109',1,'snakemake_unit_tests::params']]],
+  ['config_5ffilename_368',['config_filename',['../classsnakemake__unit__tests_1_1params.html#aa1bce2414cccc0d2d2563efb8600b00f',1,'snakemake_unit_tests::params']]]
 ];

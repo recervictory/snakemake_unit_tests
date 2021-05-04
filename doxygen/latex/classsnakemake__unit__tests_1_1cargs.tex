@@ -33,8 +33,10 @@ std\+::string \mbox{\hyperlink{classsnakemake__unit__tests_1_1cargs_a456a635b998
 \begin{DoxyCompactList}\small\item\em get the snakemake log for the successful pipeline run that needs unit tests \end{DoxyCompactList}\item 
 std\+::string \mbox{\hyperlink{classsnakemake__unit__tests_1_1cargs_a278b41f5ea298bdf6ab55ce8826db360}{get\+\_\+output\+\_\+test\+\_\+dir}} () const
 \begin{DoxyCompactList}\small\item\em get top-\/level directory under which tests should be installed \end{DoxyCompactList}\item 
-std\+::string \mbox{\hyperlink{classsnakemake__unit__tests_1_1cargs_a56029082ac7b6294d67859c666d9e498}{get\+\_\+pipeline\+\_\+dir}} () const
-\begin{DoxyCompactList}\small\item\em get top-\/level directory under which actual pipeline was run \end{DoxyCompactList}\item 
+std\+::string \mbox{\hyperlink{classsnakemake__unit__tests_1_1cargs_acf7b31ac69a8bb310a258cb2a1a07959}{get\+\_\+pipeline\+\_\+top\+\_\+dir}} () const
+\begin{DoxyCompactList}\small\item\em get top-\/level directory of test pipeline \end{DoxyCompactList}\item 
+std\+::string \mbox{\hyperlink{classsnakemake__unit__tests_1_1cargs_a144442a32454acb9f09676f81ae7515d}{get\+\_\+pipeline\+\_\+run\+\_\+dir}} () const
+\begin{DoxyCompactList}\small\item\em get directory of actual pipeline run, relative to top-\/level pipeline directory. \end{DoxyCompactList}\item 
 std\+::string \mbox{\hyperlink{classsnakemake__unit__tests_1_1cargs_a6a443bcd3356618fb16f508da84b7654}{get\+\_\+inst\+\_\+dir}} () const
 \begin{DoxyCompactList}\small\item\em get path to inst directory for this copy of snakemake\+\_\+unit\+\_\+tests \end{DoxyCompactList}\item 
 std\+::vector$<$ std\+::string $>$ \mbox{\hyperlink{classsnakemake__unit__tests_1_1cargs_a4c8a0de7bcae0eeeb2f5e24fc078a140}{get\+\_\+added\+\_\+files}} () const
@@ -49,6 +51,8 @@ bool \mbox{\hyperlink{classsnakemake__unit__tests_1_1cargs_a95e6b64164687848fe05
 \begin{DoxyCompactList}\small\item\em get user flag for updating existing tests in place (snakefiles only) \end{DoxyCompactList}\item 
 bool \mbox{\hyperlink{classsnakemake__unit__tests_1_1cargs_aecc9bee27294c2cc8ac3423954749964}{update\+\_\+added\+\_\+content}} () const
 \begin{DoxyCompactList}\small\item\em get user flag for updating added files and directories in place \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classsnakemake__unit__tests_1_1cargs_a7af6754b82a6bcd815d1522d87aaddc9}{update\+\_\+config}} () const
+\begin{DoxyCompactList}\small\item\em get user flag for updating config report to unit directory top level \end{DoxyCompactList}\item 
 bool \mbox{\hyperlink{classsnakemake__unit__tests_1_1cargs_a08a00a9c0db47315111e027b5e43dfce}{update\+\_\+inputs}} () const
 \begin{DoxyCompactList}\small\item\em get user flag for updating unit tests\textquotesingle{} inputs \end{DoxyCompactList}\item 
 bool \mbox{\hyperlink{classsnakemake__unit__tests_1_1cargs_a48364153c7fe7da02f0a0736107a8634}{update\+\_\+outputs}} () const
@@ -71,6 +75,8 @@ void \mbox{\hyperlink{classsnakemake__unit__tests_1_1cargs_aa50a26e90723123d7318
 boost\+::filesystem\+::path \mbox{\hyperlink{classsnakemake__unit__tests_1_1cargs_a940197b74bb1793509c339387a4730c7}{override\+\_\+if\+\_\+specified}} (const std\+::string \&cli\+\_\+entry, const boost\+::filesystem\+::path \&params\+\_\+entry) const
 \begin{DoxyCompactList}\small\item\em if the first parameter is nonempty, return it; otherwise return the second \end{DoxyCompactList}\item 
 {\footnotesize template$<$class value\+\_\+type $>$ }\\void \mbox{\hyperlink{classsnakemake__unit__tests_1_1cargs_a47b20118f204085dd8f47e4db648c722}{add\+\_\+contents}} (const std\+::vector$<$ std\+::string $>$ \&cli\+\_\+entries, std\+::vector$<$ value\+\_\+type $>$ $\ast$params\+\_\+entries) const
+\begin{DoxyCompactList}\small\item\em append any CLI entries for a multitoken parameter to those already found in the config yaml \end{DoxyCompactList}\item 
+{\footnotesize template$<$class value\+\_\+type $>$ }\\void \mbox{\hyperlink{classsnakemake__unit__tests_1_1cargs_a7060744899f8b051f68df310592d5a4b}{add\+\_\+contents}} (const std\+::vector$<$ std\+::string $>$ \&cli\+\_\+entries, std\+::map$<$ value\+\_\+type, bool $>$ $\ast$params\+\_\+entries) const
 \begin{DoxyCompactList}\small\item\em append any CLI entries for a multitoken parameter to those already found in the config yaml \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{classsnakemake__unit__tests_1_1cargs_a01412612909d772f3dc8f0cbc5832365}{check\+\_\+nonempty}} (const boost\+::filesystem\+::path \&p, const std\+::string \&msg) const
 \begin{DoxyCompactList}\small\item\em make sure a path isn\textquotesingle{}t just an empty string \end{DoxyCompactList}\item 
@@ -143,10 +149,33 @@ disabled
 
 
 \doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1cargs_a7060744899f8b051f68df310592d5a4b}\label{classsnakemake__unit__tests_1_1cargs_a7060744899f8b051f68df310592d5a4b}} 
+\index{snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}!add\_contents@{add\_contents}}
+\index{add\_contents@{add\_contents}!snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}}
+\doxysubsubsection{\texorpdfstring{add\_contents()}{add\_contents()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$class value\+\_\+type $>$ \\
+void snakemake\+\_\+unit\+\_\+tests\+::cargs\+::add\+\_\+contents (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ std\+::string $>$ \&}]{cli\+\_\+entries,  }\item[{std\+::map$<$ value\+\_\+type, bool $>$ $\ast$}]{params\+\_\+entries }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [private]}}
+
+
+
+append any CLI entries for a multitoken parameter to those already found in the config yaml 
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em value\+\_\+type} & class to cast command line strings into (can just be strings) \\
+\hline
+\end{DoxyTemplParams}
+
+\begin{DoxyParams}{Parameters}
+{\em cli\+\_\+entries} & values for the parameter found on the command line \\
+\hline
+{\em params\+\_\+entries} & values for the parameter found in the config yaml, as keys in a map \\
+\hline
+\end{DoxyParams}
 \mbox{\Hypertarget{classsnakemake__unit__tests_1_1cargs_a47b20118f204085dd8f47e4db648c722}\label{classsnakemake__unit__tests_1_1cargs_a47b20118f204085dd8f47e4db648c722}} 
 \index{snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}!add\_contents@{add\_contents}}
 \index{add\_contents@{add\_contents}!snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}}
-\doxysubsubsection{\texorpdfstring{add\_contents()}{add\_contents()}}
+\doxysubsubsection{\texorpdfstring{add\_contents()}{add\_contents()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
 {\footnotesize\ttfamily template$<$class value\+\_\+type $>$ \\
 void snakemake\+\_\+unit\+\_\+tests\+::cargs\+::add\+\_\+contents (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ std\+::string $>$ \&}]{cli\+\_\+entries,  }\item[{std\+::vector$<$ value\+\_\+type $>$ $\ast$}]{params\+\_\+entries }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [private]}}
 
@@ -346,15 +375,28 @@ get top-\/level directory under which tests should be installed
 \begin{DoxyReturn}{Returns}
 top-\/level test directory
 \end{DoxyReturn}
-as of this writing (March 2021), the default value for this in snakemake is \textquotesingle{}.tests\textquotesingle{} and that default is carried over here \mbox{\Hypertarget{classsnakemake__unit__tests_1_1cargs_a56029082ac7b6294d67859c666d9e498}\label{classsnakemake__unit__tests_1_1cargs_a56029082ac7b6294d67859c666d9e498}} 
-\index{snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}!get\_pipeline\_dir@{get\_pipeline\_dir}}
-\index{get\_pipeline\_dir@{get\_pipeline\_dir}!snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}}
-\doxysubsubsection{\texorpdfstring{get\_pipeline\_dir()}{get\_pipeline\_dir()}}
-{\footnotesize\ttfamily std\+::string snakemake\+\_\+unit\+\_\+tests\+::cargs\+::get\+\_\+pipeline\+\_\+dir (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+as of this writing (March 2021), the default value for this in snakemake is \textquotesingle{}.tests\textquotesingle{} and that default is carried over here \mbox{\Hypertarget{classsnakemake__unit__tests_1_1cargs_a144442a32454acb9f09676f81ae7515d}\label{classsnakemake__unit__tests_1_1cargs_a144442a32454acb9f09676f81ae7515d}} 
+\index{snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}!get\_pipeline\_run\_dir@{get\_pipeline\_run\_dir}}
+\index{get\_pipeline\_run\_dir@{get\_pipeline\_run\_dir}!snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}}
+\doxysubsubsection{\texorpdfstring{get\_pipeline\_run\_dir()}{get\_pipeline\_run\_dir()}}
+{\footnotesize\ttfamily std\+::string snakemake\+\_\+unit\+\_\+tests\+::cargs\+::get\+\_\+pipeline\+\_\+run\+\_\+dir (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
 
 
 
-get top-\/level directory under which actual pipeline was run 
+get directory of actual pipeline run, relative to top-\/level pipeline directory. 
+
+\begin{DoxyReturn}{Returns}
+directory of actual pipeline run relative to top-\/level pipeline directory.
+\end{DoxyReturn}
+this parameter is optional. if not specified, it will be assumed to be \textquotesingle{}.\textquotesingle{}; that is, that the pipeline was run in the top level of the pipeline installation itself. a valid option here might be \textquotesingle{}workflows/rnaseq\textquotesingle{} or equivalent. \mbox{\Hypertarget{classsnakemake__unit__tests_1_1cargs_acf7b31ac69a8bb310a258cb2a1a07959}\label{classsnakemake__unit__tests_1_1cargs_acf7b31ac69a8bb310a258cb2a1a07959}} 
+\index{snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}!get\_pipeline\_top\_dir@{get\_pipeline\_top\_dir}}
+\index{get\_pipeline\_top\_dir@{get\_pipeline\_top\_dir}!snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}}
+\doxysubsubsection{\texorpdfstring{get\_pipeline\_top\_dir()}{get\_pipeline\_top\_dir()}}
+{\footnotesize\ttfamily std\+::string snakemake\+\_\+unit\+\_\+tests\+::cargs\+::get\+\_\+pipeline\+\_\+top\+\_\+dir (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+get top-\/level directory of test pipeline 
 
 \begin{DoxyReturn}{Returns}
 top-\/level run directory
@@ -484,7 +526,20 @@ get user flag for updating all parts of unit tests
 \begin{DoxyReturn}{Returns}
 whether the user wants a full replacement of all unit test content 
 \end{DoxyReturn}
-\mbox{\Hypertarget{classsnakemake__unit__tests_1_1cargs_a08a00a9c0db47315111e027b5e43dfce}\label{classsnakemake__unit__tests_1_1cargs_a08a00a9c0db47315111e027b5e43dfce}} 
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1cargs_a7af6754b82a6bcd815d1522d87aaddc9}\label{classsnakemake__unit__tests_1_1cargs_a7af6754b82a6bcd815d1522d87aaddc9}} 
+\index{snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}!update\_config@{update\_config}}
+\index{update\_config@{update\_config}!snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}}
+\doxysubsubsection{\texorpdfstring{update\_config()}{update\_config()}}
+{\footnotesize\ttfamily bool snakemake\+\_\+unit\+\_\+tests\+::cargs\+::update\+\_\+config (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+get user flag for updating config report to unit directory top level 
+
+\begin{DoxyReturn}{Returns}
+whether the user wants to update run configuration report based on the current settings
+\end{DoxyReturn}
+the distinction here is that there are definitely some cases in which the user won\textquotesingle{}t want to update config based on some test or rule subset or different log they\textquotesingle{}re working with for testing purposes \mbox{\Hypertarget{classsnakemake__unit__tests_1_1cargs_a08a00a9c0db47315111e027b5e43dfce}\label{classsnakemake__unit__tests_1_1cargs_a08a00a9c0db47315111e027b5e43dfce}} 
 \index{snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}!update\_inputs@{update\_inputs}}
 \index{update\_inputs@{update\_inputs}!snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}}
 \doxysubsubsection{\texorpdfstring{update\_inputs()}{update\_inputs()}}

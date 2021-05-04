@@ -1,0 +1,25 @@
+rule all:
+    input:
+        "splitted/7-of-8.post.txt",
+
+
+scattergather:
+    split=8
+pass
+
+
+pass
+
+
+rule intermediate:
+    input:
+        "splitted/{scatteritem}.txt"
+    output:
+        "splitted/{scatteritem}.post.txt"
+    shell:
+        "cp {input} {output}"
+
+
+pass
+
+

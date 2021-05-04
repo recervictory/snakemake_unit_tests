@@ -1,0 +1,109 @@
+Building DAG of jobs...
+Using shell: /usr/local/bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	2	aggregate
+	1	all
+	1	preflight
+	2	somestep
+	6
+Select jobs to execute...
+
+[Thu Apr 29 11:18:24 2021]
+rule preflight:
+    input: presample/b.txt
+    output: samples/b.txt
+    jobid: 5
+
+[Thu Apr 29 11:18:24 2021]
+Finished job 5.
+1 of 6 steps (17%) done
+Select jobs to execute...
+
+[Thu Apr 29 11:18:24 2021]
+checkpoint somestep:
+    input: samples/b.txt
+    output: somestep/b.txt
+    jobid: 4
+    wildcards: sample=b
+Downstream jobs will be updated after completion.
+
+Updating job aggregate.
+[Thu Apr 29 11:18:24 2021]
+Finished job 4.
+5 of 8 steps (62%) done
+Select jobs to execute...
+
+[Thu Apr 29 11:18:24 2021]
+rule alt_intermediate:
+    input: somestep/b.txt
+    output: alt/b.txt
+    jobid: 9
+    wildcards: sample=b
+
+[Thu Apr 29 11:18:24 2021]
+Finished job 9.
+6 of 8 steps (75%) done
+Select jobs to execute...
+
+[Thu Apr 29 11:18:24 2021]
+rule aggregate:
+    input: alt/b.txt
+    output: aggregated/b.txt
+    jobid: 3
+    wildcards: sample=b
+
+[Thu Apr 29 11:18:24 2021]
+Finished job 3.
+7 of 8 steps (88%) done
+Select jobs to execute...
+
+[Thu Apr 29 11:18:24 2021]
+checkpoint somestep:
+    input: samples/a.txt
+    output: somestep/a.txt
+    jobid: 2
+    wildcards: sample=a
+Downstream jobs will be updated after completion.
+
+Updating job aggregate.
+[Thu Apr 29 11:18:24 2021]
+Finished job 2.
+2 of 7 steps (29%) done
+Select jobs to execute...
+
+[Thu Apr 29 11:18:24 2021]
+rule intermediate:
+    input: somestep/a.txt
+    output: post/a.txt
+    jobid: 7
+    wildcards: sample=a
+
+[Thu Apr 29 11:18:24 2021]
+Finished job 7.
+3 of 7 steps (43%) done
+Select jobs to execute...
+
+[Thu Apr 29 11:18:24 2021]
+rule aggregate:
+    input: post/a.txt
+    output: aggregated/a.txt
+    jobid: 1
+    wildcards: sample=a
+
+[Thu Apr 29 11:18:24 2021]
+Finished job 1.
+4 of 7 steps (57%) done
+Select jobs to execute...
+
+[Thu Apr 29 11:18:24 2021]
+localrule all:
+    input: aggregated/a.txt, aggregated/b.txt
+    jobid: 0
+
+[Thu Apr 29 11:18:24 2021]
+Finished job 0.
+8 of 8 steps (100%) done
+Complete log: /Users/palmercd/Development/snakemake_unit_tests/tests/examples/test22/input/.snakemake/log/2021-04-29T111823.913072.snakemake.log

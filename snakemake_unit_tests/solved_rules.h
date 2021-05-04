@@ -15,9 +15,11 @@
 #include <map>
 #include <stdexcept>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "boost/regex.hpp"
+#include "boost/smart_ptr.hpp"
 #include "snakemake_unit_tests/snakemake_file.h"
 #include "snakemake_unit_tests/utilities.h"
 
@@ -32,13 +34,19 @@ class recipe {
   /*!
     @brief constructor
    */
-  recipe() : _rule_name(""), _log("") {}
+  recipe()
+      : _rule_name(""),
+        _rule_is_checkpoint(false),
+        _checkpoint_update(false),
+        _log("") {}
   /*!
     @brief copy constructor
     @param obj existing recipe object
    */
   recipe(const recipe &obj)
       : _rule_name(obj._rule_name),
+        _rule_is_checkpoint(obj._rule_is_checkpoint),
+        _checkpoint_update(obj._checkpoint_update),
         _inputs(obj._inputs),
         _outputs(obj._outputs),
         _log(obj._log) {}
@@ -57,6 +65,26 @@ class recipe {
     @param s new rule name
    */
   void set_rule_name(const std::string &s) { _rule_name = s; }
+  /*!
+    @brief if this rule is a checkpoint
+    @return if this rule is a checkpoint
+  */
+  bool is_checkpoint() const { return _rule_is_checkpoint; }
+  /*!
+    @brief set checkpoint status
+    @param b new setting for checkpoint indicator
+   */
+  void set_checkpoint(bool b) { _rule_is_checkpoint = b; }
+  /*!
+    @brief if this rule is affected by a checkpoint
+    @return if this rule is affected by a checkpoint
+  */
+  bool is_checkpoint_update() const { return _checkpoint_update; }
+  /*!
+    @brief set checkpoint affectedness status
+    @param b new setting for checkpoint affectedness indicator
+   */
+  void set_checkpoint_update(bool b) { _checkpoint_update = b; }
   /*!
     @brief access list of input files
     @return vector storing all input filenames; may be empty
@@ -106,6 +134,20 @@ class recipe {
    */
   std::string _rule_name;
   /*!
+    @brief whether the rule is a checkpoint
+
+    note that there are indications (28 Apr 2021) of checkpoints not functioning
+    on cluster systems, so their use is somewhat dubious
+   */
+  bool _rule_is_checkpoint;
+  /*!
+    @brief whether this rule is affected by upstream checkpoints
+
+    this is part of the snakemake logging system, but unfortunately doesn't
+    exactly define what step(s) are implicated upstream
+   */
+  bool _checkpoint_update;
+  /*!
     @brief snakemake solved input files to rule
 
     parsed from ", " delimited list from log output
@@ -141,7 +183,8 @@ class solved_rules {
     @brief copy constructor
     @param obj existing solved_rules object
    */
-  solved_rules(const solved_rules &obj) : _recipes(obj._recipes) {}
+  solved_rules(const solved_rules &obj)
+      : _recipes(obj._recipes), _output_lookup(obj._output_lookup) {}
   /*!
     @brief destructor
    */
@@ -156,12 +199,15 @@ class solved_rules {
     @param sf snakemake_file object with rule definitions corresponding
     to loaded log data
     @param output_test_dir output directory for tests (e.g. '.tests/')
-    @param pipeline_dir parent directory of snakemake pipeline used to generate
-    corresponding log file (e.g.: X for X/workflow/Snakefile)
+    @param pipeline_top_dir parent directory of snakemake pipeline used to
+    generate corresponding log file (e.g.: X for X/workflow/Snakefile)
+    @param pipeline_run_dir directory in which pipeline was run, relative to
+    pipeline_top_dir. if you run the pipeline in the top level directory,
+    this should simply be '.'
     @param inst_dir directory in snakemake_unit_tests repo containing
     installation files (when conda mode is enabled, this will default to
     $CONDA_PREFIX/share/snakemake_unit_tests/inst)
-    @param exclude_rules vector of rules to skip tests for
+    @param exclude_rules map of rules to skip tests for
     @param added_files vector of additional files to add to test workspaces
     @param added_directories vector of additional directories to add to test
     workspaces
@@ -171,30 +217,37 @@ class solved_rules {
     @param update_inputs controls whether to copy rule inputs
     @param update_outputs controls whether to copy rule outputs
     @param update_pytest controls whether to copy pytest infrastructure
+    @param include_entire_dag controls whether to override default
+    behavior and emit all rules, instead of just the target
   */
   void emit_tests(const snakemake_file &sf,
                   const boost::filesystem::path &output_test_dir,
-                  const boost::filesystem::path &pipeline_dir,
+                  const boost::filesystem::path &pipeline_top_dir,
+                  const boost::filesystem::path &pipeline_run_dir,
                   const boost::filesystem::path &inst_dir,
-                  const std::vector<std::string> &exclude_rules,
+                  const std::map<std::string, bool> &exclude_rules,
                   const std::vector<boost::filesystem::path> &added_files,
                   const std::vector<boost::filesystem::path> &added_directories,
                   bool update_snakefiles, bool update_added_content,
-                  bool update_inputs, bool update_outputs,
-                  bool update_pytest) const;
+                  bool update_inputs, bool update_outputs, bool update_pytest,
+                  bool include_entire_dag) const;
   /*!
     @brief emit snakefile from parsed snakemake information
     @param sf snakemake_file object with rule definitions corresponding
     to loaded log data
     @param workspace_path top level of emitted workspace
     @param rec target rule for emission
+    @param dependent_rulenames all rule names that should be included in
+    the output
     @param requires_phony_all whether the file needs an all target injected.
     this should only be included at top level
     @return whether the rule was found in the snakefile or its dependencies
   */
   bool emit_snakefile(const snakemake_file &sf,
                       const boost::filesystem::path &workspace_path,
-                      const recipe &rec, bool requires_phony_all) const;
+                      const boost::shared_ptr<recipe> &rec,
+                      const std::map<std::string, bool> &dependent_rulenames,
+                      bool requires_phony_all) const;
   /*!
     @brief create a test directory
     @param rec recipe/rule entry for which a workspace should be created
@@ -202,12 +255,15 @@ class solved_rules {
     to loaded log data
     @param output_test_dir output directory for tests (e.g. '.tests/')
     @param test_parent_path '.tests/unit' by default
-    @param pipeline_dir parent directory of snakemake pipeline used to generate
-    corresponding log file (e.g.: X for X/workflow/Snakefile)
+    @param pipeline_top_dir parent directory of snakemake pipeline used to
+    generate corresponding log file (e.g.: X for X/workflow/Snakefile)
+    @param pipeline_run_dir directory in which pipeline was run, relative to
+    pipeline_top_dir. if you run the pipeline in the top level directory,
+    this should simply be '.'
     @param test_inst_py snakemake_unit_tests installed test.py script
     installation files (when conda mode is enabled, this will default to
     $CONDA_PREFIX/share/snakemake_unit_tests/inst)
-    @param exclude_rules vector of rules to skip tests for
+    @param exclude_rules map of rules to skip tests for
     @param added_files vector of additional files to add to test workspaces
     @param added_directories vector of additional directories to add to test
     workspaces
@@ -217,18 +273,21 @@ class solved_rules {
     @param update_inputs controls whether to copy rule inputs
     @param update_outputs controls whether to copy rule outputs
     @param update_pytest controls whether to copy pytest infrastructure
+    @param include_entire_dag controls whether to override default
+    behavior and emit all rules, instead of just the target
   */
   void create_workspace(
-      const recipe &rec, const snakemake_file &sf,
+      const boost::shared_ptr<recipe> &rec, const snakemake_file &sf,
       const boost::filesystem::path &output_test_dir,
       const boost::filesystem::path &test_parent_path,
-      const boost::filesystem::path &pipeline_dir,
+      const boost::filesystem::path &pipeline_top_dir,
+      const boost::filesystem::path &pipeline_run_dir,
       const boost::filesystem::path &test_inst_py,
-      const std::vector<std::string> &exclude_rules,
+      const std::map<std::string, bool> &exclude_rules,
       const std::vector<boost::filesystem::path> &added_files,
       const std::vector<boost::filesystem::path> &added_directories,
       bool update_snakefiles, bool update_added_content, bool update_inputs,
-      bool update_outputs, bool update_pytest) const;
+      bool update_outputs, bool update_pytest, bool include_entire_dag) const;
   /*!
     @brief create an empty workspace for python testing
     @param output_test_dir output directory for tests (e.g. '.tests/')
@@ -278,19 +337,58 @@ class solved_rules {
     @param test_dir parent directory of all unit tests for the pipeline
     @param rule_name name of rule whose test is being emitted
     @param snakefile_relative_path relative path of snakefile in pipeline dir
+    @param pipeline_run_dir relative path of snakemake execution within pipeline
     @param inst_test_py snakemake_unit_tests test.py script location
    */
   void report_modified_test_script(
       const boost::filesystem::path &parent_dir,
       const boost::filesystem::path &test_dir, const std::string &rule_name,
       const boost::filesystem::path &snakefile_relative_path,
+      const boost::filesystem::path &pipeline_run_dir,
       const boost::filesystem::path &inst_test_py) const;
+
+  /*!
+    @brief determine unavoidable dependencies for query rule
+    @param sf snakemake top level file with all rules
+    @param rec query rule
+    @param include_entire_dag controls whether to override default
+    behavior and emit all rules, instead of just the target
+    @param target full set of unavoidable dependencies
+   */
+  void aggregate_dependencies(
+      const snakemake_file &sf, const boost::shared_ptr<recipe> &rec,
+      bool include_entire_dag,
+      std::map<boost::shared_ptr<recipe>, bool> *target) const;
+  /*!
+    @brief add rules and all dependencies starting from a particular leaf
+    @param rec leaf to start adding things from
+    @param include_entire_dag controls whether to override default
+    behavior and emit all rules, instead of just the target
+    @param already_added tracker for nodes already searched
+    @param target storage for included nodes
+   */
+  void add_dag_from_leaf(
+      const boost::shared_ptr<recipe> &rec, bool include_entire_dag,
+      std::map<boost::shared_ptr<recipe>, bool> *already_added,
+      std::map<boost::shared_ptr<recipe>, bool> *target) const;
+  /*!
+    @brief compute whether a rule has any checkpoint dependencies
+    @param rec leaf to start scanning dependencies from
+    @param target tracker for results
+   */
+  void compute_dependency_checkpoints(
+      const boost::shared_ptr<recipe> &rec,
+      std::map<boost::shared_ptr<recipe>, bool> *target) const;
 
  private:
   /*!
     @brief abstract set of solved recipe entries in a log file
    */
-  std::vector<recipe> _recipes;
+  std::vector<boost::shared_ptr<recipe> > _recipes;
+  /*!
+    @brief allow lookup of output->recipe for dependency resolution
+   */
+  std::map<boost::filesystem::path, boost::shared_ptr<recipe> > _output_lookup;
 };
 }  // namespace snakemake_unit_tests
 

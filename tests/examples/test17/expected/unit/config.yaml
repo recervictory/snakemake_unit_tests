@@ -1,0 +1,11 @@
+output-test-dir: /Users/palmercd/Development/snakemake_unit_tests/tests/examples/test17/output
+snakefile: /Users/palmercd/Development/snakemake_unit_tests/tests/examples/test17/input/workflow/Snakefile
+pipeline-dir: /Users/palmercd/Development/snakemake_unit_tests/tests/examples/test17/input
+inst-dir: /Users/palmercd/Development/snakemake_unit_tests/inst
+snakemake-log: /Users/palmercd/Development/snakemake_unit_tests/tests/examples/test17/input/run.log
+added-files:
+  - config.yaml
+added-directories:
+  - schema
+exclude-rules:
+  - all

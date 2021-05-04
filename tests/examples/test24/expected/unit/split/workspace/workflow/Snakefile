@@ -1,0 +1,30 @@
+rule all:
+    input:
+        "splitted/1-of-8.txt",
+        "splitted/2-of-8.txt",
+        "splitted/3-of-8.txt",
+        "splitted/4-of-8.txt",
+        "splitted/5-of-8.txt",
+        "splitted/6-of-8.txt",
+        "splitted/7-of-8.txt",
+        "splitted/8-of-8.txt",
+
+
+scattergather:
+    split=8
+pass
+
+
+rule split:
+    output:
+        scatter.split("splitted/{scatteritem}.txt")
+    shell:
+        "touch {output}"
+
+
+pass
+
+
+pass
+
+

@@ -9,12 +9,17 @@ import os
 import subprocess as sp
 from pathlib import Path
 
+import magic
 import pytest
 
-exclude_paths = ["/log/", "/logs/", "/performance_benchmarks/", "temp/", "tmp/"]
-exclude_ext = [".tbi", ".html", ".log", ".bai"]
-byte_cmp = [".jpg", ".jpeg", ".png", ".bam"]
+# import yaml
+
+
+exclude_paths = ["/log/", "/logs/", "/performance_benchmarks/", "temp/", "tmp/", ".snakemake/"]
+exclude_ext = [".tbi", ".html", ".log", ".bai", ".idx"]
 # TODO: Read in a list of extensions to exclude from the config.  See issue #16.
+
+# yaml.safe_load(config)
 
 
 class OutputChecker:
@@ -57,7 +62,14 @@ class OutputChecker:
             )
 
     def compare_files(self, generated_file, expected_file):
-        if str(generated_file).lower().endswith(tuple(byte_cmp)):
+        """Compare binary or text files.
+
+        Use byte-wise comparison if files are binary via bash cmp.  If the
+        files are plain text, then strip comment lines and compare (to
+        circumvent datestamps causing assert failures).
+        """
+        f = magic.Magic(uncompress=True, mime=True)
+        if f.from_file(str(generated_file)) != "text/plain":
             sp.check_output(["cmp", generated_file, expected_file])
         else:
             gen = process_file(generated_file)
@@ -66,10 +78,7 @@ class OutputChecker:
 
 
 def process_file(infile):
-    if str(infile).lower().endswith(("vcf", "vcf.gz")):
-        rmv = "##"
-    else:
-        rmv = "#"
+    rmv = "##" if str(infile).lower().endswith((".vcf", ".vcf.gz")) else "#"
     if str(infile).lower().endswith(".gz"):
         with gzip.open(infile, mode="rt") as f:
             n = remove_headers(f, rmv)

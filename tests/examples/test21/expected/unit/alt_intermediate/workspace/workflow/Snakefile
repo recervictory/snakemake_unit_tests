@@ -1,0 +1,32 @@
+rule all:
+    input:
+        "alt/b.txt",
+
+
+pass
+
+
+pass
+
+
+pass
+
+
+rule alt_intermediate:
+    input:
+        "somestep/{sample}.txt",
+    output:
+        "alt/{sample}.txt",
+    shell:
+        "touch {output}"
+
+
+def aggregate_input(wildcards):
+    with checkpoints.somestep.get(sample=wildcards.sample).output[0].open() as f:
+        if f.read().strip() == "a":
+            return "post/{sample}.txt"
+        else:
+            return "alt/{sample}.txt"
+pass
+
+

@@ -38,6 +38,7 @@ class rule_block {
   rule_block()
       : _rule_name(""),
         _base_rule_name(""),
+        _rule_is_checkpoint(false),
         _local_indentation(0),
         _resolution(UNRESOLVED),
         _python_tag(0) {}
@@ -48,6 +49,7 @@ class rule_block {
   rule_block(const rule_block &obj)
       : _rule_name(obj._rule_name),
         _base_rule_name(obj._base_rule_name),
+        _rule_is_checkpoint(obj._rule_is_checkpoint),
         _named_blocks(obj._named_blocks),
         _code_chunk(obj._code_chunk),
         _local_indentation(obj._local_indentation),
@@ -283,6 +285,27 @@ class rule_block {
   const boost::filesystem::path &get_resolved_included_filename() const {
     return _resolved_included_filename;
   }
+  /*!
+    @brief if this is a rule, is it a checkpoint
+    @return whether, if a rule, this is a checkpoint
+
+    uninterpretable if not a rule
+  */
+  bool is_checkpoint() const { return _rule_is_checkpoint; }
+  /*!
+    @brief set checkpoint status
+    @param b new setting for checkpoint indicator
+
+    uninterpretable if not a rule
+   */
+  void set_checkpoint(bool b) { _rule_is_checkpoint = b; }
+
+  /*!
+    @brief scan block contents for 'rules.' calls and report implicated
+    rulenames
+    @param target where to store any detected rules
+  */
+  void report_rulesdot_rules(std::map<std::string, bool> *target) const;
 
  private:
   /*!
@@ -320,6 +343,13 @@ class rule_block {
     will be populated later
    */
   std::string _base_rule_name;
+  /*!
+    @brief if the chunk is a rule, whether the rule is a checkpoint
+
+    note that there are indications (28 Apr 2021) of checkpoints not functioning
+    on cluster systems, so their use is somewhat dubious
+   */
+  bool _rule_is_checkpoint;
   /*!
     @brief arbitrary named blocks and their contents
 
