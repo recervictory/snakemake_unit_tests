@@ -9,15 +9,14 @@
 #include "snakemake_unit_tests/snakemake_file.h"
 
 /*
-  The parser reimplementation will be structured as follows:
+  The parser reimplementation is structured as follows:
 
   - consider every piece of content of the file as *either*:
   -- a snakemake rule
   -- a (possibly incomplete) python instruction, which can further be classified
   as:
   --- unrelated to file parse
-  --- an include directive (eventually split into: on strings or on
-  variables/expressions
+  --- an include directive
 
   The complete parse operation is as follows:
 
