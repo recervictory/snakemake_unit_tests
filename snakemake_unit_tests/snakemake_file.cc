@@ -648,22 +648,16 @@ bool snakemake_unit_tests::snakemake_file::query_rule_checkpoint(
 }
 
 void snakemake_unit_tests::snakemake_file::aggregate_rulesdot() {
-  std::cout << "aggregrate_rulesdot has been called" << std::endl;
   for (std::list<boost::shared_ptr<rule_block> >::const_iterator iter =
            _blocks.begin();
        iter != _blocks.end(); ++iter) {
     // new: respect blocks' reports of inclusion status
     if (!(*iter)->included()) {
       continue;
-    } else {
-      std::cout << "found an included block!" << std::endl;
     }
     // python code. scan for remaining include directives
     std::map<std::string, bool> target;
-    std::cout << "calling report_rulesdot_rules on a block" << std::endl;
     (*iter)->report_rulesdot_rules(&target);
-    std::cout << "\tresultant block annotation has size " << target.size()
-              << std::endl;
     std::vector<std::string> vec;
     for (std::map<std::string, bool>::const_iterator miter = target.begin();
          miter != target.end(); ++miter) {
@@ -671,8 +665,6 @@ void snakemake_unit_tests::snakemake_file::aggregate_rulesdot() {
     }
     _rulesdot[(*iter)->get_rule_name()] = vec;
   }
-  std::cout << "\tresultant rules. annotation size is " << _rulesdot.size()
-            << std::endl;
   for (std::map<boost::filesystem::path,
                 boost::shared_ptr<snakemake_file> >::const_iterator mapper =
            loaded_files().begin();
@@ -692,9 +684,7 @@ void snakemake_unit_tests::snakemake_file::recursively_query_rulesdot(
   while (!next_up.empty()) {
     current_query = next_up.front();
     next_up.pop_front();
-    std::cout << "next in queue: " << current_query << std::endl;
     if (already_found.find(current_query) != already_found.end()) {
-      std::cout << "\tflagged as already found, skipping" << std::endl;
       continue;
     }
     already_found[current_query] = true;
@@ -703,18 +693,11 @@ void snakemake_unit_tests::snakemake_file::recursively_query_rulesdot(
           "no aggregated rules. data available for rule \"" + rule_name +
           "\"; "
           "did you forget to call aggregate_rulesdot?");
-    std::cout << "\tfor this queue entry, found " << res.size() << " entries"
-              << std::endl;
     for (std::vector<std::string>::const_iterator iter = res.begin();
          iter != res.end(); ++iter) {
-      std::cout << "\t\tattempting rules. dependency " << *iter << std::endl;
       if (already_found.find(*iter) == already_found.end()) {
         (*target)[*iter] = true;
         next_up.push_back(*iter);
-        std::cout << "\t\tadded!" << std::endl;
-      } else {
-        std::cout << "\t\tskipped due to already being included...."
-                  << std::endl;
       }
     }
   }

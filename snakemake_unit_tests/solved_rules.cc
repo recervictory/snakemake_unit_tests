@@ -179,12 +179,9 @@ void snakemake_unit_tests::solved_rules::aggregate_dependencies(
   // 'rules.' notation
   std::map<std::string, bool> rulesdot_names;
   sf.recursively_query_rulesdot(rec->get_rule_name(), &rulesdot_names);
-  std::cout << "queried rules. for " << rec->get_rule_name() << ", found "
-            << rulesdot_names.size() << " entries" << std::endl;
   for (std::map<std::string, bool>::const_iterator iter =
            rulesdot_names.begin();
        iter != rulesdot_names.end(); ++iter) {
-    std::cout << "\taddressing rules. dependency " << iter->first << std::endl;
     // have to find the recipe, regrettably
     for (std::vector<boost::shared_ptr<recipe> >::const_iterator finder =
              _recipes.begin();
