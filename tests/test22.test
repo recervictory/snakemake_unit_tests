@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-## Test: directories as outputs
+## Test: recursively add rules for checkpoints but stop at worst-case rule
 echo 1..1
 
 TESTNAME="test22"

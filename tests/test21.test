@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-## Test: directories as outputs
+## Test: checkpoint
 echo 1..1
 
 TESTNAME="test21"
