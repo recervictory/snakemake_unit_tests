@@ -268,10 +268,14 @@ class rule_block {
    */
   unsigned get_interpreter_tag() const { return _python_tag; }
   /*!
-    @brief emit a python syntax reporting block to dummy file
+    @brief emit a python syntax reporting block to dummy file,
+    until just after the first unresolved include directive
+    is encountered (if ever)
     @param out open output stream for reporting
+    @return whether the reporting terminated upon first instance
+    of an unresolved include directive
    */
-  void report_python_logging_code(std::ostream &out) const;
+  bool report_python_logging_code(std::ostream &out) const;
   /*!
     @brief using python tag output, update resolution status
     @param tag_values loaded key(:value) pairs from python output

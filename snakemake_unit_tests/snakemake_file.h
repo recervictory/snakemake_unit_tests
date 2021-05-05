@@ -170,11 +170,14 @@ class snakemake_file {
     @param verbose whether to provide verbose logging output
     @param disable_resolution deactivate downstream processing on recursive
     calls
+    @return whether the reporting terminated just after the first
+    instance of an unresolved include directive. used to control
+    recursive behavior.
 
     this is the top level entry point for a recursion pass through python
     reporting. this should only be called from the primary caller.
    */
-  void resolve_with_python(const boost::filesystem::path &workspace,
+  bool resolve_with_python(const boost::filesystem::path &workspace,
                            const boost::filesystem::path &pipeline_top_dir,
                            const boost::filesystem::path &pipeline_run_dir,
                            bool verbose, bool disable_resolution);

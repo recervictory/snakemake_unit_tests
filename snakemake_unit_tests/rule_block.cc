@@ -269,7 +269,7 @@ unsigned snakemake_unit_tests::rule_block::get_include_depth() const {
       "that does not match include directive pattern");
 }
 
-void snakemake_unit_tests::rule_block::report_python_logging_code(
+bool snakemake_unit_tests::rule_block::report_python_logging_code(
     std::ostream &out) const {
   // report contents. may eventually be used for printing to custom snakefile
   if (!get_code_chunk().empty()) {
@@ -287,6 +287,11 @@ void snakemake_unit_tests::rule_block::report_python_logging_code(
                 << "print(\"tag" << get_interpreter_tag() << ": {}\".format("
                 << get_filename_expression() << "))" << std::endl))
         throw std::runtime_error("complex include printing error");
+      // new: terminate immediately if this was an unresolved
+      // include directive
+      if (_resolution == UNRESOLVED) {
+        return true;
+      }
     } else {
       // regardless of resolution, print other code as-is
       for (std::vector<std::string>::const_iterator iter =
@@ -315,6 +320,7 @@ void snakemake_unit_tests::rule_block::report_python_logging_code(
         throw std::runtime_error("snakemake directive printing failure");
     }
   }
+  return false;
 }
 
 bool snakemake_unit_tests::rule_block::update_resolution(

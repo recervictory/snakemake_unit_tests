@@ -361,7 +361,7 @@ bool snakemake_unit_tests::snakemake_file::contains_blockers() const {
   return res;
 }
 
-void snakemake_unit_tests::snakemake_file::resolve_with_python(
+bool snakemake_unit_tests::snakemake_file::resolve_with_python(
     const boost::filesystem::path &workspace,
     const boost::filesystem::path &pipeline_top_dir,
     const boost::filesystem::path &pipeline_run_dir, bool verbose,
@@ -395,22 +395,37 @@ void snakemake_unit_tests::snakemake_file::resolve_with_python(
         "to file \"" +
         output_name.string() + "\"");
   // write python reporting code
+  bool reporting_terminated = false;
   for (std::list<boost::shared_ptr<rule_block> >::const_iterator iter =
            get_blocks().begin();
-       iter != get_blocks().end(); ++iter) {
+       iter != get_blocks().end() && !reporting_terminated; ++iter) {
     // ask the rule to report the python equivalent of its contents
-    (*iter)->report_python_logging_code(output);
+    /* new: disable logging reporting after the first include statement
+
+       in some cases, downstream python logic may depend on what was loaded
+       from the first (unresolved) include statement. that will cause
+       the interpreter to crash, and make for all kinds of problems.
+       so for the moment, be conservative and only report until
+       immediately after the first unresolved include statement
+       is reported.
+    */
+    // true return value means the reporter hit an unresolved include
+    if ((*iter)->report_python_logging_code(output)) {
+      reporting_terminated = true;
+    }
   }
   // handle recursive reporters
   for (std::map<boost::filesystem::path,
                 boost::shared_ptr<snakemake_file> >::iterator iter =
            _included_files.begin();
-       iter != _included_files.end(); ++iter) {
+       iter != _included_files.end() && !reporting_terminated; ++iter) {
     if (verbose) {
       std::cout << "\trecursing in python resolution" << std::endl;
     }
-    iter->second->resolve_with_python(workspace, pipeline_top_dir,
-                                      pipeline_run_dir, verbose, true);
+    if (iter->second->resolve_with_python(workspace, pipeline_top_dir,
+                                          pipeline_run_dir, verbose, true)) {
+      reporting_terminated = true;
+    }
   }
   // only from the top-level call, so not during recursion
   if (!disable_resolution) {
@@ -444,6 +459,7 @@ void snakemake_unit_tests::snakemake_file::resolve_with_python(
     }
   }
   output.close();
+  return reporting_terminated;
 }
 
 bool snakemake_unit_tests::snakemake_file::process_python_results(
