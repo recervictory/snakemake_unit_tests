@@ -310,7 +310,7 @@ void snakemake_unit_tests::snakemake_file::print_blocks(
   }
 }
 
-bool snakemake_unit_tests::snakemake_file::report_single_rule(
+unsigned snakemake_unit_tests::snakemake_file::report_single_rule(
     const std::map<std::string, bool> &rule_names, std::ostream &out) const {
   // find the requested rule
   unsigned found_rule_count = 0;
@@ -337,8 +337,8 @@ bool snakemake_unit_tests::snakemake_file::report_single_rule(
       out << "pass" << std::endl << std::endl << std::endl;
     }
   }
-  // if the correct rule was never found, complain
-  return found_rule_count == rule_names.size();
+  // return number of the target rules found
+  return found_rule_count;
 }
 
 bool snakemake_unit_tests::snakemake_file::fully_resolved() const {

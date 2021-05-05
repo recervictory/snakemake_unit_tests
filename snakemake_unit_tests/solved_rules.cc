@@ -344,7 +344,11 @@ void snakemake_unit_tests::solved_rules::create_workspace(
                     "added directories");
     }
     if (update_snakefiles) {
-      if (!emit_snakefile(sf, workspace_path, rec, dependent_rulenames, true)) {
+      // new: enforce success across possibly many files by checking the sum
+      // of found rules. logic only works because the postflight checker
+      // enforces lack of redundant rulenames.
+      if (emit_snakefile(sf, workspace_path, rec, dependent_rulenames, true) !=
+          dependent_rulenames.size()) {
         throw std::runtime_error(
             "cannot find rule for requested log content \"" +
             rec->get_rule_name() + "\"");
@@ -359,7 +363,7 @@ void snakemake_unit_tests::solved_rules::create_workspace(
   }
 }
 
-bool snakemake_unit_tests::solved_rules::emit_snakefile(
+unsigned snakemake_unit_tests::solved_rules::emit_snakefile(
     const snakemake_file &sf, const boost::filesystem::path &workspace_path,
     const boost::shared_ptr<recipe> &rec,
     const std::map<std::string, bool> &dependent_rulenames,
@@ -380,13 +384,13 @@ bool snakemake_unit_tests::solved_rules::emit_snakefile(
   // note: only do this at top level
   if (requires_phony_all) report_phony_all_target(output, rec->get_outputs());
   // find the rule from the parsed snakefile(s) and report it to file
-  bool res = sf.report_single_rule(dependent_rulenames, output);
+  unsigned res = sf.report_single_rule(dependent_rulenames, output);
   output.close();
   for (std::map<boost::filesystem::path,
                 boost::shared_ptr<snakemake_file> >::const_iterator mapper =
            sf.loaded_files().begin();
        mapper != sf.loaded_files().end(); ++mapper) {
-    res |= emit_snakefile(*mapper->second, workspace_path, rec,
+    res += emit_snakefile(*mapper->second, workspace_path, rec,
                           dependent_rulenames, false);
   }
   return res;

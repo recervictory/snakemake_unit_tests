@@ -241,13 +241,14 @@ class solved_rules {
     the output
     @param requires_phony_all whether the file needs an all target injected.
     this should only be included at top level
-    @return whether the rule was found in the snakefile or its dependencies
+    @return how many of the targets were found in the snakefile or its
+    dependencies
   */
-  bool emit_snakefile(const snakemake_file &sf,
-                      const boost::filesystem::path &workspace_path,
-                      const boost::shared_ptr<recipe> &rec,
-                      const std::map<std::string, bool> &dependent_rulenames,
-                      bool requires_phony_all) const;
+  unsigned emit_snakefile(
+      const snakemake_file &sf, const boost::filesystem::path &workspace_path,
+      const boost::shared_ptr<recipe> &rec,
+      const std::map<std::string, bool> &dependent_rulenames,
+      bool requires_phony_all) const;
   /*!
     @brief create a test directory
     @param rec recipe/rule entry for which a workspace should be created

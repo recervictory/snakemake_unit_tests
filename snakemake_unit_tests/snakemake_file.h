@@ -141,10 +141,10 @@ class snakemake_file {
     @brief report all code blocks but a single requested rule to file
     @param rule_names string names of requested rules
     @param out open output stream to which to write data
-    @return whether the rule was present in this file
+    @return how many target rules are present in this file
    */
-  bool report_single_rule(const std::map<std::string, bool> &rule_names,
-                          std::ostream &out) const;
+  unsigned report_single_rule(const std::map<std::string, bool> &rule_names,
+                              std::ostream &out) const;
 
   /*!
     @brief whether the object's rules are unambiguously resolved
