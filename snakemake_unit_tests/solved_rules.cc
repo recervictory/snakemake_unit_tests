@@ -146,7 +146,7 @@ void snakemake_unit_tests::solved_rules::emit_tests(
 
   // iterate across loaded recipes, creating tests as you go
   std::map<std::string, bool> test_history;
-  for (std::vector<boost::shared_ptr<recipe> >::const_iterator iter =
+  for (std::vector<boost::shared_ptr<recipe>>::const_iterator iter =
            _recipes.begin();
        iter != _recipes.end(); ++iter) {
     if (test_history.find((*iter)->get_rule_name()) == test_history.end()) {
@@ -183,7 +183,7 @@ void snakemake_unit_tests::solved_rules::aggregate_dependencies(
            rulesdot_names.begin();
        iter != rulesdot_names.end(); ++iter) {
     // have to find the recipe, regrettably
-    for (std::vector<boost::shared_ptr<recipe> >::const_iterator finder =
+    for (std::vector<boost::shared_ptr<recipe>>::const_iterator finder =
              _recipes.begin();
          finder != _recipes.end(); ++finder) {
       if (!(*finder)->get_rule_name().compare(iter->first)) {
@@ -201,7 +201,7 @@ void snakemake_unit_tests::solved_rules::aggregate_dependencies(
   if (pull_entire_dag) {
     std::map<boost::shared_ptr<recipe>, bool> dependencies_contain_checkpoints;
     // scan nodes, determine if their dependencies contain checkpoints
-    for (std::vector<boost::shared_ptr<recipe> >::const_iterator iter =
+    for (std::vector<boost::shared_ptr<recipe>>::const_iterator iter =
              _recipes.begin();
          iter != _recipes.end(); ++iter) {
       if (dependencies_contain_checkpoints.find(*iter) ==
@@ -225,8 +225,8 @@ void snakemake_unit_tests::solved_rules::compute_dependency_checkpoints(
            rec->get_inputs().begin();
        iter != rec->get_inputs().end(); ++iter) {
     // recurse on dependencies as needed
-    std::map<boost::filesystem::path,
-             boost::shared_ptr<recipe> >::const_iterator finder;
+    std::map<boost::filesystem::path, boost::shared_ptr<recipe>>::const_iterator
+        finder;
     if ((finder = _output_lookup.find(*iter)) != _output_lookup.end()) {
       std::map<boost::shared_ptr<recipe>, bool>::const_iterator target_finder;
       if ((target_finder = target->find(finder->second)) == target->end()) {
@@ -257,8 +257,8 @@ void snakemake_unit_tests::solved_rules::add_dag_from_leaf(
   for (std::vector<boost::filesystem::path>::const_iterator iter =
            rec->get_inputs().begin();
        iter != rec->get_inputs().end(); ++iter) {
-    std::map<boost::filesystem::path,
-             boost::shared_ptr<recipe> >::const_iterator finder;
+    std::map<boost::filesystem::path, boost::shared_ptr<recipe>>::const_iterator
+        finder;
     if ((finder = _output_lookup.find(*iter)) != _output_lookup.end()) {
       (*target)[finder->second] = true;
       if ((dependency_finder = dependencies_contain_checkpoints->find(
@@ -294,6 +294,14 @@ void snakemake_unit_tests::solved_rules::create_workspace(
   std::map<boost::shared_ptr<recipe>, bool> dependent_recipes;
   std::map<std::string, bool> dependent_rulenames;
   dependent_recipes[rec] = true;
+  for (std::vector<boost::shared_ptr<recipe>>::const_iterator iter =
+           _recipes.begin();
+       iter != _recipes.end(); ++iter) {
+    if (rec->is_checkpoint_update() && (*iter)->is_checkpoint()) {
+      // add checkpoint rule itself to dependent_rulenames
+      dependent_rulenames[(*iter)->get_rule_name()] = true;
+    }
+  }
   aggregate_dependencies(sf, rec, include_entire_dag, &dependent_recipes);
   for (std::map<boost::shared_ptr<recipe>, bool>::const_iterator iter =
            dependent_recipes.begin();
@@ -387,7 +395,7 @@ unsigned snakemake_unit_tests::solved_rules::emit_snakefile(
   unsigned res = sf.report_single_rule(dependent_rulenames, output);
   output.close();
   for (std::map<boost::filesystem::path,
-                boost::shared_ptr<snakemake_file> >::const_iterator mapper =
+                boost::shared_ptr<snakemake_file>>::const_iterator mapper =
            sf.loaded_files().begin();
        mapper != sf.loaded_files().end(); ++mapper) {
     res += emit_snakefile(*mapper->second, workspace_path, rec,
