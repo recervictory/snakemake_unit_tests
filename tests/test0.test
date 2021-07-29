@@ -4,7 +4,7 @@
 ## this is a helper test to try to clarify that the conda
 ## run environment may not be active
 
-echo "1..2"
+echo "1..3"
 
 $(pytest -h > /dev/null 2>&1)
 if [[ "$?" != "0" ]] ; then
@@ -18,4 +18,11 @@ if [[ "$?" != "0" ]] ; then
     echo "not ok - snakemake not available: did you remember to activate your conda env?"
 else
     echo "ok - snakemake present in working environment"
+fi
+
+$(python -c 'import magic' > /dev/null 2>&1)
+if [[ "$?" != "0" ]] ; then
+    echo "not ok - python magic library not available: did you remember to activate your conda env?"
+else
+    echo "ok - python magic library present in working environment"
 fi
