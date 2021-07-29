@@ -48,4 +48,6 @@ def test_function():
         # and overwrite the method `compare_files(generated_file, expected_file),
         # also see common.py.
 
-        common.OutputChecker(workspace_path, expected_path, rundir).check()
+        common.OutputChecker(
+            workspace_path, expected_path, extra_comparison_exclusions, rundir
+        ).check()

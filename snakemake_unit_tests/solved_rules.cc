@@ -291,18 +291,33 @@ void snakemake_unit_tests::solved_rules::create_workspace(
   //  - rules.
   //  - checkpoints
   //  - scattergather
-  std::map<boost::shared_ptr<recipe>, bool> dependent_recipes;
+  std::map<boost::shared_ptr<recipe>, bool> dependent_recipes,
+      orphaned_checkpoints;
   std::map<std::string, bool> dependent_rulenames;
+  std::vector<boost::filesystem::path> extra_comparison_exclusions;
   dependent_recipes[rec] = true;
+  aggregate_dependencies(sf, rec, include_entire_dag, &dependent_recipes);
   for (std::vector<boost::shared_ptr<recipe>>::const_iterator iter =
            _recipes.begin();
        iter != _recipes.end(); ++iter) {
-    if (rec->is_checkpoint_update() && (*iter)->is_checkpoint()) {
+    if (rec->is_checkpoint_update() && (*iter)->is_checkpoint() &&
+        dependent_recipes.find(*iter) == dependent_recipes.end()) {
       // add checkpoint rule itself to dependent_rulenames
-      dependent_rulenames[(*iter)->get_rule_name()] = true;
+      orphaned_checkpoints[*iter] = true;
+      // copy all of this checkpoint's output files to the
+      // comparison exclusion set
+      for (std::vector<boost::filesystem::path>::const_iterator out_iter =
+               (*iter)->get_outputs().begin();
+           out_iter != (*iter)->get_outputs().end(); ++out_iter) {
+        extra_comparison_exclusions.push_back(*out_iter);
+      }
     }
   }
-  aggregate_dependencies(sf, rec, include_entire_dag, &dependent_recipes);
+  for (std::map<boost::shared_ptr<recipe>, bool>::const_iterator iter =
+           orphaned_checkpoints.begin();
+       iter != orphaned_checkpoints.end(); ++iter) {
+    dependent_recipes[iter->first] = iter->second;
+  }
   for (std::map<boost::shared_ptr<recipe>, bool>::const_iterator iter =
            dependent_recipes.begin();
        iter != dependent_recipes.end(); ++iter) {
@@ -366,7 +381,8 @@ void snakemake_unit_tests::solved_rules::create_workspace(
     if (update_pytest) {
       report_modified_test_script(
           test_parent_path, output_test_dir, rec->get_rule_name(),
-          sf.get_snakefile_relative_path(), pipeline_run_dir, inst_test_py);
+          sf.get_snakefile_relative_path(), pipeline_run_dir,
+          extra_comparison_exclusions, inst_test_py);
     }
   }
 }
@@ -483,6 +499,7 @@ void snakemake_unit_tests::solved_rules::report_modified_test_script(
     const boost::filesystem::path &test_dir, const std::string &rule_name,
     const boost::filesystem::path &snakefile_relative_path,
     const boost::filesystem::path &pipeline_run_dir,
+    const std::vector<boost::filesystem::path> &extra_comparison_exclusions,
     const boost::filesystem::path &inst_test_py) const {
   std::ifstream input;
   std::ofstream output;
@@ -498,9 +515,22 @@ void snakemake_unit_tests::solved_rules::report_modified_test_script(
                << "snakefile_relative_path='"
                << snakefile_relative_path.string() << "'" << std::endl
                << "snakemake_exec_path='" << pipeline_run_dir.string() << "'"
-               << std::endl))
+               << std::endl
+               << "extra_comparison_exclusions=["))
     throw std::runtime_error(
         "cannot write rulename variable to test python file \"" +
+        test_python_file + "\"");
+  for (std::vector<boost::filesystem::path>::const_iterator iter =
+           extra_comparison_exclusions.begin();
+       iter != extra_comparison_exclusions.end(); ++iter) {
+    if (!(output << "'" << iter->string() << "', "))
+      throw std::runtime_error(
+          "cannot write extra comparison exclusions to test python file \"" +
+          test_python_file + "\"");
+  }
+  if (!(output << "]" << std::endl))
+    throw std::runtime_error(
+        "cannot close extra comparison exclusions in test python file \"" +
         test_python_file + "\"");
   input.open(inst_test_py.string().c_str());
   if (!input.is_open())

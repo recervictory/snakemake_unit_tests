@@ -31,9 +31,10 @@ exclude_ext = [".tbi", ".html", ".log", ".bai", ".idx"]
 
 
 class OutputChecker:
-    def __init__(self, data_path, expected_path, workdir):
+    def __init__(self, data_path, expected_path, extra_comparison_exclusions, workdir):
         self.data_path = data_path
         self.expected_path = expected_path
+        self.extra_comparison_exclusions = extra_comparison_exclusions
         self.workdir = workdir
 
     def check(self):
@@ -54,6 +55,8 @@ class OutputChecker:
                 if str(f).startswith(".snakemake"):
                     continue
                 if any(m in str(f) for m in exclude_paths):
+                    continue
+                if any(m in str(f) for m in self.extra_comparison_exclusions):
                     continue
                 if str(f).endswith(tuple(exclude_ext)):
                     continue
