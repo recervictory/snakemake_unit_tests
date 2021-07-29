@@ -110,13 +110,6 @@ class snakemake_file {
   void detect_known_issues(std::map<std::string, bool> *exclude_rules);
 
   /*!
-  @brief populate derived rules with base rule blocks
-
-  required after full load for snakemake 6.0 compatibility
- */
-  void resolve_derived_rules();
-
-  /*!
   @brief print block contents to stream
   @param out open stream to which to write data
 
@@ -289,6 +282,14 @@ class snakemake_file {
  */
   void recursively_query_rulesdot(const std::string &rule_name,
                                   std::map<std::string, bool> *target) const;
+
+  /*!
+    @brief for a single rule, get base rule name
+    @param name name of rule to query
+    @param target where to store detected parent, or empty string
+    @return whether the rule was found
+  */
+  bool get_base_rule_name(const std::string &name, std::string *target) const;
 
   /*!
   @brief for a single rule, get 'rules.' dependencies

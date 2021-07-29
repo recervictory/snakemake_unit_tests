@@ -1,0 +1,44 @@
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	1	simple_rule1
+	1	simple_rule2
+	1	simple_rule3
+	3
+Select jobs to execute...
+
+[Thu Jul 29 16:50:29 2021]
+rule simple_rule2:
+    input: input2.txt
+    output: output2.txt
+    jobid: 1
+
+[Thu Jul 29 16:50:29 2021]
+Finished job 1.
+1 of 3 steps (33%) done
+Select jobs to execute...
+
+[Thu Jul 29 16:50:29 2021]
+rule simple_rule1:
+    input: input1.txt
+    output: output1.txt
+    jobid: 0
+
+[Thu Jul 29 16:50:29 2021]
+Finished job 0.
+2 of 3 steps (67%) done
+Select jobs to execute...
+
+[Thu Jul 29 16:50:29 2021]
+rule simple_rule3:
+    input: input3.txt
+    output: output3.txt
+    jobid: 2
+
+[Thu Jul 29 16:50:29 2021]
+Finished job 2.
+3 of 3 steps (100%) done
+Complete log: /home/ec2-user/Development/snakemake_unit_tests/tests/examples/test29/input/.snakemake/log/2021-07-29T165028.667035.snakemake.log

@@ -186,19 +186,6 @@ class rule_block {
   unsigned get_local_indentation() const { return _local_indentation; }
 
   /*!
-    @brief provide candidate base rule block definitions for derived rules
-    @param provider_name name of candidate base rule providing this information
-    @param block_name name of block definition from the base rule
-    @param block_values contents of block from the base rule
-
-    for safety, the rule will check that such a suggestion is sane, and
-    respond accordingly if not
-   */
-  void offer_base_rule_contents(const std::string &provider_name,
-                                const std::string &block_name,
-                                const std::string &block_values);
-
-  /*!
     @brief manually inject code into this block
     @param s code to inject
 

@@ -10,6 +10,7 @@
 #define SNAKEMAKE_UNIT_TESTS_SOLVED_RULES_H_
 
 #include <algorithm>
+#include <deque>
 #include <fstream>
 #include <iostream>
 #include <map>

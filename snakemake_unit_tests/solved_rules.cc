@@ -367,7 +367,28 @@ void snakemake_unit_tests::solved_rules::create_workspace(
                     "added directories");
     }
     if (update_snakefiles) {
-      // new: enforce success across possibly many files by checking the sum
+      // new: aggregate all possible parent rules to required derived rules
+      std::deque<std::string> possible_children;
+      for (std::map<std::string, bool>::const_iterator iter =
+               dependent_rulenames.begin();
+           iter != dependent_rulenames.end(); ++iter) {
+        possible_children.push_back(iter->first);
+      }
+      std::string parent_candidate = "";
+      while (!possible_children.empty()) {
+        if (sf.get_base_rule_name(possible_children.front(),
+                                  &parent_candidate)) {
+          if (!parent_candidate.empty()) {
+            possible_children.push_back(parent_candidate);
+            dependent_rulenames[parent_candidate] = true;
+          }
+          possible_children.pop_front();
+        } else {
+          throw std::runtime_error("unable to locate required rule \"" +
+                                   possible_children.front() + "\"");
+        }
+      }
+      // enforce success across possibly many files by checking the sum
       // of found rules. logic only works because the postflight checker
       // enforces lack of redundant rulenames.
       if (emit_snakefile(sf, workspace_path, rec, dependent_rulenames, true) !=

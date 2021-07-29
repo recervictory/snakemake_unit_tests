@@ -365,10 +365,16 @@ void snakemake_unit_tests::rule_block::print_contents(std::ostream &out) const {
         throw std::runtime_error("code chunk printing error");
     }
   } else if (!get_rule_name().empty()) {  // rule
-    if (!(out << indentation(get_local_indentation())
-              << (is_checkpoint() ? "checkpoint " : "rule ") << get_rule_name()
-              << ":" << std::endl))
+    if (!get_base_rule_name().empty()) {
+      if (!(out << indentation(get_local_indentation()) << "use rule "
+                << get_base_rule_name() << " as " << get_rule_name()
+                << " with:" << std::endl))
+        throw std::runtime_error("base rule name printing failure");
+    } else if (!(out << indentation(get_local_indentation())
+                     << (is_checkpoint() ? "checkpoint " : "rule ")
+                     << get_rule_name() << ":" << std::endl)) {
       throw std::runtime_error("rule name printing failure");
+    }
     // enforce restrictions on block order
     std::map<std::string, bool> high_priority_blocks, low_priority_blocks;
     high_priority_blocks["input"] = true;
@@ -430,19 +436,6 @@ void snakemake_unit_tests::rule_block::clear() {
   _rule_name = _base_rule_name = "";
   _named_blocks.clear();
   _code_chunk.clear();
-}
-
-void snakemake_unit_tests::rule_block::offer_base_rule_contents(
-    const std::string &provider_name, const std::string &block_name,
-    const std::string &block_values) {
-  // make sure the suggestion is consistent with stored annotations
-  if (provider_name.compare(get_base_rule_name()) ||
-      get_base_rule_name().empty())
-    return;
-  // only update if there wasn't a definition in the derived rule itself
-  if (_named_blocks.find(block_name) != _named_blocks.end()) return;
-  // only now, perform the update
-  _named_blocks[block_name] = block_values;
 }
 
 std::string snakemake_unit_tests::rule_block::indentation(
