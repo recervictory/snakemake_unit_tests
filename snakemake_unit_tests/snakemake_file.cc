@@ -58,8 +58,6 @@ void snakemake_unit_tests::snakemake_file::load_everything(
     const boost::filesystem::path &filename,
     const boost::filesystem::path &base_dir,
     std::map<std::string, bool> *exclude_rules, bool verbose) {
-  // create a dummy rule block with just a single include directive for this
-  // file
   if (!exclude_rules)
     throw std::runtime_error(
         "null exclude_rules provided to "
@@ -618,7 +616,6 @@ void snakemake_unit_tests::snakemake_file::aggregate_rulesdot() {
     if (!(*iter)->included()) {
       continue;
     }
-    // python code. scan for remaining include directives
     std::map<std::string, bool> target;
     (*iter)->report_rulesdot_rules(&target);
     std::vector<std::string> vec;
