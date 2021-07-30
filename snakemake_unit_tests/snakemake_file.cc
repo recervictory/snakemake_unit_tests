@@ -689,6 +689,9 @@ bool snakemake_unit_tests::snakemake_file::get_base_rule_name(
   for (std::list<boost::shared_ptr<rule_block> >::const_iterator iter =
            _blocks.begin();
        iter != _blocks.end(); ++iter) {
+    if (!(*iter)->included()) {
+      continue;
+    }
     if (!(*iter)->get_rule_name().compare(name)) {
       *target = (*iter)->get_base_rule_name();
       return true;

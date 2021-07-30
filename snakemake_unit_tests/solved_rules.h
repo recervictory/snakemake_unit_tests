@@ -369,20 +369,10 @@ class solved_rules {
     @param rec leaf to start adding things from
     @param include_entire_dag controls whether to override default
     behavior and emit all rules, instead of just the target
-    @param already_added tracker for nodes already searched
     @param target storage for included nodes
    */
   void add_dag_from_leaf(
       const boost::shared_ptr<recipe> &rec, bool include_entire_dag,
-      std::map<boost::shared_ptr<recipe>, bool> *already_added,
-      std::map<boost::shared_ptr<recipe>, bool> *target) const;
-  /*!
-    @brief compute whether a rule has any checkpoint dependencies
-    @param rec leaf to start scanning dependencies from
-    @param target tracker for results
-   */
-  void compute_dependency_checkpoints(
-      const boost::shared_ptr<recipe> &rec,
       std::map<boost::shared_ptr<recipe>, bool> *target) const;
 
  private:

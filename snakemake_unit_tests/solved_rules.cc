@@ -175,7 +175,7 @@ void snakemake_unit_tests::solved_rules::aggregate_dependencies(
   // - it is called in the input block as 'rules.rulename.whatever'
   // - it is a checkpoint
   // for each output, find the generating rule
-  bool pull_entire_dag = rec->is_checkpoint_update() || include_entire_dag;
+
   // 'rules.' notation
   std::map<std::string, bool> rulesdot_names;
   sf.recursively_query_rulesdot(rec->get_rule_name(), &rulesdot_names);
@@ -188,7 +188,6 @@ void snakemake_unit_tests::solved_rules::aggregate_dependencies(
          finder != _recipes.end(); ++finder) {
       if (!(*finder)->get_rule_name().compare(iter->first)) {
         (*target)[*finder] = true;
-        pull_entire_dag |= (*finder)->is_checkpoint_update();
         break;
       }
     }
@@ -198,61 +197,15 @@ void snakemake_unit_tests::solved_rules::aggregate_dependencies(
   std::map<boost::shared_ptr<recipe>, bool> candidates;
   // only update the full dag if the log reports that this particular rule was
   // updated
-  if (pull_entire_dag) {
-    std::map<boost::shared_ptr<recipe>, bool> dependencies_contain_checkpoints;
-    // scan nodes, determine if their dependencies contain checkpoints
-    for (std::vector<boost::shared_ptr<recipe>>::const_iterator iter =
-             _recipes.begin();
-         iter != _recipes.end(); ++iter) {
-      if (dependencies_contain_checkpoints.find(*iter) ==
-          dependencies_contain_checkpoints.end()) {
-        compute_dependency_checkpoints(*iter,
-                                       &dependencies_contain_checkpoints);
-      }
-    }
-    add_dag_from_leaf(rec, include_entire_dag,
-                      &dependencies_contain_checkpoints, target);
+  if (include_entire_dag) {
+    add_dag_from_leaf(rec, include_entire_dag, target);
   }
-}
-
-void snakemake_unit_tests::solved_rules::compute_dependency_checkpoints(
-    const boost::shared_ptr<recipe> &rec,
-    std::map<boost::shared_ptr<recipe>, bool> *target) const {
-  if (!target)
-    throw std::runtime_error("null pointer to compute_dependency_checkpoints");
-  // for each dependency in the recipe
-  for (std::vector<boost::filesystem::path>::const_iterator iter =
-           rec->get_inputs().begin();
-       iter != rec->get_inputs().end(); ++iter) {
-    // recurse on dependencies as needed
-    std::map<boost::filesystem::path, boost::shared_ptr<recipe>>::const_iterator
-        finder;
-    if ((finder = _output_lookup.find(*iter)) != _output_lookup.end()) {
-      std::map<boost::shared_ptr<recipe>, bool>::const_iterator target_finder;
-      if ((target_finder = target->find(finder->second)) == target->end()) {
-        compute_dependency_checkpoints(finder->second, target);
-        target_finder = target->find(finder->second);
-      }
-      // if the dependency depends on a checkpoint or is a checkpoint or is
-      // updated by one
-      if (target_finder->second ||
-          target_finder->first->is_checkpoint_update() ||
-          target_finder->first->is_checkpoint()) {
-        target->insert(std::make_pair(rec, true));
-        return;
-      }
-    }
-    // otherwise is a fixed input, and is not a checkpoint
-  }
-  target->insert(std::make_pair(rec, false));
 }
 
 void snakemake_unit_tests::solved_rules::add_dag_from_leaf(
     const boost::shared_ptr<recipe> &rec, bool include_entire_dag,
-    std::map<boost::shared_ptr<recipe>, bool> *dependencies_contain_checkpoints,
     std::map<boost::shared_ptr<recipe>, bool> *target) const {
-  if (!target || !dependencies_contain_checkpoints)
-    throw std::runtime_error("null pointer to add_dag_from_leaf");
+  if (!target) throw std::runtime_error("null pointer to add_dag_from_leaf");
   std::map<boost::shared_ptr<recipe>, bool>::const_iterator dependency_finder;
   for (std::vector<boost::filesystem::path>::const_iterator iter =
            rec->get_inputs().begin();
@@ -261,14 +214,8 @@ void snakemake_unit_tests::solved_rules::add_dag_from_leaf(
         finder;
     if ((finder = _output_lookup.find(*iter)) != _output_lookup.end()) {
       (*target)[finder->second] = true;
-      if ((dependency_finder = dependencies_contain_checkpoints->find(
-               finder->second)) == dependencies_contain_checkpoints->end()) {
-        throw std::logic_error(
-            "unable to find dependency tracker content for rule, which should "
-            "be impossible");
-      } else if (dependency_finder->second || include_entire_dag) {
-        add_dag_from_leaf(finder->second, include_entire_dag,
-                          dependencies_contain_checkpoints, target);
+      if (include_entire_dag) {
+        add_dag_from_leaf(finder->second, include_entire_dag, target);
       }
     }
   }
