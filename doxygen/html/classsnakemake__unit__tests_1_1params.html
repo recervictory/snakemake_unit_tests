@@ -137,6 +137,9 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1params.html#a6db748314e21c92bfc3057b2cb97fcf3">update_pytest</a></td></tr>
 <tr class="memdesc:a6db748314e21c92bfc3057b2cb97fcf3"><td class="mdescLeft">&#160;</td><td class="mdescRight">update pytest infrastructure in output directories <br /></td></tr>
 <tr class="separator:a6db748314e21c92bfc3057b2cb97fcf3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a275da037aa83fb8e124ccf4fd1e95658"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1params.html#a275da037aa83fb8e124ccf4fd1e95658">include_entire_dag</a></td></tr>
+<tr class="memdesc:a275da037aa83fb8e124ccf4fd1e95658"><td class="mdescLeft">&#160;</td><td class="mdescRight">spike entire dag into each output snakefile, instead of just the rule(s) being tested  <a href="classsnakemake__unit__tests_1_1params.html#a275da037aa83fb8e124ccf4fd1e95658">More...</a><br /></td></tr>
+<tr class="separator:a275da037aa83fb8e124ccf4fd1e95658"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa1bce2414cccc0d2d2563efb8600b00f"><td class="memItemLeft" align="right" valign="top"><a id="aa1bce2414cccc0d2d2563efb8600b00f"></a>
 boost::filesystem::path&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1params.html#aa1bce2414cccc0d2d2563efb8600b00f">config_filename</a></td></tr>
 <tr class="memdesc:aa1bce2414cccc0d2d2563efb8600b00f"><td class="mdescLeft">&#160;</td><td class="mdescRight">name of yaml configuration file <br /></td></tr>
@@ -347,6 +350,24 @@ std::map&lt; std::string, bool &gt;&#160;</td><td class="memItemRight" valign="b
 </dl>
 <p>the reported settings will be the result of resolving the input config and any command line flags, but will not report any binary flags</p>
 <p>TODO(cpalmer718): check if BB wants binary flags </p>
+
+</div>
+</div>
+<h2 class="groupheader">Field Documentation</h2>
+<a id="a275da037aa83fb8e124ccf4fd1e95658"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a275da037aa83fb8e124ccf4fd1e95658">&#9670;&nbsp;</a></span>include_entire_dag</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool snakemake_unit_tests::params::include_entire_dag</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>spike entire dag into each output snakefile, instead of just the rule(s) being tested </p>
+<p>designed as a last ditch solution for unsupported calls to <code>rules.</code>. will cause significant performance degradation while running the actual tests. </p>
 
 </div>
 </div>

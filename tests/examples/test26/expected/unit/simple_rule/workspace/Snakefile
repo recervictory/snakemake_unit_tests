@@ -1,0 +1,21 @@
+rule all:
+    input:
+        "output.txt",
+
+
+pass
+
+
+include: "Snakedefs.smk"
+if vardef:
+    rule simple_rule:
+        output:
+            "output.txt",
+        shell:
+            'echo "this worked fine" > {output}'
+
+
+else:
+    pass
+
+

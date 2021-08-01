@@ -53,6 +53,8 @@ bool \mbox{\hyperlink{classsnakemake__unit__tests_1_1params_ad8c5f36d2e70ceba4f1
 \mbox{\Hypertarget{classsnakemake__unit__tests_1_1params_a6db748314e21c92bfc3057b2cb97fcf3}\label{classsnakemake__unit__tests_1_1params_a6db748314e21c92bfc3057b2cb97fcf3}} 
 bool \mbox{\hyperlink{classsnakemake__unit__tests_1_1params_a6db748314e21c92bfc3057b2cb97fcf3}{update\+\_\+pytest}}
 \begin{DoxyCompactList}\small\item\em update pytest infrastructure in output directories \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classsnakemake__unit__tests_1_1params_a275da037aa83fb8e124ccf4fd1e95658}{include\+\_\+entire\+\_\+dag}}
+\begin{DoxyCompactList}\small\item\em spike entire dag into each output snakefile, instead of just the rule(s) being tested \end{DoxyCompactList}\item 
 \mbox{\Hypertarget{classsnakemake__unit__tests_1_1params_aa1bce2414cccc0d2d2563efb8600b00f}\label{classsnakemake__unit__tests_1_1params_aa1bce2414cccc0d2d2563efb8600b00f}} 
 boost\+::filesystem\+::path \mbox{\hyperlink{classsnakemake__unit__tests_1_1params_aa1bce2414cccc0d2d2563efb8600b00f}{config\+\_\+filename}}
 \begin{DoxyCompactList}\small\item\em name of yaml configuration file \end{DoxyCompactList}\item 
@@ -175,6 +177,19 @@ report settings to yaml file
 the reported settings will be the result of resolving the input config and any command line flags, but will not report any binary flags
 
 TODO(cpalmer718)\+: check if BB wants binary flags 
+
+\doxysubsection{Field Documentation}
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1params_a275da037aa83fb8e124ccf4fd1e95658}\label{classsnakemake__unit__tests_1_1params_a275da037aa83fb8e124ccf4fd1e95658}} 
+\index{snakemake\_unit\_tests::params@{snakemake\_unit\_tests::params}!include\_entire\_dag@{include\_entire\_dag}}
+\index{include\_entire\_dag@{include\_entire\_dag}!snakemake\_unit\_tests::params@{snakemake\_unit\_tests::params}}
+\doxysubsubsection{\texorpdfstring{include\_entire\_dag}{include\_entire\_dag}}
+{\footnotesize\ttfamily bool snakemake\+\_\+unit\+\_\+tests\+::params\+::include\+\_\+entire\+\_\+dag}
+
+
+
+spike entire dag into each output snakefile, instead of just the rule(s) being tested 
+
+designed as a last ditch solution for unsupported calls to {\ttfamily rules.}. will cause significant performance degradation while running the actual tests. 
 
 The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
 \item 

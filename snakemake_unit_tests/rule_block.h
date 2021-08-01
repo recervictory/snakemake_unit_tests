@@ -186,19 +186,6 @@ class rule_block {
   unsigned get_local_indentation() const { return _local_indentation; }
 
   /*!
-    @brief provide candidate base rule block definitions for derived rules
-    @param provider_name name of candidate base rule providing this information
-    @param block_name name of block definition from the base rule
-    @param block_values contents of block from the base rule
-
-    for safety, the rule will check that such a suggestion is sane, and
-    respond accordingly if not
-   */
-  void offer_base_rule_contents(const std::string &provider_name,
-                                const std::string &block_name,
-                                const std::string &block_values);
-
-  /*!
     @brief manually inject code into this block
     @param s code to inject
 
@@ -268,10 +255,14 @@ class rule_block {
    */
   unsigned get_interpreter_tag() const { return _python_tag; }
   /*!
-    @brief emit a python syntax reporting block to dummy file
+    @brief emit a python syntax reporting block to dummy file,
+    until just after the first unresolved include directive
+    is encountered (if ever)
     @param out open output stream for reporting
+    @return whether the reporting terminated upon first instance
+    of an unresolved include directive
    */
-  void report_python_logging_code(std::ostream &out) const;
+  bool report_python_logging_code(std::ostream &out) const;
   /*!
     @brief using python tag output, update resolution status
     @param tag_values loaded key(:value) pairs from python output

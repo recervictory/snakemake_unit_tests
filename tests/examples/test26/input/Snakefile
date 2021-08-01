@@ -1,0 +1,26 @@
+rule all:
+    input:
+        "output.txt",
+
+
+include: "Snakedefs.smk"
+
+
+if vardef:
+
+    rule simple_rule:
+        output:
+            "output.txt",
+        shell:
+            'echo "this worked fine" > {output}'
+
+
+else:
+
+    rule toxic_rule:
+        input:
+            "file_doesnt_exist.docx",
+        output:
+            "no_thank_you.png",
+        shell:
+            "unzip {input} > {output}"

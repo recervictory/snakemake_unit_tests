@@ -132,6 +132,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a6e83b9c67fc3ee8713435c5978d5b063"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1cargs.html#a6e83b9c67fc3ee8713435c5978d5b063">get_exclude_rules</a> () const</td></tr>
 <tr class="memdesc:a6e83b9c67fc3ee8713435c5978d5b063"><td class="mdescLeft">&#160;</td><td class="mdescRight">get optional rule names to exclude from testing  <a href="classsnakemake__unit__tests_1_1cargs.html#a6e83b9c67fc3ee8713435c5978d5b063">More...</a><br /></td></tr>
 <tr class="separator:a6e83b9c67fc3ee8713435c5978d5b063"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:accef292124109e119548ce8120b7b56a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1cargs.html#accef292124109e119548ce8120b7b56a">include_entire_dag</a> () const</td></tr>
+<tr class="memdesc:accef292124109e119548ce8120b7b56a"><td class="mdescLeft">&#160;</td><td class="mdescRight">get user flag for overriding default behavior and adding entire DAG to synthetic snakefiles  <a href="classsnakemake__unit__tests_1_1cargs.html#accef292124109e119548ce8120b7b56a">More...</a><br /></td></tr>
+<tr class="separator:accef292124109e119548ce8120b7b56a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac89eba739d1cbc9eac095e7989c00d8a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1cargs.html#ac89eba739d1cbc9eac095e7989c00d8a">update_all</a> () const</td></tr>
 <tr class="memdesc:ac89eba739d1cbc9eac095e7989c00d8a"><td class="mdescLeft">&#160;</td><td class="mdescRight">get user flag for updating all parts of unit tests  <a href="classsnakemake__unit__tests_1_1cargs.html#ac89eba739d1cbc9eac095e7989c00d8a">More...</a><br /></td></tr>
 <tr class="separator:ac89eba739d1cbc9eac095e7989c00d8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -980,6 +983,35 @@ template&lt;class value_type &gt; </div>
 <p>determine whether the user has requested help documentation </p>
 <dl class="section return"><dt>Returns</dt><dd>whether the user has requested help documentation</dd></dl>
 <p>This test is separate from whether the user has run the software with no flags </p>
+
+</div>
+</div>
+<a id="accef292124109e119548ce8120b7b56a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#accef292124109e119548ce8120b7b56a">&#9670;&nbsp;</a></span>include_entire_dag()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool snakemake_unit_tests::cargs::include_entire_dag </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>get user flag for overriding default behavior and adding entire DAG to synthetic snakefiles </p>
+<dl class="section return"><dt>Returns</dt><dd>whether the user wants the full DAG</dd></dl>
+<p>the user should only activate this when default <code>rules.</code> detection has failed due to wrapping <code>rules.</code> calls under defined function blocks or other infrastructure. this will potentially massively slow down execution, and should only be used for individual problematic rules. </p>
 
 </div>
 </div>

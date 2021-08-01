@@ -10,6 +10,7 @@
 #define SNAKEMAKE_UNIT_TESTS_SOLVED_RULES_H_
 
 #include <algorithm>
+#include <deque>
 #include <fstream>
 #include <iostream>
 #include <map>
@@ -241,13 +242,14 @@ class solved_rules {
     the output
     @param requires_phony_all whether the file needs an all target injected.
     this should only be included at top level
-    @return whether the rule was found in the snakefile or its dependencies
+    @return how many of the targets were found in the snakefile or its
+    dependencies
   */
-  bool emit_snakefile(const snakemake_file &sf,
-                      const boost::filesystem::path &workspace_path,
-                      const boost::shared_ptr<recipe> &rec,
-                      const std::map<std::string, bool> &dependent_rulenames,
-                      bool requires_phony_all) const;
+  unsigned emit_snakefile(
+      const snakemake_file &sf, const boost::filesystem::path &workspace_path,
+      const boost::shared_ptr<recipe> &rec,
+      const std::map<std::string, bool> &dependent_rulenames,
+      bool requires_phony_all) const;
   /*!
     @brief create a test directory
     @param rec recipe/rule entry for which a workspace should be created
@@ -338,6 +340,8 @@ class solved_rules {
     @param rule_name name of rule whose test is being emitted
     @param snakefile_relative_path relative path of snakefile in pipeline dir
     @param pipeline_run_dir relative path of snakemake execution within pipeline
+    @param extra_comparison_exclusions vector of files to exclude from pytest
+    comparisons
     @param inst_test_py snakemake_unit_tests test.py script location
    */
   void report_modified_test_script(
@@ -345,6 +349,7 @@ class solved_rules {
       const boost::filesystem::path &test_dir, const std::string &rule_name,
       const boost::filesystem::path &snakefile_relative_path,
       const boost::filesystem::path &pipeline_run_dir,
+      const std::vector<boost::filesystem::path> &extra_comparison_exclusions,
       const boost::filesystem::path &inst_test_py) const;
 
   /*!
@@ -364,20 +369,10 @@ class solved_rules {
     @param rec leaf to start adding things from
     @param include_entire_dag controls whether to override default
     behavior and emit all rules, instead of just the target
-    @param already_added tracker for nodes already searched
     @param target storage for included nodes
    */
   void add_dag_from_leaf(
       const boost::shared_ptr<recipe> &rec, bool include_entire_dag,
-      std::map<boost::shared_ptr<recipe>, bool> *already_added,
-      std::map<boost::shared_ptr<recipe>, bool> *target) const;
-  /*!
-    @brief compute whether a rule has any checkpoint dependencies
-    @param rec leaf to start scanning dependencies from
-    @param target tracker for results
-   */
-  void compute_dependency_checkpoints(
-      const boost::shared_ptr<recipe> &rec,
       std::map<boost::shared_ptr<recipe>, bool> *target) const;
 
  private:
