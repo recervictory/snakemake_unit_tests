@@ -139,9 +139,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a382259a591a1f4c9345523b23de4f478"><td class="memItemLeft" align="right" valign="top">unsigned&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1rule__block.html#a382259a591a1f4c9345523b23de4f478">get_local_indentation</a> () const</td></tr>
 <tr class="memdesc:a382259a591a1f4c9345523b23de4f478"><td class="mdescLeft">&#160;</td><td class="mdescRight">get local indentation of rule block  <a href="classsnakemake__unit__tests_1_1rule__block.html#a382259a591a1f4c9345523b23de4f478">More...</a><br /></td></tr>
 <tr class="separator:a382259a591a1f4c9345523b23de4f478"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1fa1be741a981cae72e5975a19d906f9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1rule__block.html#a1fa1be741a981cae72e5975a19d906f9">offer_base_rule_contents</a> (const std::string &amp;provider_name, const std::string &amp;block_name, const std::string &amp;block_values)</td></tr>
-<tr class="memdesc:a1fa1be741a981cae72e5975a19d906f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">provide candidate base rule block definitions for derived rules  <a href="classsnakemake__unit__tests_1_1rule__block.html#a1fa1be741a981cae72e5975a19d906f9">More...</a><br /></td></tr>
-<tr class="separator:a1fa1be741a981cae72e5975a19d906f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a087a1519c228e377353bb2f3a1e9e418"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1rule__block.html#a087a1519c228e377353bb2f3a1e9e418">add_code_chunk</a> (const std::string &amp;s)</td></tr>
 <tr class="memdesc:a087a1519c228e377353bb2f3a1e9e418"><td class="mdescLeft">&#160;</td><td class="mdescRight">manually inject code into this block  <a href="classsnakemake__unit__tests_1_1rule__block.html#a087a1519c228e377353bb2f3a1e9e418">More...</a><br /></td></tr>
 <tr class="separator:a087a1519c228e377353bb2f3a1e9e418"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -169,9 +166,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ae9a883957b638b6ed42aef5426f62f0e"><td class="memItemLeft" align="right" valign="top">unsigned&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1rule__block.html#ae9a883957b638b6ed42aef5426f62f0e">get_interpreter_tag</a> () const</td></tr>
 <tr class="memdesc:ae9a883957b638b6ed42aef5426f62f0e"><td class="mdescLeft">&#160;</td><td class="mdescRight">get the unique python tag for inclusion tracking  <a href="classsnakemake__unit__tests_1_1rule__block.html#ae9a883957b638b6ed42aef5426f62f0e">More...</a><br /></td></tr>
 <tr class="separator:ae9a883957b638b6ed42aef5426f62f0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aead538d30807b81125b41c734bc1088d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1rule__block.html#aead538d30807b81125b41c734bc1088d">report_python_logging_code</a> (std::ostream &amp;out) const</td></tr>
-<tr class="memdesc:aead538d30807b81125b41c734bc1088d"><td class="mdescLeft">&#160;</td><td class="mdescRight">emit a python syntax reporting block to dummy file  <a href="classsnakemake__unit__tests_1_1rule__block.html#aead538d30807b81125b41c734bc1088d">More...</a><br /></td></tr>
-<tr class="separator:aead538d30807b81125b41c734bc1088d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15e0c923b41df20624fcfec49681b196"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1rule__block.html#a15e0c923b41df20624fcfec49681b196">report_python_logging_code</a> (std::ostream &amp;out) const</td></tr>
+<tr class="memdesc:a15e0c923b41df20624fcfec49681b196"><td class="mdescLeft">&#160;</td><td class="mdescRight">emit a python syntax reporting block to dummy file, until just after the first unresolved include directive is encountered (if ever)  <a href="classsnakemake__unit__tests_1_1rule__block.html#a15e0c923b41df20624fcfec49681b196">More...</a><br /></td></tr>
+<tr class="separator:a15e0c923b41df20624fcfec49681b196"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2601453e4ef166e0ea70926801869504"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsnakemake__unit__tests_1_1rule__block.html#a2601453e4ef166e0ea70926801869504">update_resolution</a> (const std::map&lt; std::string, std::string &gt; &amp;tag_values)</td></tr>
 <tr class="memdesc:a2601453e4ef166e0ea70926801869504"><td class="mdescLeft">&#160;</td><td class="mdescRight">using python tag output, update resolution status  <a href="classsnakemake__unit__tests_1_1rule__block.html#a2601453e4ef166e0ea70926801869504">More...</a><br /></td></tr>
 <tr class="separator:a2601453e4ef166e0ea70926801869504"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -883,51 +880,6 @@ boost::filesystem::path&#160;</td><td class="memItemRight" valign="bottom"><a cl
 
 </div>
 </div>
-<a id="a1fa1be741a981cae72e5975a19d906f9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1fa1be741a981cae72e5975a19d906f9">&#9670;&nbsp;</a></span>offer_base_rule_contents()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void snakemake_unit_tests::rule_block::offer_base_rule_contents </td>
-          <td>(</td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>provider_name</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>block_name</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>block_values</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>provide candidate base rule block definitions for derived rules </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">provider_name</td><td>name of candidate base rule providing this information </td></tr>
-    <tr><td class="paramname">block_name</td><td>name of block definition from the base rule </td></tr>
-    <tr><td class="paramname">block_values</td><td>contents of block from the base rule</td></tr>
-  </table>
-  </dd>
-</dl>
-<p>for safety, the rule will check that such a suggestion is sane, and respond accordingly if not </p>
-
-</div>
-</div>
 <a id="ae4472fc8a2403a5ce4503483940542cb"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae4472fc8a2403a5ce4503483940542cb">&#9670;&nbsp;</a></span>operator!=()</h2>
 
@@ -1026,14 +978,14 @@ boost::filesystem::path&#160;</td><td class="memItemRight" valign="bottom"><a cl
 
 </div>
 </div>
-<a id="aead538d30807b81125b41c734bc1088d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aead538d30807b81125b41c734bc1088d">&#9670;&nbsp;</a></span>report_python_logging_code()</h2>
+<a id="a15e0c923b41df20624fcfec49681b196"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a15e0c923b41df20624fcfec49681b196">&#9670;&nbsp;</a></span>report_python_logging_code()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void snakemake_unit_tests::rule_block::report_python_logging_code </td>
+          <td class="memname">bool snakemake_unit_tests::rule_block::report_python_logging_code </td>
           <td>(</td>
           <td class="paramtype">std::ostream &amp;&#160;</td>
           <td class="paramname"><em>out</em></td><td>)</td>
@@ -1042,13 +994,14 @@ boost::filesystem::path&#160;</td><td class="memItemRight" valign="bottom"><a cl
       </table>
 </div><div class="memdoc">
 
-<p>emit a python syntax reporting block to dummy file </p>
+<p>emit a python syntax reporting block to dummy file, until just after the first unresolved include directive is encountered (if ever) </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">out</td><td>open output stream for reporting </td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd>whether the reporting terminated upon first instance of an unresolved include directive </dd></dl>
 
 </div>
 </div>

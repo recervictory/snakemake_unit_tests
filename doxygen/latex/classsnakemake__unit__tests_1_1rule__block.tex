@@ -50,8 +50,6 @@ const std\+::map$<$ std\+::string, std\+::string $>$ \& \mbox{\hyperlink{classsn
 \begin{DoxyCompactList}\small\item\em get named blocks of rule body \end{DoxyCompactList}\item 
 unsigned \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block_a382259a591a1f4c9345523b23de4f478}{get\+\_\+local\+\_\+indentation}} () const
 \begin{DoxyCompactList}\small\item\em get local indentation of rule block \end{DoxyCompactList}\item 
-void \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block_a1fa1be741a981cae72e5975a19d906f9}{offer\+\_\+base\+\_\+rule\+\_\+contents}} (const std\+::string \&provider\+\_\+name, const std\+::string \&block\+\_\+name, const std\+::string \&block\+\_\+values)
-\begin{DoxyCompactList}\small\item\em provide candidate base rule block definitions for derived rules \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block_a087a1519c228e377353bb2f3a1e9e418}{add\+\_\+code\+\_\+chunk}} (const std\+::string \&s)
 \begin{DoxyCompactList}\small\item\em manually inject code into this block \end{DoxyCompactList}\item 
 bool \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block_a1e2e3182649715cc41e4426d5f80f67f}{operator==}} (const \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block}{rule\+\_\+block}} \&obj) const
@@ -70,8 +68,8 @@ void \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block_aac1221b806b4a0
 \begin{DoxyCompactList}\small\item\em set the unique python tag for inclusion tracking \end{DoxyCompactList}\item 
 unsigned \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block_ae9a883957b638b6ed42aef5426f62f0e}{get\+\_\+interpreter\+\_\+tag}} () const
 \begin{DoxyCompactList}\small\item\em get the unique python tag for inclusion tracking \end{DoxyCompactList}\item 
-void \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block_aead538d30807b81125b41c734bc1088d}{report\+\_\+python\+\_\+logging\+\_\+code}} (std\+::ostream \&out) const
-\begin{DoxyCompactList}\small\item\em emit a python syntax reporting block to dummy file \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block_a15e0c923b41df20624fcfec49681b196}{report\+\_\+python\+\_\+logging\+\_\+code}} (std\+::ostream \&out) const
+\begin{DoxyCompactList}\small\item\em emit a python syntax reporting block to dummy file, until just after the first unresolved include directive is encountered (if ever) \end{DoxyCompactList}\item 
 bool \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block_a2601453e4ef166e0ea70926801869504}{update\+\_\+resolution}} (const std\+::map$<$ std\+::string, std\+::string $>$ \&tag\+\_\+values)
 \begin{DoxyCompactList}\small\item\em using python tag output, update resolution status \end{DoxyCompactList}\item 
 const boost\+::filesystem\+::path \& \mbox{\hyperlink{classsnakemake__unit__tests_1_1rule__block_a3e6433b428c06778b4fb4c9753692b84}{get\+\_\+resolved\+\_\+included\+\_\+filename}} () const
@@ -439,26 +437,7 @@ load a rule block or python chunk from a snakemake file vector
 \begin{DoxyReturn}{Returns}
 whether a rule was successfully loaded
 \end{DoxyReturn}
-this function will parse out a single rule from a snakemake file. it is designed to be called until it returns false. \mbox{\Hypertarget{classsnakemake__unit__tests_1_1rule__block_a1fa1be741a981cae72e5975a19d906f9}\label{classsnakemake__unit__tests_1_1rule__block_a1fa1be741a981cae72e5975a19d906f9}} 
-\index{snakemake\_unit\_tests::rule\_block@{snakemake\_unit\_tests::rule\_block}!offer\_base\_rule\_contents@{offer\_base\_rule\_contents}}
-\index{offer\_base\_rule\_contents@{offer\_base\_rule\_contents}!snakemake\_unit\_tests::rule\_block@{snakemake\_unit\_tests::rule\_block}}
-\doxysubsubsection{\texorpdfstring{offer\_base\_rule\_contents()}{offer\_base\_rule\_contents()}}
-{\footnotesize\ttfamily void snakemake\+\_\+unit\+\_\+tests\+::rule\+\_\+block\+::offer\+\_\+base\+\_\+rule\+\_\+contents (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{provider\+\_\+name,  }\item[{const std\+::string \&}]{block\+\_\+name,  }\item[{const std\+::string \&}]{block\+\_\+values }\end{DoxyParamCaption})}
-
-
-
-provide candidate base rule block definitions for derived rules 
-
-
-\begin{DoxyParams}{Parameters}
-{\em provider\+\_\+name} & name of candidate base rule providing this information \\
-\hline
-{\em block\+\_\+name} & name of block definition from the base rule \\
-\hline
-{\em block\+\_\+values} & contents of block from the base rule\\
-\hline
-\end{DoxyParams}
-for safety, the rule will check that such a suggestion is sane, and respond accordingly if not \mbox{\Hypertarget{classsnakemake__unit__tests_1_1rule__block_ae4472fc8a2403a5ce4503483940542cb}\label{classsnakemake__unit__tests_1_1rule__block_ae4472fc8a2403a5ce4503483940542cb}} 
+this function will parse out a single rule from a snakemake file. it is designed to be called until it returns false. \mbox{\Hypertarget{classsnakemake__unit__tests_1_1rule__block_ae4472fc8a2403a5ce4503483940542cb}\label{classsnakemake__unit__tests_1_1rule__block_ae4472fc8a2403a5ce4503483940542cb}} 
 \index{snakemake\_unit\_tests::rule\_block@{snakemake\_unit\_tests::rule\_block}!operator"!=@{operator"!=}}
 \index{operator"!=@{operator"!=}!snakemake\_unit\_tests::rule\_block@{snakemake\_unit\_tests::rule\_block}}
 \doxysubsubsection{\texorpdfstring{operator"!=()}{operator!=()}}
@@ -509,21 +488,24 @@ report mildly formatted contents to a stream
 {\em out} & an open stream to which to write formatted contents \\
 \hline
 \end{DoxyParams}
-\mbox{\Hypertarget{classsnakemake__unit__tests_1_1rule__block_aead538d30807b81125b41c734bc1088d}\label{classsnakemake__unit__tests_1_1rule__block_aead538d30807b81125b41c734bc1088d}} 
+\mbox{\Hypertarget{classsnakemake__unit__tests_1_1rule__block_a15e0c923b41df20624fcfec49681b196}\label{classsnakemake__unit__tests_1_1rule__block_a15e0c923b41df20624fcfec49681b196}} 
 \index{snakemake\_unit\_tests::rule\_block@{snakemake\_unit\_tests::rule\_block}!report\_python\_logging\_code@{report\_python\_logging\_code}}
 \index{report\_python\_logging\_code@{report\_python\_logging\_code}!snakemake\_unit\_tests::rule\_block@{snakemake\_unit\_tests::rule\_block}}
 \doxysubsubsection{\texorpdfstring{report\_python\_logging\_code()}{report\_python\_logging\_code()}}
-{\footnotesize\ttfamily void snakemake\+\_\+unit\+\_\+tests\+::rule\+\_\+block\+::report\+\_\+python\+\_\+logging\+\_\+code (\begin{DoxyParamCaption}\item[{std\+::ostream \&}]{out }\end{DoxyParamCaption}) const}
+{\footnotesize\ttfamily bool snakemake\+\_\+unit\+\_\+tests\+::rule\+\_\+block\+::report\+\_\+python\+\_\+logging\+\_\+code (\begin{DoxyParamCaption}\item[{std\+::ostream \&}]{out }\end{DoxyParamCaption}) const}
 
 
 
-emit a python syntax reporting block to dummy file 
+emit a python syntax reporting block to dummy file, until just after the first unresolved include directive is encountered (if ever) 
 
 
 \begin{DoxyParams}{Parameters}
 {\em out} & open output stream for reporting \\
 \hline
 \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+whether the reporting terminated upon first instance of an unresolved include directive 
+\end{DoxyReturn}
 \mbox{\Hypertarget{classsnakemake__unit__tests_1_1rule__block_a18f1e8b82df2cf9fafdbbf0a6146f343}\label{classsnakemake__unit__tests_1_1rule__block_a18f1e8b82df2cf9fafdbbf0a6146f343}} 
 \index{snakemake\_unit\_tests::rule\_block@{snakemake\_unit\_tests::rule\_block}!report\_rulesdot\_rules@{report\_rulesdot\_rules}}
 \index{report\_rulesdot\_rules@{report\_rulesdot\_rules}!snakemake\_unit\_tests::rule\_block@{snakemake\_unit\_tests::rule\_block}}

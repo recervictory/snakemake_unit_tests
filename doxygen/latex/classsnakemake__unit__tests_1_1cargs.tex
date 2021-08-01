@@ -45,6 +45,8 @@ std\+::vector$<$ std\+::string $>$ \mbox{\hyperlink{classsnakemake__unit__tests_
 \begin{DoxyCompactList}\small\item\em get optional multiple directories (with relative paths) that will be installed alongside each unit test \end{DoxyCompactList}\item 
 std\+::vector$<$ std\+::string $>$ \mbox{\hyperlink{classsnakemake__unit__tests_1_1cargs_a6e83b9c67fc3ee8713435c5978d5b063}{get\+\_\+exclude\+\_\+rules}} () const
 \begin{DoxyCompactList}\small\item\em get optional rule names to exclude from testing \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classsnakemake__unit__tests_1_1cargs_accef292124109e119548ce8120b7b56a}{include\+\_\+entire\+\_\+dag}} () const
+\begin{DoxyCompactList}\small\item\em get user flag for overriding default behavior and adding entire DAG to synthetic snakefiles \end{DoxyCompactList}\item 
 bool \mbox{\hyperlink{classsnakemake__unit__tests_1_1cargs_ac89eba739d1cbc9eac095e7989c00d8a}{update\+\_\+all}} () const
 \begin{DoxyCompactList}\small\item\em get user flag for updating all parts of unit tests \end{DoxyCompactList}\item 
 bool \mbox{\hyperlink{classsnakemake__unit__tests_1_1cargs_a95e6b64164687848fe05bd06b8cd4f07}{update\+\_\+snakefiles}} () const
@@ -442,7 +444,20 @@ determine whether the user has requested help documentation
 \begin{DoxyReturn}{Returns}
 whether the user has requested help documentation
 \end{DoxyReturn}
-This test is separate from whether the user has run the software with no flags \mbox{\Hypertarget{classsnakemake__unit__tests_1_1cargs_aa6ed23df6e8352dcd2a2607688bb2180}\label{classsnakemake__unit__tests_1_1cargs_aa6ed23df6e8352dcd2a2607688bb2180}} 
+This test is separate from whether the user has run the software with no flags \mbox{\Hypertarget{classsnakemake__unit__tests_1_1cargs_accef292124109e119548ce8120b7b56a}\label{classsnakemake__unit__tests_1_1cargs_accef292124109e119548ce8120b7b56a}} 
+\index{snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}!include\_entire\_dag@{include\_entire\_dag}}
+\index{include\_entire\_dag@{include\_entire\_dag}!snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}}
+\doxysubsubsection{\texorpdfstring{include\_entire\_dag()}{include\_entire\_dag()}}
+{\footnotesize\ttfamily bool snakemake\+\_\+unit\+\_\+tests\+::cargs\+::include\+\_\+entire\+\_\+dag (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+get user flag for overriding default behavior and adding entire DAG to synthetic snakefiles 
+
+\begin{DoxyReturn}{Returns}
+whether the user wants the full DAG
+\end{DoxyReturn}
+the user should only activate this when default {\ttfamily rules.} detection has failed due to wrapping {\ttfamily rules.} calls under defined function blocks or other infrastructure. this will potentially massively slow down execution, and should only be used for individual problematic rules. \mbox{\Hypertarget{classsnakemake__unit__tests_1_1cargs_aa6ed23df6e8352dcd2a2607688bb2180}\label{classsnakemake__unit__tests_1_1cargs_aa6ed23df6e8352dcd2a2607688bb2180}} 
 \index{snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}!initialize\_options@{initialize\_options}}
 \index{initialize\_options@{initialize\_options}!snakemake\_unit\_tests::cargs@{snakemake\_unit\_tests::cargs}}
 \doxysubsubsection{\texorpdfstring{initialize\_options()}{initialize\_options()}}
