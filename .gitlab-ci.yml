@@ -24,6 +24,7 @@ build_and_tap:
   # instead of calling g++ directly you can also use some build toolkit like make
   # install the necessary build tools when needed
   before_script:
+    - echo 'deb http://deb.debian.org/debian testing main' >> /etc/apt/sources.list
     - apt update && install_packages wget gcc make autoconf libboost-all-dev libyaml-cpp-dev automake libcppunit-dev python3-magic libmagic-dev
   script:
     - ./generate.bash
