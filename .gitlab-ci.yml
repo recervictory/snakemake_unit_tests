@@ -19,21 +19,36 @@ workflow:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
+cache:
+  key: $CI_COMMIT_REF_SLUG
+  paths:
+    - ./miniconda3
+
 build_and_tap:
   stage: build
   # instead of calling g++ directly you can also use some build toolkit like make
   # install the necessary build tools when needed
   before_script:
-    - apt update && apt -y install make autoconf libboost-all-dev libyaml-cpp-dev automake libcppunit-dev snakemake python3-pytest python3-magic libmagic-dev
+    - apt update && apt install -y wget
   script:
+    - wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+    - bash ./Miniconda3-latest-Linux-x86_64.sh -b -p ./miniconda3
+    - source miniconda3/bin/activate
+    - conda init
+    - conda install -y -c conda-forge mamba
+    - mamba env create -f ./environment-linux.yaml
+    - conda activate snakemake_unit_tests-env
     - ./generate.sh
-    - ./configure 
+    - ./configure --with-boost=$CONDA_PREFIX --with-boost-libdir=$CONDA_PREFIX/lib
     - make -j2 check
   artifacts:
     paths:
       - snakemake_unit_tests.out
 
 test_cppunit:
-    stage: test
-    script:
-        echo "placeholder"
+  stage: test
+  script:
+    - source miniconda3/bin/activate
+    - conda init
+    - conda activate snakemake_unit_tests-env
+    - echo "placeholder"
