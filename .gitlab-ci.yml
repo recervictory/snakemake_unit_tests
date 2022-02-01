@@ -8,7 +8,7 @@
 # can use verions as well, like gcc:5.2
 # see https://hub.docker.com/_/gcc/
 
-image: snakemake/snakemake
+image: cpalmer718/snakemake-gcc
 
 stages:
   - build
@@ -23,13 +23,6 @@ build_and_tap:
   stage: build
   # instead of calling g++ directly you can also use some build toolkit like make
   # install the necessary build tools when needed
-  before_script:
-    - echo 'deb http://deb.debian.org/debian testing main' >> /etc/apt/sources.list
-    - apt update
-    - apt upgrade -y
-    - apt --fix-broken install
-    - apt update
-    - install_packages wget gcc make autoconf libboost-all-dev libyaml-cpp-dev automake libcppunit-dev python3-magic libmagic-dev
   script:
     - ./generate.bash
     - ./configure
