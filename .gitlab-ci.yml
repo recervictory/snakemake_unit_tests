@@ -8,7 +8,7 @@
 # can use verions as well, like gcc:5.2
 # see https://hub.docker.com/_/gcc/
 
-image: gcc
+image: snakemake/snakemake
 
 stages:
   - build
@@ -19,32 +19,15 @@ workflow:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
-cache:
-  key: $CI_COMMIT_REF_SLUG
-  paths:
-    - ./miniconda3
-
 build_and_tap:
   stage: build
   # instead of calling g++ directly you can also use some build toolkit like make
   # install the necessary build tools when needed
   before_script:
-    - apt update && apt install -y wget
-    - |
-      if [[ ! -d "miniconda3" ]] ; then
-        wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
-        bash ./Miniconda3-latest-Linux-x86_64.sh -b -p ./miniconda3
-      fi
-      source miniconda3/bin/activate
-      conda init
-      if [[ ! -d "miniconda3/envs/snakemake_unit_tests-env" ]] ; then
-        conda install -y -c conda-forge mamba
-        mamba env create -f ./environment-linux.yaml
-      fi
+    - apt update && install_packages wget make autoconf libboost-all-dev libyaml-cpp-dev automake libcppunit-dev python3-magic libmagic-dev
   script:
-    - conda activate snakemake_unit_tests-env
     - ./generate.bash
-    - ./configure --with-boost=$CONDA_PREFIX --with-boost-libdir=$CONDA_PREFIX/lib
+    - ./configure
     - make -j2 check
   artifacts:
     paths:
@@ -53,7 +36,4 @@ build_and_tap:
 test_cppunit:
   stage: test
   script:
-    - source miniconda3/bin/activate
-    - conda init
-    - conda activate snakemake_unit_tests-env
     - echo "placeholder"
