@@ -24,7 +24,7 @@ build_and_tap:
   # instead of calling g++ directly you can also use some build toolkit like make
   # install the necessary build tools when needed
   before_script:
-    - apt update && apt -y install make autoconf libboost-all-dev libyaml-cpp-dev automake libcppunit-dev snakemake python-pytest python-magic libmagic-dev
+    - apt update && apt -y install make autoconf libboost-all-dev libyaml-cpp-dev automake libcppunit-dev snakemake python3-pytest python3-magic libmagic-dev
   script:
     - ./generate.sh
     - ./configure 
