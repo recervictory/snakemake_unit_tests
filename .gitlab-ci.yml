@@ -26,6 +26,11 @@ build_and_tap:
   script:
     - ./generate.bash
     - ./configure --with-boost=$CONDA_PREFIX --with-boost-libdir=$CONDA_PREFIX/lib
+    - make -j2
+    - ./snakemake_unit_tests.out -h
+    - ./snakemake_unit_tests.out --update-all -i inst -l tests/examples/test1/input/run.log -o tests/examples/test1/output -p tests/examples/test1/input -s tests/examples/test1/input/workflow/Snakefile 
+    - pytest tests/examples/test1/output/unit
+    - rm -Rf tests/examples/test1/output
     - make -j2 check
   artifacts:
     paths:
