@@ -30,15 +30,20 @@ build_and_tap:
   # install the necessary build tools when needed
   before_script:
     - apt update && apt install -y wget
+    - |
+      if [[ ! -d "miniconda3" ]] ; then
+        wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+        bash ./Miniconda3-latest-Linux-x86_64.sh -b -p ./miniconda3
+      fi
+      source miniconda3/bin/activate
+      conda init
+      if [[ ! -d "miniconda3/envs/snakemake_unit_tests-env" ]] ; then
+        conda install -y -c conda-forge mamba
+        mamba env create -f ./environment-linux.yaml
+      fi
   script:
-    - wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
-    - bash ./Miniconda3-latest-Linux-x86_64.sh -b -p ./miniconda3
-    - source miniconda3/bin/activate
-    - conda init
-    - conda install -y -c conda-forge mamba
-    - mamba env create -f ./environment-linux.yaml
     - conda activate snakemake_unit_tests-env
-    - ./generate.sh
+    - ./generate.bash
     - ./configure --with-boost=$CONDA_PREFIX --with-boost-libdir=$CONDA_PREFIX/lib
     - make -j2 check
   artifacts:
