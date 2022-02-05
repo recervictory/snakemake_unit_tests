@@ -11,17 +11,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: mamba
       run: conda install -y -c conda-forge mamba
-    - name: condaenv
       run: mamba env create -c bioconda -c conda-forge -f environment-linux.yaml
-    - name: generate
+      run: conda activate snakemake_unit_tests-env
       run: ./generate.bash
-    - name: configure
       run: ./configure --with-boost=$CONDA_PREFIX --with-boost-libdir=$CONDA_PREFIX/bin
-    - name: make
       run: make -j2
-    - name: make check
       run: make -j2 check
-    - name: unit tests
       run: ./test_suite.out
