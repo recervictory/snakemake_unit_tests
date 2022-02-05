@@ -3,6 +3,9 @@ name: C/C++ CI
 on:
   pull_request:
     branches: [ default, dev ]
+  push:
+    branches:
+      - default
 
 jobs:
   build:
