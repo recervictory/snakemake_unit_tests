@@ -20,7 +20,7 @@ jobs:
         run: |
           export PATH="/usr/share/miniconda/bin:$PATH"
           conda install -c conda-forge -y mamba
-          sed -i 's/  - pytest//' environment-linux.yaml
+          sed -i 's/  - pytest/  - pytest ==6.1.2/' environment-linux.yaml
           mamba env create -f environment-linux.yaml
       - name: generate
         run: |
