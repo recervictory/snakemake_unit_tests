@@ -18,8 +18,8 @@ jobs:
       - name: set up build environment
         run: |
           export PATH="/usr/share/miniconda/bin:$PATH"
-          conda install -c conda-forge -q mamba
-          mamba env create -q -f environment-linux.yaml
+          conda install -c conda-forge -y mamba
+          mamba env create -f environment-linux.yaml
       - name: generate
         run: |
           export PATH="/usr/share/miniconda/envs/snakemake_unit_tests-env/bin:$PATH"
