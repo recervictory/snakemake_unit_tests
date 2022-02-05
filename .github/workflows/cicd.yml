@@ -12,6 +12,11 @@ jobs:
     steps:
       - name: checkout_repo
         uses: actions/checkout@v2
+      - name: activate_conda
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          auto-activate-base: true
+          activate-environment: ""
       - name: build_and_test
         run: |
           conda install -y -c conda-forge mamba
