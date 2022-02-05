@@ -17,9 +17,17 @@ jobs:
       - run:
           name: build_and_test
           command: |
-            export CONDA_PREFIX="/opt/conda"
-            export PATH="/opt/conda/bin:$PATH"
-            echo $PATH
+            __conda_setup="$('/opt/conda/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+            if [ $? -eq 0 ]; then
+              eval "$__conda_setup"
+            else
+              if [ -f "/opt/conda/etc/profile.d/conda.sh" ]; then
+                . "/opt/conda/etc/profile.d/conda.sh"
+              else
+                export PATH="/opt/conda/bin:$PATH"
+              fi
+            fi
+            unset __conda_setup
             ./generate.bash
             ./configure --prefix=/opt/conda --with-boost=$CONDA_PREFIX --with-boost-libdir=$CONDA_PREFIX/lib
             make -j2
