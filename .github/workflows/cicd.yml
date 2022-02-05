@@ -3,6 +3,8 @@ name: C/C++ CI
 on:
   pull_request:
     branches: [ default, dev ]
+
+on:
   workflow_dispatch:
     inputs:
       logLevel:
