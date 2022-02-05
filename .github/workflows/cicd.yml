@@ -12,26 +12,5 @@ jobs:
     steps:
       - name: checkout_repo
         uses: actions/checkout@v2
-      - name: activate_conda
-        uses: conda-incubator/setup-miniconda@v2
-        with:
-          auto-activate-base: true
-          activate-environment: ""
-      - name: install_mamba
-        run: conda install -y -c conda-forge mamba
-      - name: install_environment
-        run: mamba env create -f environment-linux.yaml
-      - name: activate_environment
-        uses: conda-incubator/setup-miniconda@v2
-        with:
-          activate-environment: "snakemake_unit_tests-env"
-      - name: generate
-        run: ./generate.bash
-      - name: configure
-        run: ./configure --with-boost=$CONDA/envs/snakemake_unit_tests-env --with-boost-libdir=$CONDA/envs/snakemake_unit_tests-env/lib
-      - name: build
-        run: make -j2
-      - name: TAP
-        run: make -j2 check
-      - name: unit_tests
-        run: ./test_suite.out
+      - name: run_cicd_docker
+        run: docker run cpalmer718/snakemake-gcc ./build_test_commands.sh
