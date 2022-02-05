@@ -19,7 +19,6 @@ jobs:
         run: |
           export PATH="/usr/share/miniconda/bin:$PATH"
           conda install -c conda-forge -q mamba
-          echo "  - mamba" >> environment-linux.yaml
           mamba env create -q -f environment-linux.yaml
       - name: generate
         run: |
