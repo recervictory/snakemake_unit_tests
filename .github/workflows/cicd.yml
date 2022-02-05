@@ -28,7 +28,7 @@ jobs:
       - name: generate
         run: ./generate.bash
       - name: configure
-        run: ./configure --with-boost=$CONDA_PREFIX --with-boost-libdir=$CONDA_PREFIX/bin
+        run: ./configure --with-boost=$CONDA --with-boost-libdir=$CONDA/bin
       - name: build
         run: make -j2
       - name: TAP
