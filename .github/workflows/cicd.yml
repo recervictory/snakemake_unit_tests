@@ -19,7 +19,6 @@ jobs:
         run: |
           export PATH="/usr/share/miniconda/bin:$PATH"
           conda install -c conda-forge -y mamba
-#          sed -i 's/  - pytest// ; s/  - python-magic// ; s/  - libmagic//' environment-linux.yaml
           mamba env create -f environment-linux.yaml
       - name: generate
         run: |
