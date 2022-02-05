@@ -12,6 +12,8 @@ package*json
 *.so
 *.so.1
 *.so.1.0*
+*gcda
+*gcno
 *m4
 m4*
 install-sh
