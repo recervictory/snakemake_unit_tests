@@ -12,13 +12,14 @@ jobs:
     steps:
       - name: checkout_repo
         uses: actions/checkout@v2
-      - name: generate
-        run: docker run cpalmer718/snakemake-gcc ./generate.bash
-      - name: configure
-        run: docker run cpalmer718/snakemake-gcc ./configure --with-boost=$CONDA_PREFIX --with-boost-libdir=$CONDA_PREFIX/lib
-      - name: build
-        run: docker run cpalmer718/snakemake-gcc make -j2
-      - name: TAP
-        run: docker run cpalmer718/snakemake-gcc make -j2 check
-      - name: unit_tests
-        run: docker run cpalmer718/snakemake-gcc ./test_suite.out
+      - name: run_in_docker
+        uses: addnab/docker-run-action@v3
+        with:
+          image: cpalmer718/snakemake-gcc
+          options: -v ${{ github.workspace }}:/work
+        run: |
+          ./generate.bash
+          ./configure --with-boost=$CONDA_PREFIX --with-boost-libdir=$CONDA_PREFIX/lib
+          make -j2
+          make -j2 check
+          ./test_suite.out
