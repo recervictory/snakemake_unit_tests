@@ -19,15 +19,14 @@ jobs:
           command: |
             export CONDA_PREFIX="/opt/conda"
             export PATH="/opt/conda/bin:$PATH"
-            export LD_LIBRARY_PATH="/opt/conda/lib"
             whereis conda
             whereis snakemake
             echo $CONDA_PREFIX
             ./generate.bash
             ./configure --with-boost=$CONDA_PREFIX --with-boost-libdir=$CONDA_PREFIX/lib
             make -j2
-            make -j2 check
-            ./test_suite.out
+            /lib/ld-linux.so.2 --library-path /opt/conda/lib make -j2 check
+            /lib/ld-linux.so.2 --library-path /opt/conda/lib ./test_suite.out
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
