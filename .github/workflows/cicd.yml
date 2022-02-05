@@ -12,5 +12,13 @@ jobs:
     steps:
       - name: checkout_repo
         uses: actions/checkout@v2
-      - name: run_cicd_docker
-        run: docker run cpalmer718/snakemake-gcc ./build_test_commands.sh
+      - name: generate
+        run: docker run cpalmer718/snakemake-gcc ./generate.bash
+      - name: configure
+        run: docker run cpalmer718/snakemake-gcc ./configure --with-boost=$CONDA_PREFIX --with-boost-libdir=$CONDA_PREFIX/lib
+      - name: build
+        run: docker run cpalmer718/snakemake-gcc make -j2
+      - name: TAP
+        run: docker run cpalmer718/snakemake-gcc make -j2 check
+      - name: unit_tests
+        run: docker run cpalmer718/snakemake-gcc ./test_suite.out
