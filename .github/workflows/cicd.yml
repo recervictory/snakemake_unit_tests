@@ -24,23 +24,28 @@ jobs:
       - name: configure
         run: |
           export PATH="/usr/share/miniconda/envs/snakemake_unit_tests-env/bin:$PATH"
+          export LD_LIBRARY_PATH="/usr/share/miniconda/envs/snakemake_unit_tests-env/lib:$PATH"
           ./configure --with-boost=/usr/share/miniconda/envs/snakemake_unit_tests-env --with-boost-libdir=/usr/share/miniconda/envs/snakemake_unit_tests-env/lib
       - name: build
         run: |
           export PATH="/usr/share/miniconda/envs/snakemake_unit_tests-env/bin:$PATH"
+          export LD_LIBRARY_PATH="/usr/share/miniconda/envs/snakemake_unit_tests-env/lib:$PATH"
           make -j2
           ./snakemake_unit_tests.out -h
       - name: TAP
         run: |
           export PATH="/usr/share/miniconda/envs/snakemake_unit_tests-env/bin:$PATH"
+          export LD_LIBRARY_PATH="/usr/share/miniconda/envs/snakemake_unit_tests-env/lib:$PATH"
           make -j2 check
       - name: run unit tests
         run: |
           export PATH="/usr/share/miniconda/envs/snakemake_unit_tests-env/bin:$PATH"
+          export LD_LIBRARY_PATH="/usr/share/miniconda/envs/snakemake_unit_tests-env/lib:$PATH"
           ./test_suite.out
       - name: run code coverage
         run: |
           export PATH="/usr/share/miniconda/envs/snakemake_unit_tests-env/bin:$PATH"
+          export LD_LIBRARY_PATH="/usr/share/miniconda/envs/snakemake_unit_tests-env/lib:$PATH"
           x86_64-conda-linux-gnu-gcov -r $(find snakemake_unit_tests \( -name "*gcda" -and -not -iname "*test*" \) -print)
           gcovr -g -x
           curl -Os https://uploader.codecov.io/latest/linux/codecov
