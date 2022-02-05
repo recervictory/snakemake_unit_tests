@@ -1,5 +1,7 @@
 # snakemake unit tests
 
+[![unit tests](https://github.com/cpalmer718/snakemake_unit_tests/actions/workflows/cicd.yml/badge.svg)](https://github.com/cpalmer718/snakemake_unit_tests/actions/workflows/cicd.yml)
+
 ## Brief Summary
 
 Candidate supplement to `snakemake --generate-unit-tests` with more
@@ -118,6 +120,7 @@ TODO(cpalmer718): create conda package and provide conda installation instructio
   - [boost program_options](https://www.boost.org/doc/libs/1_75_0/doc/html/program_options.html)
   - [boost filesystem/system](https://www.boost.org/doc/libs/1_75_0/libs/filesystem/doc/index.htm)
   - [yaml-cpp](https://github.com/jbeder/yaml-cpp)
+  - [cppunit](https://freedesktop.org/wiki/Software/cppunit/)
 
 #### Build
 
