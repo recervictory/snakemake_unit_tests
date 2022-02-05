@@ -1,0 +1,46 @@
+name: C/C++ CI
+
+on:
+  pull_request:
+    branches: [ default, dev ]
+  push:
+    branches:
+      - default
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: "set up build environment"
+        run: |
+          export PATH="/usr/share/miniconda/bin:$PATH"
+          conda install -c conda-forge -y mamba
+          mamba env create -f environment-linux.yaml
+
+      - name: configure_and_build
+        run: |
+          export PATH="/usr/share/miniconda/envs/snakemake_unit_tests-env/bin:$PATH"
+          export LD_LIBRARY_PATH="/usr/share/miniconda/envs/snakemake_unit_tests-env/lib"
+          ./generate.bash
+          ./configure --with-boost=/usr/share/miniconda/envs/snakemake_unit_tests-env --with-boost-libdir=/usr/share/miniconda/envs/snakemake_unit_tests-env/lib
+          make -j2
+          ./snakemake_unit_tests.out -h
+
+      - name: run_unit_tests
+        run: |
+          export PATH="/usr/share/miniconda/envs/snakemake_unit_tests-env/bin:$PATH"
+          export LD_LIBRARY_PATH="/usr/share/miniconda/envs/snakemake_unit_tests-env/lib"
+          ./test_suite.out
+#      - name: run_code_coverage
+#        run: |
+#          export PATH="/usr/share/miniconda/envs/snakemake_unit_tests-env/bin:$PATH"
+#          export LD_LIBRARY_PATH="/usr/share/miniconda/envs/snakemake_unit_tests-env/lib"
+#          x86_64-conda-linux-gnu-gcov -r $(find snakemake_unit_tests \( -name "*gcda" -and -not -iname "*test*" \) -print)
+#          gcovr -g -x
+#          curl -Os https://uploader.codecov.io/latest/linux/codecov
+#          chmod +x codecov
+#          ./codecov
