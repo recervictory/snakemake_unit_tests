@@ -28,7 +28,7 @@ jobs:
       - name: build
         run: |
           export PATH="/usr/share/miniconda/bin:$PATH"
-          make -j2 CPPFLAGS=""
+          make -j2 CPPFLAGS="-I/usr/share/miniconda/include" LDFLAGS="-L/usr/share/miniconda/lib"
       - name: TAP
         run: |
           export PATH="/usr/share/miniconda/bin:$PATH"
