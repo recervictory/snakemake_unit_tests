@@ -17,6 +17,9 @@ jobs:
       - run:
           name: build_and_test
           command: |
+            export CONDA_PREFIX="/opt/conda"
+            export PATH="/opt/conda/bin:$PATH"
+            export LD_LIBRARY_PATH="/opt/conda/lib"
             whereis conda
             whereis snakemake
             echo $CONDA_PREFIX
