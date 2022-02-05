@@ -17,6 +17,7 @@ jobs:
       - run:
           name: build_and_test
           command: |
+            echo $CONDA_PREFIX
             ./generate.bash
             ./configure --with-boost=$CONDA_PREFIX --with-boost-libdir=$CONDA_PREFIX/lib
             make -j2
