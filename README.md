@@ -1,5 +1,7 @@
 # snakemake unit tests
 
+[![unit tests](https://github.com/cpalmer718/snakemake_unit_tests/actions/workflows/cicd.yml/badge.svg)](https://github.com/cpalmer718/snakemake_unit_tests/actions/workflows/cicd.yml)
+
 ## Brief Summary
 
 Candidate supplement to `snakemake --generate-unit-tests` with more
