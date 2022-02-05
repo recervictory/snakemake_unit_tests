@@ -17,12 +17,10 @@ jobs:
       - run:
           name: build_and_test
           command: |
-            micromamba activate /opt/conda
             export CONDA_PREFIX="/opt/conda"
             export PATH="/opt/conda/bin:$PATH"
-            ls -l $CONDA_PREFIX/bin
             ./generate.bash
-            ./configure --with-boost=$CONDA_PREFIX --with-boost-libdir=$CONDA_PREFIX/lib
+            ./configure --prefix=/opt/conda --with-boost=$CONDA_PREFIX --with-boost-libdir=$CONDA_PREFIX/lib
             make -j2
             /lib/ld-linux.so.2 --library-path /opt/conda/lib make -j2 check
             /lib/ld-linux.so.2 --library-path /opt/conda/lib ./test_suite.out
