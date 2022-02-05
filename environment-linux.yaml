@@ -22,6 +22,7 @@ dependencies:
 
   - snakemake
   - mamba
-  - pytest<7
+  - ncurses<6.3
+  - pytest
   - python-magic
   - libmagic
