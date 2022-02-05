@@ -19,6 +19,7 @@ jobs:
           command: |
             export CONDA_PREFIX="/opt/conda"
             export PATH="/opt/conda/bin:$PATH"
+            echo $PATH
             ./generate.bash
             ./configure --prefix=/opt/conda --with-boost=$CONDA_PREFIX --with-boost-libdir=$CONDA_PREFIX/lib
             make -j2
