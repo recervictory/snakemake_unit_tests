@@ -1,0 +1,27 @@
+name: C/C++ CI
+
+on:
+  pull_request:
+    branches: [ default, dev ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: mamba
+      run: conda install -c conda-forge mamba
+    - name: condaenv
+      run: mamba env create -c bioconda -c conda-forge -f environment-linux.yaml
+    - name: generate
+      run: ./generate.bash
+    - name: configure
+      run: ./configure --with-boost=$CONDA_PREFIX --with-boost-libdir=$CONDA_PREFIX/bin
+    - name: make
+      run: make -j2
+    - name: make check
+      run: make -j2 check
+    - name: unit tests
+      run: ./test_suite.out
