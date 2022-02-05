@@ -12,11 +12,14 @@ jobs:
     steps:
       - name: checkout_repo
         uses: actions/checkout@v2
+      - name: update host
+        run: |
+          sudo apt-get update
       - name: set up build environment
         run: |
           export PATH="/usr/share/miniconda/bin:$PATH"
           conda install -c conda-forge -q mamba
-          echo "  - bash" >> environment-linux.yaml
+          echo "  - mamba" >> environment-linux.yaml
           mamba env create -q -f environment-linux.yaml
       - name: generate
         run: |
@@ -25,30 +28,31 @@ jobs:
       - name: configure
         run: |
           export PATH="/usr/share/miniconda/envs/snakemake_unit_tests-env/bin:$PATH"
-          export LD_LIBRARY_PATH="/usr/share/miniconda/envs/snakemake_unit_tests-env/lib:$LD_LIBRARY_PATH"
+          export LD_LIBRARY_PATH="/usr/share/miniconda/envs/snakemake_unit_tests-env/lib"
           ./configure --with-boost=/usr/share/miniconda/envs/snakemake_unit_tests-env --with-boost-libdir=/usr/share/miniconda/envs/snakemake_unit_tests-env/lib
       - name: build
         run: |
           export PATH="/usr/share/miniconda/envs/snakemake_unit_tests-env/bin:$PATH"
-          export LD_LIBRARY_PATH="/usr/share/miniconda/envs/snakemake_unit_tests-env/lib:$LD_LIBRARY_PATH"
+          export LD_LIBRARY_PATH="/usr/share/miniconda/envs/snakemake_unit_tests-env/lib"
           make -j2
           ./snakemake_unit_tests.out -h
       - name: TAP
         run: |
           export PATH="/usr/share/miniconda/envs/snakemake_unit_tests-env/bin:$PATH"
-          export LD_LIBRARY_PATH="/usr/share/miniconda/envs/snakemake_unit_tests-env/lib:$LD_LIBRARY_PATH"
+          export LD_LIBRARY_PATH="/usr/share/miniconda/envs/snakemake_unit_tests-env/lib"
           ./snakemake_unit_tests.out --update-all -i inst -l tests/examples/test3/input/run.log -o tests/examples/test3/output -p tests/examples/test3/input -s tests/examples/test3/input/workflow/Snakefile
           pytest tests/examples/test3/output/unit
+          rm -Rf tests/examples/test3/output
           make -j2 check
       - name: run unit tests
         run: |
           export PATH="/usr/share/miniconda/envs/snakemake_unit_tests-env/bin:$PATH"
-          export LD_LIBRARY_PATH="/usr/share/miniconda/envs/snakemake_unit_tests-env/lib:$LD_LIBRARY_PATH"
+          export LD_LIBRARY_PATH="/usr/share/miniconda/envs/snakemake_unit_tests-env/lib"
           ./test_suite.out
       - name: run code coverage
         run: |
           export PATH="/usr/share/miniconda/envs/snakemake_unit_tests-env/bin:$PATH"
-          export LD_LIBRARY_PATH="/usr/share/miniconda/envs/snakemake_unit_tests-env/lib:$LD_LIBRARY_PATH"
+          export LD_LIBRARY_PATH="/usr/share/miniconda/envs/snakemake_unit_tests-env/lib"
           x86_64-conda-linux-gnu-gcov -r $(find snakemake_unit_tests \( -name "*gcda" -and -not -iname "*test*" \) -print)
           gcovr -g -x
           curl -Os https://uploader.codecov.io/latest/linux/codecov
