@@ -3,6 +3,12 @@ name: C/C++ CI
 on:
   pull_request:
     branches: [ default, dev ]
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'     
+        required: true
+        default: 'warning'
 
 jobs:
   build:
