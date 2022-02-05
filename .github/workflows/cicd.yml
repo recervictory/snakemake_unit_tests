@@ -20,7 +20,7 @@ jobs:
       - name: install_mamba
         run: conda install -y -c conda-forge mamba
       - name: install_environment
-        run: mamba env create -c bioconda -c conda-forge -f environment-linux.yaml
+        run: mamba env create -f environment-linux.yaml
       - name: activate_environment
         run: conda activate snakemake_unit_tests-env
       - name: generate
