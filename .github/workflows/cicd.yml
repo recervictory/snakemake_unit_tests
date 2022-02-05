@@ -12,15 +12,28 @@ jobs:
     steps:
       - name: checkout_repo
         uses: actions/checkout@v2
-      - name: run_in_docker
-        uses: addnab/docker-run-action@v3
-        with:
-          image: cpalmer718/snakemake-gcc
-          options: -v ${{ github.workspace }}:/work/snakemake_unit_tests
-          run: |
-            ls -l
-            ./generate.bash
-            ./configure --with-boost=$CONDA_PREFIX --with-boost-libdir=$CONDA_PREFIX/lib
-            make -j2
-            make -j2 check
-            ./test_suite.out
+      - name: set up build environment
+        run: |
+          export PATH="/usr/share/miniconda/bin:$PATH"
+          conda install -c conda-forge -q mamba
+          mamba env create -q -f environment-linux.yaml
+      - name: generate
+        run: |
+          export PATH="/usr/share/miniconda/bin:$PATH"
+          ./generate.bash
+      - name: configure
+        run: |
+          export PATH="/usr/share/miniconda/bin:$PATH"
+          ./configure --with-boost=/usr/share/miniconda --with-boost-libdir=/usr/share/miniconda/lib
+      - name: build
+        run: |
+          export PATH="/usr/share/miniconda/bin:$PATH"
+          make -j2
+      - name: TAP
+        run: |
+          export PATH="/usr/share/miniconda/bin:$PATH"
+          make -j2 check
+      - name: run unit tests
+        run: |
+          export PATH="/usr/share/miniconda/bin:$PATH"
+          ./test_suite.out
