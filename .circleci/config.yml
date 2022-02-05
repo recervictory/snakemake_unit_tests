@@ -17,6 +17,7 @@ jobs:
       - run:
           name: build_and_test
           command: |
+            micromamba activate /opt/conda
             export CONDA_PREFIX="/opt/conda"
             export PATH="/opt/conda/bin:$PATH"
             ls -l $CONDA_PREFIX/bin
