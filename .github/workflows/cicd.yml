@@ -16,6 +16,7 @@ jobs:
         run: |
           export PATH="/usr/share/miniconda/bin:$PATH"
           conda install -c conda-forge -q mamba
+          echo "  - bash" >> environment-linux.yaml
           mamba env create -q -f environment-linux.yaml
       - name: generate
         run: |
@@ -36,6 +37,8 @@ jobs:
         run: |
           export PATH="/usr/share/miniconda/envs/snakemake_unit_tests-env/bin:$PATH"
           export LD_LIBRARY_PATH="/usr/share/miniconda/envs/snakemake_unit_tests-env/lib:$LD_LIBRARY_PATH"
+          ./snakemake_unit_tests.out --update-all -i inst -l tests/examples/test3/input/run.log -o tests/examples/test3/output -p tests/examples/test3/input -s tests/examples/test3/input/workflow/Snakefile
+          pytest tests/examples/test3/output/unit
           make -j2 check
       - name: run unit tests
         run: |
