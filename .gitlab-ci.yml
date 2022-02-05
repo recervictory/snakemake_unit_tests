@@ -12,7 +12,6 @@ image: cpalmer718/snakemake-gcc
 
 stages:
   - build
-  - test
 
 workflow:
   rules:
@@ -28,11 +27,6 @@ build_and_tap:
     - ./configure --with-boost=$CONDA_PREFIX --with-boost-libdir=$CONDA_PREFIX/lib
     - make -j2
     - make -j2 check
-  artifacts:
-    paths:
-      - snakemake_unit_tests.out
-
-test_cppunit:
-  stage: test
-  script:
-    - echo "placeholder"
+    - ./test_suite.out
+    - $CONDA_PREFIX/bin/x86_64-conda-linux-gnu-gcov -r $(find snakemake_unit_tests \( -name "*gcda" -and -not -iname "*test*" \) -print)
+  coverage: '/Lines executed:(\d+\.\d*)% of/'
