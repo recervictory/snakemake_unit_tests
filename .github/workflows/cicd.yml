@@ -17,13 +17,19 @@ jobs:
         with:
           auto-activate-base: true
           activate-environment: ""
-      - name: build_and_test
-        run: |
-          conda install -y -c conda-forge mamba
-          mamba env create -c bioconda -c conda-forge -f environment-linux.yaml
-          conda activate snakemake_unit_tests-env
-          ./generate.bash
-          ./configure --with-boost=$CONDA_PREFIX --with-boost-libdir=$CONDA_PREFIX/bin
-          make -j2
-          make -j2 check
-          ./test_suite.out
+      - name: install_mamba
+        run: conda install -y -c conda-forge mamba
+      - name: install_environment
+        run: mamba env create -c bioconda -c conda-forge -f environment-linux.yaml
+      - name: activate_environment
+        run: conda activate snakemake_unit_tests-env
+      - name: generate
+        run: ./generate.bash
+      - name: configure
+        run: ./configure --with-boost=$CONDA_PREFIX --with-boost-libdir=$CONDA_PREFIX/bin
+      - name: build
+        run: make -j2
+      - name: TAP
+        run: make -j2 check
+      - name: unit_tests
+        run: ./test_suite.out
