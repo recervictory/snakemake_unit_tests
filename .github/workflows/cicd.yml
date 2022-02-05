@@ -10,13 +10,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-      run: |
-        conda install -y -c conda-forge mamba
-        mamba env create -c bioconda -c conda-forge -f environment-linux.yaml
-        conda activate snakemake_unit_tests-env
-        ./generate.bash
-        ./configure --with-boost=$CONDA_PREFIX --with-boost-libdir=$CONDA_PREFIX/bin
-        make -j2
-        make -j2 check
-        ./test_suite.out
+      - name: checkout_repo
+        uses: actions/checkout@v2
+      - name: build_and_test
+        run: |
+          conda install -y -c conda-forge mamba
+          mamba env create -c bioconda -c conda-forge -f environment-linux.yaml
+          conda activate snakemake_unit_tests-env
+          ./generate.bash
+          ./configure --with-boost=$CONDA_PREFIX --with-boost-libdir=$CONDA_PREFIX/bin
+          make -j2
+          make -j2 check
+          ./test_suite.out
