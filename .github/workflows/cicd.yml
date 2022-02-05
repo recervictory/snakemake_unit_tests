@@ -17,9 +17,9 @@ jobs:
         with:
           image: cpalmer718/snakemake-gcc
           options: -v ${{ github.workspace }}:/work
-        run: |
-          ./generate.bash
-          ./configure --with-boost=$CONDA_PREFIX --with-boost-libdir=$CONDA_PREFIX/lib
-          make -j2
-          make -j2 check
-          ./test_suite.out
+          run: |
+            ./generate.bash
+            ./configure --with-boost=$CONDA_PREFIX --with-boost-libdir=$CONDA_PREFIX/lib
+            make -j2
+            make -j2 check
+            ./test_suite.out
