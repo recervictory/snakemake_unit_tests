@@ -28,7 +28,7 @@ jobs:
       - name: generate
         run: ./generate.bash
       - name: configure
-        run: ./configure --with-boost=$CONDA --with-boost-libdir=$CONDA/bin
+        run: ./configure --with-boost=$CONDA/envs/snakemake_unit_tests-env --with-boost-libdir=$CONDA/envs/snakemake_unit_tests-env/lib
       - name: build
         run: make -j2
       - name: TAP
