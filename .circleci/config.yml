@@ -31,8 +31,8 @@ jobs:
             ./generate.bash
             ./configure --prefix=/opt/conda --with-boost=$CONDA_PREFIX --with-boost-libdir=$CONDA_PREFIX/lib
             make -j2
-            /lib/ld-linux.so.2 --library-path /opt/conda/lib make -j2 check
-            /lib/ld-linux.so.2 --library-path /opt/conda/lib ./test_suite.out
+            make -j2 check
+            ./test_suite.out
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
