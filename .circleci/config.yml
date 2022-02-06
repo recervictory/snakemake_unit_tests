@@ -33,7 +33,7 @@ jobs:
               fi
             fi
             unset __conda_setup
-            export PATH=$(PATH) >> $BASH_ENV
+            export PATH="$PATH" >> $BASH_ENV
             mamba install -c conda-forge -y curl gnupg
             ./generate.bash
             ./configure --prefix=/opt/conda --with-boost=$CONDA_PREFIX --with-boost-libdir=$CONDA_PREFIX/lib
