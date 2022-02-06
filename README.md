@@ -4,7 +4,6 @@
 
 ## Brief Summary
 
-
 Candidate supplement to `snakemake --generate-unit-tests` with more
 compatible use cases and flexibility.
 
