@@ -43,7 +43,7 @@ jobs:
             $CONDA_PREFIX/bin/x86_64-conda-linux-gnu-gcov -r $(ls snakemake_unit_tests/*gcda | sed 's/gcda/cc/g')
             curl -Os https://uploader.codecov.io/latest/linux/codecov
             chmod +x codecov
-            ./codecov
+            ./codecov -R .
 
 
 # Invoke jobs via workflows
