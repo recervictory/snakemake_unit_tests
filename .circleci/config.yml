@@ -32,7 +32,7 @@ jobs:
               fi
             fi
             unset __conda_setup
-            mamba install -c conda-forge -y gcovr curl
+            mamba install -c conda-forge -y gcovr curl gnupg
             ./generate.bash
             ./configure --prefix=/opt/conda --with-boost=$CONDA_PREFIX --with-boost-libdir=$CONDA_PREFIX/lib
             make -j2
