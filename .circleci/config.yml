@@ -3,8 +3,6 @@
 # See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
 
-orbs:
-  codecov: codecov/codecov@3.2.2
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
@@ -44,8 +42,9 @@ jobs:
             ./test_suite.out
             $CONDA_PREFIX/bin/x86_64-conda-linux-gnu-gcov -r $(ls snakemake_unit_tests/*gcda | sed 's/gcda/cc/g')
             gcovr -g -x > covr.xml
-      - codecov/upload:
-          file: "covr.xml"
+            curl -Os https://uploader.codecov.io/latest/linux/codecov
+            chmod +x codecov
+            ./codecov -f covr.xml
 
 
 # Invoke jobs via workflows
