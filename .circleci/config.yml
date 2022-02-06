@@ -44,7 +44,7 @@ jobs:
             gcovr -g -x > covr.xml
             curl -Os https://uploader.codecov.io/latest/linux/codecov
             chmod +x codecov
-            ./codecov -f covr.xml -t ${CODECOV_TOKEN}
+            ./codecov -f covr.xml -t $CODECOV_TOKEN
 
 
 # Invoke jobs via workflows
