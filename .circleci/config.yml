@@ -40,18 +40,10 @@ jobs:
             #find snakemake_unit_tests -name "*gcda" -delete
             ./test_suite.out
             $CONDA_PREFIX/bin/x86_64-conda-linux-gnu-gcov -r $(ls snakemake_unit_tests/*gcda | sed 's/gcda/cc/g')
-            os="linux"
-            [[ $os == "linux" ]] && osID=$(grep -e "^ID=" /etc/os-release | cut -c4-)
-            filename="codecov"
-            curl -Os "https://uploader.codecov.io/latest/${os}/${filename}"
-            curl https://keybase.io/codecovsecurity/pgp_keys.asc | gpg --no-default-keyring --keyring trustedkeys.gpg --import # One-time step
-            curl -Os "https://uploader.codecov.io/latest/${os}/${filename}.SHA256SUM"
-            curl -Os "https://uploader.codecov.io/latest/${os}/${filename}.SHA256SUM.sig"
-            gpgv $filename.SHA256SUM.sig $filename.SHA256SUM
-            shasum -a 256 -c $filename.SHA256SUM || sha256sum -c $filename.SHA256SUM
-            unset NODE_OPTIONS  # See https://github.com/codecov/uploader/issues/475
-            chmod +x $filename
-            ./$filename 
+            curl -Os https://uploader.codecov.io/latest/linux/codecov
+            chmod +x codecov
+            ./codecov
+
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
