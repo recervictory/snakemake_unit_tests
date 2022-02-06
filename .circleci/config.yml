@@ -45,6 +45,8 @@ jobs:
             gcovr -g -x > covr.xml
             ln -s /opt/conda/bin/curl curl
       - codecov/upload:
+          environment:
+            PATH: "/opt/conda/bin"
           file: covr.xml
 
 # Invoke jobs via workflows
