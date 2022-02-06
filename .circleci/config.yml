@@ -2,10 +2,9 @@
 
 # See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
-orbs:
-  codecov: codecov/codecov@3.1.1
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
+
 jobs:
   build_and_test:
     # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
@@ -33,7 +32,6 @@ jobs:
               fi
             fi
             unset __conda_setup
-            export PATH="$PATH" >> $BASH_ENV
             mamba install -c conda-forge -y gcovr curl
             ./generate.bash
             ./configure --prefix=/opt/conda --with-boost=$CONDA_PREFIX --with-boost-libdir=$CONDA_PREFIX/lib
@@ -43,11 +41,31 @@ jobs:
             ./test_suite.out
             $CONDA_PREFIX/bin/x86_64-conda-linux-gnu-gcov -r $(ls snakemake_unit_tests/*gcda | sed 's/gcda/cc/g')
             gcovr -g -x > covr.xml
-            ln -s /opt/conda/bin/curl curl
-      - codecov/upload:
-          environment:
-            PATH: "/opt/conda/bin"
-          file: covr.xml
+          name: Codecov
+          command: |
+            __conda_setup="$('/opt/conda/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+            if [ $? -eq 0 ]; then
+              eval "$__conda_setup"
+            else
+              if [ -f "/opt/conda/etc/profile.d/conda.sh" ]; then
+                . "/opt/conda/etc/profile.d/conda.sh"
+              else
+                export PATH="/opt/conda/bin:$PATH"
+              fi
+            fi
+            unset __conda_setup
+            os="linux"
+            [[ $os == "linux" ]] && osID=$(grep -e "^ID=" /etc/os-release | cut -c4-)
+            filename="codecov"
+            curl -Os "https://uploader.codecov.io/latest/${os}/${filename}"
+            curl https://keybase.io/codecovsecurity/pgp_keys.asc | gpg --no-default-keyring --keyring trustedkeys.gpg --import # One-time step
+            curl -Os "https://uploader.codecov.io/latest/${os}/${filename}.SHA256SUM"
+            curl -Os "https://uploader.codecov.io/latest/${os}/${filename}.SHA256SUM.sig"
+            gpgv $filename.SHA256SUM.sig $filename.SHA256SUM
+            shasum -a 256 -c $filename.SHA256SUM || sha256sum -c $filename.SHA256SUM
+            unset NODE_OPTIONS  # See https://github.com/codecov/uploader/issues/475
+            chmod +x $filename
+            ./$filename -t ${CODECOV_TOKEN} -f covr.xml
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
