@@ -41,6 +41,7 @@ jobs:
             ./test_suite.out
             $CONDA_PREFIX/bin/x86_64-conda-linux-gnu-gcov -r $(ls snakemake_unit_tests/*gcda | sed 's/gcda/cc/g')
             gcovr -g -x > covr.xml
+      - run:
           name: Codecov
           command: |
             __conda_setup="$('/opt/conda/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
