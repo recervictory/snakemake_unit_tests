@@ -34,7 +34,7 @@ jobs:
             unset __conda_setup
             ./generate.bash
             ./configure --prefix=/opt/conda --with-boost=$CONDA_PREFIX --with-boost-libdir=$CONDA_PREFIX/lib
-            make -j2
+            make -j2 CPPFLAGS=" --coverage -fprofile-arcs -ftest-coverage -fPIC"
             make -j2 check
             ./test_suite.out
 
