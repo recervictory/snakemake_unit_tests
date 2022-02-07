@@ -16,6 +16,7 @@
 #include <string>
 #include <vector>
 
+#include "snakemake_unit_tests/cargs.h"
 #include "snakemake_unit_tests/utilities.h"
 
 namespace snakemake_unit_tests {

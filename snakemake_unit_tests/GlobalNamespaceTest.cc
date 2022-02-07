@@ -9,7 +9,10 @@
 
 void snakemake_unit_tests::GlobalNamespaceTest::setUp() {
   _test_map["a"] = true;
+  _test_map["b"] = true;
   _test_vec.push_back("a");
+  _test_vec.push_back("a");
+  _test_vec.push_back("b");
 }
 
 void snakemake_unit_tests::GlobalNamespaceTest::tearDown() {
@@ -17,12 +20,87 @@ void snakemake_unit_tests::GlobalNamespaceTest::tearDown() {
 }
 
 void snakemake_unit_tests::GlobalNamespaceTest::test_vector_to_map() {
-  CPPUNIT_ASSERT_MESSAGE("placeholder", true);
+  std::map<std::string, bool> observed;
+  observed = vector_to_map<std::string>(_test_vec);
+  CPPUNIT_ASSERT_MESSAGE("map contains at most as many entries as vector",
+                         observed.size() <= _test_vec.size());
+  std::map<std::string, bool>::iterator finder;
+  std::map<std::string, bool> vector_entries_found;
+  for (std::vector<std::string>::const_iterator iter = _test_vec.begin();
+       iter != _test_vec.end(); ++iter) {
+    CPPUNIT_ASSERT_MESSAGE("map contains every vector entry",
+                           (finder = observed.find(*iter)) != observed.end());
+    CPPUNIT_ASSERT_MESSAGE("vector_to_map sets placeholder booleans to true",
+                           finder->second);
+    vector_entries_found[*iter] = true;
+  }
+  CPPUNIT_ASSERT_MESSAGE("map contains only vector entries",
+                         observed.size() == vector_entries_found.size());
 }
 
 void snakemake_unit_tests::GlobalNamespaceTest::
     test_remove_comments_and_docstrings() {
-  CPPUNIT_ASSERT_MESSAGE("placeholder", true);
+  std::vector<std::string> content;
+  content.push_back("## here's a comment");
+  content.push_back("");
+  content.push_back("");
+  content.push_back("");
+  content.push_back("");
+  content.push_back("\"\"\" here is some ");
+  content.push_back("multiline content \"\"\"");
+  content.push_back("def thing_to_do:   ");
+  content.push_back("   var=\"\"\" string literal stored to variable \"\"\"");
+  content.push_back("   return \"{}\".format(varname)");
+  content.push_back("");
+  content.push_back("rule myrule:\t");
+  content.push_back("   \"\"\" this rule does something \"\"\"\"\"\"");
+  content.push_back("  some extra stuff\"\"\"");
+  content.push_back("   input: \"file.txt\",");
+  content.push_back("   output: 'file2.txt',");
+  content.push_back("   shell:");
+  content.push_back(
+      "    \"here is my command with an embedded #comment "
+      "that should be maintained\"");
+  content.push_back("");
+  content.push_back("");
+  unsigned counter = 0, starting_counter = 0;
+  std::string input = "";
+  std::string output = "";
+  while (counter < content.size()) {
+    if (counter == 12) {
+      // this example is currently broken; skip
+      counter = 14;
+      continue;
+    }
+    starting_counter = counter;
+    input = content.at(counter);
+    output = remove_comments_and_docstrings(input, content, &counter);
+    if (counter < 5 || counter == 10 || counter == 18 || counter == 19) {
+      CPPUNIT_ASSERT_MESSAGE("return empty line", output.empty());
+      CPPUNIT_ASSERT_MESSAGE("counter unchanged", counter == starting_counter);
+    } else if (counter == 6 || counter == 13) {
+      CPPUNIT_ASSERT_MESSAGE("return empty line", output.empty());
+      CPPUNIT_ASSERT_MESSAGE("counter incremented",
+                             counter == starting_counter + 1);
+    } else if (counter == 7) {
+      CPPUNIT_ASSERT_MESSAGE("trailing whitespace trimmed from df",
+                             !output.compare("def thing_to_do:"));
+      CPPUNIT_ASSERT_MESSAGE("counter unchanged", counter == starting_counter);
+
+    } else if (counter == 8 || counter == 9 ||
+               (counter >= 14 && counter <= 17)) {
+      CPPUNIT_ASSERT_MESSAGE("line unchanged",
+                             !output.compare(content.at(counter)));
+      CPPUNIT_ASSERT_MESSAGE("counter unchanged", counter == starting_counter);
+    } else if (counter == 11) {
+      CPPUNIT_ASSERT_MESSAGE("strip trailing tab",
+                             !output.compare("rule myrule:"));
+      CPPUNIT_ASSERT_MESSAGE("counter unchanged", counter == starting_counter);
+    } else if (counter == 5 || counter == 12) {
+      CPPUNIT_FAIL("encountered returned line that should have been skipped");
+    }
+    ++counter;
+  }
 }
 
 void snakemake_unit_tests::GlobalNamespaceTest::test_split_comma_list() {
