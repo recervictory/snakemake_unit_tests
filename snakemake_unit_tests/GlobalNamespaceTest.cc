@@ -172,4 +172,578 @@ void snakemake_unit_tests::GlobalNamespaceTest::test_split_comma_list() {
                          split_vec == expected_vec);
 }
 
+void snakemake_unit_tests::GlobalNamespaceTest::
+    test_concatenate_string_literals() {
+  std::string resolved_line = "";
+  std::string aggregated_line = "";
+  std::vector<std::string> results;
+
+  // single line added to empty vector with no aggregated content
+  resolved_line = " here is my line";
+  concatenate_string_literals(resolved_line, &aggregated_line, &results);
+  CPPUNIT_ASSERT(aggregated_line.empty());
+  CPPUNIT_ASSERT(results.size() == 1);
+  CPPUNIT_ASSERT(!results.at(0).compare(" here is my line"));
+  // single line added to empty vector with aggregated content
+  resolved_line = " here is my line";
+  aggregated_line = " stuff at the beginning";
+  results.clear();
+  concatenate_string_literals(resolved_line, &aggregated_line, &results);
+  CPPUNIT_ASSERT(aggregated_line.empty());
+  CPPUNIT_ASSERT(results.size() == 1);
+  CPPUNIT_ASSERT(
+      !results.at(0).compare(" stuff at the beginning here is my line"));
+  // single line added to full vector with no merge required and no aggregated
+  // content
+  resolved_line = " no merge here";
+  results.clear();
+  results.push_back("stuff that's already' present");
+  concatenate_string_literals(resolved_line, &aggregated_line, &results);
+  CPPUNIT_ASSERT(aggregated_line.empty());
+  CPPUNIT_ASSERT(results.size() == 2);
+  CPPUNIT_ASSERT(!results.at(0).compare("stuff that's already' present"));
+  CPPUNIT_ASSERT(!results.at(1).compare(" no merge here"));
+  // single line added to full vector with no merge required and aggregated
+  // content
+  resolved_line = " no merge here";
+  aggregated_line = " why was this here before";
+  results.clear();
+  results.push_back("starting content");
+  concatenate_string_literals(resolved_line, &aggregated_line, &results);
+  CPPUNIT_ASSERT(aggregated_line.empty());
+  CPPUNIT_ASSERT(results.size() == 2);
+  CPPUNIT_ASSERT(!results.at(0).compare("starting content"));
+  CPPUNIT_ASSERT(
+      !results.at(1).compare(" why was this here before no merge here"));
+  // vector ends in ", newline starts in '
+  // single line added to full vector with merge required and no aggregated
+  // content
+  resolved_line = "'here is a thing'";
+  results.clear();
+  results.push_back("thing1");
+  results.push_back("\"thing 2\"");
+  concatenate_string_literals(resolved_line, &aggregated_line, &results);
+  CPPUNIT_ASSERT(aggregated_line.empty());
+  CPPUNIT_ASSERT(results.size() == 2);
+  CPPUNIT_ASSERT(!results.at(0).compare("thing1"));
+  CPPUNIT_ASSERT(!results.at(1).compare("\"thing 2\"\n'here is a thing'"));
+  // single line added to full vector with merge required and aggregated content
+  resolved_line = "here is a thing";
+  aggregated_line = "'here is a thing'";
+  results.clear();
+  results.push_back("thing1");
+  results.push_back("\"thing 2\"");
+  concatenate_string_literals(resolved_line, &aggregated_line, &results);
+  CPPUNIT_ASSERT(aggregated_line.empty());
+  CPPUNIT_ASSERT(results.size() == 2);
+  CPPUNIT_ASSERT(!results.at(0).compare("thing1"));
+  CPPUNIT_ASSERT(
+      !results.at(1).compare("\"thing 2\"\n'here is a thing'here is a thing"));
+  // vector ends in ", newline starts in "
+  // single line added to full vector with merge required and no aggregated
+  // content
+  resolved_line = "\"here is a thing\"";
+  results.clear();
+  results.push_back("thing1");
+  results.push_back("\"thing 2\"");
+  concatenate_string_literals(resolved_line, &aggregated_line, &results);
+  CPPUNIT_ASSERT(aggregated_line.empty());
+  CPPUNIT_ASSERT(results.size() == 2);
+  CPPUNIT_ASSERT(!results.at(0).compare("thing1"));
+  CPPUNIT_ASSERT(!results.at(1).compare("\"thing 2\"\n\"here is a thing\""));
+  // single line added to full vector with merge required and aggregated content
+  resolved_line = "here is a thing";
+  aggregated_line = "\"here is a thing\"";
+  results.clear();
+  results.push_back("thing1");
+  results.push_back("\"thing 2\"");
+  concatenate_string_literals(resolved_line, &aggregated_line, &results);
+  CPPUNIT_ASSERT(aggregated_line.empty());
+  CPPUNIT_ASSERT(results.size() == 2);
+  CPPUNIT_ASSERT(!results.at(0).compare("thing1"));
+  CPPUNIT_ASSERT(!results.at(1).compare(
+      "\"thing 2\"\n\"here is a thing\"here is a thing"));
+  // vector ends in ', newline starts in "
+  // single line added to full vector with merge required and no aggregated
+  // content
+  resolved_line = "\"here is a thing\"";
+  results.clear();
+  results.push_back("thing1");
+  results.push_back("'thing 2'");
+  concatenate_string_literals(resolved_line, &aggregated_line, &results);
+  CPPUNIT_ASSERT(aggregated_line.empty());
+  CPPUNIT_ASSERT(results.size() == 2);
+  CPPUNIT_ASSERT(!results.at(0).compare("thing1"));
+  CPPUNIT_ASSERT(!results.at(1).compare("'thing 2'\n\"here is a thing\""));
+  // single line added to full vector with merge required and aggregated content
+  resolved_line = "here is a thing";
+  aggregated_line = "\"here is a thing\"";
+  results.clear();
+  results.push_back("thing1");
+  results.push_back("'thing 2'");
+  concatenate_string_literals(resolved_line, &aggregated_line, &results);
+  CPPUNIT_ASSERT(aggregated_line.empty());
+  CPPUNIT_ASSERT(results.size() == 2);
+  CPPUNIT_ASSERT(!results.at(0).compare("thing1"));
+  CPPUNIT_ASSERT(
+      !results.at(1).compare("'thing 2'\n\"here is a thing\"here is a thing"));
+  // vector ends in ', newline starts in '
+  // single line added to full vector with merge required and no aggregated
+  // content
+  resolved_line = "'here is a thing'";
+  results.clear();
+  results.push_back("thing1");
+  results.push_back("'thing 2'");
+  concatenate_string_literals(resolved_line, &aggregated_line, &results);
+  CPPUNIT_ASSERT(aggregated_line.empty());
+  CPPUNIT_ASSERT(results.size() == 2);
+  CPPUNIT_ASSERT(!results.at(0).compare("thing1"));
+  CPPUNIT_ASSERT(!results.at(1).compare("'thing 2'\n'here is a thing'"));
+  // single line added to full vector with merge required and aggregated content
+  resolved_line = "here is a thing";
+  aggregated_line = "'here is a thing'";
+  results.clear();
+  results.push_back("thing1");
+  results.push_back("'thing 2'");
+  concatenate_string_literals(resolved_line, &aggregated_line, &results);
+  CPPUNIT_ASSERT(aggregated_line.empty());
+  CPPUNIT_ASSERT(results.size() == 2);
+  CPPUNIT_ASSERT(!results.at(0).compare("thing1"));
+  CPPUNIT_ASSERT(
+      !results.at(1).compare("'thing 2'\n'here is a thing'here is a thing"));
+}
+
+void snakemake_unit_tests::GlobalNamespaceTest::
+    test_concatenate_string_literals_null_arg1() {
+  std::string resolved_line = "";
+  std::vector<std::string> results;
+  concatenate_string_literals(resolved_line, NULL, &results);
+}
+
+void snakemake_unit_tests::GlobalNamespaceTest::
+    test_concatenate_string_literals_null_arg2() {
+  std::string resolved_line = "", aggregated_line = "";
+  concatenate_string_literals(resolved_line, &aggregated_line, NULL);
+}
+
+void snakemake_unit_tests::GlobalNamespaceTest::
+    test_resolve_string_delimiter() {
+  quote_type active_quote_type = none;
+  unsigned parse_index = 0;
+  bool string_open = false;
+  bool literal_open = false;
+  std::string example_simple_triple_quote =
+      "here is \"\"\"a simple literal\"\"\"";
+  parse_index = 8;
+  string_open = literal_open = false;
+  active_quote_type = none;
+  resolve_string_delimiter(example_simple_triple_quote, &active_quote_type,
+                           &parse_index, &string_open, &literal_open);
+  CPPUNIT_ASSERT(active_quote_type == triple_quote);
+  CPPUNIT_ASSERT(parse_index == 11);
+  CPPUNIT_ASSERT(!string_open);
+  CPPUNIT_ASSERT(literal_open);
+  parse_index = 27;
+  resolve_string_delimiter(example_simple_triple_quote, &active_quote_type,
+                           &parse_index, &string_open, &literal_open);
+  CPPUNIT_ASSERT(parse_index == 30);
+  CPPUNIT_ASSERT(!string_open);
+  CPPUNIT_ASSERT(!literal_open);
+  std::string example_simple_triple_tick = "here is '''a simple literal'''";
+  parse_index = 8;
+  string_open = literal_open = false;
+  active_quote_type = none;
+  resolve_string_delimiter(example_simple_triple_tick, &active_quote_type,
+                           &parse_index, &string_open, &literal_open);
+  CPPUNIT_ASSERT(active_quote_type == triple_tick);
+  CPPUNIT_ASSERT(parse_index == 11);
+  CPPUNIT_ASSERT(!string_open);
+  CPPUNIT_ASSERT(literal_open);
+  parse_index = 27;
+  resolve_string_delimiter(example_simple_triple_tick, &active_quote_type,
+                           &parse_index, &string_open, &literal_open);
+  CPPUNIT_ASSERT(parse_index == 30);
+  CPPUNIT_ASSERT(!string_open);
+  CPPUNIT_ASSERT(!literal_open);
+  std::string example_simple_single_quote = "here is \"a quoted thing\"";
+  parse_index = 8;
+  string_open = literal_open = false;
+  active_quote_type = none;
+  resolve_string_delimiter(example_simple_single_quote, &active_quote_type,
+                           &parse_index, &string_open, &literal_open);
+  CPPUNIT_ASSERT(active_quote_type == single_quote);
+  CPPUNIT_ASSERT(parse_index == 9);
+  CPPUNIT_ASSERT(string_open);
+  CPPUNIT_ASSERT(!literal_open);
+  parse_index = 23;
+  resolve_string_delimiter(example_simple_single_quote, &active_quote_type,
+                           &parse_index, &string_open, &literal_open);
+  CPPUNIT_ASSERT(parse_index == 24);
+  CPPUNIT_ASSERT(!string_open);
+  CPPUNIT_ASSERT(!literal_open);
+  std::string example_simple_single_tick = "here is 'a quoted thing'";
+  parse_index = 8;
+  string_open = literal_open = false;
+  active_quote_type = none;
+  resolve_string_delimiter(example_simple_single_tick, &active_quote_type,
+                           &parse_index, &string_open, &literal_open);
+  CPPUNIT_ASSERT(active_quote_type == single_tick);
+  CPPUNIT_ASSERT(parse_index == 9);
+  CPPUNIT_ASSERT(string_open);
+  CPPUNIT_ASSERT(!literal_open);
+  parse_index = 23;
+  resolve_string_delimiter(example_simple_single_tick, &active_quote_type,
+                           &parse_index, &string_open, &literal_open);
+  CPPUNIT_ASSERT(parse_index == 24);
+  CPPUNIT_ASSERT(!string_open);
+  CPPUNIT_ASSERT(!literal_open);
+  std::string example_embedded1 =
+      "here is \"\"\"something that should 'be skipped'\"\"\"";
+  parse_index = 8;
+  string_open = literal_open = false;
+  active_quote_type = none;
+  resolve_string_delimiter(example_embedded1, &active_quote_type, &parse_index,
+                           &string_open, &literal_open);
+  CPPUNIT_ASSERT(parse_index == 11);
+  CPPUNIT_ASSERT(active_quote_type == triple_quote);
+  CPPUNIT_ASSERT(!string_open);
+  CPPUNIT_ASSERT(literal_open);
+  parse_index = 33;
+  resolve_string_delimiter(example_embedded1, &active_quote_type, &parse_index,
+                           &string_open, &literal_open);
+  CPPUNIT_ASSERT(parse_index == 34);
+  CPPUNIT_ASSERT(active_quote_type == triple_quote);
+  CPPUNIT_ASSERT(!string_open);
+  CPPUNIT_ASSERT(literal_open);
+  parse_index = 44;
+  resolve_string_delimiter(example_embedded1, &active_quote_type, &parse_index,
+                           &string_open, &literal_open);
+  CPPUNIT_ASSERT(parse_index == 45);
+  CPPUNIT_ASSERT(active_quote_type == triple_quote);
+  CPPUNIT_ASSERT(!string_open);
+  CPPUNIT_ASSERT(literal_open);
+  resolve_string_delimiter(example_embedded1, &active_quote_type, &parse_index,
+                           &string_open, &literal_open);
+  CPPUNIT_ASSERT(parse_index == 48);
+  CPPUNIT_ASSERT(!string_open);
+  CPPUNIT_ASSERT(!literal_open);
+  std::string example_embedded2 =
+      "here is '''something that should \"be skipped\"'''";
+  parse_index = 8;
+  string_open = literal_open = false;
+  active_quote_type = none;
+  resolve_string_delimiter(example_embedded2, &active_quote_type, &parse_index,
+                           &string_open, &literal_open);
+  CPPUNIT_ASSERT(parse_index == 11);
+  CPPUNIT_ASSERT(active_quote_type == triple_tick);
+  CPPUNIT_ASSERT(!string_open);
+  CPPUNIT_ASSERT(literal_open);
+  parse_index = 33;
+  resolve_string_delimiter(example_embedded2, &active_quote_type, &parse_index,
+                           &string_open, &literal_open);
+  CPPUNIT_ASSERT(parse_index == 34);
+  CPPUNIT_ASSERT(active_quote_type == triple_tick);
+  CPPUNIT_ASSERT(!string_open);
+  CPPUNIT_ASSERT(literal_open);
+  parse_index = 44;
+  resolve_string_delimiter(example_embedded2, &active_quote_type, &parse_index,
+                           &string_open, &literal_open);
+  CPPUNIT_ASSERT(parse_index == 45);
+  CPPUNIT_ASSERT(active_quote_type == triple_tick);
+  CPPUNIT_ASSERT(!string_open);
+  CPPUNIT_ASSERT(literal_open);
+  resolve_string_delimiter(example_embedded2, &active_quote_type, &parse_index,
+                           &string_open, &literal_open);
+  CPPUNIT_ASSERT(parse_index == 48);
+  CPPUNIT_ASSERT(!string_open);
+  CPPUNIT_ASSERT(!literal_open);
+  std::string example_embedded3 =
+      "here is '''something that should 'be skipped'''";
+  parse_index = 8;
+  string_open = literal_open = false;
+  active_quote_type = none;
+  resolve_string_delimiter(example_embedded3, &active_quote_type, &parse_index,
+                           &string_open, &literal_open);
+  CPPUNIT_ASSERT(parse_index == 11);
+  CPPUNIT_ASSERT(active_quote_type == triple_tick);
+  CPPUNIT_ASSERT(!string_open);
+  CPPUNIT_ASSERT(literal_open);
+  parse_index = 33;
+  resolve_string_delimiter(example_embedded3, &active_quote_type, &parse_index,
+                           &string_open, &literal_open);
+  CPPUNIT_ASSERT(parse_index == 34);
+  CPPUNIT_ASSERT(active_quote_type == triple_tick);
+  CPPUNIT_ASSERT(!string_open);
+  CPPUNIT_ASSERT(literal_open);
+  parse_index = 44;
+  resolve_string_delimiter(example_embedded3, &active_quote_type, &parse_index,
+                           &string_open, &literal_open);
+  CPPUNIT_ASSERT(parse_index == 47);
+  CPPUNIT_ASSERT(!string_open);
+  CPPUNIT_ASSERT(!literal_open);
+  std::string example_embedded4 =
+      "here is \"\"\"something that should \"be skipped\"\"\"";
+  parse_index = 8;
+  string_open = literal_open = false;
+  active_quote_type = none;
+  resolve_string_delimiter(example_embedded4, &active_quote_type, &parse_index,
+                           &string_open, &literal_open);
+  CPPUNIT_ASSERT(parse_index == 11);
+  CPPUNIT_ASSERT(active_quote_type == triple_quote);
+  CPPUNIT_ASSERT(!string_open);
+  CPPUNIT_ASSERT(literal_open);
+  parse_index = 33;
+  resolve_string_delimiter(example_embedded4, &active_quote_type, &parse_index,
+                           &string_open, &literal_open);
+  CPPUNIT_ASSERT(parse_index == 34);
+  CPPUNIT_ASSERT(active_quote_type == triple_quote);
+  CPPUNIT_ASSERT(!string_open);
+  CPPUNIT_ASSERT(literal_open);
+  parse_index = 44;
+  resolve_string_delimiter(example_embedded4, &active_quote_type, &parse_index,
+                           &string_open, &literal_open);
+  CPPUNIT_ASSERT(parse_index == 47);
+  CPPUNIT_ASSERT(!string_open);
+  CPPUNIT_ASSERT(!literal_open);
+  std::string example_greedy1 = "here is 'a strange example'''";
+  parse_index = 8;
+  string_open = literal_open = false;
+  active_quote_type = none;
+  resolve_string_delimiter(example_greedy1, &active_quote_type, &parse_index,
+                           &string_open, &literal_open);
+  CPPUNIT_ASSERT(parse_index == 9);
+  CPPUNIT_ASSERT(active_quote_type == single_tick);
+  CPPUNIT_ASSERT(string_open);
+  CPPUNIT_ASSERT(!literal_open);
+  parse_index = 26;
+  resolve_string_delimiter(example_greedy1, &active_quote_type, &parse_index,
+                           &string_open, &literal_open);
+  CPPUNIT_ASSERT(parse_index == 27);
+  CPPUNIT_ASSERT(!string_open);
+  CPPUNIT_ASSERT(!literal_open);
+  resolve_string_delimiter(example_greedy1, &active_quote_type, &parse_index,
+                           &string_open, &literal_open);
+  CPPUNIT_ASSERT(parse_index == 28);
+  CPPUNIT_ASSERT(active_quote_type == single_tick);
+  CPPUNIT_ASSERT(string_open);
+  CPPUNIT_ASSERT(!literal_open);
+  resolve_string_delimiter(example_greedy1, &active_quote_type, &parse_index,
+                           &string_open, &literal_open);
+  CPPUNIT_ASSERT(parse_index == 29);
+  CPPUNIT_ASSERT(!string_open);
+  CPPUNIT_ASSERT(!literal_open);
+  std::string example_greedy2 = "here is \"a strange example\"\"\"";
+  parse_index = 8;
+  string_open = literal_open = false;
+  active_quote_type = none;
+  resolve_string_delimiter(example_greedy2, &active_quote_type, &parse_index,
+                           &string_open, &literal_open);
+  CPPUNIT_ASSERT(parse_index == 9);
+  CPPUNIT_ASSERT(active_quote_type == single_quote);
+  CPPUNIT_ASSERT(string_open);
+  CPPUNIT_ASSERT(!literal_open);
+  parse_index = 26;
+  resolve_string_delimiter(example_greedy2, &active_quote_type, &parse_index,
+                           &string_open, &literal_open);
+  CPPUNIT_ASSERT(parse_index == 27);
+  CPPUNIT_ASSERT(!string_open);
+  CPPUNIT_ASSERT(!literal_open);
+  resolve_string_delimiter(example_greedy2, &active_quote_type, &parse_index,
+                           &string_open, &literal_open);
+  CPPUNIT_ASSERT(parse_index == 28);
+  CPPUNIT_ASSERT(active_quote_type == single_quote);
+  CPPUNIT_ASSERT(string_open);
+  CPPUNIT_ASSERT(!literal_open);
+  resolve_string_delimiter(example_greedy2, &active_quote_type, &parse_index,
+                           &string_open, &literal_open);
+  CPPUNIT_ASSERT(parse_index == 29);
+  CPPUNIT_ASSERT(!string_open);
+  CPPUNIT_ASSERT(!literal_open);
+  std::string escape1 = "ignore \\\"escaped marks";
+  parse_index = 8;
+  active_quote_type = none;
+  string_open = literal_open = false;
+  resolve_string_delimiter(escape1, &active_quote_type, &parse_index,
+                           &string_open, &literal_open);
+  CPPUNIT_ASSERT(parse_index == 9);
+  CPPUNIT_ASSERT(active_quote_type == none);
+  CPPUNIT_ASSERT(!string_open);
+  CPPUNIT_ASSERT(!literal_open);
+  std::string escape2 = "ignore \\'escaped marks";
+  parse_index = 8;
+  active_quote_type = none;
+  string_open = literal_open = false;
+  resolve_string_delimiter(escape2, &active_quote_type, &parse_index,
+                           &string_open, &literal_open);
+  CPPUNIT_ASSERT(parse_index == 9);
+  CPPUNIT_ASSERT(active_quote_type == none);
+  CPPUNIT_ASSERT(!string_open);
+  CPPUNIT_ASSERT(!literal_open);
+  std::string escape3 = "accept \\\\\"valid marks";
+  parse_index = 9;
+  active_quote_type = none;
+  string_open = literal_open = false;
+  resolve_string_delimiter(escape3, &active_quote_type, &parse_index,
+                           &string_open, &literal_open);
+  CPPUNIT_ASSERT(parse_index == 10);
+  CPPUNIT_ASSERT(active_quote_type == single_quote);
+  CPPUNIT_ASSERT(string_open);
+  CPPUNIT_ASSERT(!literal_open);
+  std::string escape4 = "accept \\\\'valid marks";
+  parse_index = 9;
+  active_quote_type = none;
+  string_open = literal_open = false;
+  resolve_string_delimiter(escape4, &active_quote_type, &parse_index,
+                           &string_open, &literal_open);
+  CPPUNIT_ASSERT(parse_index == 10);
+  CPPUNIT_ASSERT(active_quote_type == single_tick);
+  CPPUNIT_ASSERT(string_open);
+  CPPUNIT_ASSERT(!literal_open);
+  std::string escape5 = "\"\"\" keep going \\\\\"\\\\\"\"\"";
+  parse_index = 0;
+  active_quote_type = none;
+  string_open = literal_open = false;
+  resolve_string_delimiter(escape5, &active_quote_type, &parse_index,
+                           &string_open, &literal_open);
+  CPPUNIT_ASSERT(parse_index == 3);
+  CPPUNIT_ASSERT(active_quote_type == triple_quote);
+  CPPUNIT_ASSERT(!string_open);
+  CPPUNIT_ASSERT(literal_open);
+  parse_index = 17;
+  resolve_string_delimiter(escape5, &active_quote_type, &parse_index,
+                           &string_open, &literal_open);
+  CPPUNIT_ASSERT(parse_index == 18);
+  CPPUNIT_ASSERT(active_quote_type == triple_quote);
+  CPPUNIT_ASSERT(!string_open);
+  CPPUNIT_ASSERT(literal_open);
+  parse_index = 20;
+  resolve_string_delimiter(escape5, &active_quote_type, &parse_index,
+                           &string_open, &literal_open);
+  CPPUNIT_ASSERT(parse_index == 23);
+  CPPUNIT_ASSERT(!string_open);
+  CPPUNIT_ASSERT(!literal_open);
+  std::string escape6 = "''' keep going \\\\'\\\\'''";
+  parse_index = 0;
+  active_quote_type = none;
+  string_open = literal_open = false;
+  resolve_string_delimiter(escape6, &active_quote_type, &parse_index,
+                           &string_open, &literal_open);
+  CPPUNIT_ASSERT(parse_index == 3);
+  CPPUNIT_ASSERT(active_quote_type == triple_tick);
+  CPPUNIT_ASSERT(!string_open);
+  CPPUNIT_ASSERT(literal_open);
+  parse_index = 17;
+  resolve_string_delimiter(escape6, &active_quote_type, &parse_index,
+                           &string_open, &literal_open);
+  CPPUNIT_ASSERT(parse_index == 18);
+  CPPUNIT_ASSERT(active_quote_type == triple_tick);
+  CPPUNIT_ASSERT(!string_open);
+  CPPUNIT_ASSERT(literal_open);
+  parse_index = 20;
+  resolve_string_delimiter(escape6, &active_quote_type, &parse_index,
+                           &string_open, &literal_open);
+  CPPUNIT_ASSERT(parse_index == 23);
+  CPPUNIT_ASSERT(!string_open);
+  CPPUNIT_ASSERT(!literal_open);
+}
+
+void snakemake_unit_tests::GlobalNamespaceTest::
+    test_resolve_string_delimiter_null_arg1() {
+  std::string line = "";
+  unsigned index = 0;
+  bool string_open = false, literal_open = false;
+  resolve_string_delimiter(line, NULL, &index, &string_open, &literal_open);
+}
+
+void snakemake_unit_tests::GlobalNamespaceTest::
+    test_resolve_string_delimiter_null_arg2() {
+  std::string line = "";
+  quote_type qt = none;
+  bool string_open = false, literal_open = false;
+  resolve_string_delimiter(line, &qt, NULL, &string_open, &literal_open);
+}
+
+void snakemake_unit_tests::GlobalNamespaceTest::
+    test_resolve_string_delimiter_null_arg3() {
+  std::string line = "";
+  quote_type qt = none;
+  unsigned index = 0;
+  bool literal_open = false;
+  resolve_string_delimiter(line, &qt, &index, NULL, &literal_open);
+}
+
+void snakemake_unit_tests::GlobalNamespaceTest::
+    test_resolve_string_delimiter_null_arg4() {
+  std::string line = "";
+  quote_type qt = none;
+  unsigned index = 0;
+  bool string_open = false;
+  resolve_string_delimiter(line, &qt, &index, &string_open, NULL);
+}
+
+void snakemake_unit_tests::GlobalNamespaceTest::
+    test_resolve_string_delimiter_index_oob() {
+  std::string line = "here is a line";
+  quote_type qt = none;
+  unsigned index = 100;
+  bool string_open = false, literal_open = false;
+  resolve_string_delimiter(line, &qt, &index, &string_open, &literal_open);
+}
+
+void snakemake_unit_tests::GlobalNamespaceTest::
+    test_resolve_string_delimiter_index_not_mark() {
+  std::string line = "here is a line";
+  quote_type qt = none;
+  unsigned index = 0;
+  bool string_open = false, literal_open = false;
+  resolve_string_delimiter(line, &qt, &index, &string_open, &literal_open);
+}
+
+void snakemake_unit_tests::GlobalNamespaceTest::test_lexical_parse() {
+  std::vector<std::string> input, output, expected;
+  input.push_back("   standard lines are preserved");
+  input.push_back("   comments are pruned # like me");
+  input.push_back("   quotes in comments are irrelevant # like this '");
+  input.push_back(
+      "   trailing slash in comments are irrelevant # like this \\");
+  input.push_back("   trailing slashes merge lines \\");
+  input.push_back(" with their following line");
+  input.push_back("example: \"quotes on the same line are preserved\"");
+  input.push_back(
+      "example: \"comment characters within quotes like # are preserved\"");
+  input.push_back("example: \"\"\" literals crossing lines are ");
+  input.push_back("       merged together sensibly \"\"\"");
+  input.push_back(
+      "example: \"\"\" multiple literals on the same \"\"\" line are \"\"\"");
+  input.push_back(" handled identically \"\"\"");
+  input.push_back("example: \"aggregated strings are glued together\"  ");
+  input.push_back(" 'in a way that preserves python syntax' ");
+
+  expected.push_back("   standard lines are preserved");
+  expected.push_back("   comments are pruned ");
+  expected.push_back("   quotes in comments are irrelevant ");
+  expected.push_back("   trailing slash in comments are irrelevant ");
+  expected.push_back(
+      "   trailing slashes merge lines  with their following line");
+  expected.push_back("example: \"quotes on the same line are preserved\"");
+  expected.push_back(
+      "example: \"comment characters within quotes like # are preserved\"");
+  expected.push_back(
+      "example: \"\"\" literals crossing lines are        merged together "
+      "sensibly \"\"\"");
+  expected.push_back(
+      "example: \"\"\" multiple literals on the same \"\"\" line are \"\"\" "
+      "handled identically \"\"\"");
+  expected.push_back(
+      "example: \"aggregated strings are glued together\"  \n 'in a way that "
+      "preserves python syntax' ");
+
+  output = lexical_parse(input);
+
+  CPPUNIT_ASSERT(output.size() == expected.size());
+  for (unsigned i = 0; i < output.size(); ++i) {
+    CPPUNIT_ASSERT(!output.at(i).compare(expected.at(i)));
+  }
+}
+
 CPPUNIT_TEST_SUITE_REGISTRATION(snakemake_unit_tests::GlobalNamespaceTest);

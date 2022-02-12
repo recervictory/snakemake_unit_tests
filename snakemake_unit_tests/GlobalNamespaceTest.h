@@ -26,6 +26,25 @@ class GlobalNamespaceTest : public CppUnit::TestFixture {
   CPPUNIT_TEST(test_vector_to_map);
   CPPUNIT_TEST(test_remove_comments_and_docstrings);
   CPPUNIT_TEST(test_split_comma_list);
+  CPPUNIT_TEST(test_concatenate_string_literals);
+  CPPUNIT_TEST_EXCEPTION(test_concatenate_string_literals_null_arg1,
+                         std::runtime_error);
+  CPPUNIT_TEST_EXCEPTION(test_concatenate_string_literals_null_arg2,
+                         std::runtime_error);
+  CPPUNIT_TEST(test_resolve_string_delimiter);
+  CPPUNIT_TEST_EXCEPTION(test_resolve_string_delimiter_null_arg1,
+                         std::runtime_error);
+  CPPUNIT_TEST_EXCEPTION(test_resolve_string_delimiter_null_arg2,
+                         std::runtime_error);
+  CPPUNIT_TEST_EXCEPTION(test_resolve_string_delimiter_null_arg3,
+                         std::runtime_error);
+  CPPUNIT_TEST_EXCEPTION(test_resolve_string_delimiter_null_arg4,
+                         std::runtime_error);
+  CPPUNIT_TEST_EXCEPTION(test_resolve_string_delimiter_index_oob,
+                         std::runtime_error);
+  CPPUNIT_TEST_EXCEPTION(test_resolve_string_delimiter_index_not_mark,
+                         std::runtime_error);
+  CPPUNIT_TEST(test_lexical_parse);
   CPPUNIT_TEST_SUITE_END();
 
  public:
@@ -36,6 +55,17 @@ class GlobalNamespaceTest : public CppUnit::TestFixture {
   void test_vector_to_map();
   void test_remove_comments_and_docstrings();
   void test_split_comma_list();
+  void test_concatenate_string_literals();
+  void test_concatenate_string_literals_null_arg1();
+  void test_concatenate_string_literals_null_arg2();
+  void test_resolve_string_delimiter();
+  void test_resolve_string_delimiter_null_arg1();
+  void test_resolve_string_delimiter_null_arg2();
+  void test_resolve_string_delimiter_null_arg3();
+  void test_resolve_string_delimiter_null_arg4();
+  void test_resolve_string_delimiter_index_oob();
+  void test_resolve_string_delimiter_index_not_mark();
+  void test_lexical_parse();
 
  private:
   std::map<std::string, bool> _test_map;
