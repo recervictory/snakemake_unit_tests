@@ -189,6 +189,14 @@ bool snakemake_unit_tests::rule_block::consume_rule_contents(
           }
           return true;
         }
+      } else if (_named_blocks.empty() &&
+                 (line.at(line.find_first_not_of(" \t")) == '\'' ||
+                  line.at(line.find_first_not_of(" \t")) == '"')) {
+        if (_docstring.empty()) {
+          _docstring = line;
+        } else {
+          _docstring += "\n" + line;
+        }
       } else {
         std::cerr << "warning: in a rule parse, the line \"" << line
                   << "\" is found floating and is removed. if this behavior "
@@ -373,6 +381,12 @@ void snakemake_unit_tests::rule_block::print_contents(std::ostream &out) const {
                      << (is_checkpoint() ? "checkpoint " : "rule ")
                      << get_rule_name() << ":" << std::endl)) {
       throw std::runtime_error("rule name printing failure");
+    }
+    // if docstring is present, report it
+    if (!_docstring.empty()) {
+      if (!(out << _docstring << std::endl)) {
+        throw std::runtime_error("docstring printing failure");
+      }
     }
     // enforce restrictions on block order
     std::map<std::string, bool> high_priority_blocks, low_priority_blocks;

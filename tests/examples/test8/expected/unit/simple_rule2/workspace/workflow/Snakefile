@@ -10,6 +10,11 @@ pass
 
 
 rule simple_rule2:
+    """ This
+    could also be
+
+    one
+    """
     input:
         "input2.txt",
     output:

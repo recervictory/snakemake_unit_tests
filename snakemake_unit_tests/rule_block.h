@@ -39,6 +39,7 @@ class rule_block {
       : _rule_name(""),
         _base_rule_name(""),
         _rule_is_checkpoint(false),
+        _docstring(""),
         _local_indentation(0),
         _resolution(UNRESOLVED),
         _python_tag(0) {}
@@ -50,6 +51,7 @@ class rule_block {
       : _rule_name(obj._rule_name),
         _base_rule_name(obj._base_rule_name),
         _rule_is_checkpoint(obj._rule_is_checkpoint),
+        _docstring(obj._docstring),
         _named_blocks(obj._named_blocks),
         _code_chunk(obj._code_chunk),
         _local_indentation(obj._local_indentation),
@@ -341,6 +343,12 @@ class rule_block {
     on cluster systems, so their use is somewhat dubious
    */
   bool _rule_is_checkpoint;
+  /*!
+    @brief optional docstring
+
+    allow the rule to have an arbitrary docstring (or series of docstrings)
+   */
+  std::string _docstring;
   /*!
     @brief arbitrary named blocks and their contents
 

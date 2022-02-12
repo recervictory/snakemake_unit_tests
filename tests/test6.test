@@ -4,7 +4,7 @@
 echo 1..1
 
 TESTNAME="test6"
-TESTDESCRIPTION="remove string literals"
+TESTDESCRIPTION="preserve string literals"
 INPUTDIR="tests/examples/$TESTNAME/input"
 OUTPUTDIR="tests/examples/$TESTNAME/output"
 EXPECTEDDIR="tests/examples/$TESTNAME/expected"
