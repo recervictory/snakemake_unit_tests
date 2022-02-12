@@ -70,7 +70,7 @@ std::vector<std::string> snakemake_unit_tests::lexical_parse(
       // if we are, this line isn't over.
       if (string_open || literal_open) {
         // add to aggregator
-        aggregated_line += lines.at(current_line);
+        aggregated_line += lines.at(current_line) + "\n";
       } else {
         // finalize the line
         resolved_line = lines.at(current_line);
@@ -208,8 +208,11 @@ void snakemake_unit_tests::concatenate_string_literals(
   // if there is aggregated line content, that means that a previous line ended
   // in a slash line extension. this needs to be glued together first
   std::string candidate = resolved_line;
+  // trailing whitespace on this line solution should be stripped before further
+  // processing
+  candidate = candidate.substr(0, candidate.find_last_not_of(" \t") + 1);
   if (!aggregated_line->empty()) {
-    candidate = *aggregated_line + resolved_line;
+    candidate = *aggregated_line + candidate;
     *aggregated_line = "";
   }
   // problem: we have a line to add, but in some cases it may need to be glued
@@ -217,6 +220,11 @@ void snakemake_unit_tests::concatenate_string_literals(
   // and this line started with one
   if (results->empty()) {
     // can't merge if there's nothing there
+    results->push_back(candidate);
+  } else if (candidate.find_first_not_of(" \t") == std::string::npos ||
+             results->rbegin()->find_first_not_of(" \t") == std::string::npos) {
+    // empty strings don't contain quotation marks, and python convention
+    // is that an empty line breaks successive line concatenation
     results->push_back(candidate);
   } else if ((candidate.at(candidate.find_first_not_of(" \t")) == '\'' ||
               candidate.at(candidate.find_first_not_of(" \t")) == '"') &&

@@ -3,6 +3,9 @@ rule all:
         "output2.txt",
 
 
+"""
+What a terrible place to have a docstring
+"""
 pass
 
 
@@ -15,6 +18,10 @@ rule simple_rule2:
         "cp {input} {output}"
 
 
+""" Maybe
+
+someone put one here
+"""
 pass
 
 

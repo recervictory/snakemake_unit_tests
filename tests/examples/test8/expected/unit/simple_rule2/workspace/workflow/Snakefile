@@ -3,6 +3,9 @@ rule all:
         "output2.txt",
 
 
+"""
+What a terrible place to have a docstring
+"""
 pass
 
 

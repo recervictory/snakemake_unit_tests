@@ -112,7 +112,6 @@ void snakemake_unit_tests::GlobalNamespaceTest::
   std::string resolved_line = "";
   std::string aggregated_line = "";
   std::vector<std::string> results;
-
   // single line added to empty vector with no aggregated content
   resolved_line = " here is my line";
   concatenate_string_literals(resolved_line, &aggregated_line, &results);
@@ -246,6 +245,44 @@ void snakemake_unit_tests::GlobalNamespaceTest::
   CPPUNIT_ASSERT(!results.at(0).compare("thing1"));
   CPPUNIT_ASSERT(
       !results.at(1).compare("'thing 2'\n'here is a thing'here is a thing"));
+  // both previous and current strings are empty
+  results.clear();
+  results.push_back("");
+  aggregated_line = "";
+  resolved_line = "";
+  concatenate_string_literals(resolved_line, &aggregated_line, &results);
+  CPPUNIT_ASSERT(aggregated_line.empty());
+  CPPUNIT_ASSERT(results.size() == 2);
+  CPPUNIT_ASSERT(results.at(0).empty());
+  CPPUNIT_ASSERT(results.at(1).empty());
+  // only previous string is empty
+  results.clear();
+  results.push_back("");
+  aggregated_line = "";
+  resolved_line = "thingy";
+  concatenate_string_literals(resolved_line, &aggregated_line, &results);
+  CPPUNIT_ASSERT(aggregated_line.empty());
+  CPPUNIT_ASSERT(results.size() == 2);
+  CPPUNIT_ASSERT(results.at(0).empty());
+  CPPUNIT_ASSERT(!results.at(1).compare("thingy"));
+  // only current string is empty
+  results.clear();
+  results.push_back("thingy");
+  aggregated_line = "";
+  resolved_line = "";
+  concatenate_string_literals(resolved_line, &aggregated_line, &results);
+  CPPUNIT_ASSERT(aggregated_line.empty());
+  CPPUNIT_ASSERT(results.size() == 2);
+  CPPUNIT_ASSERT(!results.at(0).compare("thingy"));
+  CPPUNIT_ASSERT(results.at(1).empty());
+  // trailing whitespace is removed
+  results.clear();
+  aggregated_line = "";
+  resolved_line = "here is some content   \t";
+  concatenate_string_literals(resolved_line, &aggregated_line, &results);
+  CPPUNIT_ASSERT(results.size() == 1);
+  CPPUNIT_ASSERT(aggregated_line.empty());
+  CPPUNIT_ASSERT(!results.at(0).compare("here is some content"));
 }
 
 void snakemake_unit_tests::GlobalNamespaceTest::
@@ -648,30 +685,36 @@ void snakemake_unit_tests::GlobalNamespaceTest::test_lexical_parse() {
       "example: \"comment characters within quotes like # are preserved\"");
   input.push_back("example: \"\"\" literals crossing lines are ");
   input.push_back("       merged together sensibly \"\"\"");
+  input.push_back("");
   input.push_back(
       "example: \"\"\" multiple literals on the same \"\"\" line are \"\"\"");
   input.push_back(" handled identically \"\"\"");
+  input.push_back("");
+  input.push_back("");
   input.push_back("example: \"aggregated strings are glued together\"  ");
   input.push_back(" 'in a way that preserves python syntax' ");
 
   expected.push_back("   standard lines are preserved");
-  expected.push_back("   comments are pruned ");
-  expected.push_back("   quotes in comments are irrelevant ");
-  expected.push_back("   trailing slash in comments are irrelevant ");
+  expected.push_back("   comments are pruned");
+  expected.push_back("   quotes in comments are irrelevant");
+  expected.push_back("   trailing slash in comments are irrelevant");
   expected.push_back(
       "   trailing slashes merge lines  with their following line");
   expected.push_back("example: \"quotes on the same line are preserved\"");
   expected.push_back(
       "example: \"comment characters within quotes like # are preserved\"");
   expected.push_back(
-      "example: \"\"\" literals crossing lines are        merged together "
+      "example: \"\"\" literals crossing lines are \n       merged together "
       "sensibly \"\"\"");
+  expected.push_back("");
   expected.push_back(
-      "example: \"\"\" multiple literals on the same \"\"\" line are \"\"\" "
+      "example: \"\"\" multiple literals on the same \"\"\" line are \"\"\"\n "
       "handled identically \"\"\"");
+  expected.push_back("");
+  expected.push_back("");
   expected.push_back(
-      "example: \"aggregated strings are glued together\"  \n 'in a way that "
-      "preserves python syntax' ");
+      "example: \"aggregated strings are glued together\"\n 'in a way that "
+      "preserves python syntax'");
 
   output = lexical_parse(input);
 
