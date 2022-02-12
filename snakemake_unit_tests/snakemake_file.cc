@@ -66,6 +66,8 @@ void snakemake_unit_tests::snakemake_file::load_everything(
   std::vector<std::string> loaded_lines;
   boost::filesystem::path recursive_path = base_dir / filename;
   load_lines(recursive_path, &loaded_lines);
+  // new: preprocess all lines with the improved lexical parser
+  loaded_lines = lexical_parse(loaded_lines);
   parse_file(loaded_lines, _blocks.begin(), filename, verbose);
 }
 

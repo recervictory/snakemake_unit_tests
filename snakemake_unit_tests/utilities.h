@@ -67,24 +67,6 @@ void concatenate_string_literals(const std::string &resolved_line,
  */
 std::vector<std::string> lexical_parse(const std::vector<std::string> &lines);
 /*!
-  @brief prune superfluous content from snakemake content line
-  @param s line to be pruned down to minimal essential content
-  @param loaded_lines currently processed snakemake file lines
-  @param line_number counter of line in file, for error reporting
-  @return pruned line
-
-  for the moment, this removes:
-
-  - things that look like docstrings (""" content """)
-
-  - comments (all text after unescaped '#')
-
-  - trailing whitespace (tab or space)
- */
-std::string remove_comments_and_docstrings(
-    const std::string &s, const std::vector<std::string> &loaded_lines,
-    unsigned *line_number);
-/*!
   @brief take a comma/space delimited list of filenames and break them up into a
   vector
   @param s input list; intended to be from snakemake log data

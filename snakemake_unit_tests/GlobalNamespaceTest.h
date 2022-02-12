@@ -24,7 +24,6 @@ class GlobalNamespaceTest : public CppUnit::TestFixture {
   // macros to declare suite
   CPPUNIT_TEST_SUITE(GlobalNamespaceTest);
   CPPUNIT_TEST(test_vector_to_map);
-  CPPUNIT_TEST(test_remove_comments_and_docstrings);
   CPPUNIT_TEST(test_split_comma_list);
   CPPUNIT_TEST(test_concatenate_string_literals);
   CPPUNIT_TEST_EXCEPTION(test_concatenate_string_literals_null_arg1,
@@ -53,7 +52,6 @@ class GlobalNamespaceTest : public CppUnit::TestFixture {
   void tearDown();
   // test case methods
   void test_vector_to_map();
-  void test_remove_comments_and_docstrings();
   void test_split_comma_list();
   void test_concatenate_string_literals();
   void test_concatenate_string_literals_null_arg1();

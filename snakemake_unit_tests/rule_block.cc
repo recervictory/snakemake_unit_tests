@@ -34,7 +34,7 @@ bool snakemake_unit_tests::rule_block::load_content_block(
     if (verbose) {
       std::cout << "considering line \"" << line << "\"" << std::endl;
     }
-    line = remove_comments_and_docstrings(line, loaded_lines, current_line);
+    // remove_comments_and_docstrings is deprecated by lexical parser
     if (verbose) {
       std::cout << "line reduced to \"" << line << "\"" << std::endl;
     }
@@ -119,7 +119,7 @@ bool snakemake_unit_tests::rule_block::consume_rule_contents(
       std::cout << "considering (in block) line \"" << line << "\""
                 << std::endl;
     }
-    line = remove_comments_and_docstrings(line, loaded_lines, current_line);
+    // remove_comments_and_docstrings is deprecated by lexical parser
     if (verbose) {
       std::cout << "line reduced (in block) to \"" << line << "\"" << std::endl;
     }
@@ -145,16 +145,15 @@ bool snakemake_unit_tests::rule_block::consume_rule_contents(
       boost::smatch named_block_tag_result;
       if (boost::regex_match(line, named_block_tag_result, named_block_tag)) {
         block_name = named_block_tag_result[1];
-        block_contents = remove_comments_and_docstrings(
-            named_block_tag_result[2], loaded_lines, current_line);
+        block_contents = named_block_tag_result[2];
+        // remove_comments_and_docstrings is deprecated by lexical parser
         // while additional block contents are theoretically available
         while (*current_line < loaded_lines.size()) {
           // deal with reverting multiline consumption of content
           starting_line = *current_line;
           line = loaded_lines.at(*current_line);
           ++*current_line;
-          line =
-              remove_comments_and_docstrings(line, loaded_lines, current_line);
+          // remove_comments_and_docstrings is deprecated by lexical parser
           if (line.empty() || line.find_first_not_of(" ") == std::string::npos)
             continue;
           line_indentation = line.find_first_not_of(" ");
