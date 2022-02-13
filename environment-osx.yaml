@@ -10,7 +10,7 @@ dependencies:
   - nodejs
   - pre-commit
   - cppcheck
-  - sarcasm::clang-format
+##  - sarcasm::clang-format
 
   - libtool
   - automake

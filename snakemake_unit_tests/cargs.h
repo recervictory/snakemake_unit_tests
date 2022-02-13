@@ -37,8 +37,7 @@ namespace snakemake_unit_tests {
 template <class value_type>
 std::map<value_type, bool> vector_to_map(const std::vector<value_type> &vec) {
   std::map<value_type, bool> res;
-  for (typename std::vector<value_type>::const_iterator iter = vec.begin();
-       iter != vec.end(); ++iter) {
+  for (typename std::vector<value_type>::const_iterator iter = vec.begin(); iter != vec.end(); ++iter) {
     res[*iter] = true;
   }
   return res;
@@ -120,9 +119,7 @@ class params {
 
     note that null sequences are emitted as "key: ~" in YAML style
    */
-  void emit_yaml_map(YAML::Emitter *out,
-                     const std::map<std::string, bool> &data,
-                     const std::string &key) const;
+  void emit_yaml_map(YAML::Emitter *out, const std::map<std::string, bool> &data, const std::string &key) const;
   /*!
     @brief emit vector contents as key->sequence in a YAML::Map
     @param out YAML Emitter to which to report YAML content
@@ -131,9 +128,7 @@ class params {
 
     note that null sequences are emitted as "key: ~" in YAML style
    */
-  void emit_yaml_vector(YAML::Emitter *out,
-                        const std::vector<boost::filesystem::path> &data,
-                        const std::string &key) const;
+  void emit_yaml_vector(YAML::Emitter *out, const std::vector<boost::filesystem::path> &data, const std::string &key) const;
   /*!
     @brief provide verbose logging output
    */
@@ -248,8 +243,7 @@ class cargs {
    */
   cargs(int argc, char **argv) : _desc("Recognized options") {
     initialize_options();
-    boost::program_options::store(
-        boost::program_options::parse_command_line(argc, argv, _desc), _vm);
+    boost::program_options::store(boost::program_options::parse_command_line(argc, argv, _desc), _vm);
     boost::program_options::notify(_vm);
   }
   /*!
@@ -296,9 +290,7 @@ class cargs {
     line call each time
     @return string filename of config yaml file
    */
-  std::string get_config_yaml() const {
-    return compute_parameter<std::string>("config", true);
-  }
+  std::string get_config_yaml() const { return compute_parameter<std::string>("config", true); }
 
   /*!
     @brief get the top-level snakefile used for the full workflow
@@ -307,9 +299,7 @@ class cargs {
     this just points to the top-level snakefile. any modularized
     rules in secondary snakefiles are loaded in automatically
    */
-  std::string get_snakefile() const {
-    return compute_parameter<std::string>("snakefile", true);
-  }
+  std::string get_snakefile() const { return compute_parameter<std::string>("snakefile", true); }
 
   /*!
     @brief get the snakemake log for the successful pipeline run that
@@ -320,9 +310,7 @@ class cargs {
     list of snakemake run settings that need to be used to make this
     log sufficiently informative
    */
-  std::string get_snakemake_log() const {
-    return compute_parameter<std::string>("snakemake-log", true);
-  }
+  std::string get_snakemake_log() const { return compute_parameter<std::string>("snakemake-log", true); }
 
   /*!
     @brief get top-level directory under which tests should be installed
@@ -331,9 +319,7 @@ class cargs {
     as of this writing (March 2021), the default value for this in snakemake
     is '.tests' and that default is carried over here
    */
-  std::string get_output_test_dir() const {
-    return compute_parameter<std::string>("output-test-dir", true);
-  }
+  std::string get_output_test_dir() const { return compute_parameter<std::string>("output-test-dir", true); }
 
   /*!
     @brief get top-level directory of test pipeline
@@ -350,9 +336,7 @@ class cargs {
     directories for non-compliant (but still valid) snakemake configurations,
     such as when the file is in ~/Snakefile instead of ~/workflow/Snakefile.
    */
-  std::string get_pipeline_top_dir() const {
-    return compute_parameter<std::string>("pipeline-top-dir", true);
-  }
+  std::string get_pipeline_top_dir() const { return compute_parameter<std::string>("pipeline-top-dir", true); }
   /*!
     @brief get directory of actual pipeline run, relative to top-level
     pipeline directory.
@@ -364,9 +348,7 @@ class cargs {
     the pipeline installation itself. a valid option here might be
     'workflows/rnaseq' or equivalent.
    */
-  std::string get_pipeline_run_dir() const {
-    return compute_parameter<std::string>("pipeline-run-dir", true);
-  }
+  std::string get_pipeline_run_dir() const { return compute_parameter<std::string>("pipeline-run-dir", true); }
 
   /*!
     @brief get path to inst directory for this copy of snakemake_unit_tests
@@ -377,9 +359,7 @@ class cargs {
     $CONDA_PREFIX/share/snakemake_unit_tests/inst and the user's life will
     improve concomitantly.
    */
-  std::string get_inst_dir() const {
-    return compute_parameter<std::string>("inst-dir", true);
-  }
+  std::string get_inst_dir() const { return compute_parameter<std::string>("inst-dir", true); }
 
   /*!
     @brief get optional multiple files (with relative paths) that will be
@@ -390,9 +370,7 @@ class cargs {
     is for this option to be unnecessary, but it's exposed as an option just
     in case people come up with corner cases that the main logic cannot handle
    */
-  std::vector<std::string> get_added_files() const {
-    return compute_parameter<std::vector<std::string> >("added-files", true);
-  }
+  std::vector<std::string> get_added_files() const { return compute_parameter<std::vector<std::string> >("added-files", true); }
 
   /*!
     @brief get optional multiple directories (with relative paths) that will be
@@ -403,18 +381,13 @@ class cargs {
     is for this option to be unnecessary, but it's exposed as an option just
     in case people come up with corner  cases that the main logic cannot handle
    */
-  std::vector<std::string> get_added_directories() const {
-    return compute_parameter<std::vector<std::string> >("added-directories",
-                                                        true);
-  }
+  std::vector<std::string> get_added_directories() const { return compute_parameter<std::vector<std::string> >("added-directories", true); }
 
   /*!
     @brief get optional rule names to exclude from testing
     @return vector of all provided rules to exclude from test output
    */
-  std::vector<std::string> get_exclude_rules() const {
-    return compute_parameter<std::vector<std::string> >("exclude-rules", true);
-  }
+  std::vector<std::string> get_exclude_rules() const { return compute_parameter<std::vector<std::string> >("exclude-rules", true); }
 
   /*!
     @brief get user flag for overriding default behavior and adding entire DAG
@@ -445,9 +418,7 @@ class cargs {
     @return whether the user wants to update existing tests' added files and
     directories
    */
-  bool update_added_content() const {
-    return compute_flag("update-added-content");
-  }
+  bool update_added_content() const { return compute_flag("update-added-content"); }
   /*!
     @brief get user flag for updating config report to unit directory top level
     @return whether the user wants to update run configuration report based on
@@ -509,15 +480,13 @@ class cargs {
     @warning throws exception if parameter was not set and had no default
    */
   template <class value_type>
-  value_type compute_parameter(const std::string &tag,
-                               bool optional = false) const {
+  value_type compute_parameter(const std::string &tag, bool optional = false) const {
     if (_vm.count(tag)) {
       return _vm[tag].as<value_type>();
     } else if (optional) {
       return value_type();
     } else {
-      throw std::domain_error("cargs: requested parameter \"" + tag +
-                              "\" unset");
+      throw std::domain_error("cargs: requested parameter \"" + tag + "\" unset");
     }
   }
 
@@ -528,20 +497,18 @@ class cargs {
     Parameter should probably be std::cout or std::cerr at your preference.
    */
   void print_help(std::ostream &out) {
-    if (!(out << _desc))
-      throw std::domain_error("cargs::print_help: unable to write to stream");
+    if (!(out << _desc)) throw std::domain_error("cargs::print_help: unable to write to stream");
   }
 
  private:
+  friend class cargsTest;
   /*!
     @brief default constructor
     @warning disabled
    */
   cargs() { throw std::domain_error("cargs: do not use default constructor"); }
-  boost::program_options::options_description
-      _desc;  //!< help documentation string
-  boost::program_options::variables_map
-      _vm;  //!< storage of parsed command line settings
+  boost::program_options::options_description _desc;  //!< help documentation string
+  boost::program_options::variables_map _vm;          //!< storage of parsed command line settings
   /*!
     @brief if the first parameter is nonempty, return it; otherwise return
     the second
@@ -549,9 +516,7 @@ class cargs {
     @param params_entry the value for the parameter loaded from the yaml config
     @return the resolved value from the two provided
   */
-  boost::filesystem::path override_if_specified(
-      const std::string &cli_entry,
-      const boost::filesystem::path &params_entry) const;
+  boost::filesystem::path override_if_specified(const std::string &cli_entry, const boost::filesystem::path &params_entry) const;
 
   /*!
     @brief append any CLI entries for a multitoken parameter to
@@ -562,12 +527,9 @@ class cargs {
     @param params_entries values for the parameter found in the config yaml
    */
   template <class value_type>
-  void add_contents(const std::vector<std::string> &cli_entries,
-                    std::vector<value_type> *params_entries) const {
-    if (!params_entries)
-      throw std::runtime_error("null pointer to add_contents");
-    for (std::vector<std::string>::const_iterator iter = cli_entries.begin();
-         iter != cli_entries.end(); ++iter) {
+  void add_contents(const std::vector<std::string> &cli_entries, std::vector<value_type> *params_entries) const {
+    if (!params_entries) throw std::runtime_error("null pointer to add_contents");
+    for (std::vector<std::string>::const_iterator iter = cli_entries.begin(); iter != cli_entries.end(); ++iter) {
       params_entries->push_back(value_type(*iter));
     }
   }
@@ -581,12 +543,9 @@ class cargs {
     as keys in a map
    */
   template <class value_type>
-  void add_contents(const std::vector<std::string> &cli_entries,
-                    std::map<value_type, bool> *params_entries) const {
-    if (!params_entries)
-      throw std::runtime_error("null pointer to add_contents");
-    for (std::vector<std::string>::const_iterator iter = cli_entries.begin();
-         iter != cli_entries.end(); ++iter) {
+  void add_contents(const std::vector<std::string> &cli_entries, std::map<value_type, bool> *params_entries) const {
+    if (!params_entries) throw std::runtime_error("null pointer to add_contents");
+    for (std::vector<std::string>::const_iterator iter = cli_entries.begin(); iter != cli_entries.end(); ++iter) {
       params_entries->insert(std::make_pair(value_type(*iter), true));
     }
   }
@@ -595,17 +554,14 @@ class cargs {
     @param p path to check
     @param msg name of parameter flag for error messages
    */
-  void check_nonempty(const boost::filesystem::path &p,
-                      const std::string &msg) const;
+  void check_nonempty(const boost::filesystem::path &p, const std::string &msg) const;
   /*!
     @brief given a path, enforce it being a regular file
     @param p input candidate file
     @param prefix optional prefix for actual file; can be empty
     @param msg name of parameter flag for error messages
    */
-  void check_regular_file(const boost::filesystem::path &p,
-                          const boost::filesystem::path &prefix,
-                          const std::string &msg) const;
+  void check_regular_file(const boost::filesystem::path &p, const boost::filesystem::path &prefix, const std::string &msg) const;
   /*!
     @brief given a path, enforce it being a directory, and
     gently clean up its format
@@ -613,9 +569,7 @@ class cargs {
     @param prefix optional prefix for actual directory; can be empty
     @param msg name of parameter flag for error messages
    */
-  void check_and_fix_dir(boost::filesystem::path *p,
-                         const boost::filesystem::path &prefix,
-                         const std::string &msg) const;
+  void check_and_fix_dir(boost::filesystem::path *p, const boost::filesystem::path &prefix, const std::string &msg) const;
 
   /*!
     @brief cast entries of a vector into something else
@@ -626,11 +580,9 @@ class cargs {
     there are definitely less silly ways of doing this
    */
   template <class value_type>
-  std::vector<value_type> vector_convert(
-      const std::vector<std::string> &vec) const {
+  std::vector<value_type> vector_convert(const std::vector<std::string> &vec) const {
     std::vector<value_type> res;
-    for (std::vector<std::string>::const_iterator iter = vec.begin();
-         iter != vec.end(); ++iter) {
+    for (std::vector<std::string>::const_iterator iter = vec.begin(); iter != vec.end(); ++iter) {
       res.push_back(value_type(*iter));
     }
     return res;

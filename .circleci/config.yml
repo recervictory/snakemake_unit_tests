@@ -35,10 +35,11 @@ jobs:
             mamba install -c conda-forge -y curl gnupg
             ./generate.bash
             ./configure --prefix=/opt/conda --with-boost=$CONDA_PREFIX --with-boost-libdir=$CONDA_PREFIX/lib
-            make -j2
+            make -j2 CXXFLAGS=" --coverage -fprofile-arcs -ftest-coverage -fPIC"
             make -j2 check
             find snakemake_unit_tests -name "*gcda" -delete
             ./test_suite.out
+            find snakemake_unit_tests -name "*Test*gcda" -delete
             $CONDA_PREFIX/bin/x86_64-conda-linux-gnu-gcov -r $(ls snakemake_unit_tests/*gcda | sed 's/gcda/cc/g')
             curl -Os https://uploader.codecov.io/latest/linux/codecov
             chmod +x codecov

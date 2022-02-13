@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 ## Test: string literals assigned to variables are not considered docstrings
-## TODO(cpalmer718) make this test pass
 echo 1..1
 
 TESTNAME="test8"
@@ -25,7 +24,7 @@ fi
 ## specifically expect Snakefile to differ
 expected_bad_diff=$(diff "$EXPECTEDDIR/unit/simple_rule2/workspace/workflow/Snakefile" "$OUTPUTDIR/unit/simple_rule2/workspace/workflow/Snakefile" | wc -l)
 if [[ "$expected_bad_diff" -gt "0" ]] ; then
-    echo "not ok: $TESTDESCRIPTION - variable assignment is ignored # TODO implement variable assignment detection for docstrings"
+    echo "not ok: $TESTDESCRIPTION - variable assignment is ignored"
     exit 0
 fi
 

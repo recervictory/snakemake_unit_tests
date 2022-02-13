@@ -12,6 +12,7 @@ package*json
 *.so
 *.so.1
 *.so.1.0*
+*ignore.bash
 *gcda
 *gcno
 *gcov
