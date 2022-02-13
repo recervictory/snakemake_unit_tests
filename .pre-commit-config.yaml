@@ -1,13 +1,16 @@
 repos:
 
 ## C++ support
+- repo: https://github.com/cpalmer718/pre-commit-cpp
+  rev: 1.0.0
+  hooks:
+  - id: clang-format
 
 - repo: https://gitlab.com/daverona/pre-commit/cpp
   rev: 0.8.0
   hooks:
-  - id: clang-format
   - id: cpplint
-    args: ["--includeorder=default"]
+    args: ["--includeorder=default", "--linelength=240"]
   - id: cppcheck
 
 ## Python support

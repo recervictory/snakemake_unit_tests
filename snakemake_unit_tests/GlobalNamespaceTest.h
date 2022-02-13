@@ -24,25 +24,54 @@ class GlobalNamespaceTest : public CppUnit::TestFixture {
   // macros to declare suite
   CPPUNIT_TEST_SUITE(GlobalNamespaceTest);
   CPPUNIT_TEST(test_vector_to_map);
-  CPPUNIT_TEST(test_split_comma_list);
-  CPPUNIT_TEST(test_concatenate_string_literals);
-  CPPUNIT_TEST_EXCEPTION(test_concatenate_string_literals_null_arg1,
-                         std::runtime_error);
-  CPPUNIT_TEST_EXCEPTION(test_concatenate_string_literals_null_arg2,
-                         std::runtime_error);
-  CPPUNIT_TEST(test_resolve_string_delimiter);
-  CPPUNIT_TEST_EXCEPTION(test_resolve_string_delimiter_null_arg1,
-                         std::runtime_error);
-  CPPUNIT_TEST_EXCEPTION(test_resolve_string_delimiter_null_arg2,
-                         std::runtime_error);
-  CPPUNIT_TEST_EXCEPTION(test_resolve_string_delimiter_null_arg3,
-                         std::runtime_error);
-  CPPUNIT_TEST_EXCEPTION(test_resolve_string_delimiter_null_arg4,
-                         std::runtime_error);
-  CPPUNIT_TEST_EXCEPTION(test_resolve_string_delimiter_index_oob,
-                         std::runtime_error);
-  CPPUNIT_TEST_EXCEPTION(test_resolve_string_delimiter_index_not_mark,
-                         std::runtime_error);
+  CPPUNIT_TEST(test_split_comma_list_1);
+  CPPUNIT_TEST(test_split_comma_list_2);
+  CPPUNIT_TEST(test_split_comma_list_3);
+  CPPUNIT_TEST(test_split_comma_list_4);
+  CPPUNIT_TEST(test_split_comma_list_5);
+  CPPUNIT_TEST(test_split_comma_list_6);
+  CPPUNIT_TEST(test_split_comma_list_7);
+  CPPUNIT_TEST(test_split_comma_list_8);
+  CPPUNIT_TEST(test_concatenate_string_literals_1);
+  CPPUNIT_TEST(test_concatenate_string_literals_2);
+  CPPUNIT_TEST(test_concatenate_string_literals_3);
+  CPPUNIT_TEST(test_concatenate_string_literals_4);
+  CPPUNIT_TEST(test_concatenate_string_literals_5);
+  CPPUNIT_TEST(test_concatenate_string_literals_6);
+  CPPUNIT_TEST(test_concatenate_string_literals_7);
+  CPPUNIT_TEST(test_concatenate_string_literals_8);
+  CPPUNIT_TEST(test_concatenate_string_literals_9);
+  CPPUNIT_TEST(test_concatenate_string_literals_10);
+  CPPUNIT_TEST(test_concatenate_string_literals_11);
+  CPPUNIT_TEST(test_concatenate_string_literals_12);
+  CPPUNIT_TEST(test_concatenate_string_literals_13);
+  CPPUNIT_TEST(test_concatenate_string_literals_14);
+  CPPUNIT_TEST(test_concatenate_string_literals_15);
+  CPPUNIT_TEST(test_concatenate_string_literals_16);
+  CPPUNIT_TEST_EXCEPTION(test_concatenate_string_literals_null_arg1, std::runtime_error);
+  CPPUNIT_TEST_EXCEPTION(test_concatenate_string_literals_null_arg2, std::runtime_error);
+  CPPUNIT_TEST(test_resolve_string_delimiter_1);
+  CPPUNIT_TEST(test_resolve_string_delimiter_2);
+  CPPUNIT_TEST(test_resolve_string_delimiter_3);
+  CPPUNIT_TEST(test_resolve_string_delimiter_4);
+  CPPUNIT_TEST(test_resolve_string_delimiter_5);
+  CPPUNIT_TEST(test_resolve_string_delimiter_6);
+  CPPUNIT_TEST(test_resolve_string_delimiter_7);
+  CPPUNIT_TEST(test_resolve_string_delimiter_8);
+  CPPUNIT_TEST(test_resolve_string_delimiter_9);
+  CPPUNIT_TEST(test_resolve_string_delimiter_10);
+  CPPUNIT_TEST(test_resolve_string_delimiter_11);
+  CPPUNIT_TEST(test_resolve_string_delimiter_12);
+  CPPUNIT_TEST(test_resolve_string_delimiter_13);
+  CPPUNIT_TEST(test_resolve_string_delimiter_14);
+  CPPUNIT_TEST(test_resolve_string_delimiter_15);
+  CPPUNIT_TEST(test_resolve_string_delimiter_16);
+  CPPUNIT_TEST_EXCEPTION(test_resolve_string_delimiter_null_arg1, std::runtime_error);
+  CPPUNIT_TEST_EXCEPTION(test_resolve_string_delimiter_null_arg2, std::runtime_error);
+  CPPUNIT_TEST_EXCEPTION(test_resolve_string_delimiter_null_arg3, std::runtime_error);
+  CPPUNIT_TEST_EXCEPTION(test_resolve_string_delimiter_null_arg4, std::runtime_error);
+  CPPUNIT_TEST_EXCEPTION(test_resolve_string_delimiter_index_oob, std::runtime_error);
+  CPPUNIT_TEST_EXCEPTION(test_resolve_string_delimiter_index_not_mark, std::runtime_error);
   CPPUNIT_TEST(test_lexical_parse);
   CPPUNIT_TEST_SUITE_END();
 
@@ -52,11 +81,48 @@ class GlobalNamespaceTest : public CppUnit::TestFixture {
   void tearDown();
   // test case methods
   void test_vector_to_map();
-  void test_split_comma_list();
-  void test_concatenate_string_literals();
+  void test_split_comma_list_1();
+  void test_split_comma_list_2();
+  void test_split_comma_list_3();
+  void test_split_comma_list_4();
+  void test_split_comma_list_5();
+  void test_split_comma_list_6();
+  void test_split_comma_list_7();
+  void test_split_comma_list_8();
+  void test_concatenate_string_literals_1();
+  void test_concatenate_string_literals_2();
+  void test_concatenate_string_literals_3();
+  void test_concatenate_string_literals_4();
+  void test_concatenate_string_literals_5();
+  void test_concatenate_string_literals_6();
+  void test_concatenate_string_literals_7();
+  void test_concatenate_string_literals_8();
+  void test_concatenate_string_literals_9();
+  void test_concatenate_string_literals_10();
+  void test_concatenate_string_literals_11();
+  void test_concatenate_string_literals_12();
+  void test_concatenate_string_literals_13();
+  void test_concatenate_string_literals_14();
+  void test_concatenate_string_literals_15();
+  void test_concatenate_string_literals_16();
   void test_concatenate_string_literals_null_arg1();
   void test_concatenate_string_literals_null_arg2();
-  void test_resolve_string_delimiter();
+  void test_resolve_string_delimiter_1();
+  void test_resolve_string_delimiter_2();
+  void test_resolve_string_delimiter_3();
+  void test_resolve_string_delimiter_4();
+  void test_resolve_string_delimiter_5();
+  void test_resolve_string_delimiter_6();
+  void test_resolve_string_delimiter_7();
+  void test_resolve_string_delimiter_8();
+  void test_resolve_string_delimiter_9();
+  void test_resolve_string_delimiter_10();
+  void test_resolve_string_delimiter_11();
+  void test_resolve_string_delimiter_12();
+  void test_resolve_string_delimiter_13();
+  void test_resolve_string_delimiter_14();
+  void test_resolve_string_delimiter_15();
+  void test_resolve_string_delimiter_16();
   void test_resolve_string_delimiter_null_arg1();
   void test_resolve_string_delimiter_null_arg2();
   void test_resolve_string_delimiter_null_arg3();
