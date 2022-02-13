@@ -7,13 +7,19 @@
 
 #include "snakemake_unit_tests/yaml_reader.h"
 
+bool snakemake_unit_tests::yaml_reader::operator==(const yaml_reader &obj) const {
+  YAML::Emitter out1, out2;
+  out1 << _data;
+  out2 << obj._data;
+  return !std::string(out1.c_str()).compare(std::string(out2.c_str()));
+}
+
 void snakemake_unit_tests::yaml_reader::load_file(const std::string &filename) {
   // just use the yaml-cpp method for this operation
   _data = YAML::LoadFile(filename.c_str());
 }
 
-std::vector<std::string> snakemake_unit_tests::yaml_reader::get_sequence(
-    const std::vector<std::string> &queries) const {
+std::vector<std::string> snakemake_unit_tests::yaml_reader::get_sequence(const std::vector<std::string> &queries) const {
   // copy the top node of the file, lest it get scoped out of existence
   YAML::Node current = YAML::Clone(_data), next;
   std::vector<std::string> res;
@@ -27,8 +33,7 @@ std::vector<std::string> snakemake_unit_tests::yaml_reader::get_sequence(
   } else if (current.Type() == YAML::NodeType::Sequence) {
     // cast the entire Sequence as strings and return it
     res.reserve(current.size());
-    for (YAML::const_iterator iter = current.begin(); iter != current.end();
-         ++iter) {
+    for (YAML::const_iterator iter = current.begin(); iter != current.end(); ++iter) {
       res.push_back(iter->as<std::string>());
     }
   } else {
@@ -40,8 +45,7 @@ std::vector<std::string> snakemake_unit_tests::yaml_reader::get_sequence(
   return res;
 }
 
-YAML::Node snakemake_unit_tests::yaml_reader::get_node(
-    const std::vector<std::string> &queries) const {
+YAML::Node snakemake_unit_tests::yaml_reader::get_node(const std::vector<std::string> &queries) const {
   // the user just wants a node, so give it to them
   // note that they get the copy, so they can do what they want with it
   YAML::Node current = YAML::Clone(_data), next;
@@ -49,9 +53,7 @@ YAML::Node snakemake_unit_tests::yaml_reader::get_node(
   return current;
 }
 
-std::vector<std::pair<std::string, std::string> >
-snakemake_unit_tests::yaml_reader::get_map(
-    const std::vector<std::string> &queries) const {
+std::vector<std::pair<std::string, std::string> > snakemake_unit_tests::yaml_reader::get_map(const std::vector<std::string> &queries) const {
   // copy the top node of the file, lest it get scoped out of existence
   YAML::Node current = YAML::Clone(_data), next;
   std::vector<std::pair<std::string, std::string> > res;
@@ -60,10 +62,8 @@ snakemake_unit_tests::yaml_reader::get_map(
   if (current.Type() == YAML::NodeType::Map) {
     // if you find a Map, cast keys and values as strings and return them
     res.reserve(current.size());
-    for (YAML::const_iterator iter = current.begin(); iter != current.end();
-         ++iter) {
-      std::pair<std::string, std::string> val(iter->first.as<std::string>(),
-                                              iter->second.as<std::string>());
+    for (YAML::const_iterator iter = current.begin(); iter != current.end(); ++iter) {
+      std::pair<std::string, std::string> val(iter->first.as<std::string>(), iter->second.as<std::string>());
       res.push_back(val);
     }
   } else {
@@ -75,8 +75,7 @@ snakemake_unit_tests::yaml_reader::get_map(
   return res;
 }
 
-bool snakemake_unit_tests::yaml_reader::query_valid(
-    const std::vector<std::string> &queries) const {
+bool snakemake_unit_tests::yaml_reader::query_valid(const std::vector<std::string> &queries) const {
   // copy the top level node as always
   YAML::Node current = YAML::Clone(_data), next;
   try {
@@ -89,18 +88,13 @@ bool snakemake_unit_tests::yaml_reader::query_valid(
   return true;
 }
 
-void snakemake_unit_tests::yaml_reader::apply_queries(
-    const std::vector<std::string> &queries, YAML::Node *current,
-    YAML::Node *next) const {
+void snakemake_unit_tests::yaml_reader::apply_queries(const std::vector<std::string> &queries, YAML::Node *current, YAML::Node *next) const {
   // sanity check input pointers
-  if (!current || !next)
-    throw std::runtime_error("apply_queries: null pointer");
+  if (!current || !next) throw std::runtime_error("apply_queries: null pointer");
   // require that the input keys exist at all
-  if (queries.empty())
-    throw std::runtime_error("apply_queries: no query provided");
+  if (queries.empty()) throw std::runtime_error("apply_queries: no query provided");
   // can't probe Scalars or Null
-  if (current->Type() != YAML::NodeType::Sequence &&
-      current->Type() != YAML::NodeType::Map) {
+  if (current->Type() != YAML::NodeType::Sequence && current->Type() != YAML::NodeType::Map) {
     throw std::runtime_error(
         "apply_queries: starting node not "
         "Sequence or Map, cannot apply query \"" +
@@ -114,13 +108,10 @@ void snakemake_unit_tests::yaml_reader::apply_queries(
     switch (next->Type()) {
         // Null at this step is bad
       case YAML::NodeType::Null:
-        throw std::runtime_error("apply_queries: query \"" + queries.at(i) +
-                                 "\" not present at query level");
+        throw std::runtime_error("apply_queries: query \"" + queries.at(i) + "\" not present at query level");
         // Scalar is bad unless it's the endpoint
       case YAML::NodeType::Scalar:
-        if (i != queries.size() - 1)
-          throw std::runtime_error("apply_queries: query \"" + queries.at(i) +
-                                   "\" found scalar terminator");
+        if (i != queries.size() - 1) throw std::runtime_error("apply_queries: query \"" + queries.at(i) + "\" found scalar terminator");
         break;
         // Sequence is fine
       case YAML::NodeType::Sequence:

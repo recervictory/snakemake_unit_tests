@@ -65,9 +65,7 @@ class yaml_reader {
       for (unsigned i = 1; i <= queries.size(); ++i) {
         o << "::" << queries.at(i);
       }
-      throw std::runtime_error("invalid number of results for entry query " +
-                               o.str() + "\": found " +
-                               std::to_string(all_results.size()));
+      throw std::runtime_error("invalid number of results for entry query " + o.str() + "\": found " + std::to_string(all_results.size()));
     }
     return *all_results.begin();
   }
@@ -107,15 +105,13 @@ class yaml_reader {
           - val2
           - val3
    */
-  std::vector<std::string> get_sequence(
-      const std::vector<std::string> &queries) const;
+  std::vector<std::string> get_sequence(const std::vector<std::string> &queries) const;
   /*!
     @brief get map entries corresponding to a query
     @param query key to query in node
     @return vector of key:value pairs
    */
-  std::vector<std::pair<std::string, std::string> > get_map(
-      const std::string &query) const {
+  std::vector<std::pair<std::string, std::string> > get_map(const std::string &query) const {
     std::vector<std::string> queries;
     queries.push_back(query);
     return get_map(queries);
@@ -125,8 +121,7 @@ class yaml_reader {
     @param queries ordered set of keys to query in node
     @return vector of key:value pairs corresponding to full query
    */
-  std::vector<std::pair<std::string, std::string> > get_map(
-      const std::vector<std::string> &queries) const;
+  std::vector<std::pair<std::string, std::string> > get_map(const std::vector<std::string> &queries) const;
   /*!
     @brief get arbitrary YAML Node corresponding to a query
     @param query key to query in node
@@ -160,15 +155,23 @@ class yaml_reader {
    */
   bool query_valid(const std::vector<std::string> &queries) const;
 
+  /*!
+    @brief test comparison by value of node tree
+    @param obj yaml_reader object to compare
+    @return whether the two objects contain same value contents
+   */
+  bool operator==(const yaml_reader &obj) const;
+
  private:
+  friend class yaml_readerTest;
+  friend class cargsTest;
   /*!
     @brief apply an arbitrary query to a node
     @param queries keys to search in node
     @param current top-level node to query
     @param next result of query in current node
    */
-  void apply_queries(const std::vector<std::string> &queries,
-                     YAML::Node *current, YAML::Node *next) const;
+  void apply_queries(const std::vector<std::string> &queries, YAML::Node *current, YAML::Node *next) const;
   /*!
     @brief top level node representing config file, usually
    */

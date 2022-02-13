@@ -19,6 +19,7 @@
 
 #include "snakemake_unit_tests/cargs.h"
 #include "snakemake_unit_tests/utilities.h"
+#include "snakemake_unit_tests/yaml_reader.h"
 
 namespace snakemake_unit_tests {
 class cargsTest : public CppUnit::TestFixture {
