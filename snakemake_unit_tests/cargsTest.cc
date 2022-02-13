@@ -13,8 +13,75 @@ void snakemake_unit_tests::cargsTest::tearDown() {
   // nothing to do at the moment
 }
 
-void snakemake_unit_tests::cargsTest::test_params_default_constructor() {}
-void snakemake_unit_tests::cargsTest::test_params_copy_constructor() {}
+void snakemake_unit_tests::cargsTest::test_params_default_constructor() {
+  params p;
+  CPPUNIT_ASSERT(!p.verbose);
+  CPPUNIT_ASSERT(!p.update_all);
+  CPPUNIT_ASSERT(!p.update_snakefiles);
+  CPPUNIT_ASSERT(!p.update_added_content);
+  CPPUNIT_ASSERT(!p.update_config);
+  CPPUNIT_ASSERT(!p.update_inputs);
+  CPPUNIT_ASSERT(!p.update_outputs);
+  CPPUNIT_ASSERT(!p.update_pytest);
+  CPPUNIT_ASSERT(!p.include_entire_dag);
+  CPPUNIT_ASSERT(p.config_filename.string().empty());
+  CPPUNIT_ASSERT(p.config == yaml_reader());
+  CPPUNIT_ASSERT(p.output_test_dir.string().empty());
+  CPPUNIT_ASSERT(p.snakefile.string().empty());
+  CPPUNIT_ASSERT(p.pipeline_top_dir.string().empty());
+  CPPUNIT_ASSERT(p.pipeline_run_dir.string().empty());
+  CPPUNIT_ASSERT(p.inst_dir.string().empty());
+  CPPUNIT_ASSERT(p.snakemake_log.string().empty());
+  CPPUNIT_ASSERT(p.added_files.empty());
+  CPPUNIT_ASSERT(p.added_directories.empty());
+  CPPUNIT_ASSERT(p.exclude_rules.empty());
+  CPPUNIT_ASSERT(p.exclude_extensions.empty());
+  CPPUNIT_ASSERT(p.exclude_paths.empty());
+  CPPUNIT_ASSERT(p.byte_comparisons.empty());
+}
+
+void snakemake_unit_tests::cargsTest::test_params_copy_constructor() {
+  params p;
+  p.verbose = p.update_all = p.update_snakefiles = p.update_added_content = true;
+  p.update_config = p.update_inputs = p.update_outputs = p.update_pytest = p.include_entire_dag = true;
+  p.config_filename = "thing1";
+  p.config._data = YAML::Load("[1, 2, 3]");
+  p.output_test_dir = "thing2";
+  p.snakefile = "thing3";
+  p.pipeline_top_dir = "thing4";
+  p.pipeline_run_dir = "thing5";
+  p.inst_dir = "thing6";
+  p.snakemake_log = "thing7";
+  p.added_files.push_back("thing8");
+  p.added_directories.push_back("thing9");
+  p.exclude_rules["thing10"] = true;
+  p.exclude_extensions["thing11"] = true;
+  p.exclude_paths["thing12"] = true;
+  p.byte_comparisons["thing13"] = true;
+  params q(p);
+  CPPUNIT_ASSERT(p.verbose == q.verbose);
+  CPPUNIT_ASSERT(p.update_all = q.update_all);
+  CPPUNIT_ASSERT(p.update_snakefiles == q.update_snakefiles);
+  CPPUNIT_ASSERT(p.update_added_content == q.update_added_content);
+  CPPUNIT_ASSERT(p.update_config == q.update_config);
+  CPPUNIT_ASSERT(p.update_inputs == q.update_inputs);
+  CPPUNIT_ASSERT(p.update_outputs == q.update_outputs);
+  CPPUNIT_ASSERT(p.update_pytest == q.update_pytest);
+  CPPUNIT_ASSERT(p.include_entire_dag == q.include_entire_dag);
+  CPPUNIT_ASSERT(p.config_filename == q.config_filename);
+  CPPUNIT_ASSERT(p.config == q.config);
+  CPPUNIT_ASSERT(p.output_test_dir == q.output_test_dir);
+  CPPUNIT_ASSERT(p.snakefile == q.snakefile);
+  CPPUNIT_ASSERT(p.pipeline_top_dir == q.pipeline_top_dir);
+  CPPUNIT_ASSERT(p.inst_dir == q.inst_dir);
+  CPPUNIT_ASSERT(p.snakemake_log == q.snakemake_log);
+  CPPUNIT_ASSERT(p.added_files == q.added_files);
+  CPPUNIT_ASSERT(p.added_directories == q.added_directories);
+  CPPUNIT_ASSERT(p.exclude_rules == q.exclude_rules);
+  CPPUNIT_ASSERT(p.exclude_extensions == q.exclude_extensions);
+  CPPUNIT_ASSERT(p.exclude_paths == q.exclude_paths);
+  CPPUNIT_ASSERT(p.byte_comparisons == q.byte_comparisons);
+}
 void snakemake_unit_tests::cargsTest::test_params_report_settings() {}
 void snakemake_unit_tests::cargsTest::test_params_emit_yaml_map() {}
 void snakemake_unit_tests::cargsTest::test_params_emit_yaml_vector() {}
