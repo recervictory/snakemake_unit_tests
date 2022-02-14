@@ -32,7 +32,10 @@ class cargsTest : public CppUnit::TestFixture {
   CPPUNIT_TEST(test_params_emit_yaml_map_single_entry);
   CPPUNIT_TEST(test_params_emit_yaml_map_no_entries);
   CPPUNIT_TEST_EXCEPTION(test_params_emit_yaml_map_null_pointer, std::runtime_error);
-  CPPUNIT_TEST(test_params_emit_yaml_vector);
+  CPPUNIT_TEST(test_params_emit_yaml_vector_multiple_entries);
+  CPPUNIT_TEST(test_params_emit_yaml_vector_single_entry);
+  CPPUNIT_TEST(test_params_emit_yaml_vector_no_entries);
+  CPPUNIT_TEST_EXCEPTION(test_params_emit_yaml_vector_null_pointer, std::runtime_error);
   CPPUNIT_TEST_EXCEPTION(test_cargs_default_constructor, std::domain_error);
   CPPUNIT_TEST(test_cargs_standard_constructor);
   CPPUNIT_TEST(test_cargs_copy_constructor);
@@ -82,7 +85,10 @@ class cargsTest : public CppUnit::TestFixture {
   void test_params_emit_yaml_map_single_entry();
   void test_params_emit_yaml_map_no_entries();
   void test_params_emit_yaml_map_null_pointer();
-  void test_params_emit_yaml_vector();
+  void test_params_emit_yaml_vector_multiple_entries();
+  void test_params_emit_yaml_vector_single_entry();
+  void test_params_emit_yaml_vector_no_entries();
+  void test_params_emit_yaml_vector_null_pointer();
   void test_cargs_default_constructor();
   void test_cargs_standard_constructor();
   void test_cargs_copy_constructor();

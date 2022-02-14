@@ -131,6 +131,10 @@ class params {
     @param key YAML key corresponding to this sequence
 
     note that null sequences are emitted as "key: ~" in YAML style
+
+    @warning this is expected to be run on a YAML::Emitter that has
+    already received a YAML::BeginMap token. if not, the output
+    format will be undefined and probably not what you want.
    */
   void emit_yaml_vector(YAML::Emitter *out, const std::vector<boost::filesystem::path> &data,
                         const std::string &key) const;
