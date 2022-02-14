@@ -83,7 +83,52 @@ void snakemake_unit_tests::cargsTest::test_params_copy_constructor() {
   CPPUNIT_ASSERT(p.byte_comparisons == q.byte_comparisons);
 }
 void snakemake_unit_tests::cargsTest::test_params_report_settings() {}
-void snakemake_unit_tests::cargsTest::test_params_emit_yaml_map() {}
+void snakemake_unit_tests::cargsTest::test_params_emit_yaml_map_multiple_entries() {
+  YAML::Emitter out;
+  std::string key = "mykey";
+  std::map<std::string, bool> data;
+  data["mykey1"] = true;
+  data["mykey2"] = true;
+  data["mykey3"] = true;
+  params p;
+  out << YAML::BeginMap;
+  p.emit_yaml_map(&out, data, key);
+  out << YAML::EndMap;
+  std::string expected = "mykey:\n  - mykey1\n  - mykey2\n  - mykey3";
+  std::string observed = std::string(out.c_str());
+  CPPUNIT_ASSERT(!expected.compare(observed));
+}
+void snakemake_unit_tests::cargsTest::test_params_emit_yaml_map_single_entry() {
+  YAML::Emitter out;
+  std::string key = "mykey";
+  std::map<std::string, bool> data;
+  data["mykey1"] = true;
+  params p;
+  out << YAML::BeginMap;
+  p.emit_yaml_map(&out, data, key);
+  out << YAML::EndMap;
+  std::string expected = "mykey:\n  - mykey1";
+  std::string observed = std::string(out.c_str());
+  CPPUNIT_ASSERT(!expected.compare(observed));
+}
+void snakemake_unit_tests::cargsTest::test_params_emit_yaml_map_no_entries() {
+  YAML::Emitter out;
+  std::string key = "mykey";
+  std::map<std::string, bool> data;
+  params p;
+  out << YAML::BeginMap;
+  p.emit_yaml_map(&out, data, key);
+  out << YAML::EndMap;
+  std::string expected = "mykey: ~";
+  std::string observed = std::string(out.c_str());
+  CPPUNIT_ASSERT(!expected.compare(observed));
+}
+void snakemake_unit_tests::cargsTest::test_params_emit_yaml_map_null_pointer() {
+  std::string key = "mykey";
+  std::map<std::string, bool> data;
+  params p;
+  p.emit_yaml_map(NULL, data, key);
+}
 void snakemake_unit_tests::cargsTest::test_params_emit_yaml_vector() {}
 void snakemake_unit_tests::cargsTest::test_cargs_default_constructor() { cargs ap; }
 void snakemake_unit_tests::cargsTest::test_cargs_standard_constructor() {}
