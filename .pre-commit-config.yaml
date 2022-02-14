@@ -10,7 +10,7 @@ repos:
   rev: 0.8.0
   hooks:
   - id: cpplint
-    args: ["--includeorder=default", "--linelength=240"]
+    args: ["--includeorder=default", "--linelength=120"]
   - id: cppcheck
 
 ## Python support

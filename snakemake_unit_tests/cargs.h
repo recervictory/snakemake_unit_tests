@@ -118,6 +118,10 @@ class params {
     @param key YAML key corresponding to this sequence
 
     note that null sequences are emitted as "key: ~" in YAML style
+
+    @warning this is expected to be run on a YAML::Emitter that has
+    already received a YAML::BeginMap token. if not, the output
+    format will be undefined and probably not what you want.
    */
   void emit_yaml_map(YAML::Emitter *out, const std::map<std::string, bool> &data, const std::string &key) const;
   /*!
@@ -127,8 +131,13 @@ class params {
     @param key YAML key corresponding to this sequence
 
     note that null sequences are emitted as "key: ~" in YAML style
+
+    @warning this is expected to be run on a YAML::Emitter that has
+    already received a YAML::BeginMap token. if not, the output
+    format will be undefined and probably not what you want.
    */
-  void emit_yaml_vector(YAML::Emitter *out, const std::vector<boost::filesystem::path> &data, const std::string &key) const;
+  void emit_yaml_vector(YAML::Emitter *out, const std::vector<boost::filesystem::path> &data,
+                        const std::string &key) const;
   /*!
     @brief provide verbose logging output
    */
@@ -370,7 +379,9 @@ class cargs {
     is for this option to be unnecessary, but it's exposed as an option just
     in case people come up with corner cases that the main logic cannot handle
    */
-  std::vector<std::string> get_added_files() const { return compute_parameter<std::vector<std::string> >("added-files", true); }
+  std::vector<std::string> get_added_files() const {
+    return compute_parameter<std::vector<std::string> >("added-files", true);
+  }
 
   /*!
     @brief get optional multiple directories (with relative paths) that will be
@@ -381,13 +392,17 @@ class cargs {
     is for this option to be unnecessary, but it's exposed as an option just
     in case people come up with corner  cases that the main logic cannot handle
    */
-  std::vector<std::string> get_added_directories() const { return compute_parameter<std::vector<std::string> >("added-directories", true); }
+  std::vector<std::string> get_added_directories() const {
+    return compute_parameter<std::vector<std::string> >("added-directories", true);
+  }
 
   /*!
     @brief get optional rule names to exclude from testing
     @return vector of all provided rules to exclude from test output
    */
-  std::vector<std::string> get_exclude_rules() const { return compute_parameter<std::vector<std::string> >("exclude-rules", true); }
+  std::vector<std::string> get_exclude_rules() const {
+    return compute_parameter<std::vector<std::string> >("exclude-rules", true);
+  }
 
   /*!
     @brief get user flag for overriding default behavior and adding entire DAG
@@ -516,7 +531,8 @@ class cargs {
     @param params_entry the value for the parameter loaded from the yaml config
     @return the resolved value from the two provided
   */
-  boost::filesystem::path override_if_specified(const std::string &cli_entry, const boost::filesystem::path &params_entry) const;
+  boost::filesystem::path override_if_specified(const std::string &cli_entry,
+                                                const boost::filesystem::path &params_entry) const;
 
   /*!
     @brief append any CLI entries for a multitoken parameter to
@@ -561,7 +577,8 @@ class cargs {
     @param prefix optional prefix for actual file; can be empty
     @param msg name of parameter flag for error messages
    */
-  void check_regular_file(const boost::filesystem::path &p, const boost::filesystem::path &prefix, const std::string &msg) const;
+  void check_regular_file(const boost::filesystem::path &p, const boost::filesystem::path &prefix,
+                          const std::string &msg) const;
   /*!
     @brief given a path, enforce it being a directory, and
     gently clean up its format
@@ -569,7 +586,8 @@ class cargs {
     @param prefix optional prefix for actual directory; can be empty
     @param msg name of parameter flag for error messages
    */
-  void check_and_fix_dir(boost::filesystem::path *p, const boost::filesystem::path &prefix, const std::string &msg) const;
+  void check_and_fix_dir(boost::filesystem::path *p, const boost::filesystem::path &prefix,
+                         const std::string &msg) const;
 
   /*!
     @brief cast entries of a vector into something else
