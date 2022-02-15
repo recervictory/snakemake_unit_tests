@@ -63,7 +63,8 @@ void snakemake_unit_tests::GlobalNamespaceTest::test_split_comma_list_4() {
   expected_vec.push_back("abc");
   expected_vec.push_back("def");
   split_comma_list("abc, def", &split_vec);
-  CPPUNIT_ASSERT_MESSAGE("split_comma_list: double entry with single comma splits into two tokens", split_vec == expected_vec);
+  CPPUNIT_ASSERT_MESSAGE("split_comma_list: double entry with single comma splits into two tokens",
+                         split_vec == expected_vec);
 }
 
 void snakemake_unit_tests::GlobalNamespaceTest::test_split_comma_list_5() {
@@ -73,7 +74,8 @@ void snakemake_unit_tests::GlobalNamespaceTest::test_split_comma_list_5() {
   expected_vec.push_back("22");
   expected_vec.push_back("333");
   split_comma_list("1, 22, 333", &split_vec);
-  CPPUNIT_ASSERT_MESSAGE("split_comma_list: triple entry with two commas splits into three tokens", split_vec == expected_vec);
+  CPPUNIT_ASSERT_MESSAGE("split_comma_list: triple entry with two commas splits into three tokens",
+                         split_vec == expected_vec);
 }
 
 void snakemake_unit_tests::GlobalNamespaceTest::test_split_comma_list_6() {
@@ -85,7 +87,8 @@ void snakemake_unit_tests::GlobalNamespaceTest::test_split_comma_list_6() {
   expected_vec.push_back("");
   expected_vec.push_back("");
   split_comma_list(", , , , ", &split_vec);
-  CPPUNIT_ASSERT_MESSAGE("split_comma_list: multiple consecutive commas returns empty strings", split_vec == expected_vec);
+  CPPUNIT_ASSERT_MESSAGE("split_comma_list: multiple consecutive commas returns empty strings",
+                         split_vec == expected_vec);
 }
 
 void snakemake_unit_tests::GlobalNamespaceTest::test_split_comma_list_7() {
@@ -115,46 +118,46 @@ void snakemake_unit_tests::GlobalNamespaceTest::test_split_comma_list_8() {
   CPPUNIT_ASSERT_MESSAGE("split_comma_list: combined test", split_vec == expected_vec);
 }
 
-void snakemake_unit_tests::GlobalNamespaceTest::test_concatenate_string_literals_1() {
+void snakemake_unit_tests::GlobalNamespaceTest::test_append_resolved_line_1() {
   std::string resolved_line = "";
   std::string aggregated_line = "";
   std::vector<std::string> results;
   // single line added to empty vector with no aggregated content
   resolved_line = " here is my line";
-  concatenate_string_literals(resolved_line, &aggregated_line, &results);
+  append_resolved_line(resolved_line, &aggregated_line, &results);
   CPPUNIT_ASSERT(aggregated_line.empty());
   CPPUNIT_ASSERT(results.size() == 1);
   CPPUNIT_ASSERT(!results.at(0).compare(" here is my line"));
 }
 
-void snakemake_unit_tests::GlobalNamespaceTest::test_concatenate_string_literals_2() {
+void snakemake_unit_tests::GlobalNamespaceTest::test_append_resolved_line_2() {
   std::string resolved_line = "";
   std::string aggregated_line = "";
   std::vector<std::string> results;
   // single line added to empty vector with aggregated content
   resolved_line = " here is my line";
   aggregated_line = " stuff at the beginning";
-  concatenate_string_literals(resolved_line, &aggregated_line, &results);
+  append_resolved_line(resolved_line, &aggregated_line, &results);
   CPPUNIT_ASSERT(aggregated_line.empty());
   CPPUNIT_ASSERT(results.size() == 1);
   CPPUNIT_ASSERT(!results.at(0).compare(" stuff at the beginning here is my line"));
 }
 
-void snakemake_unit_tests::GlobalNamespaceTest::test_concatenate_string_literals_3() {
+void snakemake_unit_tests::GlobalNamespaceTest::test_append_resolved_line_3() {
   std::string resolved_line = "";
   std::string aggregated_line = "";
   std::vector<std::string> results;
   // single line added to full vector with no merge required and no aggregated content
   resolved_line = " no merge here";
   results.push_back("stuff that's already' present");
-  concatenate_string_literals(resolved_line, &aggregated_line, &results);
+  append_resolved_line(resolved_line, &aggregated_line, &results);
   CPPUNIT_ASSERT(aggregated_line.empty());
   CPPUNIT_ASSERT(results.size() == 2);
   CPPUNIT_ASSERT(!results.at(0).compare("stuff that's already' present"));
   CPPUNIT_ASSERT(!results.at(1).compare(" no merge here"));
 }
 
-void snakemake_unit_tests::GlobalNamespaceTest::test_concatenate_string_literals_4() {
+void snakemake_unit_tests::GlobalNamespaceTest::test_append_resolved_line_4() {
   std::string resolved_line = "";
   std::string aggregated_line = "";
   std::vector<std::string> results;
@@ -162,204 +165,91 @@ void snakemake_unit_tests::GlobalNamespaceTest::test_concatenate_string_literals
   resolved_line = " no merge here";
   aggregated_line = " why was this here before";
   results.push_back("starting content");
-  concatenate_string_literals(resolved_line, &aggregated_line, &results);
+  append_resolved_line(resolved_line, &aggregated_line, &results);
   CPPUNIT_ASSERT(aggregated_line.empty());
   CPPUNIT_ASSERT(results.size() == 2);
   CPPUNIT_ASSERT(!results.at(0).compare("starting content"));
   CPPUNIT_ASSERT(!results.at(1).compare(" why was this here before no merge here"));
 }
 
-void snakemake_unit_tests::GlobalNamespaceTest::test_concatenate_string_literals_5() {
+void snakemake_unit_tests::GlobalNamespaceTest::test_append_resolved_line_5() {
   std::string resolved_line = "";
   std::string aggregated_line = "";
   std::vector<std::string> results;
   // vector ends in ", newline starts in '
-  // single line added to full vector with merge required and no aggregated
-  // content
+  // old functionality for merging lines is disabled
   resolved_line = "'here is a thing'";
   results.push_back("thing1");
   results.push_back("\"thing 2\"");
-  concatenate_string_literals(resolved_line, &aggregated_line, &results);
+  append_resolved_line(resolved_line, &aggregated_line, &results);
   CPPUNIT_ASSERT(aggregated_line.empty());
-  CPPUNIT_ASSERT(results.size() == 2);
+  CPPUNIT_ASSERT(results.size() == 3);
   CPPUNIT_ASSERT(!results.at(0).compare("thing1"));
-  CPPUNIT_ASSERT(!results.at(1).compare("\"thing 2\"\n'here is a thing'"));
+  CPPUNIT_ASSERT(!results.at(1).compare("\"thing 2\""));
+  CPPUNIT_ASSERT(!results.at(2).compare("'here is a thing'"));
 }
 
-void snakemake_unit_tests::GlobalNamespaceTest::test_concatenate_string_literals_6() {
-  std::string resolved_line = "";
-  std::string aggregated_line = "";
-  std::vector<std::string> results;
-  // single line added to full vector with merge required and aggregated content
-  resolved_line = "here is a thing";
-  aggregated_line = "'here is a thing'";
-  results.push_back("thing1");
-  results.push_back("\"thing 2\"");
-  concatenate_string_literals(resolved_line, &aggregated_line, &results);
-  CPPUNIT_ASSERT(aggregated_line.empty());
-  CPPUNIT_ASSERT(results.size() == 2);
-  CPPUNIT_ASSERT(!results.at(0).compare("thing1"));
-  CPPUNIT_ASSERT(!results.at(1).compare("\"thing 2\"\n'here is a thing'here is a thing"));
-}
-
-void snakemake_unit_tests::GlobalNamespaceTest::test_concatenate_string_literals_7() {
-  std::string resolved_line = "";
-  std::string aggregated_line = "";
-  std::vector<std::string> results;
-  // vector ends in ", newline starts in "
-  // single line added to full vector with merge required and no aggregated content
-  resolved_line = "\"here is a thing\"";
-  results.push_back("thing1");
-  results.push_back("\"thing 2\"");
-  concatenate_string_literals(resolved_line, &aggregated_line, &results);
-  CPPUNIT_ASSERT(aggregated_line.empty());
-  CPPUNIT_ASSERT(results.size() == 2);
-  CPPUNIT_ASSERT(!results.at(0).compare("thing1"));
-  CPPUNIT_ASSERT(!results.at(1).compare("\"thing 2\"\n\"here is a thing\""));
-}
-
-void snakemake_unit_tests::GlobalNamespaceTest::test_concatenate_string_literals_8() {
-  std::string resolved_line = "";
-  std::string aggregated_line = "";
-  std::vector<std::string> results;
-  // single line added to full vector with merge required and aggregated content
-  resolved_line = "here is a thing";
-  aggregated_line = "\"here is a thing\"";
-  results.push_back("thing1");
-  results.push_back("\"thing 2\"");
-  concatenate_string_literals(resolved_line, &aggregated_line, &results);
-  CPPUNIT_ASSERT(aggregated_line.empty());
-  CPPUNIT_ASSERT(results.size() == 2);
-  CPPUNIT_ASSERT(!results.at(0).compare("thing1"));
-  CPPUNIT_ASSERT(!results.at(1).compare("\"thing 2\"\n\"here is a thing\"here is a thing"));
-}
-
-void snakemake_unit_tests::GlobalNamespaceTest::test_concatenate_string_literals_9() {
-  std::string resolved_line = "";
-  std::string aggregated_line = "";
-  std::vector<std::string> results;
-  // vector ends in ', newline starts in "
-  // single line added to full vector with merge required and no aggregated content
-  resolved_line = "\"here is a thing\"";
-  results.push_back("thing1");
-  results.push_back("'thing 2'");
-  concatenate_string_literals(resolved_line, &aggregated_line, &results);
-  CPPUNIT_ASSERT(aggregated_line.empty());
-  CPPUNIT_ASSERT(results.size() == 2);
-  CPPUNIT_ASSERT(!results.at(0).compare("thing1"));
-  CPPUNIT_ASSERT(!results.at(1).compare("'thing 2'\n\"here is a thing\""));
-}
-
-void snakemake_unit_tests::GlobalNamespaceTest::test_concatenate_string_literals_10() {
-  std::string resolved_line = "";
-  std::string aggregated_line = "";
-  std::vector<std::string> results;
-  // single line added to full vector with merge required and aggregated content
-  resolved_line = "here is a thing";
-  aggregated_line = "\"here is a thing\"";
-  results.push_back("thing1");
-  results.push_back("'thing 2'");
-  concatenate_string_literals(resolved_line, &aggregated_line, &results);
-  CPPUNIT_ASSERT(aggregated_line.empty());
-  CPPUNIT_ASSERT(results.size() == 2);
-  CPPUNIT_ASSERT(!results.at(0).compare("thing1"));
-  CPPUNIT_ASSERT(!results.at(1).compare("'thing 2'\n\"here is a thing\"here is a thing"));
-}
-
-void snakemake_unit_tests::GlobalNamespaceTest::test_concatenate_string_literals_11() {
-  std::string resolved_line = "";
-  std::string aggregated_line = "";
-  std::vector<std::string> results;
-  // vector ends in ', newline starts in '
-  // single line added to full vector with merge required and no aggregated
-  // content
-  resolved_line = "'here is a thing'";
-  results.push_back("thing1");
-  results.push_back("'thing 2'");
-  concatenate_string_literals(resolved_line, &aggregated_line, &results);
-  CPPUNIT_ASSERT(aggregated_line.empty());
-  CPPUNIT_ASSERT(results.size() == 2);
-  CPPUNIT_ASSERT(!results.at(0).compare("thing1"));
-  CPPUNIT_ASSERT(!results.at(1).compare("'thing 2'\n'here is a thing'"));
-}
-
-void snakemake_unit_tests::GlobalNamespaceTest::test_concatenate_string_literals_12() {
-  std::string resolved_line = "";
-  std::string aggregated_line = "";
-  std::vector<std::string> results;
-  // single line added to full vector with merge required and aggregated content
-  resolved_line = "here is a thing";
-  aggregated_line = "'here is a thing'";
-  results.push_back("thing1");
-  results.push_back("'thing 2'");
-  concatenate_string_literals(resolved_line, &aggregated_line, &results);
-  CPPUNIT_ASSERT(aggregated_line.empty());
-  CPPUNIT_ASSERT(results.size() == 2);
-  CPPUNIT_ASSERT(!results.at(0).compare("thing1"));
-  CPPUNIT_ASSERT(!results.at(1).compare("'thing 2'\n'here is a thing'here is a thing"));
-}
-
-void snakemake_unit_tests::GlobalNamespaceTest::test_concatenate_string_literals_13() {
+void snakemake_unit_tests::GlobalNamespaceTest::test_append_resolved_line_13() {
   std::string resolved_line = "";
   std::string aggregated_line = "";
   std::vector<std::string> results;
   // both previous and current strings are empty
   results.push_back("");
-  concatenate_string_literals(resolved_line, &aggregated_line, &results);
+  append_resolved_line(resolved_line, &aggregated_line, &results);
   CPPUNIT_ASSERT(aggregated_line.empty());
   CPPUNIT_ASSERT(results.size() == 2);
   CPPUNIT_ASSERT(results.at(0).empty());
   CPPUNIT_ASSERT(results.at(1).empty());
 }
 
-void snakemake_unit_tests::GlobalNamespaceTest::test_concatenate_string_literals_14() {
+void snakemake_unit_tests::GlobalNamespaceTest::test_append_resolved_line_14() {
   std::string resolved_line = "";
   std::string aggregated_line = "";
   std::vector<std::string> results;
   // only previous string is empty
   results.push_back("");
   resolved_line = "thingy";
-  concatenate_string_literals(resolved_line, &aggregated_line, &results);
+  append_resolved_line(resolved_line, &aggregated_line, &results);
   CPPUNIT_ASSERT(aggregated_line.empty());
   CPPUNIT_ASSERT(results.size() == 2);
   CPPUNIT_ASSERT(results.at(0).empty());
   CPPUNIT_ASSERT(!results.at(1).compare("thingy"));
 }
 
-void snakemake_unit_tests::GlobalNamespaceTest::test_concatenate_string_literals_15() {
+void snakemake_unit_tests::GlobalNamespaceTest::test_append_resolved_line_15() {
   std::string resolved_line = "";
   std::string aggregated_line = "";
   std::vector<std::string> results;
   // only current string is empty
   results.push_back("thingy");
-  concatenate_string_literals(resolved_line, &aggregated_line, &results);
+  append_resolved_line(resolved_line, &aggregated_line, &results);
   CPPUNIT_ASSERT(aggregated_line.empty());
   CPPUNIT_ASSERT(results.size() == 2);
   CPPUNIT_ASSERT(!results.at(0).compare("thingy"));
   CPPUNIT_ASSERT(results.at(1).empty());
 }
 
-void snakemake_unit_tests::GlobalNamespaceTest::test_concatenate_string_literals_16() {
+void snakemake_unit_tests::GlobalNamespaceTest::test_append_resolved_line_16() {
   std::string resolved_line = "";
   std::string aggregated_line = "";
   std::vector<std::string> results;
   // trailing whitespace is removed
   resolved_line = "here is some content   \t";
-  concatenate_string_literals(resolved_line, &aggregated_line, &results);
+  append_resolved_line(resolved_line, &aggregated_line, &results);
   CPPUNIT_ASSERT(results.size() == 1);
   CPPUNIT_ASSERT(aggregated_line.empty());
   CPPUNIT_ASSERT(!results.at(0).compare("here is some content"));
 }
 
-void snakemake_unit_tests::GlobalNamespaceTest::test_concatenate_string_literals_null_arg1() {
+void snakemake_unit_tests::GlobalNamespaceTest::test_append_resolved_line_null_arg1() {
   std::string resolved_line = "";
   std::vector<std::string> results;
-  concatenate_string_literals(resolved_line, NULL, &results);
+  append_resolved_line(resolved_line, NULL, &results);
 }
 
-void snakemake_unit_tests::GlobalNamespaceTest::test_concatenate_string_literals_null_arg2() {
+void snakemake_unit_tests::GlobalNamespaceTest::test_append_resolved_line_null_arg2() {
   std::string resolved_line = "", aggregated_line = "";
-  concatenate_string_literals(resolved_line, &aggregated_line, NULL);
+  append_resolved_line(resolved_line, &aggregated_line, NULL);
 }
 
 void snakemake_unit_tests::GlobalNamespaceTest::test_resolve_string_delimiter_1() {
@@ -757,7 +647,7 @@ void snakemake_unit_tests::GlobalNamespaceTest::test_lexical_parse() {
   input.push_back(" handled identically \"\"\"");
   input.push_back("");
   input.push_back("");
-  input.push_back("example: \"aggregated strings are glued together\"  ");
+  input.push_back("example: \"aggregated strings are not glued together\"  ");
   input.push_back(" 'in a way that preserves python syntax' ");
 
   expected.push_back("   standard lines are preserved");
@@ -769,10 +659,12 @@ void snakemake_unit_tests::GlobalNamespaceTest::test_lexical_parse() {
   expected.push_back("example: \"comment characters within quotes like # are preserved\"");
   expected.push_back("example: \"\"\" literals crossing lines are \n       merged together sensibly \"\"\"");
   expected.push_back("");
-  expected.push_back("example: \"\"\" multiple literals on the same \"\"\" line are \"\"\"\n handled identically \"\"\"");
+  expected.push_back(
+      "example: \"\"\" multiple literals on the same \"\"\" line are \"\"\"\n handled identically \"\"\"");
   expected.push_back("");
   expected.push_back("");
-  expected.push_back("example: \"aggregated strings are glued together\"\n 'in a way that preserves python syntax'");
+  expected.push_back("example: \"aggregated strings are not glued together\"");
+  expected.push_back(" 'in a way that preserves python syntax'");
 
   output = lexical_parse(input);
 
