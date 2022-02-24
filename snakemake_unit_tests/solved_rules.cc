@@ -354,6 +354,27 @@ void snakemake_unit_tests::solved_rules::copy_contents(const std::vector<boost::
   for (std::vector<boost::filesystem::path>::const_iterator iter = contents.begin(); iter != contents.end(); ++iter) {
     boost::filesystem::path source_file = source_prefix / *iter;
     boost::filesystem::path target_file = target_prefix / *iter;
+    // deal with the fact that source prefix might be an absolute path :(
+    if (boost::filesystem::absolute(*iter) == *iter) {
+      // corner case: for some reason, snakemake is tracking absolute path of
+      // something that is still actually in the pipeline directory
+      if (boost::filesystem::canonical(boost::filesystem::absolute(*iter))
+              .string()
+              .find(boost::filesystem::canonical(boost::filesystem::absolute(source_prefix)).string()) == 0) {
+        source_file = *iter;
+        target_file = target_prefix / boost::filesystem::relative(
+                                          boost::filesystem::canonical(boost::filesystem::absolute(*iter)),
+                                          boost::filesystem::canonical(boost::filesystem::absolute(source_prefix)));
+      } else {
+        std::cout << "warning: absolute path input file detected: \"" << iter->string()
+                  << "\". for consistency, this file will *not* be copied. your unit tests "
+                  << "will function, but they will not be modular in the sense that you cannot "
+                  << "in most cases move them off your filesystem. to avoid this problem, "
+                  << "configure your pipeline to only take inputs inside the pipeline directory itself; "
+                  << "or add the impacted rule to your excluded ruleset in your configuration." << std::endl;
+        continue;
+      }
+    }
     // check source exists
     if (!boost::filesystem::is_regular_file(source_file) && !boost::filesystem::is_directory(source_file)) {
       throw std::runtime_error("cannot find file/directory \"" + source_file.string() + "\" for " + rule_name);
