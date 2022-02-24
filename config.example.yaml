@@ -131,6 +131,7 @@ exclude-extensions:
   - .html
   - .log
   - .bai
+  - .idx
 
 # exclude-paths: [scalar or sequence]
 ## optionally exclude file paths (or fragments of such) for comparison
