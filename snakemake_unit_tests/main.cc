@@ -48,8 +48,12 @@ int main(int argc, char **argv) {
   // parse the top-level snakefile and all include files (hopefully)
   snakemake_unit_tests::snakemake_file sf;
   // express snakefile as path relative to top-level pipeline dir
-  std::string snakefile_str = boost::filesystem::absolute(p.snakefile).string();
-  std::string pipeline_str = boost::filesystem::absolute(p.pipeline_top_dir).string();
+  std::string snakefile_str = boost::filesystem::canonical(boost::filesystem::absolute(p.snakefile)).string();
+  std::string pipeline_str = boost::filesystem::canonical(boost::filesystem::absolute(p.pipeline_top_dir)).string();
+  if (p.verbose) {
+    std::cout << "computed snakefile (absolute) is " << snakefile_str << std::endl;
+    std::cout << "computed pipeline top dir (absolute) is " << pipeline_str << std::endl;
+  }
   if (snakefile_str.find(pipeline_str) != 0) {
     throw std::runtime_error("configured snakefile \"" + p.snakefile.string() +
                              "\" is not a subdirectory of the pipeline top directory \"" + p.pipeline_top_dir.string() +
