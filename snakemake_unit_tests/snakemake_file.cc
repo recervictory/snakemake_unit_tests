@@ -339,12 +339,18 @@ bool snakemake_unit_tests::snakemake_file::resolve_with_python(const boost::file
         boost::filesystem::canonical(pipeline_top_dir / _snakefile_relative_path);
     std::string adjusted_snakefile = complete_snakefile_loc.string().substr(complete_run_directory.string().size() + 1);
     // execute python script and capture output
+    if (verbose) {
+      std::cout << "\texecuting snakemake" << std::endl;
+    }
     std::vector<std::string> results =
         exec("cd " + (workspace / pipeline_run_dir).string() + " && snakemake -nFs " + adjusted_snakefile);
     // capture the resulting tags for updating completion status
     std::map<std::string, std::string> tag_values;
     capture_python_tag_values(results, &tag_values);
     process_python_results(workspace, pipeline_top_dir, verbose, tag_values, output_name);
+    if (verbose) {
+      std::cout << "\tprocessing tagged python output" << std::endl;
+    }
     for (std::map<boost::filesystem::path, boost::shared_ptr<snakemake_file> >::iterator mapper =
              _included_files.begin();
          mapper != _included_files.end(); ++mapper) {
@@ -352,6 +358,9 @@ bool snakemake_unit_tests::snakemake_file::resolve_with_python(const boost::file
     }
   }
   output.close();
+  if (verbose) {
+    std::cout << "\tpython pass complete" << std::endl;
+  }
   return reporting_terminated;
 }
 
@@ -412,7 +421,7 @@ bool snakemake_unit_tests::snakemake_file::process_python_results(const boost::f
         load_lines(input_name, &loaded_lines);
         if (verbose)
           std::cout << "\t\tthe file has not been loaded before, loading it now: " << input_name << std::endl;
-        loaded_lines = lexical_parse(loaded_lines);
+        loaded_lines = lexical_parse(loaded_lines, verbose);
         if (verbose) std::cout << "\t\t\tlexical parse successful" << std::endl;
         boost::shared_ptr<snakemake_file> ptr(new snakemake_file(_tag_counter));
         ptr->parse_file(loaded_lines, ptr->get_blocks().begin(), computed_relative_suffix, verbose);
