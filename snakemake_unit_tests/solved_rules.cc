@@ -121,11 +121,14 @@ void snakemake_unit_tests::solved_rules::emit_tests(
   // repo files for creating pytest infrastructure
   boost::filesystem::path inst_test_py = inst_dir / "test.py";
   boost::filesystem::path inst_common_py = inst_dir / "common.py";
-  if (!boost::filesystem::is_regular_file(inst_test_py) || !boost::filesystem::is_regular_file(inst_common_py))
+  boost::filesystem::path inst_launcher_bash = inst_dir / "pytest_runner.bash";
+  if (!boost::filesystem::is_regular_file(inst_test_py) || !boost::filesystem::is_regular_file(inst_common_py) ||
+      !boost::filesystem::is_regular_file(inst_launcher_bash)) {
     throw std::runtime_error(
         "cannot locate required files test.py or common.py "
         "in inst directory \"" +
         inst_dir.string() + "\"");
+  }
 
   // iterate across loaded recipes, creating tests as you go
   std::map<std::string, bool> test_history;
@@ -142,6 +145,7 @@ void snakemake_unit_tests::solved_rules::emit_tests(
     boost::filesystem::copy(
         inst_common_py, test_parent_path,
         boost::filesystem::copy_options::overwrite_existing | boost::filesystem::copy_options::recursive);
+    report_modified_launcher_script(test_parent_path, output_test_dir, inst_launcher_bash);
   }
 }
 
@@ -439,6 +443,27 @@ void snakemake_unit_tests::solved_rules::report_modified_test_script(
   if (!input.is_open()) throw std::runtime_error("cannot read installed file \"" + inst_test_py.string() + "\"");
   if (!(output << input.rdbuf()))
     throw std::runtime_error("cannot dump \"" + inst_test_py.string() + "\" to output \"" + test_python_file + "\"");
+  input.close();
+  output.close();
+}
+
+void snakemake_unit_tests::solved_rules::report_modified_launcher_script(
+    const boost::filesystem::path &parent_dir, const boost::filesystem::path &test_dir,
+    const boost::filesystem::path &inst_launcher_script) const {
+  std::ifstream input;
+  std::ofstream output;
+  std::string launcher_file = (parent_dir / "pytest_runner.bash").string();
+  output.open(launcher_file.c_str());
+  if (!output.is_open()) throw std::runtime_error("cannot write launcher file \"" + launcher_file + "\"");
+  if (!(output << "#!/usr/bin/env bash\nSNAKEMAKE_UNIT_TESTS_DIR=" << test_dir.string() << std::endl)) {
+    throw std::runtime_error("cannot write bash header to \"" + launcher_file + "\"");
+  }
+  input.open(inst_launcher_script.string().c_str());
+  if (!input.is_open())
+    throw std::runtime_error("cannot read installed file \"" + inst_launcher_script.string() + "\"");
+  if (!(output << input.rdbuf()))
+    throw std::runtime_error("cannot dump \"" + inst_launcher_script.string() + "\" to output \"" + launcher_file +
+                             "\"");
   input.close();
   output.close();
 }

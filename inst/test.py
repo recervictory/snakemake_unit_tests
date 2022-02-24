@@ -26,9 +26,7 @@ byte_comparisons = list(config["byte-comparisons"] or "")
 def test_function():
 
     with TemporaryDirectory() as tmpdir:
-        rundir = (
-            Path(tmpdir) / "rundir"
-        )  # FOR TESTING: PurePosixPath(testdir + "/unit/out_" + rulename)
+        rundir = PurePosixPath("{}/unit/{}/output".format(testdir, rulename))
         workspace_path = PurePosixPath("{}/unit/{}/workspace".format(testdir, rulename))
         expected_path = PurePosixPath("{}/unit/{}/expected".format(testdir, rulename))
 
