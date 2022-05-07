@@ -39,6 +39,13 @@ void snakemake_unit_tests::cargsTest::setUp() {
       "-p project -r rundir -s Snakefile -v";
   populate_arguments(longform, &_arg_vec_long, &_argv_long);
   populate_arguments(shortform, &_arg_vec_short, &_argv_short);
+  unsigned buffer_size = std::filesystem::temp_directory_path().string().size() + 20;
+  _tmp_dir = new char[buffer_size];
+  strncpy(_tmp_dir, (std::filesystem::temp_directory_path().string() + "/sutCATXXXXXX").c_str(), buffer_size);
+  char *res = mkdtemp(_tmp_dir);
+  if (!res) {
+    throw std::runtime_error("cargsTest mkdtemp failed");
+  }
 }
 
 void snakemake_unit_tests::cargsTest::tearDown() {
@@ -49,6 +56,10 @@ void snakemake_unit_tests::cargsTest::tearDown() {
   if (_argv_short) {
     delete[] _argv_short;
     _argv_short = 0;
+  }
+  if (_tmp_dir) {
+    std::filesystem::remove_all(std::filesystem::path(_tmp_dir));
+    delete[] _tmp_dir;
   }
 }
 
@@ -395,11 +406,117 @@ void snakemake_unit_tests::cargsTest::test_cargs_print_help() {
   CPPUNIT_ASSERT_MESSAGE("cargs help string printed", !o1.str().compare(o2.str()));
 }
 void snakemake_unit_tests::cargsTest::test_cargs_override_if_specified() {}
-void snakemake_unit_tests::cargsTest::test_cargs_add_contents_to_vector() {}
-void snakemake_unit_tests::cargsTest::test_cargs_add_contents_to_map() {}
-void snakemake_unit_tests::cargsTest::test_cargs_check_nonempty() {}
-void snakemake_unit_tests::cargsTest::test_cargs_check_regular_file() {}
-void snakemake_unit_tests::cargsTest::test_cargs_check_and_fix_dir() {}
-void snakemake_unit_tests::cargsTest::test_cargs_vector_convert() {}
+void snakemake_unit_tests::cargsTest::test_cargs_add_contents_to_vector() {
+  std::vector<std::string> vec1, vec2;
+  vec1.push_back("oldarg");
+  vec2.push_back("newarg1");
+  vec2.push_back("newarg2");
+  cargs ap(_arg_vec_long.size(), _argv_long);
+  ap.add_contents<std::string>(vec2, &vec1);
+  CPPUNIT_ASSERT_MESSAGE("add_contents to vector results in correct size", vec1.size() == 3);
+  CPPUNIT_ASSERT(!vec1.at(0).compare("oldarg"));
+  CPPUNIT_ASSERT(!vec1.at(1).compare("newarg1"));
+  CPPUNIT_ASSERT(!vec1.at(2).compare("newarg2"));
+}
+void snakemake_unit_tests::cargsTest::test_cargs_add_contents_to_vector_null_pointer() {
+  cargs ap(_arg_vec_long.size(), _argv_long);
+  ap.add_contents<std::string>(std::vector<std::string>(), reinterpret_cast<std::vector<std::string> *>(NULL));
+}
+void snakemake_unit_tests::cargsTest::test_cargs_add_contents_to_map() {
+  std::map<std::string, bool> map1;
+  std::vector<std::string> vec2;
+  map1["oldarg"] = false;
+  vec2.push_back("newarg1");
+  vec2.push_back("newarg2");
+  cargs ap(_arg_vec_long.size(), _argv_long);
+  ap.add_contents<std::string>(vec2, &map1);
+  CPPUNIT_ASSERT_MESSAGE("add_contents to map results in correct size", map1.size() == 3);
+  std::map<std::string, bool>::const_iterator finder;
+  CPPUNIT_ASSERT((finder = map1.find("oldarg")) != map1.end() && !finder->second);
+  CPPUNIT_ASSERT((finder = map1.find("newarg1")) != map1.end() && finder->second);
+  CPPUNIT_ASSERT((finder = map1.find("newarg2")) != map1.end() && finder->second);
+}
+void snakemake_unit_tests::cargsTest::test_cargs_add_contents_to_map_null_pointer() {
+  cargs ap(_arg_vec_long.size(), _argv_long);
+  ap.add_contents<std::string>(std::vector<std::string>(), reinterpret_cast<std::map<std::string, bool> *>(NULL));
+}
+void snakemake_unit_tests::cargsTest::test_cargs_check_nonempty() {
+  // this currently throws exception if it is empty, so this is just... check that it runs
+  cargs ap(_arg_vec_long.size(), _argv_long);
+  boost::filesystem::path p("placeholder");
+  ap.check_nonempty(p, "my parameter goes here");
+}
+void snakemake_unit_tests::cargsTest::test_cargs_check_nonempty_invalid_path() {
+  cargs ap(_arg_vec_long.size(), _argv_long);
+  boost::filesystem::path p;
+  ap.check_nonempty(p, "empty parameter");
+}
+void snakemake_unit_tests::cargsTest::test_cargs_check_regular_file() {
+  // create a regular file under allocated tmp directory
+  std::string file_suffix = "check_regular_file.txt";
+  std::ofstream output;
+  output.open((_tmp_dir + std::string("/") + file_suffix).c_str());
+  if (!output.is_open()) throw std::runtime_error("cargs check_regular_file: unable to write file");
+  output.close();
+  cargs ap(_arg_vec_long.size(), _argv_long);
+  ap.check_regular_file(boost::filesystem::path(std::string(_tmp_dir)) / file_suffix, boost::filesystem::path(),
+                        "file with null prefix");
+  ap.check_regular_file(boost::filesystem::path(file_suffix), boost::filesystem::path(std::string(_tmp_dir)),
+                        "file with prefix");
+}
+void snakemake_unit_tests::cargsTest::test_cargs_check_regular_file_not_file() {
+  // can pass it whatever?
+  cargs ap(_arg_vec_long.size(), _argv_long);
+  ap.check_regular_file(boost::filesystem::path(std::string(_tmp_dir)), boost::filesystem::path(""),
+                        "actually a directory");
+}
+void snakemake_unit_tests::cargsTest::test_cargs_check_and_fix_dir() {
+  cargs ap(_arg_vec_long.size(), _argv_long);
+  boost::filesystem::path p(std::string(_tmp_dir) + "/");
+  // check that it strips trailing separator
+  ap.check_and_fix_dir(&p, boost::filesystem::path(), "simple directory with trailing suffix");
+  CPPUNIT_ASSERT_MESSAGE("cargs check_and_fix_dir strips trailing separator",
+                         !p.string().compare(std::string(_tmp_dir)));
+  // check that it preserves directory without trailing separator
+  ap.check_and_fix_dir(&p, boost::filesystem::path(), "simple directory without trailing suffix");
+  CPPUNIT_ASSERT_MESSAGE("cargs check_and_fix_dir preserves directory without trailing suffix",
+                         !p.string().compare(std::string(_tmp_dir)));
+  // check that it glues prefix on correctly
+  std::filesystem::create_directory(std::string(_tmp_dir) + "/check_and_fix_dir");
+  boost::filesystem::path suffix("check_and_fix_dir");
+  ap.check_and_fix_dir(&suffix, boost::filesystem::path(std::string(_tmp_dir)), "directory requiring prefix");
+}
+
+void snakemake_unit_tests::cargsTest::test_cargs_check_and_fix_dir_null_pointer() {
+  cargs ap(_arg_vec_long.size(), _argv_long);
+  ap.check_and_fix_dir(reinterpret_cast<boost::filesystem::path *>(NULL), boost::filesystem::path(), "bad pointer");
+}
+
+void snakemake_unit_tests::cargsTest::test_cargs_check_and_fix_dir_not_directory() {
+  cargs ap(_arg_vec_long.size(), _argv_long);
+  // just in case, create a file
+  std::string filename = std::string(_tmp_dir) + "/check_and_fix_dir.txt";
+  std::ofstream output;
+  output.open(filename.c_str());
+  if (!output.is_open()) {
+    throw std::runtime_error("cargs check_and_fix_dir: cannot create file");
+  }
+  output.close();
+  boost::filesystem::path p("check_and_fix_dir.txt");
+  ap.check_and_fix_dir(&p, boost::filesystem::path(std::string(_tmp_dir)), "invalid directory");
+}
+
+void snakemake_unit_tests::cargsTest::test_cargs_vector_convert() {
+  cargs ap(_arg_vec_long.size(), _argv_long);
+  std::vector<std::string> vec1;
+  vec1.push_back("0");
+  vec1.push_back("1");
+  vec1.push_back("2");
+  std::vector<boost::filesystem::path> vec2 = ap.vector_convert<boost::filesystem::path>(vec1);
+  CPPUNIT_ASSERT(vec1.size() == vec2.size());
+  CPPUNIT_ASSERT(!vec2.at(0).string().compare("0"));
+  CPPUNIT_ASSERT(!vec2.at(1).string().compare("1"));
+  CPPUNIT_ASSERT(!vec2.at(2).string().compare("2"));
+}
 
 CPPUNIT_TEST_SUITE_REGISTRATION(snakemake_unit_tests::cargsTest);
