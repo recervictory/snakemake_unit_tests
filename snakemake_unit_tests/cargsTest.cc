@@ -132,7 +132,67 @@ void snakemake_unit_tests::cargsTest::test_params_copy_constructor() {
   CPPUNIT_ASSERT(p.exclude_paths == q.exclude_paths);
   CPPUNIT_ASSERT(p.byte_comparisons == q.byte_comparisons);
 }
-void snakemake_unit_tests::cargsTest::test_params_report_settings() {}
+void snakemake_unit_tests::cargsTest::test_params_report_settings() {
+  boost::filesystem::path output_filename =
+      boost::filesystem::path(std::string(_tmp_dir)) / "params_report_settings.yaml";
+  params p;
+  p.output_test_dir = "outdir";
+  p.snakefile = "Snakefile";
+  p.pipeline_top_dir = "ptop";
+  p.pipeline_run_dir = "prun";
+  p.inst_dir = "inst";
+  p.snakemake_log = "slog";
+  std::vector<boost::filesystem::path> files, directories;
+  files.push_back("fname1");
+  files.push_back("fname2");
+  p.added_files = files;
+  directories.push_back("dname1");
+  directories.push_back("dname2");
+  p.added_directories = directories;
+  p.exclude_rules["rulename1"] = true;
+  p.exclude_rules["rulename2"] = true;
+  p.exclude_extensions.clear();
+  p.exclude_paths["path1"] = true;
+  p.byte_comparisons[".ext1"] = true;
+  p.byte_comparisons[".ext2"] = true;
+  p.byte_comparisons[".ext3"] = true;
+  p.report_settings(output_filename);
+  std::string pwd = boost::filesystem::current_path().string();
+  std::string expected_contents = "output-test-dir: " + pwd +
+                                  "/outdir\n"
+                                  "snakefile: " +
+                                  pwd +
+                                  "/Snakefile\n"
+                                  "pipeline-top-dir: " +
+                                  pwd +
+                                  "/ptop\n"
+                                  "pipeline-run-dir: " +
+                                  pwd +
+                                  "/prun\n"
+                                  "inst-dir: " +
+                                  pwd +
+                                  "/inst\n"
+                                  "snakemake-log: " +
+                                  pwd +
+                                  "/slog\n"
+                                  "added-files:\n  - fname1\n  - fname2\n"
+                                  "added-directories:\n  - dname1\n  - dname2\n"
+                                  "exclude-rules:\n  - rulename1\n  - rulename2\n"
+                                  "exclude-extensions: ~\n"
+                                  "exclude-paths:\n  - path1\n"
+                                  "byte-comparisons:\n  - .ext1\n  - .ext2\n  - .ext3\n";
+  std::ifstream input;
+  std::string line = "";
+  std::ostringstream observed_contents;
+  input.open(output_filename.string().c_str());
+  CPPUNIT_ASSERT(input.is_open());
+  while (input.peek() != EOF) {
+    getline(input, line);
+    observed_contents << line << '\n';
+  }
+  input.close();
+  CPPUNIT_ASSERT(!observed_contents.str().compare(expected_contents));
+}
 void snakemake_unit_tests::cargsTest::test_params_emit_yaml_map_multiple_entries() {
   YAML::Emitter out;
   std::string key = "mykey";
@@ -405,7 +465,21 @@ void snakemake_unit_tests::cargsTest::test_cargs_print_help() {
   o2 << ap._desc;
   CPPUNIT_ASSERT_MESSAGE("cargs help string printed", !o1.str().compare(o2.str()));
 }
-void snakemake_unit_tests::cargsTest::test_cargs_override_if_specified() {}
+void snakemake_unit_tests::cargsTest::test_cargs_override_if_specified() {
+  cargs ap(_arg_vec_long.size(), _argv_long);
+  boost::filesystem::path result;
+  result = ap.override_if_specified("cli-entry", boost::filesystem::path());
+  CPPUNIT_ASSERT_MESSAGE("cargs override_if_specified chooses CLI with NULL alternative",
+                         !result.string().compare("cli-entry"));
+  result = ap.override_if_specified("", boost::filesystem::path("yaml-entry"));
+  CPPUNIT_ASSERT_MESSAGE("cargs override_if_specified chooses yaml with NULL alternative",
+                         !result.string().compare("yaml-entry"));
+  result = ap.override_if_specified("", boost::filesystem::path());
+  CPPUNIT_ASSERT_MESSAGE("cargs override_if_specified quietly returns NULL if both entries are NULL",
+                         result.string().empty());
+  result = ap.override_if_specified("cli-entry", boost::filesystem::path("yaml-entry"));
+  CPPUNIT_ASSERT_MESSAGE("cargs override_if_specified prefers CLI entry", !result.string().compare("cli-entry"));
+}
 void snakemake_unit_tests::cargsTest::test_cargs_add_contents_to_vector() {
   std::vector<std::string> vec1, vec2;
   vec1.push_back("oldarg");
