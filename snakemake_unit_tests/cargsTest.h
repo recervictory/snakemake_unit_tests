@@ -63,6 +63,7 @@ class cargsTest : public CppUnit::TestFixture {
   CPPUNIT_TEST(test_cargs_verbose);
   CPPUNIT_TEST(test_cargs_compute_flag);
   CPPUNIT_TEST(test_cargs_compute_parameter);
+  CPPUNIT_TEST_EXCEPTION(test_cargs_compute_missing_required_parameter, std::domain_error);
   CPPUNIT_TEST(test_cargs_print_help);
   CPPUNIT_TEST(test_cargs_override_if_specified);
   CPPUNIT_TEST(test_cargs_add_contents_to_vector);
@@ -116,6 +117,7 @@ class cargsTest : public CppUnit::TestFixture {
   void test_cargs_verbose();
   void test_cargs_compute_flag();
   void test_cargs_compute_parameter();
+  void test_cargs_compute_missing_required_parameter();
   void test_cargs_print_help();
   void test_cargs_override_if_specified();
   void test_cargs_add_contents_to_vector();

@@ -302,27 +302,107 @@ void snakemake_unit_tests::cargsTest::test_cargs_help() {
   cargs ap(_argc, _argv_long);
   CPPUNIT_ASSERT_MESSAGE("cargs help request detected", ap.help());
 }
-void snakemake_unit_tests::cargsTest::test_cargs_get_config_yaml() {}
-void snakemake_unit_tests::cargsTest::test_cargs_get_snakefile() {}
-void snakemake_unit_tests::cargsTest::test_cargs_get_snakemake_log() {}
-void snakemake_unit_tests::cargsTest::test_cargs_get_output_test_dir() {}
-void snakemake_unit_tests::cargsTest::test_cargs_get_pipeline_top_dir() {}
-void snakemake_unit_tests::cargsTest::test_cargs_get_pipeline_run_dir() {}
-void snakemake_unit_tests::cargsTest::test_cargs_get_inst_dir() {}
-void snakemake_unit_tests::cargsTest::test_cargs_get_added_files() {}
-void snakemake_unit_tests::cargsTest::test_cargs_get_added_directories() {}
-void snakemake_unit_tests::cargsTest::test_cargs_get_exclude_rules() {}
-void snakemake_unit_tests::cargsTest::test_cargs_include_entire_dag() {}
-void snakemake_unit_tests::cargsTest::test_cargs_update_all() {}
-void snakemake_unit_tests::cargsTest::test_cargs_update_snakefiles() {}
-void snakemake_unit_tests::cargsTest::test_cargs_update_added_content() {}
-void snakemake_unit_tests::cargsTest::test_cargs_update_config() {}
-void snakemake_unit_tests::cargsTest::test_cargs_update_inputs() {}
-void snakemake_unit_tests::cargsTest::test_cargs_update_outputs() {}
-void snakemake_unit_tests::cargsTest::test_cargs_update_pytest() {}
-void snakemake_unit_tests::cargsTest::test_cargs_verbose() {}
-void snakemake_unit_tests::cargsTest::test_cargs_compute_flag() {}
-void snakemake_unit_tests::cargsTest::test_cargs_compute_parameter() {}
+void snakemake_unit_tests::cargsTest::test_cargs_get_config_yaml() {
+  cargs ap(_argc, _argv_long);
+  CPPUNIT_ASSERT(!ap.get_config_yaml().compare("configname.yaml"));
+}
+void snakemake_unit_tests::cargsTest::test_cargs_get_snakefile() {
+  cargs ap(_argc, _argv_long);
+  CPPUNIT_ASSERT(!ap.get_snakefile().compare("Snakefile"));
+}
+void snakemake_unit_tests::cargsTest::test_cargs_get_snakemake_log() {
+  cargs ap(_argc, _argv_long);
+  CPPUNIT_ASSERT(!ap.get_snakemake_log().compare("logfile"));
+}
+void snakemake_unit_tests::cargsTest::test_cargs_get_output_test_dir() {
+  cargs ap(_argc, _argv_long);
+  CPPUNIT_ASSERT(!ap.get_output_test_dir().compare("outdir"));
+}
+void snakemake_unit_tests::cargsTest::test_cargs_get_pipeline_top_dir() {
+  cargs ap(_argc, _argv_long);
+  CPPUNIT_ASSERT(!ap.get_pipeline_top_dir().compare("project"));
+}
+void snakemake_unit_tests::cargsTest::test_cargs_get_pipeline_run_dir() {
+  cargs ap(_argc, _argv_long);
+  CPPUNIT_ASSERT(!ap.get_pipeline_run_dir().compare("rundir"));
+}
+void snakemake_unit_tests::cargsTest::test_cargs_get_inst_dir() {
+  cargs ap(_argc, _argv_long);
+  CPPUNIT_ASSERT(!ap.get_inst_dir().compare("inst"));
+}
+void snakemake_unit_tests::cargsTest::test_cargs_get_added_files() {
+  cargs ap(_argc, _argv_long);
+  std::vector<std::string> res = ap.get_added_files();
+  CPPUNIT_ASSERT(res.size() == 1 && !res.at(0).compare("added_file"));
+}
+void snakemake_unit_tests::cargsTest::test_cargs_get_added_directories() {
+  cargs ap(_argc, _argv_long);
+  std::vector<std::string> res = ap.get_added_directories();
+  CPPUNIT_ASSERT(res.size() == 1 && !res.at(0).compare("added_dir"));
+}
+void snakemake_unit_tests::cargsTest::test_cargs_get_exclude_rules() {
+  cargs ap(_argc, _argv_long);
+  std::vector<std::string> res = ap.get_exclude_rules();
+  CPPUNIT_ASSERT(res.size() == 1 && !res.at(0).compare("rulename"));
+}
+void snakemake_unit_tests::cargsTest::test_cargs_include_entire_dag() {
+  cargs ap(_argc, _argv_long);
+  CPPUNIT_ASSERT(ap.include_entire_dag());
+}
+void snakemake_unit_tests::cargsTest::test_cargs_update_all() {
+  cargs ap(_argc, _argv_long);
+  CPPUNIT_ASSERT(ap.update_all());
+}
+void snakemake_unit_tests::cargsTest::test_cargs_update_snakefiles() {
+  cargs ap(_argc, _argv_long);
+  CPPUNIT_ASSERT(ap.update_snakefiles());
+}
+void snakemake_unit_tests::cargsTest::test_cargs_update_added_content() {
+  cargs ap(_argc, _argv_long);
+  CPPUNIT_ASSERT(ap.update_added_content());
+}
+void snakemake_unit_tests::cargsTest::test_cargs_update_config() {
+  cargs ap(_argc, _argv_long);
+  CPPUNIT_ASSERT(ap.update_config());
+}
+void snakemake_unit_tests::cargsTest::test_cargs_update_inputs() {
+  cargs ap(_argc, _argv_long);
+  CPPUNIT_ASSERT(ap.update_inputs());
+}
+void snakemake_unit_tests::cargsTest::test_cargs_update_outputs() {
+  cargs ap(_argc, _argv_long);
+  CPPUNIT_ASSERT(ap.update_outputs());
+}
+void snakemake_unit_tests::cargsTest::test_cargs_update_pytest() {
+  cargs ap(_argc, _argv_long);
+  CPPUNIT_ASSERT(ap.update_pytest());
+}
+void snakemake_unit_tests::cargsTest::test_cargs_verbose() {
+  cargs ap(_argc, _argv_long);
+  CPPUNIT_ASSERT(ap.verbose());
+}
+void snakemake_unit_tests::cargsTest::test_cargs_compute_flag() {
+  // note that a desired behavior might be for this to not behave
+  // gracefully but rather crash when an unsupported flag is queried
+  cargs ap(_argc, _argv_long);
+  CPPUNIT_ASSERT(ap.compute_flag("help"));
+  CPPUNIT_ASSERT_MESSAGE("cargs compute_flag gracefully handles absent tags", !ap.compute_flag("othertag"));
+}
+void snakemake_unit_tests::cargsTest::test_cargs_compute_parameter() {
+  // note that as with compute_flag, this doesn't actually check that
+  // the queried parameter is part of the accepted parameter set
+  cargs ap(_argc, _argv_long);
+  // a recognized parameter should have its value returned
+  CPPUNIT_ASSERT_MESSAGE("cargs compute_parameter returns parameter value",
+                         !ap.compute_parameter<std::string>("config").compare("configname.yaml"));
+  // an optional parameter is allowed to not be present
+  CPPUNIT_ASSERT_MESSAGE("cargs compute_parameter tolerates missing optional parameters",
+                         ap.compute_parameter<std::string>("weirdname", true).empty());
+}
+void snakemake_unit_tests::cargsTest::test_cargs_compute_missing_required_parameter() {
+  cargs ap(_argc, _argv_long);
+  ap.compute_parameter<std::string>("weirdname", false);
+}
 void snakemake_unit_tests::cargsTest::test_cargs_print_help() {
   cargs ap(_argc, _argv_long);
   std::ostringstream o1, o2;
