@@ -12,28 +12,23 @@ from pathlib import Path
 import magic
 import pytest
 
-# import yaml
-
-
-exclude_paths = [
-    "/log/",
-    "/logs/",
-    "/performance_benchmarks/",
-    "temp/",
-    "tmp/",
-    ".snakemake/",
-    "__pycache__",
-]
-exclude_ext = [".tbi", ".html", ".log", ".bai", ".idx"]
-# TODO: Read in a list of extensions to exclude from the config.  See issue #16.
-
-# yaml.safe_load(config)
-
 
 class OutputChecker:
-    def __init__(self, data_path, expected_path, extra_comparison_exclusions, workdir):
+    def __init__(
+        self,
+        data_path,
+        expected_path,
+        exclude_paths,
+        exclude_ext,
+        byte_comparisons,
+        extra_comparison_exclusions,
+        workdir,
+    ):
         self.data_path = data_path
         self.expected_path = expected_path
+        self.exclude_paths = exclude_paths
+        self.exclude_ext = exclude_ext
+        self.byte_comparisons = byte_comparisons
         self.extra_comparison_exclusions = extra_comparison_exclusions
         self.workdir = workdir
 
@@ -54,11 +49,11 @@ class OutputChecker:
                 f = (Path(path) / f).relative_to(self.workdir)
                 if str(f).startswith(".snakemake"):
                     continue
-                if any(m in str(f) for m in exclude_paths):
+                if any(m in str(f) for m in self.exclude_paths):
                     continue
                 if any(m in str(f) for m in self.extra_comparison_exclusions):
                     continue
-                if str(f).endswith(tuple(exclude_ext)):
+                if str(f).endswith(tuple(self.exclude_ext)):
                     continue
                 if f in expected_files:
                     self.compare_files(self.workdir / f, self.expected_path / f)
@@ -80,7 +75,10 @@ class OutputChecker:
         circumvent datestamps causing assert failures).
         """
         f = magic.Magic(uncompress=True, mime=True)
-        if f.from_file(str(generated_file)) != "text/plain":
+        if (
+            str(generated_file).endswith(tuple(self.byte_comparisons))
+            or f.from_file(str(generated_file)) != "text/plain"
+        ):
             sp.check_output(["cmp", generated_file, expected_file])
         else:
             gen = process_file(generated_file)

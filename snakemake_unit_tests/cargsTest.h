@@ -12,6 +12,8 @@
 #include <cppunit/extensions/TestFactoryRegistry.h>
 #include <cppunit/ui/text/TestRunner.h>
 
+#include <cstdlib>
+#include <filesystem>
 #include <map>
 #include <stdexcept>
 #include <string>
@@ -63,13 +65,20 @@ class cargsTest : public CppUnit::TestFixture {
   CPPUNIT_TEST(test_cargs_verbose);
   CPPUNIT_TEST(test_cargs_compute_flag);
   CPPUNIT_TEST(test_cargs_compute_parameter);
+  CPPUNIT_TEST_EXCEPTION(test_cargs_compute_missing_required_parameter, std::domain_error);
   CPPUNIT_TEST(test_cargs_print_help);
   CPPUNIT_TEST(test_cargs_override_if_specified);
   CPPUNIT_TEST(test_cargs_add_contents_to_vector);
+  CPPUNIT_TEST_EXCEPTION(test_cargs_add_contents_to_vector_null_pointer, std::runtime_error);
   CPPUNIT_TEST(test_cargs_add_contents_to_map);
+  CPPUNIT_TEST_EXCEPTION(test_cargs_add_contents_to_map_null_pointer, std::runtime_error);
   CPPUNIT_TEST(test_cargs_check_nonempty);
+  CPPUNIT_TEST_EXCEPTION(test_cargs_check_nonempty_invalid_path, std::logic_error);
   CPPUNIT_TEST(test_cargs_check_regular_file);
+  CPPUNIT_TEST_EXCEPTION(test_cargs_check_regular_file_not_file, std::logic_error);
   CPPUNIT_TEST(test_cargs_check_and_fix_dir);
+  CPPUNIT_TEST_EXCEPTION(test_cargs_check_and_fix_dir_null_pointer, std::runtime_error);
+  CPPUNIT_TEST_EXCEPTION(test_cargs_check_and_fix_dir_not_directory, std::logic_error);
   CPPUNIT_TEST(test_cargs_vector_convert);
   CPPUNIT_TEST_SUITE_END();
 
@@ -116,16 +125,30 @@ class cargsTest : public CppUnit::TestFixture {
   void test_cargs_verbose();
   void test_cargs_compute_flag();
   void test_cargs_compute_parameter();
+  void test_cargs_compute_missing_required_parameter();
   void test_cargs_print_help();
   void test_cargs_override_if_specified();
   void test_cargs_add_contents_to_vector();
+  void test_cargs_add_contents_to_vector_null_pointer();
   void test_cargs_add_contents_to_map();
+  void test_cargs_add_contents_to_map_null_pointer();
   void test_cargs_check_nonempty();
+  void test_cargs_check_nonempty_invalid_path();
   void test_cargs_check_regular_file();
+  void test_cargs_check_regular_file_not_file();
   void test_cargs_check_and_fix_dir();
+  void test_cargs_check_and_fix_dir_not_directory();
+  void test_cargs_check_and_fix_dir_null_pointer();
   void test_cargs_vector_convert();
 
  private:
+  void populate_arguments(const std::string &cmd, std::vector<std::string> *vec, const char ***arr) const;
+
+  const char **_argv_long;
+  const char **_argv_short;
+  std::vector<std::string> _arg_vec_long;
+  std::vector<std::string> _arg_vec_short;
+  char *_tmp_dir;
 };
 }  // namespace snakemake_unit_tests
 

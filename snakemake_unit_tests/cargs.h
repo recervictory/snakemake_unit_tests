@@ -250,7 +250,7 @@ class cargs {
     @param argc number of arguments including program name
     @param argv string array containing actual arguments
    */
-  cargs(int argc, char **argv) : _desc("Recognized options") {
+  cargs(int argc, const char **const argv) : _desc("Recognized options") {
     initialize_options();
     boost::program_options::store(boost::program_options::parse_command_line(argc, argv, _desc), _vm);
     boost::program_options::notify(_vm);

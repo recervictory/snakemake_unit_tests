@@ -35,11 +35,7 @@ class recipe {
   /*!
     @brief constructor
    */
-  recipe()
-      : _rule_name(""),
-        _rule_is_checkpoint(false),
-        _checkpoint_update(false),
-        _log("") {}
+  recipe() : _rule_name(""), _rule_is_checkpoint(false), _checkpoint_update(false), _log("") {}
   /*!
     @brief copy constructor
     @param obj existing recipe object
@@ -90,9 +86,7 @@ class recipe {
     @brief access list of input files
     @return vector storing all input filenames; may be empty
   */
-  const std::vector<boost::filesystem::path> &get_inputs() const {
-    return _inputs;
-  }
+  const std::vector<boost::filesystem::path> &get_inputs() const { return _inputs; }
   /*!
     @brief add an input filename
     @param s new input filename
@@ -102,9 +96,7 @@ class recipe {
     @brief access list of output files
     @return vector storing all output filenames; shouldn't be empty
    */
-  const std::vector<boost::filesystem::path> &get_outputs() const {
-    return _outputs;
-  }
+  const std::vector<boost::filesystem::path> &get_outputs() const { return _outputs; }
   /*!
     @brief add an output filename
     @param s new output filename
@@ -184,8 +176,7 @@ class solved_rules {
     @brief copy constructor
     @param obj existing solved_rules object
    */
-  solved_rules(const solved_rules &obj)
-      : _recipes(obj._recipes), _output_lookup(obj._output_lookup) {}
+  solved_rules(const solved_rules &obj) : _recipes(obj._recipes), _output_lookup(obj._output_lookup) {}
   /*!
     @brief destructor
    */
@@ -221,16 +212,12 @@ class solved_rules {
     @param include_entire_dag controls whether to override default
     behavior and emit all rules, instead of just the target
   */
-  void emit_tests(const snakemake_file &sf,
-                  const boost::filesystem::path &output_test_dir,
-                  const boost::filesystem::path &pipeline_top_dir,
-                  const boost::filesystem::path &pipeline_run_dir,
-                  const boost::filesystem::path &inst_dir,
-                  const std::map<std::string, bool> &exclude_rules,
+  void emit_tests(const snakemake_file &sf, const boost::filesystem::path &output_test_dir,
+                  const boost::filesystem::path &pipeline_top_dir, const boost::filesystem::path &pipeline_run_dir,
+                  const boost::filesystem::path &inst_dir, const std::map<std::string, bool> &exclude_rules,
                   const std::vector<boost::filesystem::path> &added_files,
-                  const std::vector<boost::filesystem::path> &added_directories,
-                  bool update_snakefiles, bool update_added_content,
-                  bool update_inputs, bool update_outputs, bool update_pytest,
+                  const std::vector<boost::filesystem::path> &added_directories, bool update_snakefiles,
+                  bool update_added_content, bool update_inputs, bool update_outputs, bool update_pytest,
                   bool include_entire_dag) const;
   /*!
     @brief emit snakefile from parsed snakemake information
@@ -245,11 +232,9 @@ class solved_rules {
     @return how many of the targets were found in the snakefile or its
     dependencies
   */
-  unsigned emit_snakefile(
-      const snakemake_file &sf, const boost::filesystem::path &workspace_path,
-      const boost::shared_ptr<recipe> &rec,
-      const std::map<std::string, bool> &dependent_rulenames,
-      bool requires_phony_all) const;
+  unsigned emit_snakefile(const snakemake_file &sf, const boost::filesystem::path &workspace_path,
+                          const boost::shared_ptr<recipe> &rec, const std::map<std::string, bool> &dependent_rulenames,
+                          bool requires_phony_all) const;
   /*!
     @brief create a test directory
     @param rec recipe/rule entry for which a workspace should be created
@@ -278,18 +263,15 @@ class solved_rules {
     @param include_entire_dag controls whether to override default
     behavior and emit all rules, instead of just the target
   */
-  void create_workspace(
-      const boost::shared_ptr<recipe> &rec, const snakemake_file &sf,
-      const boost::filesystem::path &output_test_dir,
-      const boost::filesystem::path &test_parent_path,
-      const boost::filesystem::path &pipeline_top_dir,
-      const boost::filesystem::path &pipeline_run_dir,
-      const boost::filesystem::path &test_inst_py,
-      const std::map<std::string, bool> &exclude_rules,
-      const std::vector<boost::filesystem::path> &added_files,
-      const std::vector<boost::filesystem::path> &added_directories,
-      bool update_snakefiles, bool update_added_content, bool update_inputs,
-      bool update_outputs, bool update_pytest, bool include_entire_dag) const;
+  void create_workspace(const boost::shared_ptr<recipe> &rec, const snakemake_file &sf,
+                        const boost::filesystem::path &output_test_dir, const boost::filesystem::path &test_parent_path,
+                        const boost::filesystem::path &pipeline_top_dir,
+                        const boost::filesystem::path &pipeline_run_dir, const boost::filesystem::path &test_inst_py,
+                        const std::map<std::string, bool> &exclude_rules,
+                        const std::vector<boost::filesystem::path> &added_files,
+                        const std::vector<boost::filesystem::path> &added_directories, bool update_snakefiles,
+                        bool update_added_content, bool update_inputs, bool update_outputs, bool update_pytest,
+                        bool include_entire_dag) const;
   /*!
     @brief create an empty workspace for python testing
     @param output_test_dir output directory for tests (e.g. '.tests/')
@@ -299,19 +281,17 @@ class solved_rules {
     @param added_directories vector of additional directories to add to test
     workspaces
   */
-  void create_empty_workspace(
-      const boost::filesystem::path &output_test_dir,
-      const boost::filesystem::path &pipeline_dir,
-      const std::vector<boost::filesystem::path> &added_files,
-      const std::vector<boost::filesystem::path> &added_directories) const;
+  void create_empty_workspace(const boost::filesystem::path &output_test_dir,
+                              const boost::filesystem::path &pipeline_dir,
+                              const std::vector<boost::filesystem::path> &added_files,
+                              const std::vector<boost::filesystem::path> &added_directories) const;
 
   /*!
     @brief recursively remove empty workspace after python integration is
     complete
     @param output_test_dir output diretory for tests (e.g. '.tests/')
    */
-  void remove_empty_workspace(
-      const boost::filesystem::path &output_test_dir) const;
+  void remove_empty_workspace(const boost::filesystem::path &output_test_dir) const;
 
   /*!
     @brief copy files/folders enumerated in vector to a location
@@ -320,19 +300,15 @@ class solved_rules {
     @param target_prefix directory destination of files/folders
     @param rule_name label for error reporting
    */
-  void copy_contents(const std::vector<boost::filesystem::path> &contents,
-                     const boost::filesystem::path &source_prefix,
-                     const boost::filesystem::path &target_prefix,
-                     const std::string &rule_name) const;
+  void copy_contents(const std::vector<boost::filesystem::path> &contents, const boost::filesystem::path &source_prefix,
+                     const boost::filesystem::path &target_prefix, const std::string &rule_name) const;
 
   /*!
     @brief report phony all target controlling test snakemake run
     @param out stream to which to write data
     @param targets phony targets for all rule
    */
-  void report_phony_all_target(
-      std::ostream &out,
-      const std::vector<boost::filesystem::path> &targets) const;
+  void report_phony_all_target(std::ostream &out, const std::vector<boost::filesystem::path> &targets) const;
   /*!
     @brief copy over pytest script with certain additions
     @param parent_dir parent directory of test workspace
@@ -344,14 +320,20 @@ class solved_rules {
     comparisons
     @param inst_test_py snakemake_unit_tests test.py script location
    */
-  void report_modified_test_script(
-      const boost::filesystem::path &parent_dir,
-      const boost::filesystem::path &test_dir, const std::string &rule_name,
-      const boost::filesystem::path &snakefile_relative_path,
-      const boost::filesystem::path &pipeline_run_dir,
-      const std::vector<boost::filesystem::path> &extra_comparison_exclusions,
-      const boost::filesystem::path &inst_test_py) const;
-
+  void report_modified_test_script(const boost::filesystem::path &parent_dir, const boost::filesystem::path &test_dir,
+                                   const std::string &rule_name, const boost::filesystem::path &snakefile_relative_path,
+                                   const boost::filesystem::path &pipeline_run_dir,
+                                   const std::vector<boost::filesystem::path> &extra_comparison_exclusions,
+                                   const boost::filesystem::path &inst_test_py) const;
+  /*!
+    @brief copy over helper launcher with certain additions
+    @param parent_dir parent directory of test workspace
+    @param test_dir parent directory of all unit tests for the pipeline
+    @param inst_launcher_script snakemake_unit_tests pytest_launcher.bash script location
+   */
+  void report_modified_launcher_script(const boost::filesystem::path &parent_dir,
+                                       const boost::filesystem::path &test_dir,
+                                       const boost::filesystem::path &inst_launcher_script) const;
   /*!
     @brief determine unavoidable dependencies for query rule
     @param sf snakemake top level file with all rules
@@ -360,10 +342,8 @@ class solved_rules {
     behavior and emit all rules, instead of just the target
     @param target full set of unavoidable dependencies
    */
-  void aggregate_dependencies(
-      const snakemake_file &sf, const boost::shared_ptr<recipe> &rec,
-      bool include_entire_dag,
-      std::map<boost::shared_ptr<recipe>, bool> *target) const;
+  void aggregate_dependencies(const snakemake_file &sf, const boost::shared_ptr<recipe> &rec, bool include_entire_dag,
+                              std::map<boost::shared_ptr<recipe>, bool> *target) const;
   /*!
     @brief add rules and all dependencies starting from a particular leaf
     @param rec leaf to start adding things from
@@ -371,9 +351,8 @@ class solved_rules {
     behavior and emit all rules, instead of just the target
     @param target storage for included nodes
    */
-  void add_dag_from_leaf(
-      const boost::shared_ptr<recipe> &rec, bool include_entire_dag,
-      std::map<boost::shared_ptr<recipe>, bool> *target) const;
+  void add_dag_from_leaf(const boost::shared_ptr<recipe> &rec, bool include_entire_dag,
+                         std::map<boost::shared_ptr<recipe>, bool> *target) const;
 
  private:
   /*!

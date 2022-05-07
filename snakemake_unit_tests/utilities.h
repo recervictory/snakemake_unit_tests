@@ -49,13 +49,14 @@ void append_resolved_line(const std::string &resolved_line, std::string *aggrega
 /*!
   \brief prune superfluous content from snakemake content line
   @param lines all loaded lines from file
+  @param verbose whether to emit verbose logging output to cout
   @return input data with comments and unassigned string literals pruned
 
   this modification of the function replaces the initial implementation
   of this function that only partially addressed the problem and
   was known to break in certain toxic corner cases
  */
-std::vector<std::string> lexical_parse(const std::vector<std::string> &lines);
+std::vector<std::string> lexical_parse(const std::vector<std::string> &lines, bool verbose = false);
 /*!
   @brief take a comma/space delimited list of filenames and break them up into a
   vector

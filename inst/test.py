@@ -5,17 +5,28 @@ import sys
 from pathlib import Path, PurePosixPath
 from tempfile import TemporaryDirectory
 
+import yaml
+
 sys.path.insert(0, os.path.dirname(__file__))
 
 import common
+
+exclude_paths = [
+    ".snakemake/",
+    "__pycache__",
+]
+with open("{}/unit/config.yaml".format(testdir), "r") as f:
+    config = yaml.safe_load(f)
+if config["exclude-paths"] is not None:
+    exclude_paths.extend(config["exclude-paths"])
+exclude_ext = list(config["exclude-extensions"] or "")
+byte_comparisons = list(config["byte-comparisons"] or "")
 
 
 def test_function():
 
     with TemporaryDirectory() as tmpdir:
-        rundir = (
-            Path(tmpdir) / "rundir"
-        )  # FOR TESTING: PurePosixPath(testdir + "/unit/out_" + rulename)
+        rundir = PurePosixPath("{}/unit/{}/output".format(testdir, rulename))
         workspace_path = PurePosixPath("{}/unit/{}/workspace".format(testdir, rulename))
         expected_path = PurePosixPath("{}/unit/{}/expected".format(testdir, rulename))
 
@@ -49,5 +60,11 @@ def test_function():
         # also see common.py.
 
         common.OutputChecker(
-            workspace_path, expected_path, extra_comparison_exclusions, rundir
+            workspace_path,
+            expected_path,
+            exclude_paths,
+            exclude_ext,
+            byte_comparisons,
+            extra_comparison_exclusions,
+            rundir,
         ).check()

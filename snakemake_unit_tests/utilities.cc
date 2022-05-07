@@ -8,13 +8,19 @@
 
 #include "snakemake_unit_tests/utilities.h"
 
-std::vector<std::string> snakemake_unit_tests::lexical_parse(const std::vector<std::string> &lines) {
+std::vector<std::string> snakemake_unit_tests::lexical_parse(const std::vector<std::string> &lines, bool verbose) {
   unsigned current_line = 0;
   bool string_open = false, literal_open = false;
   std::string aggregated_line = "", resolved_line = "";
   std::vector<std::string> results;
   quote_type active_quote_type = none;
+  unsigned line_counter = 0;
   while (current_line < lines.size()) {
+    if (verbose) {
+      ++line_counter;
+      std::cout << "lexical parse: logical line " << line_counter << ": \"" << lines.at(current_line) << "\""
+                << std::endl;
+    }
     // parse current line
     unsigned parse_index = 0;
     // if the parser is not currently dealing with an open string, skip starting
@@ -37,6 +43,13 @@ std::vector<std::string> snakemake_unit_tests::lexical_parse(const std::vector<s
           ++current_line;
           line_consumed = true;
           break;
+        } else {
+          // new fix: increment past this position, as it's fine
+          // probably increment twice as it's escaping something?
+          if (parse_index < lines.at(current_line).size() - 1)
+            parse_index += 2;
+          else
+            ++parse_index;
         }
       } else if (lines.at(current_line).at(parse_index) == '\'' || lines.at(current_line).at(parse_index) == '"') {
         resolve_string_delimiter(lines.at(current_line), &active_quote_type, &parse_index, &string_open, &literal_open);
