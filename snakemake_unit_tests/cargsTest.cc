@@ -7,54 +7,38 @@
 
 #include "snakemake_unit_tests/cargsTest.h"
 
+void snakemake_unit_tests::cargsTest::populate_arguments(const std::string &cmd, std::vector<std::string> *vec,
+                                                         const char ***arr) const {
+  if (!vec || !arr) {
+    throw std::runtime_error("null pointer(s) to populate_arguments");
+  }
+  vec->clear();
+  std::istringstream strm1(cmd);
+  std::string token = "";
+  while (strm1 >> token) {
+    vec->push_back(token);
+  }
+  *arr = new const char *[vec->size()];
+  for (unsigned i = 0; i < vec->size(); ++i) {
+    (*arr)[i] = vec->at(i).c_str();
+  }
+}
+
 void snakemake_unit_tests::cargsTest::setUp() {
-  _arg_vec_long.push_back("./snakemake_unit_tests.out");
-  _arg_vec_long.push_back("--config,-c");
-  _arg_vec_long.push_back("configname.yaml");
-  _arg_vec_long.push_back("--added-directories,-d");
-  _arg_vec_long.push_back("added_dir");
-  _arg_vec_long.push_back("--exclude-rules,-e");
-  _arg_vec_long.push_back("rulename");
-  _arg_vec_long.push_back("--added-files,-f");
-  _arg_vec_long.push_back("added_file");
-  _arg_vec_long.push_back("--help,-h");
-  _arg_vec_long.push_back("--inst-dir,-i");
-  _arg_vec_long.push_back("inst");
-  _arg_vec_long.push_back("--snakemake-log,-l");
-  _arg_vec_long.push_back("logfile");
-  _arg_vec_long.push_back("--output-test-dir,-o");
-  _arg_vec_long.push_back("outdir");
-  _arg_vec_long.push_back("--pipeline-top-dir,-p");
-  _arg_vec_long.push_back("project");
-  _arg_vec_long.push_back("--pipeline-run-dir,-r");
-  _arg_vec_long.push_back("rundir");
-  _arg_vec_long.push_back("--snakefile,-s");
-  _arg_vec_long.push_back("Snakefile");
-  _arg_vec_long.push_back("--verbose,-v");
-  _arg_vec_long.push_back("--update-all");
-  _arg_vec_long.push_back("--update-snakefiles");
-  _arg_vec_long.push_back("--update-added-content");
-  _arg_vec_long.push_back("--update-config");
-  _arg_vec_long.push_back("--update-inputs");
-  _arg_vec_long.push_back("--update-outputs");
-  _arg_vec_long.push_back("--update-pytest");
-  _arg_vec_long.push_back("--include-entire-dag");
-  _argv_long = new const char *[_arg_vec_long.size()];
-  _argv_short = new const char *[_arg_vec_long.size()];
-  _arg_vec_short.reserve(_arg_vec_long.size());
-  for (unsigned i = 0; i < _arg_vec_long.size(); ++i) {
-    if (_arg_vec_long.at(i).find(",-")) {
-      _arg_vec_short.push_back(_arg_vec_long.at(i).substr(_arg_vec_long.at(i).find(",-") + 1));
-      _arg_vec_long.at(i) = _arg_vec_long.at(i).substr(0, _arg_vec_long.at(i).find(",-"));
-    } else {
-      _arg_vec_short.push_back(_arg_vec_long.at(i));
-    }
-  }
-  for (unsigned i = 0; i < _arg_vec_long.size(); ++i) {
-    _argv_long[i] = _arg_vec_long.at(i).c_str();
-    _argv_short[i] = _arg_vec_short.at(i).c_str();
-  }
-  _argc = _arg_vec_long.size();
+  std::string longform =
+      "./snakemake_unit_tests.out --config configname.yaml "
+      "--added-directories added_dir --exclude-rules rulename --added-files added_file "
+      "--help --inst-dir inst --snakemake-log logfile --output-test-dir outdir "
+      "--pipeline-top-dir project --pipeline-run-dir rundir --snakefile Snakefile "
+      "--verbose --update-all --update-snakefiles --update-added-content "
+      "--update-config --update-inputs --update-outputs --update-pytest --include-entire-dag";
+  std::string shortform =
+      "./snakemake_unit_tests.out -c configname.yaml "
+      "-d added_dir -e rulename -f added_file "
+      "-h -i inst -l logfile -o outdir "
+      "-p project -r rundir -s Snakefile -v";
+  populate_arguments(longform, &_arg_vec_long, &_argv_long);
+  populate_arguments(shortform, &_arg_vec_short, &_argv_short);
 }
 
 void snakemake_unit_tests::cargsTest::tearDown() {
@@ -232,12 +216,12 @@ void snakemake_unit_tests::cargsTest::test_params_emit_yaml_vector_null_pointer(
 }
 void snakemake_unit_tests::cargsTest::test_cargs_default_constructor() { cargs ap; }
 void snakemake_unit_tests::cargsTest::test_cargs_standard_constructor() {
-  cargs ap(_argc, _argv_long);
+  cargs ap(_arg_vec_long.size(), _argv_long);
   // individual accessors will be tested elsewhere, so this really
   // just tests that the standard constructor functions at all
 }
 void snakemake_unit_tests::cargsTest::test_cargs_copy_constructor() {
-  cargs ap(_argc, _argv_long);
+  cargs ap(_arg_vec_long.size(), _argv_long);
   cargs ap2(ap);
   // check that output descriptions are identical
   std::ostringstream o1, o2;
@@ -268,7 +252,7 @@ void snakemake_unit_tests::cargsTest::test_cargs_copy_constructor() {
   }
 }
 void snakemake_unit_tests::cargsTest::test_cargs_initialize_options() {
-  cargs ap(_argc, _argv_long);
+  cargs ap(_arg_vec_long.size(), _argv_long);
   // initialize_options is called by standard constructor; test that
   // standard constructor has reasonably called it. we're going to
   // compromise with feasibility and only test that the flags are present,
@@ -299,99 +283,99 @@ void snakemake_unit_tests::cargsTest::test_cargs_initialize_options() {
 }
 void snakemake_unit_tests::cargsTest::test_cargs_set_parameters() {}
 void snakemake_unit_tests::cargsTest::test_cargs_help() {
-  cargs ap(_argc, _argv_long);
+  cargs ap(_arg_vec_long.size(), _argv_long);
   CPPUNIT_ASSERT_MESSAGE("cargs help request detected", ap.help());
 }
 void snakemake_unit_tests::cargsTest::test_cargs_get_config_yaml() {
-  cargs ap(_argc, _argv_long);
+  cargs ap(_arg_vec_long.size(), _argv_long);
   CPPUNIT_ASSERT(!ap.get_config_yaml().compare("configname.yaml"));
 }
 void snakemake_unit_tests::cargsTest::test_cargs_get_snakefile() {
-  cargs ap(_argc, _argv_long);
+  cargs ap(_arg_vec_long.size(), _argv_long);
   CPPUNIT_ASSERT(!ap.get_snakefile().compare("Snakefile"));
 }
 void snakemake_unit_tests::cargsTest::test_cargs_get_snakemake_log() {
-  cargs ap(_argc, _argv_long);
+  cargs ap(_arg_vec_long.size(), _argv_long);
   CPPUNIT_ASSERT(!ap.get_snakemake_log().compare("logfile"));
 }
 void snakemake_unit_tests::cargsTest::test_cargs_get_output_test_dir() {
-  cargs ap(_argc, _argv_long);
+  cargs ap(_arg_vec_long.size(), _argv_long);
   CPPUNIT_ASSERT(!ap.get_output_test_dir().compare("outdir"));
 }
 void snakemake_unit_tests::cargsTest::test_cargs_get_pipeline_top_dir() {
-  cargs ap(_argc, _argv_long);
+  cargs ap(_arg_vec_long.size(), _argv_long);
   CPPUNIT_ASSERT(!ap.get_pipeline_top_dir().compare("project"));
 }
 void snakemake_unit_tests::cargsTest::test_cargs_get_pipeline_run_dir() {
-  cargs ap(_argc, _argv_long);
+  cargs ap(_arg_vec_long.size(), _argv_long);
   CPPUNIT_ASSERT(!ap.get_pipeline_run_dir().compare("rundir"));
 }
 void snakemake_unit_tests::cargsTest::test_cargs_get_inst_dir() {
-  cargs ap(_argc, _argv_long);
+  cargs ap(_arg_vec_long.size(), _argv_long);
   CPPUNIT_ASSERT(!ap.get_inst_dir().compare("inst"));
 }
 void snakemake_unit_tests::cargsTest::test_cargs_get_added_files() {
-  cargs ap(_argc, _argv_long);
+  cargs ap(_arg_vec_long.size(), _argv_long);
   std::vector<std::string> res = ap.get_added_files();
   CPPUNIT_ASSERT(res.size() == 1 && !res.at(0).compare("added_file"));
 }
 void snakemake_unit_tests::cargsTest::test_cargs_get_added_directories() {
-  cargs ap(_argc, _argv_long);
+  cargs ap(_arg_vec_long.size(), _argv_long);
   std::vector<std::string> res = ap.get_added_directories();
   CPPUNIT_ASSERT(res.size() == 1 && !res.at(0).compare("added_dir"));
 }
 void snakemake_unit_tests::cargsTest::test_cargs_get_exclude_rules() {
-  cargs ap(_argc, _argv_long);
+  cargs ap(_arg_vec_long.size(), _argv_long);
   std::vector<std::string> res = ap.get_exclude_rules();
   CPPUNIT_ASSERT(res.size() == 1 && !res.at(0).compare("rulename"));
 }
 void snakemake_unit_tests::cargsTest::test_cargs_include_entire_dag() {
-  cargs ap(_argc, _argv_long);
+  cargs ap(_arg_vec_long.size(), _argv_long);
   CPPUNIT_ASSERT(ap.include_entire_dag());
 }
 void snakemake_unit_tests::cargsTest::test_cargs_update_all() {
-  cargs ap(_argc, _argv_long);
+  cargs ap(_arg_vec_long.size(), _argv_long);
   CPPUNIT_ASSERT(ap.update_all());
 }
 void snakemake_unit_tests::cargsTest::test_cargs_update_snakefiles() {
-  cargs ap(_argc, _argv_long);
+  cargs ap(_arg_vec_long.size(), _argv_long);
   CPPUNIT_ASSERT(ap.update_snakefiles());
 }
 void snakemake_unit_tests::cargsTest::test_cargs_update_added_content() {
-  cargs ap(_argc, _argv_long);
+  cargs ap(_arg_vec_long.size(), _argv_long);
   CPPUNIT_ASSERT(ap.update_added_content());
 }
 void snakemake_unit_tests::cargsTest::test_cargs_update_config() {
-  cargs ap(_argc, _argv_long);
+  cargs ap(_arg_vec_long.size(), _argv_long);
   CPPUNIT_ASSERT(ap.update_config());
 }
 void snakemake_unit_tests::cargsTest::test_cargs_update_inputs() {
-  cargs ap(_argc, _argv_long);
+  cargs ap(_arg_vec_long.size(), _argv_long);
   CPPUNIT_ASSERT(ap.update_inputs());
 }
 void snakemake_unit_tests::cargsTest::test_cargs_update_outputs() {
-  cargs ap(_argc, _argv_long);
+  cargs ap(_arg_vec_long.size(), _argv_long);
   CPPUNIT_ASSERT(ap.update_outputs());
 }
 void snakemake_unit_tests::cargsTest::test_cargs_update_pytest() {
-  cargs ap(_argc, _argv_long);
+  cargs ap(_arg_vec_long.size(), _argv_long);
   CPPUNIT_ASSERT(ap.update_pytest());
 }
 void snakemake_unit_tests::cargsTest::test_cargs_verbose() {
-  cargs ap(_argc, _argv_long);
+  cargs ap(_arg_vec_long.size(), _argv_long);
   CPPUNIT_ASSERT(ap.verbose());
 }
 void snakemake_unit_tests::cargsTest::test_cargs_compute_flag() {
   // note that a desired behavior might be for this to not behave
   // gracefully but rather crash when an unsupported flag is queried
-  cargs ap(_argc, _argv_long);
+  cargs ap(_arg_vec_long.size(), _argv_long);
   CPPUNIT_ASSERT(ap.compute_flag("help"));
   CPPUNIT_ASSERT_MESSAGE("cargs compute_flag gracefully handles absent tags", !ap.compute_flag("othertag"));
 }
 void snakemake_unit_tests::cargsTest::test_cargs_compute_parameter() {
   // note that as with compute_flag, this doesn't actually check that
   // the queried parameter is part of the accepted parameter set
-  cargs ap(_argc, _argv_long);
+  cargs ap(_arg_vec_long.size(), _argv_long);
   // a recognized parameter should have its value returned
   CPPUNIT_ASSERT_MESSAGE("cargs compute_parameter returns parameter value",
                          !ap.compute_parameter<std::string>("config").compare("configname.yaml"));
@@ -400,11 +384,11 @@ void snakemake_unit_tests::cargsTest::test_cargs_compute_parameter() {
                          ap.compute_parameter<std::string>("weirdname", true).empty());
 }
 void snakemake_unit_tests::cargsTest::test_cargs_compute_missing_required_parameter() {
-  cargs ap(_argc, _argv_long);
+  cargs ap(_arg_vec_long.size(), _argv_long);
   ap.compute_parameter<std::string>("weirdname", false);
 }
 void snakemake_unit_tests::cargsTest::test_cargs_print_help() {
-  cargs ap(_argc, _argv_long);
+  cargs ap(_arg_vec_long.size(), _argv_long);
   std::ostringstream o1, o2;
   ap.print_help(o1);
   o2 << ap._desc;
