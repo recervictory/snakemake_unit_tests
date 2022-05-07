@@ -32,7 +32,7 @@
   @param argv array of command line entries
   @return exit code: 0 on success, nonzero otherwise
  */
-int main(int argc, char **argv) {
+int main(int argc, const char** const argv) {
   // parse command line input
   snakemake_unit_tests::cargs ap(argc, argv);
   snakemake_unit_tests::params p;

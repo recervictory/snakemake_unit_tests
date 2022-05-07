@@ -126,6 +126,11 @@ class cargsTest : public CppUnit::TestFixture {
   void test_cargs_vector_convert();
 
  private:
+  int _argc;
+  const char **_argv_long;
+  const char **_argv_short;
+  std::vector<std::string> _arg_vec_long;
+  std::vector<std::string> _arg_vec_short;
 };
 }  // namespace snakemake_unit_tests
 

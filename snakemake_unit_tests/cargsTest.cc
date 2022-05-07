@@ -7,10 +7,65 @@
 
 #include "snakemake_unit_tests/cargsTest.h"
 
-void snakemake_unit_tests::cargsTest::setUp() {}
+void snakemake_unit_tests::cargsTest::setUp() {
+  _arg_vec_long.push_back("./snakemake_unit_tests.out");
+  _arg_vec_long.push_back("--config,-c");
+  _arg_vec_long.push_back("configname.yaml");
+  _arg_vec_long.push_back("--added-directories,-d");
+  _arg_vec_long.push_back("added_dir");
+  _arg_vec_long.push_back("--exclude-rules,-e");
+  _arg_vec_long.push_back("rulename");
+  _arg_vec_long.push_back("--added-files,-f");
+  _arg_vec_long.push_back("added_file");
+  _arg_vec_long.push_back("--help,-h");
+  _arg_vec_long.push_back("--inst-dir,-i");
+  _arg_vec_long.push_back("inst");
+  _arg_vec_long.push_back("--snakemake-log,-l");
+  _arg_vec_long.push_back("logfile");
+  _arg_vec_long.push_back("--output-test-dir,-o");
+  _arg_vec_long.push_back("outdir");
+  _arg_vec_long.push_back("--pipeline-top-dir,-p");
+  _arg_vec_long.push_back("project");
+  _arg_vec_long.push_back("--pipeline-run-dir,-r");
+  _arg_vec_long.push_back("rundir");
+  _arg_vec_long.push_back("--snakefile,-s");
+  _arg_vec_long.push_back("Snakefile");
+  _arg_vec_long.push_back("--verbose,-v");
+  _arg_vec_long.push_back("--update-all");
+  _arg_vec_long.push_back("--update-snakefiles");
+  _arg_vec_long.push_back("--update-added-content");
+  _arg_vec_long.push_back("--update-config");
+  _arg_vec_long.push_back("--update-inputs");
+  _arg_vec_long.push_back("--update-outputs");
+  _arg_vec_long.push_back("--update-pytest");
+  _arg_vec_long.push_back("--include-entire-dag");
+  _argv_long = new const char *[_arg_vec_long.size()];
+  _argv_short = new const char *[_arg_vec_long.size()];
+  _arg_vec_short.reserve(_arg_vec_long.size());
+  for (unsigned i = 0; i < _arg_vec_long.size(); ++i) {
+    if (_arg_vec_long.at(i).find(",-")) {
+      _arg_vec_short.push_back(_arg_vec_long.at(i).substr(_arg_vec_long.at(i).find(",-") + 1));
+      _arg_vec_long.at(i) = _arg_vec_long.at(i).substr(0, _arg_vec_long.at(i).find(",-"));
+    } else {
+      _arg_vec_short.push_back(_arg_vec_long.at(i));
+    }
+  }
+  for (unsigned i = 0; i < _arg_vec_long.size(); ++i) {
+    _argv_long[i] = _arg_vec_long.at(i).c_str();
+    _argv_short[i] = _arg_vec_short.at(i).c_str();
+  }
+  _argc = _arg_vec_long.size();
+}
 
 void snakemake_unit_tests::cargsTest::tearDown() {
-  // nothing to do at the moment
+  if (_argv_long) {
+    delete[] _argv_long;
+    _argv_long = 0;
+  }
+  if (_argv_short) {
+    delete[] _argv_short;
+    _argv_short = 0;
+  }
 }
 
 void snakemake_unit_tests::cargsTest::test_params_default_constructor() {
@@ -176,11 +231,77 @@ void snakemake_unit_tests::cargsTest::test_params_emit_yaml_vector_null_pointer(
   p.emit_yaml_vector(NULL, data, key);
 }
 void snakemake_unit_tests::cargsTest::test_cargs_default_constructor() { cargs ap; }
-void snakemake_unit_tests::cargsTest::test_cargs_standard_constructor() {}
-void snakemake_unit_tests::cargsTest::test_cargs_copy_constructor() {}
-void snakemake_unit_tests::cargsTest::test_cargs_initialize_options() {}
+void snakemake_unit_tests::cargsTest::test_cargs_standard_constructor() {
+  cargs ap(_argc, _argv_long);
+  // individual accessors will be tested elsewhere, so this really
+  // just tests that the standard constructor functions at all
+}
+void snakemake_unit_tests::cargsTest::test_cargs_copy_constructor() {
+  cargs ap(_argc, _argv_long);
+  cargs ap2(ap);
+  // check that output descriptions are identical
+  std::ostringstream o1, o2;
+  o1 << ap._desc;
+  o2 << ap2._desc;
+  CPPUNIT_ASSERT(!o1.str().compare(o2.str()));
+  // check that each flag is present, and that flags with associated values are paired
+  for (unsigned i = 0; i < _arg_vec_long.size(); ++i) {
+    std::string current = _arg_vec_long.at(i);
+    if (current.find("--") == 0) {
+      current = current.substr(2);
+      CPPUNIT_ASSERT_MESSAGE("cargs copy constructor: " + current, ap2._vm.count(current));
+    } else if (i > 0) {
+      std::string prev = _arg_vec_long.at(i - 1).substr(2);
+      CPPUNIT_ASSERT_MESSAGE("cargs copy constructor, parameters sane: " + prev + " -> " + current,
+                             ap2._vm.count(prev));
+      // handle multiple value parameters separately
+      if (!prev.compare("added-directories") || !prev.compare("added-files") || !prev.compare("exclude-rules")) {
+        std::vector<std::string> result = ap2._vm[prev].as<std::vector<std::string> >();
+        CPPUNIT_ASSERT_MESSAGE("cargs copy constructor key->value: " + prev + " -> " + current,
+                               result.size() == 1 && !result.at(0).compare(current));
+      } else {
+        std::string result = ap2._vm[prev].as<std::string>();
+        CPPUNIT_ASSERT_MESSAGE("cargs copy constructor key->value: " + prev + " -> " + current,
+                               !result.compare(current));
+      }
+    }
+  }
+}
+void snakemake_unit_tests::cargsTest::test_cargs_initialize_options() {
+  cargs ap(_argc, _argv_long);
+  // initialize_options is called by standard constructor; test that
+  // standard constructor has reasonably called it. we're going to
+  // compromise with feasibility and only test that the flags are present,
+  // not that the descriptions are anything in particular; it seems like
+  // the descriptions are the bit that are most subject to change.
+  std::ostringstream o;
+  o << ap._desc;
+  CPPUNIT_ASSERT(o.str().find("-c [ --config ] arg") != std::string::npos);
+  CPPUNIT_ASSERT(o.str().find("-d [ --added-directories ] arg") != std::string::npos);
+  CPPUNIT_ASSERT(o.str().find("-e [ --exclude-rules ] arg") != std::string::npos);
+  CPPUNIT_ASSERT(o.str().find("-f [ --added-files ] arg") != std::string::npos);
+  CPPUNIT_ASSERT(o.str().find("-h [ --help ]") != std::string::npos);
+  CPPUNIT_ASSERT(o.str().find("-i [ --inst-dir ] arg") != std::string::npos);
+  CPPUNIT_ASSERT(o.str().find("-l [ --snakemake-log ] arg") != std::string::npos);
+  CPPUNIT_ASSERT(o.str().find("-o [ --output-test-dir ] arg") != std::string::npos);
+  CPPUNIT_ASSERT(o.str().find("-p [ --pipeline-top-dir ] arg") != std::string::npos);
+  CPPUNIT_ASSERT(o.str().find("-r [ --pipeline-run-dir ] arg") != std::string::npos);
+  CPPUNIT_ASSERT(o.str().find("-s [ --snakefile ] arg") != std::string::npos);
+  CPPUNIT_ASSERT(o.str().find("-v [ --verbose ]") != std::string::npos);
+  CPPUNIT_ASSERT(o.str().find("--update-all") != std::string::npos);
+  CPPUNIT_ASSERT(o.str().find("--update-snakefiles") != std::string::npos);
+  CPPUNIT_ASSERT(o.str().find("--update-added-content") != std::string::npos);
+  CPPUNIT_ASSERT(o.str().find("--update-config") != std::string::npos);
+  CPPUNIT_ASSERT(o.str().find("--update-inputs") != std::string::npos);
+  CPPUNIT_ASSERT(o.str().find("--update-outputs") != std::string::npos);
+  CPPUNIT_ASSERT(o.str().find("--update-pytest") != std::string::npos);
+  CPPUNIT_ASSERT(o.str().find("--include-entire-dag") != std::string::npos);
+}
 void snakemake_unit_tests::cargsTest::test_cargs_set_parameters() {}
-void snakemake_unit_tests::cargsTest::test_cargs_help() {}
+void snakemake_unit_tests::cargsTest::test_cargs_help() {
+  cargs ap(_argc, _argv_long);
+  CPPUNIT_ASSERT_MESSAGE("cargs help request detected", ap.help());
+}
 void snakemake_unit_tests::cargsTest::test_cargs_get_config_yaml() {}
 void snakemake_unit_tests::cargsTest::test_cargs_get_snakefile() {}
 void snakemake_unit_tests::cargsTest::test_cargs_get_snakemake_log() {}
@@ -202,7 +323,13 @@ void snakemake_unit_tests::cargsTest::test_cargs_update_pytest() {}
 void snakemake_unit_tests::cargsTest::test_cargs_verbose() {}
 void snakemake_unit_tests::cargsTest::test_cargs_compute_flag() {}
 void snakemake_unit_tests::cargsTest::test_cargs_compute_parameter() {}
-void snakemake_unit_tests::cargsTest::test_cargs_print_help() {}
+void snakemake_unit_tests::cargsTest::test_cargs_print_help() {
+  cargs ap(_argc, _argv_long);
+  std::ostringstream o1, o2;
+  ap.print_help(o1);
+  o2 << ap._desc;
+  CPPUNIT_ASSERT_MESSAGE("cargs help string printed", !o1.str().compare(o2.str()));
+}
 void snakemake_unit_tests::cargsTest::test_cargs_override_if_specified() {}
 void snakemake_unit_tests::cargsTest::test_cargs_add_contents_to_vector() {}
 void snakemake_unit_tests::cargsTest::test_cargs_add_contents_to_map() {}
