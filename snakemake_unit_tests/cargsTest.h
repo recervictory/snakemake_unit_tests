@@ -43,6 +43,16 @@ class cargsTest : public CppUnit::TestFixture {
   CPPUNIT_TEST(test_cargs_copy_constructor);
   CPPUNIT_TEST(test_cargs_initialize_options);
   CPPUNIT_TEST(test_cargs_set_parameters);
+  CPPUNIT_TEST_EXCEPTION(test_cargs_set_parameters_output_dir_missing, std::logic_error);
+  CPPUNIT_TEST_EXCEPTION(test_cargs_set_parameters_snakefile_invalid, std::logic_error);
+  CPPUNIT_TEST_EXCEPTION(test_cargs_set_parameters_top_dir_invalid, std::logic_error);
+  CPPUNIT_TEST_EXCEPTION(test_cargs_set_parameters_run_dir_invalid, std::runtime_error);
+  CPPUNIT_TEST_EXCEPTION(test_cargs_set_parameters_inst_dir_invalid, std::logic_error);
+  CPPUNIT_TEST_EXCEPTION(test_cargs_set_parameters_inst_dir_missing_test, std::runtime_error);
+  CPPUNIT_TEST_EXCEPTION(test_cargs_set_parameters_inst_dir_missing_common, std::runtime_error);
+  CPPUNIT_TEST_EXCEPTION(test_cargs_set_parameters_snakemake_log_missing, std::logic_error);
+  CPPUNIT_TEST_EXCEPTION(test_cargs_set_parameters_added_files_invalid, std::logic_error);
+  CPPUNIT_TEST_EXCEPTION(test_cargs_set_parameters_added_directories_invalid, std::logic_error);
   CPPUNIT_TEST(test_cargs_help);
   CPPUNIT_TEST(test_cargs_get_config_yaml);
   CPPUNIT_TEST(test_cargs_get_snakefile);
@@ -103,6 +113,16 @@ class cargsTest : public CppUnit::TestFixture {
   void test_cargs_copy_constructor();
   void test_cargs_initialize_options();
   void test_cargs_set_parameters();
+  void test_cargs_set_parameters_output_dir_missing();
+  void test_cargs_set_parameters_snakefile_invalid();
+  void test_cargs_set_parameters_top_dir_invalid();
+  void test_cargs_set_parameters_run_dir_invalid();
+  void test_cargs_set_parameters_inst_dir_invalid();
+  void test_cargs_set_parameters_inst_dir_missing_test();
+  void test_cargs_set_parameters_inst_dir_missing_common();
+  void test_cargs_set_parameters_snakemake_log_missing();
+  void test_cargs_set_parameters_added_files_invalid();
+  void test_cargs_set_parameters_added_directories_invalid();
   void test_cargs_help();
   void test_cargs_get_config_yaml();
   void test_cargs_get_snakefile();
@@ -143,11 +163,14 @@ class cargsTest : public CppUnit::TestFixture {
 
  private:
   void populate_arguments(const std::string &cmd, std::vector<std::string> *vec, const char ***arr) const;
+  void create_empty_file(const boost::filesystem::path &p) const;
 
   const char **_argv_long;
   const char **_argv_short;
+  const char **_argv_adhoc;
   std::vector<std::string> _arg_vec_long;
   std::vector<std::string> _arg_vec_short;
+  std::vector<std::string> _arg_vec_adhoc;
   char *_tmp_dir;
 };
 }  // namespace snakemake_unit_tests
