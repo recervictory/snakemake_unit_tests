@@ -7,6 +7,15 @@
 
 #include "snakemake_unit_tests/cargsTest.h"
 
+void snakemake_unit_tests::cargsTest::create_empty_file(const boost::filesystem::path &p) const {
+  std::ofstream output;
+  output.open(p.string().c_str());
+  if (!output.is_open()) {
+    throw std::runtime_error("cannot write empty file \"" + p.string() + "\"");
+  }
+  output.close();
+}
+
 void snakemake_unit_tests::cargsTest::populate_arguments(const std::string &cmd, std::vector<std::string> *vec,
                                                          const char ***arr) const {
   if (!vec || !arr) {
@@ -17,6 +26,10 @@ void snakemake_unit_tests::cargsTest::populate_arguments(const std::string &cmd,
   std::string token = "";
   while (strm1 >> token) {
     vec->push_back(token);
+  }
+  if (*arr) {
+    delete[] * arr;
+    *arr = 0;
   }
   *arr = new const char *[vec->size()];
   for (unsigned i = 0; i < vec->size(); ++i) {
@@ -56,6 +69,10 @@ void snakemake_unit_tests::cargsTest::tearDown() {
   if (_argv_short) {
     delete[] _argv_short;
     _argv_short = 0;
+  }
+  if (_argv_adhoc) {
+    delete[] _argv_adhoc;
+    _argv_adhoc = 0;
   }
   if (_tmp_dir) {
     std::filesystem::remove_all(std::filesystem::path(_tmp_dir));
@@ -132,7 +149,67 @@ void snakemake_unit_tests::cargsTest::test_params_copy_constructor() {
   CPPUNIT_ASSERT(p.exclude_paths == q.exclude_paths);
   CPPUNIT_ASSERT(p.byte_comparisons == q.byte_comparisons);
 }
-void snakemake_unit_tests::cargsTest::test_params_report_settings() {}
+void snakemake_unit_tests::cargsTest::test_params_report_settings() {
+  boost::filesystem::path output_filename =
+      boost::filesystem::path(std::string(_tmp_dir)) / "params_report_settings.yaml";
+  params p;
+  p.output_test_dir = "outdir";
+  p.snakefile = "Snakefile";
+  p.pipeline_top_dir = "ptop";
+  p.pipeline_run_dir = "prun";
+  p.inst_dir = "inst";
+  p.snakemake_log = "slog";
+  std::vector<boost::filesystem::path> files, directories;
+  files.push_back("fname1");
+  files.push_back("fname2");
+  p.added_files = files;
+  directories.push_back("dname1");
+  directories.push_back("dname2");
+  p.added_directories = directories;
+  p.exclude_rules["rulename1"] = true;
+  p.exclude_rules["rulename2"] = true;
+  p.exclude_extensions.clear();
+  p.exclude_paths["path1"] = true;
+  p.byte_comparisons[".ext1"] = true;
+  p.byte_comparisons[".ext2"] = true;
+  p.byte_comparisons[".ext3"] = true;
+  p.report_settings(output_filename);
+  std::string pwd = boost::filesystem::current_path().string();
+  std::string expected_contents = "output-test-dir: " + pwd +
+                                  "/outdir\n"
+                                  "snakefile: " +
+                                  pwd +
+                                  "/Snakefile\n"
+                                  "pipeline-top-dir: " +
+                                  pwd +
+                                  "/ptop\n"
+                                  "pipeline-run-dir: " +
+                                  pwd +
+                                  "/prun\n"
+                                  "inst-dir: " +
+                                  pwd +
+                                  "/inst\n"
+                                  "snakemake-log: " +
+                                  pwd +
+                                  "/slog\n"
+                                  "added-files:\n  - fname1\n  - fname2\n"
+                                  "added-directories:\n  - dname1\n  - dname2\n"
+                                  "exclude-rules:\n  - rulename1\n  - rulename2\n"
+                                  "exclude-extensions: ~\n"
+                                  "exclude-paths:\n  - path1\n"
+                                  "byte-comparisons:\n  - .ext1\n  - .ext2\n  - .ext3\n";
+  std::ifstream input;
+  std::string line = "";
+  std::ostringstream observed_contents;
+  input.open(output_filename.string().c_str());
+  CPPUNIT_ASSERT(input.is_open());
+  while (input.peek() != EOF) {
+    getline(input, line);
+    observed_contents << line << '\n';
+  }
+  input.close();
+  CPPUNIT_ASSERT(!observed_contents.str().compare(expected_contents));
+}
 void snakemake_unit_tests::cargsTest::test_params_emit_yaml_map_multiple_entries() {
   YAML::Emitter out;
   std::string key = "mykey";
@@ -292,7 +369,702 @@ void snakemake_unit_tests::cargsTest::test_cargs_initialize_options() {
   CPPUNIT_ASSERT(o.str().find("--update-pytest") != std::string::npos);
   CPPUNIT_ASSERT(o.str().find("--include-entire-dag") != std::string::npos);
 }
-void snakemake_unit_tests::cargsTest::test_cargs_set_parameters() {}
+void snakemake_unit_tests::cargsTest::test_cargs_set_parameters() {
+  /*
+    set_parameters handles resolution of conflicting run settings provided
+    in the optional config yaml and on the command line. the logic is somewhat
+    convoluted, as the desired behavior varies depending on the type of
+    parameter in question. additionally, not all of the options can be
+    specified in both places; specifically, the run mode flags are only
+    accepted on the command line, to encourage some level of user interaction;
+    and some multiply specified parameters override, while others add on top.
+
+    the settings are as follows (CLI tag, yaml tag, params internal variable):
+
+    flags only allowed on the command line:
+    - (update-all, NA, update_all)
+    - (update-snakefiles, NA, update_snakefiles)
+    - (update-added-content, NA, update_added_content)
+    - (update-config, NA, update_config)
+    - (update-inputs, NA, update_inputs)
+    - (update-outputs, NA, update_outputs)
+    - (update-pytest, NA, update_pytest)
+    - (include-entire-dag, NA, include_entire_dag)
+
+    parameters that override when present on the CLI:
+    - (output-test-dir, output-test-dir, output_test_dir)
+    - (snakefile, snakefile, snakefile)
+    - (pipeline-top-dir, pipeline-top-dir, pipeline_top_dir)
+    -   if this is NOT specified, it should be set to the parent of the Snakefile directory
+    - (pipeline-run-dir, pipeline-run-dir, pipeline_run_dir)
+    -   if this is NOT specified, it should be set to '.'
+    - (inst-dir, inst-dir, inst_dir)
+    - (snakemake-log, snakemake-log, snakemake_log)
+
+    parameters that augment when present on the CLI:
+    - (added-files, added-files, added_files)
+    - (added-directories, added-directories, added_directories)
+    - (exclude-rules, exclude-rules, exclude_rules)
+    -   exclude_rules unconditionally gets 'all' added to it
+   */
+  // mandatory input files and directories need to be present for this test
+  boost::filesystem::path filename, prefix = std::string(_tmp_dir);
+  std::ofstream output;
+  // pipeline top level directory
+  boost::filesystem::path top_dir = prefix / "set_parameters";
+  boost::filesystem::path top_dir_config = prefix / "set_parameters_config";
+  std::filesystem::create_directory(top_dir.string().c_str());
+  std::filesystem::create_directory(top_dir_config.string().c_str());
+  // pipeline run directory
+  boost::filesystem::path run_dir = "workflow";
+  boost::filesystem::path run_dir_config = "workflow_config";
+  std::filesystem::create_directory((top_dir / run_dir).string().c_str());
+  std::filesystem::create_directory((top_dir_config / run_dir_config).string().c_str());
+  // inst directory
+  boost::filesystem::path inst_dir = prefix / "inst";
+  boost::filesystem::path inst_dir_config = prefix / "inst_config";
+  std::filesystem::create_directory(inst_dir.string().c_str());
+  std::filesystem::create_directory(inst_dir_config.string().c_str());
+  // snakemake run log
+  boost::filesystem::path run_log = top_dir / "set_parameters.log";
+  boost::filesystem::path run_log_config = top_dir_config / "set_parameters_config.log";
+  create_empty_file(run_log);
+  create_empty_file(run_log_config);
+  // snakefile
+  boost::filesystem::path snakefile = top_dir / run_dir / "Snakefile";
+  boost::filesystem::path snakefile_config = top_dir_config / run_dir_config / "Snakefile_config";
+  create_empty_file(snakefile);
+  create_empty_file(snakefile_config);
+  // inst common.py
+  boost::filesystem::path common_py = inst_dir / "common.py";
+  boost::filesystem::path common_py_config = inst_dir_config / "common.py";
+  create_empty_file(common_py);
+  create_empty_file(common_py_config);
+  // inst test.py
+  boost::filesystem::path test_py = inst_dir / "test.py";
+  boost::filesystem::path test_py_config = inst_dir_config / "test.py";
+  create_empty_file(test_py);
+  create_empty_file(test_py_config);
+  // added files, directories
+  std::map<boost::filesystem::path, bool> added_files, added_files_config, added_dirs, added_dirs_config;
+  added_files["file1"] = true;
+  added_files["file2"] = true;
+  added_files_config["file1_config"] = true;
+  added_files_config["file2_config"] = true;
+  added_dirs["dir1"] = true;
+  added_dirs["dir2"] = true;
+  added_dirs_config["dir1_config"] = true;
+  added_dirs_config["dir2_config"] = true;
+  // excluded rules
+  std::map<std::string, bool> exclude_rules, exclude_rules_config;
+  exclude_rules["rule1"] = true;
+  exclude_rules["rule2"] = true;
+  exclude_rules["rule1_config"] = true;
+  exclude_rules["rule2_config"] = true;
+  // excluded paths, extensions; byte comparisons. these are only accepted from the config
+  std::map<std::string, bool> exclude_paths, exclude_extensions, byte_comparisons;
+  exclude_paths["path1"] = true;
+  exclude_paths["path2"] = true;
+  exclude_extensions["ext1"] = true;
+  exclude_extensions["ext2"] = true;
+  byte_comparisons["ext3"] = true;
+  byte_comparisons["ext4"] = true;
+  // added directories
+  // doesn't need to be created, but worth keeping this stored
+  boost::filesystem::path outdir = prefix / "outdir";
+  boost::filesystem::path outdir_config = prefix / "outdir_config";
+  // config yaml, for testing conflict resolution
+  boost::filesystem::path config_yaml = prefix / "config.yaml";
+  std::string config_data = "output-test-dir: " + outdir_config.string() +
+                            "\n"
+                            "snakefile: " +
+                            snakefile_config.string() +
+                            "\n"
+                            "pipeline-top-dir: " +
+                            top_dir_config.string() +
+                            "\n"
+                            "pipeline-run-dir: " +
+                            run_dir_config.string() +
+                            "\n"
+                            "inst-dir: " +
+                            inst_dir_config.string() +
+                            "\n"
+                            "snakemake-log: " +
+                            run_log_config.string() +
+                            "\n"
+                            "added-files:\n";
+  for (std::map<boost::filesystem::path, bool>::const_iterator iter = added_files_config.begin();
+       iter != added_files_config.end(); ++iter) {
+    config_data += "  - " + iter->first.string() + "\n";
+    create_empty_file(top_dir_config / iter->first);
+    // for later tests, this file must also be installed under the non-config top directory
+    create_empty_file(top_dir / iter->first);
+  }
+  config_data += "added-directories:\n";
+  for (std::map<boost::filesystem::path, bool>::const_iterator iter = added_dirs_config.begin();
+       iter != added_dirs_config.end(); ++iter) {
+    config_data += "  - " + iter->first.string() + "\n";
+    std::filesystem::create_directory((top_dir_config / iter->first).string().c_str());
+    // for later tests, this directory must also be installed under the non-config top directory
+    std::filesystem::create_directory((top_dir / iter->first).string().c_str());
+  }
+  config_data += "exclude-rules:\n";
+  for (std::map<std::string, bool>::const_iterator iter = exclude_rules_config.begin();
+       iter != exclude_rules_config.end(); ++iter) {
+    config_data += "  - " + iter->first + "\n";
+  }
+  config_data += "exclude-paths:\n";
+  for (std::map<std::string, bool>::const_iterator iter = exclude_paths.begin(); iter != exclude_paths.end(); ++iter) {
+    config_data += "  - " + iter->first + "\n";
+  }
+  config_data += "exclude-extensions:\n";
+  for (std::map<std::string, bool>::const_iterator iter = exclude_extensions.begin(); iter != exclude_extensions.end();
+       ++iter) {
+    config_data += "  - " + iter->first + "\n";
+  }
+  config_data += "byte-comparisons:\n";
+  for (std::map<std::string, bool>::const_iterator iter = byte_comparisons.begin(); iter != byte_comparisons.end();
+       ++iter) {
+    config_data += "  - " + iter->first + "\n";
+  }
+  output.open(config_yaml.string().c_str());
+  if (!output.is_open()) throw std::runtime_error("cargs set_parameters: cannot write config yaml");
+  output << config_data;
+  output.close();
+  output.clear();
+  // ok
+  // a run with the flag that should turn on all other run modes
+  std::string command =
+      "./snakemake_unit_tests.out --update-all "
+      "--inst-dir " +
+      inst_dir.string() + " --snakemake-log " + run_log.string() + " --output-test-dir " + outdir.string() +
+      " --pipeline-top-dir " + top_dir.string() + " --pipeline-run-dir " + run_dir.string() + " --snakefile " +
+      snakefile.string();
+  populate_arguments(command, &_arg_vec_adhoc, &_argv_adhoc);
+  cargs ap1(_arg_vec_adhoc.size(), _argv_adhoc);
+  params p1 = ap1.set_parameters();
+  CPPUNIT_ASSERT(p1.update_all);
+  // a run with every other state flag;
+  // also check the propagated state of the mandatory arguments
+  command =
+      "./snakemake_unit_tests.out "
+      "--update-snakefiles --update-added-content --update-inputs "
+      "--update-outputs --update-config --update-pytest "
+      "--inst-dir " +
+      inst_dir.string() + " --snakemake-log " + run_log.string() + " --output-test-dir " + outdir.string() +
+      " --pipeline-top-dir " + top_dir.string() + " --pipeline-run-dir " + run_dir.string() + " --snakefile " +
+      snakefile.string() + " --exclude-rules rule1 --exclude-rules rule2";
+  for (std::map<boost::filesystem::path, bool>::const_iterator iter = added_dirs.begin(); iter != added_dirs.end();
+       ++iter) {
+    command += " -d " + iter->first.string();
+    std::filesystem::create_directory((top_dir / iter->first).string().c_str());
+  }
+  for (std::map<boost::filesystem::path, bool>::const_iterator iter = added_files.begin(); iter != added_files.end();
+       ++iter) {
+    command += " -f " + iter->first.string();
+    create_empty_file(top_dir / iter->first);
+  }
+  for (std::map<std::string, bool>::const_iterator iter = exclude_rules.begin(); iter != exclude_rules.end(); ++iter) {
+    command += " -e " + iter->first;
+  }
+  populate_arguments(command, &_arg_vec_adhoc, &_argv_adhoc);
+  cargs ap2(_arg_vec_adhoc.size(), _argv_adhoc);
+  params p2 = ap2.set_parameters();
+  CPPUNIT_ASSERT(p2.update_snakefiles);
+  CPPUNIT_ASSERT(p2.update_config);
+  CPPUNIT_ASSERT(p2.update_pytest);
+  CPPUNIT_ASSERT(p2.update_inputs);
+  CPPUNIT_ASSERT(p2.update_outputs);
+  CPPUNIT_ASSERT(p2.update_added_content);
+  CPPUNIT_ASSERT(!p2.snakefile.string().compare(snakefile.string()));
+  CPPUNIT_ASSERT(!p2.pipeline_top_dir.string().compare(top_dir.string()));
+  CPPUNIT_ASSERT(!p2.pipeline_run_dir.string().compare(run_dir.string()));
+  CPPUNIT_ASSERT(!p2.output_test_dir.string().compare(outdir.string()));
+  CPPUNIT_ASSERT(!p2.inst_dir.string().compare(inst_dir.string()));
+  CPPUNIT_ASSERT(!p2.snakemake_log.string().compare(run_log.string()));
+  CPPUNIT_ASSERT(p2.added_files.size() == added_files.size());
+  for (std::vector<boost::filesystem::path>::const_iterator iter = p2.added_files.begin(); iter != p2.added_files.end();
+       ++iter) {
+    CPPUNIT_ASSERT(added_files.find(*iter) != added_files.end());
+  }
+  CPPUNIT_ASSERT(p2.added_directories.size() == added_dirs.size());
+  for (std::vector<boost::filesystem::path>::const_iterator iter = p2.added_directories.begin();
+       iter != p2.added_directories.end(); ++iter) {
+    CPPUNIT_ASSERT(added_dirs.find(*iter) != added_dirs.end());
+  }
+  CPPUNIT_ASSERT(p2.exclude_rules.size() == exclude_rules.size() + 1);
+  for (std::map<std::string, bool>::const_iterator iter = p2.exclude_rules.begin(); iter != p2.exclude_rules.end();
+       ++iter) {
+    if (iter->first.compare("all")) {
+      CPPUNIT_ASSERT(exclude_rules.find(iter->first) != exclude_rules.end());
+    }
+  }
+  CPPUNIT_ASSERT(p2.exclude_rules.find("all") != p2.exclude_rules.end());
+  // a run with config yaml input only
+  command = "./snakemake_unit_tests.out -c " + config_yaml.string();
+  populate_arguments(command, &_arg_vec_adhoc, &_argv_adhoc);
+  cargs ap3(_arg_vec_adhoc.size(), _argv_adhoc);
+  params p3 = ap3.set_parameters();
+  CPPUNIT_ASSERT(!p3.snakefile.string().compare(snakefile_config.string()));
+  CPPUNIT_ASSERT(!p3.pipeline_top_dir.string().compare(top_dir_config.string()));
+  CPPUNIT_ASSERT(!p3.pipeline_run_dir.string().compare(run_dir_config.string()));
+  CPPUNIT_ASSERT(!p3.output_test_dir.string().compare(outdir_config.string()));
+  CPPUNIT_ASSERT(!p3.inst_dir.string().compare(inst_dir_config.string()));
+  CPPUNIT_ASSERT(!p3.snakemake_log.string().compare(run_log_config.string()));
+  CPPUNIT_ASSERT(p3.added_files.size() == added_files_config.size());
+  for (std::vector<boost::filesystem::path>::const_iterator iter = p3.added_files.begin(); iter != p3.added_files.end();
+       ++iter) {
+    CPPUNIT_ASSERT(added_files_config.find(*iter) != added_files_config.end());
+  }
+  CPPUNIT_ASSERT(p3.added_directories.size() == added_dirs_config.size());
+  for (std::vector<boost::filesystem::path>::const_iterator iter = p3.added_directories.begin();
+       iter != p3.added_directories.end(); ++iter) {
+    CPPUNIT_ASSERT(added_dirs_config.find(*iter) != added_dirs_config.end());
+  }
+  CPPUNIT_ASSERT(p3.exclude_rules.size() == exclude_rules_config.size() + 1);
+  for (std::map<std::string, bool>::const_iterator iter = p3.exclude_rules.begin(); iter != p3.exclude_rules.end();
+       ++iter) {
+    if (iter->first.compare("all")) {
+      CPPUNIT_ASSERT(exclude_rules_config.find(iter->first) != exclude_rules_config.end());
+    }
+  }
+  CPPUNIT_ASSERT(p3.exclude_rules.find("all") != p3.exclude_rules.end());
+  CPPUNIT_ASSERT(p3.exclude_paths.size() == exclude_paths.size());
+  for (std::map<std::string, bool>::const_iterator iter = p3.exclude_paths.begin(); iter != p3.exclude_paths.end();
+       ++iter) {
+    CPPUNIT_ASSERT(exclude_paths.find(iter->first) != exclude_paths.end());
+  }
+  CPPUNIT_ASSERT(p3.exclude_extensions.size() == exclude_extensions.size());
+  for (std::map<std::string, bool>::const_iterator iter = p3.exclude_extensions.begin();
+       iter != p3.exclude_extensions.end(); ++iter) {
+    CPPUNIT_ASSERT(exclude_extensions.find(iter->first) != exclude_extensions.end());
+  }
+  CPPUNIT_ASSERT(p3.byte_comparisons.size() == byte_comparisons.size());
+  for (std::map<std::string, bool>::const_iterator iter = p3.byte_comparisons.begin();
+       iter != p3.byte_comparisons.end(); ++iter) {
+    CPPUNIT_ASSERT(byte_comparisons.find(iter->first) != byte_comparisons.end());
+  }
+
+  // a run with both config yaml input and CLI input, to test resolution
+  command =
+      "./snakemake_unit_tests.out "
+      "--update-snakefiles --update-added-content --update-inputs "
+      "--update-outputs --update-config --update-pytest "
+      "--inst-dir " +
+      inst_dir.string() + " --snakemake-log " + run_log.string() + " --output-test-dir " + outdir.string() +
+      " --pipeline-top-dir " + top_dir.string() + " --pipeline-run-dir " + run_dir.string() + " --snakefile " +
+      snakefile.string() + " --exclude-rules rule1 --exclude-rules rule2";
+  for (std::map<boost::filesystem::path, bool>::const_iterator iter = added_dirs.begin(); iter != added_dirs.end();
+       ++iter) {
+    command += " -d " + iter->first.string();
+    std::filesystem::create_directory((top_dir / iter->first).string().c_str());
+  }
+  for (std::map<boost::filesystem::path, bool>::const_iterator iter = added_files.begin(); iter != added_files.end();
+       ++iter) {
+    command += " -f " + iter->first.string();
+    create_empty_file(top_dir / iter->first);
+  }
+  for (std::map<std::string, bool>::const_iterator iter = exclude_rules.begin(); iter != exclude_rules.end(); ++iter) {
+    command += " -e " + iter->first;
+  }
+  command += " -c " + config_yaml.string();
+  populate_arguments(command, &_arg_vec_adhoc, &_argv_adhoc);
+  cargs ap4(_arg_vec_adhoc.size(), _argv_adhoc);
+  params p4 = ap4.set_parameters();
+  // almost everything should be what was found on the command line, not in the config yaml
+  CPPUNIT_ASSERT(!p4.snakefile.string().compare(snakefile.string()));
+  CPPUNIT_ASSERT(!p4.pipeline_top_dir.string().compare(top_dir.string()));
+  CPPUNIT_ASSERT(!p4.pipeline_run_dir.string().compare(run_dir.string()));
+  CPPUNIT_ASSERT(!p4.output_test_dir.string().compare(outdir.string()));
+  CPPUNIT_ASSERT(!p4.inst_dir.string().compare(inst_dir.string()));
+  CPPUNIT_ASSERT(!p4.snakemake_log.string().compare(run_log.string()));
+  // files, directories, rules are cumulative
+  CPPUNIT_ASSERT(p4.added_files.size() == added_files.size() + added_files_config.size());
+  for (std::vector<boost::filesystem::path>::const_iterator iter = p4.added_files.begin(); iter != p4.added_files.end();
+       ++iter) {
+    CPPUNIT_ASSERT(added_files_config.find(*iter) != added_files_config.end() ||
+                   added_files.find(*iter) != added_files.end());
+  }
+  CPPUNIT_ASSERT(p4.added_directories.size() == added_dirs.size() + added_dirs_config.size());
+  for (std::vector<boost::filesystem::path>::const_iterator iter = p4.added_directories.begin();
+       iter != p4.added_directories.end(); ++iter) {
+    CPPUNIT_ASSERT(added_dirs_config.find(*iter) != added_dirs_config.end() ||
+                   added_dirs.find(*iter) != added_dirs.end());
+  }
+  CPPUNIT_ASSERT(p4.exclude_rules.size() == exclude_rules.size() + exclude_rules_config.size() + 1);
+  for (std::map<std::string, bool>::const_iterator iter = p4.exclude_rules.begin(); iter != p4.exclude_rules.end();
+       ++iter) {
+    if (iter->first.compare("all")) {
+      CPPUNIT_ASSERT(exclude_rules_config.find(iter->first) != exclude_rules_config.end() ||
+                     exclude_rules.find(iter->first) != exclude_rules.end());
+    }
+  }
+  CPPUNIT_ASSERT(p4.exclude_rules.find("all") != p4.exclude_rules.end());
+  CPPUNIT_ASSERT(p3.exclude_paths.size() == exclude_paths.size());
+  for (std::map<std::string, bool>::const_iterator iter = p3.exclude_paths.begin(); iter != p3.exclude_paths.end();
+       ++iter) {
+    CPPUNIT_ASSERT(exclude_paths.find(iter->first) != exclude_paths.end());
+  }
+  CPPUNIT_ASSERT(p3.exclude_extensions.size() == exclude_extensions.size());
+  for (std::map<std::string, bool>::const_iterator iter = p3.exclude_extensions.begin();
+       iter != p3.exclude_extensions.end(); ++iter) {
+    CPPUNIT_ASSERT(exclude_extensions.find(iter->first) != exclude_extensions.end());
+  }
+  CPPUNIT_ASSERT(p3.byte_comparisons.size() == byte_comparisons.size());
+  for (std::map<std::string, bool>::const_iterator iter = p3.byte_comparisons.begin();
+       iter != p3.byte_comparisons.end(); ++iter) {
+    CPPUNIT_ASSERT(byte_comparisons.find(iter->first) != byte_comparisons.end());
+  }
+}
+void snakemake_unit_tests::cargsTest::test_cargs_set_parameters_output_dir_missing() {
+  // construct an otherwise valid command, but leave out output directory
+  boost::filesystem::path prefix = std::string(_tmp_dir);
+  // pipeline top level directory
+  boost::filesystem::path top_dir = prefix / "set_parameters";
+  std::filesystem::create_directory(top_dir.string().c_str());
+  // pipeline run directory
+  boost::filesystem::path run_dir = "workflow";
+  std::filesystem::create_directory((top_dir / run_dir).string().c_str());
+  // inst directory
+  boost::filesystem::path inst_dir = prefix / "inst";
+  std::filesystem::create_directory(inst_dir.string().c_str());
+  // snakemake run log
+  boost::filesystem::path run_log = top_dir / "set_parameters.log";
+  create_empty_file(run_log);
+  // snakefile
+  boost::filesystem::path snakefile = top_dir / run_dir / "Snakefile";
+  create_empty_file(snakefile);
+  // inst common.py
+  boost::filesystem::path common_py = inst_dir / "common.py";
+  create_empty_file(common_py);
+  // inst test.py
+  boost::filesystem::path test_py = inst_dir / "test.py";
+  create_empty_file(test_py);
+  std::string command =
+      "./snakemake_unit_tests.out "
+      "--inst-dir " +
+      inst_dir.string() + " --snakemake-log " + run_log.string() + " --pipeline-top-dir " + top_dir.string() +
+      " --pipeline-run-dir " + run_dir.string() + " --snakefile " + snakefile.string();
+  populate_arguments(command, &_arg_vec_adhoc, &_argv_adhoc);
+  cargs ap(_arg_vec_adhoc.size(), _argv_adhoc);
+  params p = ap.set_parameters();
+}
+
+void snakemake_unit_tests::cargsTest::test_cargs_set_parameters_snakefile_invalid() {
+  // construct an otherwise valid command, but snakefile is invalid
+  boost::filesystem::path prefix = std::string(_tmp_dir);
+  // pipeline top level directory
+  boost::filesystem::path top_dir = prefix / "set_parameters";
+  std::filesystem::create_directory(top_dir.string().c_str());
+  // pipeline run directory
+  boost::filesystem::path run_dir = "workflow";
+  std::filesystem::create_directory((top_dir / run_dir).string().c_str());
+  // snakefile
+  boost::filesystem::path snakefile = top_dir / run_dir / "Snakefile";
+  // inst directory
+  boost::filesystem::path inst_dir = prefix / "inst";
+  std::filesystem::create_directory(inst_dir.string().c_str());
+  // snakemake run log
+  boost::filesystem::path run_log = top_dir / "set_parameters.log";
+  create_empty_file(run_log);
+  // inst common.py
+  boost::filesystem::path common_py = inst_dir / "common.py";
+  create_empty_file(common_py);
+  // inst test.py
+  boost::filesystem::path test_py = inst_dir / "test.py";
+  create_empty_file(test_py);
+  // output directory
+  boost::filesystem::path outdir = prefix / "outdir";
+  std::string command =
+      "./snakemake_unit_tests.out "
+      "--inst-dir " +
+      inst_dir.string() + " --snakemake-log " + run_log.string() + " -o " + outdir.string() + " --pipeline-top-dir " +
+      top_dir.string() + " --pipeline-run-dir " + run_dir.string() + " --snakefile " + snakefile.string();
+  populate_arguments(command, &_arg_vec_adhoc, &_argv_adhoc);
+  cargs ap(_arg_vec_adhoc.size(), _argv_adhoc);
+  params p = ap.set_parameters();
+}
+
+void snakemake_unit_tests::cargsTest::test_cargs_set_parameters_top_dir_invalid() {
+  // construct an otherwise valid command, but snakemake top directory is invalid
+  boost::filesystem::path prefix = std::string(_tmp_dir);
+  // pipeline top level directory
+  boost::filesystem::path top_dir = prefix / "set_parameters";
+  std::filesystem::create_directory(top_dir.string().c_str());
+  // pipeline run directory
+  boost::filesystem::path run_dir = "workflow";
+  std::filesystem::create_directory((top_dir / run_dir).string().c_str());
+  // inst directory
+  boost::filesystem::path inst_dir = prefix / "inst";
+  std::filesystem::create_directory(inst_dir.string().c_str());
+  // snakemake run log
+  boost::filesystem::path run_log = top_dir / "set_parameters.log";
+  create_empty_file(run_log);
+  // snakefile
+  boost::filesystem::path snakefile = top_dir / run_dir / "Snakefile";
+  create_empty_file(snakefile);
+  // inst common.py
+  boost::filesystem::path common_py = inst_dir / "common.py";
+  create_empty_file(common_py);
+  // inst test.py
+  boost::filesystem::path test_py = inst_dir / "test.py";
+  create_empty_file(test_py);
+  // output directory
+  boost::filesystem::path outdir = prefix / "outdir";
+  std::string command =
+      "./snakemake_unit_tests.out "
+      "--inst-dir " +
+      inst_dir.string() + " --snakemake-log " + run_log.string() + " -o " + outdir.string() + " --pipeline-top-dir " +
+      (top_dir / "bad").string() + " --pipeline-run-dir " + run_dir.string() + " --snakefile " + snakefile.string();
+  populate_arguments(command, &_arg_vec_adhoc, &_argv_adhoc);
+  cargs ap(_arg_vec_adhoc.size(), _argv_adhoc);
+  params p = ap.set_parameters();
+}
+
+void snakemake_unit_tests::cargsTest::test_cargs_set_parameters_run_dir_invalid() {
+  // construct an otherwise valid command, but snakemake run directory is malformed
+  boost::filesystem::path prefix = std::string(_tmp_dir);
+  // pipeline top level directory
+  boost::filesystem::path top_dir = prefix / "set_parameters";
+  std::filesystem::create_directory(top_dir.string().c_str());
+  // pipeline run directory
+  boost::filesystem::path run_dir = prefix / "workflow";
+  std::filesystem::create_directory(run_dir.string().c_str());
+  // inst directory
+  boost::filesystem::path inst_dir = prefix / "inst";
+  std::filesystem::create_directory(inst_dir.string().c_str());
+  // snakemake run log
+  boost::filesystem::path run_log = top_dir / "set_parameters.log";
+  create_empty_file(run_log);
+  // snakefile
+  boost::filesystem::path snakefile = run_dir / "Snakefile";
+  create_empty_file(snakefile);
+  // inst common.py
+  boost::filesystem::path common_py = inst_dir / "common.py";
+  create_empty_file(common_py);
+  // inst test.py
+  boost::filesystem::path test_py = inst_dir / "test.py";
+  create_empty_file(test_py);
+  // output directory
+  boost::filesystem::path outdir = prefix / "outdir";
+  std::string command =
+      "./snakemake_unit_tests.out "
+      "--inst-dir " +
+      inst_dir.string() + " --snakemake-log " + run_log.string() + " -o " + outdir.string() + " --pipeline-top-dir " +
+      top_dir.string() + " --pipeline-run-dir " + run_dir.string() + " --snakefile " + snakefile.string();
+  populate_arguments(command, &_arg_vec_adhoc, &_argv_adhoc);
+  cargs ap(_arg_vec_adhoc.size(), _argv_adhoc);
+  params p = ap.set_parameters();
+}
+
+void snakemake_unit_tests::cargsTest::test_cargs_set_parameters_inst_dir_invalid() {
+  // construct an otherwise valid command, but inst is bad
+  boost::filesystem::path prefix = std::string(_tmp_dir);
+  // pipeline top level directory
+  boost::filesystem::path top_dir = prefix / "set_parameters";
+  std::filesystem::create_directory(top_dir.string().c_str());
+  // pipeline run directory
+  boost::filesystem::path run_dir = "workflow";
+  std::filesystem::create_directory((top_dir / run_dir).string().c_str());
+  // inst directory
+  boost::filesystem::path inst_dir = prefix / "inst";
+  // snakemake run log
+  boost::filesystem::path run_log = top_dir / "set_parameters.log";
+  create_empty_file(run_log);
+  // snakefile
+  boost::filesystem::path snakefile = top_dir / run_dir / "Snakefile";
+  create_empty_file(snakefile);
+  // output directory
+  boost::filesystem::path outdir = prefix / "outdir";
+  std::string command =
+      "./snakemake_unit_tests.out "
+      "--inst-dir " +
+      inst_dir.string() + " --snakemake-log " + run_log.string() + " -o " + outdir.string() + " --pipeline-top-dir " +
+      top_dir.string() + " --pipeline-run-dir " + run_dir.string() + " --snakefile " + snakefile.string();
+  populate_arguments(command, &_arg_vec_adhoc, &_argv_adhoc);
+  cargs ap(_arg_vec_adhoc.size(), _argv_adhoc);
+  params p = ap.set_parameters();
+}
+
+void snakemake_unit_tests::cargsTest::test_cargs_set_parameters_inst_dir_missing_test() {
+  // construct an otherwise valid command, but test.py isn't present under inst
+  boost::filesystem::path prefix = std::string(_tmp_dir);
+  // pipeline top level directory
+  boost::filesystem::path top_dir = prefix / "set_parameters";
+  std::filesystem::create_directory(top_dir.string().c_str());
+  // pipeline run directory
+  boost::filesystem::path run_dir = "workflow";
+  std::filesystem::create_directory((top_dir / run_dir).string().c_str());
+  // inst directory
+  boost::filesystem::path inst_dir = prefix / "inst";
+  std::filesystem::create_directory(inst_dir.string().c_str());
+  // snakemake run log
+  boost::filesystem::path run_log = top_dir / "set_parameters.log";
+  create_empty_file(run_log);
+  // snakefile
+  boost::filesystem::path snakefile = top_dir / run_dir / "Snakefile";
+  create_empty_file(snakefile);
+  // inst common.py
+  boost::filesystem::path common_py = inst_dir / "common.py";
+  create_empty_file(common_py);
+  // inst test.py
+  boost::filesystem::path test_py = inst_dir / "test.py";
+  // output directory
+  boost::filesystem::path outdir = prefix / "outdir";
+  std::string command =
+      "./snakemake_unit_tests.out "
+      "--inst-dir " +
+      inst_dir.string() + " --snakemake-log " + run_log.string() + " -o " + outdir.string() + " --pipeline-top-dir " +
+      top_dir.string() + " --pipeline-run-dir " + run_dir.string() + " --snakefile " + snakefile.string();
+  populate_arguments(command, &_arg_vec_adhoc, &_argv_adhoc);
+  cargs ap(_arg_vec_adhoc.size(), _argv_adhoc);
+  params p = ap.set_parameters();
+}
+
+void snakemake_unit_tests::cargsTest::test_cargs_set_parameters_inst_dir_missing_common() {
+  // construct an otherwise valid command, but common.py isn't present under inst
+  boost::filesystem::path prefix = std::string(_tmp_dir);
+  // pipeline top level directory
+  boost::filesystem::path top_dir = prefix / "set_parameters";
+  std::filesystem::create_directory(top_dir.string().c_str());
+  // pipeline run directory
+  boost::filesystem::path run_dir = "workflow";
+  std::filesystem::create_directory((top_dir / run_dir).string().c_str());
+  // inst directory
+  boost::filesystem::path inst_dir = prefix / "inst";
+  std::filesystem::create_directory(inst_dir.string().c_str());
+  // snakemake run log
+  boost::filesystem::path run_log = top_dir / "set_parameters.log";
+  create_empty_file(run_log);
+  // snakefile
+  boost::filesystem::path snakefile = top_dir / run_dir / "Snakefile";
+  create_empty_file(snakefile);
+  // inst common.py
+  boost::filesystem::path common_py = inst_dir / "common.py";
+  // inst test.py
+  boost::filesystem::path test_py = inst_dir / "test.py";
+  create_empty_file(test_py);
+  // output directory
+  boost::filesystem::path outdir = prefix / "outdir";
+  std::string command =
+      "./snakemake_unit_tests.out "
+      "--inst-dir " +
+      inst_dir.string() + " --snakemake-log " + run_log.string() + " -o " + outdir.string() + " --pipeline-top-dir " +
+      top_dir.string() + " --pipeline-run-dir " + run_dir.string() + " --snakefile " + snakefile.string();
+  populate_arguments(command, &_arg_vec_adhoc, &_argv_adhoc);
+  cargs ap(_arg_vec_adhoc.size(), _argv_adhoc);
+  params p = ap.set_parameters();
+}
+
+void snakemake_unit_tests::cargsTest::test_cargs_set_parameters_snakemake_log_missing() {
+  // construct an otherwise valid command, but leave out snakemake log
+  boost::filesystem::path prefix = std::string(_tmp_dir);
+  // pipeline top level directory
+  boost::filesystem::path top_dir = prefix / "set_parameters";
+  std::filesystem::create_directory(top_dir.string().c_str());
+  // pipeline run directory
+  boost::filesystem::path run_dir = "workflow";
+  std::filesystem::create_directory((top_dir / run_dir).string().c_str());
+  // inst directory
+  boost::filesystem::path inst_dir = prefix / "inst";
+  std::filesystem::create_directory(inst_dir.string().c_str());
+  // snakemake run log
+  boost::filesystem::path run_log = top_dir / "set_parameters.log";
+  // snakefile
+  boost::filesystem::path snakefile = top_dir / run_dir / "Snakefile";
+  create_empty_file(snakefile);
+  // inst common.py
+  boost::filesystem::path common_py = inst_dir / "common.py";
+  create_empty_file(common_py);
+  // inst test.py
+  boost::filesystem::path test_py = inst_dir / "test.py";
+  create_empty_file(test_py);
+  // output directory
+  boost::filesystem::path outdir = prefix / "outdir";
+  std::string command =
+      "./snakemake_unit_tests.out "
+      "--inst-dir " +
+      inst_dir.string() + " --snakemake-log " + run_log.string() + " -o " + outdir.string() + " --pipeline-top-dir " +
+      top_dir.string() + " --pipeline-run-dir " + run_dir.string() + " --snakefile " + snakefile.string();
+  populate_arguments(command, &_arg_vec_adhoc, &_argv_adhoc);
+  cargs ap(_arg_vec_adhoc.size(), _argv_adhoc);
+  params p = ap.set_parameters();
+}
+
+void snakemake_unit_tests::cargsTest::test_cargs_set_parameters_added_files_invalid() {
+  // construct an otherwise valid command, but provide bad added file
+  boost::filesystem::path prefix = std::string(_tmp_dir);
+  // pipeline top level directory
+  boost::filesystem::path top_dir = prefix / "set_parameters";
+  std::filesystem::create_directory(top_dir.string().c_str());
+  // pipeline run directory
+  boost::filesystem::path run_dir = "workflow";
+  std::filesystem::create_directory((top_dir / run_dir).string().c_str());
+  // inst directory
+  boost::filesystem::path inst_dir = prefix / "inst";
+  std::filesystem::create_directory(inst_dir.string().c_str());
+  // snakemake run log
+  boost::filesystem::path run_log = top_dir / "set_parameters.log";
+  create_empty_file(run_log);
+  // snakefile
+  boost::filesystem::path snakefile = top_dir / run_dir / "Snakefile";
+  create_empty_file(snakefile);
+  // inst common.py
+  boost::filesystem::path common_py = inst_dir / "common.py";
+  create_empty_file(common_py);
+  // inst test.py
+  boost::filesystem::path test_py = inst_dir / "test.py";
+  create_empty_file(test_py);
+  // output directory
+  boost::filesystem::path outdir = prefix / "outdir";
+  std::string command =
+      "./snakemake_unit_tests.out "
+      "--inst-dir " +
+      inst_dir.string() + " --snakemake-log " + run_log.string() + " -o " + outdir.string() + " --pipeline-top-dir " +
+      top_dir.string() + " --pipeline-run-dir " + run_dir.string() + " --snakefile " + snakefile.string() + " -f " +
+      (top_dir / "weird_file").string();
+  populate_arguments(command, &_arg_vec_adhoc, &_argv_adhoc);
+  cargs ap(_arg_vec_adhoc.size(), _argv_adhoc);
+  params p = ap.set_parameters();
+}
+
+void snakemake_unit_tests::cargsTest::test_cargs_set_parameters_added_directories_invalid() {
+  // construct an otherwise valid command, but provide bad added directory
+  boost::filesystem::path prefix = std::string(_tmp_dir);
+  // pipeline top level directory
+  boost::filesystem::path top_dir = prefix / "set_parameters";
+  std::filesystem::create_directory(top_dir.string().c_str());
+  // pipeline run directory
+  boost::filesystem::path run_dir = "workflow";
+  std::filesystem::create_directory((top_dir / run_dir).string().c_str());
+  // inst directory
+  boost::filesystem::path inst_dir = prefix / "inst";
+  std::filesystem::create_directory(inst_dir.string().c_str());
+  // snakemake run log
+  boost::filesystem::path run_log = top_dir / "set_parameters.log";
+  create_empty_file(run_log);
+  // snakefile
+  boost::filesystem::path snakefile = top_dir / run_dir / "Snakefile";
+  create_empty_file(snakefile);
+  // inst common.py
+  boost::filesystem::path common_py = inst_dir / "common.py";
+  create_empty_file(common_py);
+  // inst test.py
+  boost::filesystem::path test_py = inst_dir / "test.py";
+  create_empty_file(test_py);
+  // output directory
+  boost::filesystem::path outdir = prefix / "outdir";
+  std::string command =
+      "./snakemake_unit_tests.out "
+      "--inst-dir " +
+      inst_dir.string() + " --snakemake-log " + run_log.string() + " -o " + outdir.string() + " --pipeline-top-dir " +
+      top_dir.string() + " --pipeline-run-dir " + run_dir.string() + " --snakefile " + snakefile.string() + " -d " +
+      (top_dir / "weird_dir").string();
+  populate_arguments(command, &_arg_vec_adhoc, &_argv_adhoc);
+  cargs ap(_arg_vec_adhoc.size(), _argv_adhoc);
+  params p = ap.set_parameters();
+}
+
 void snakemake_unit_tests::cargsTest::test_cargs_help() {
   cargs ap(_arg_vec_long.size(), _argv_long);
   CPPUNIT_ASSERT_MESSAGE("cargs help request detected", ap.help());
@@ -405,7 +1177,21 @@ void snakemake_unit_tests::cargsTest::test_cargs_print_help() {
   o2 << ap._desc;
   CPPUNIT_ASSERT_MESSAGE("cargs help string printed", !o1.str().compare(o2.str()));
 }
-void snakemake_unit_tests::cargsTest::test_cargs_override_if_specified() {}
+void snakemake_unit_tests::cargsTest::test_cargs_override_if_specified() {
+  cargs ap(_arg_vec_long.size(), _argv_long);
+  boost::filesystem::path result;
+  result = ap.override_if_specified("cli-entry", boost::filesystem::path());
+  CPPUNIT_ASSERT_MESSAGE("cargs override_if_specified chooses CLI with NULL alternative",
+                         !result.string().compare("cli-entry"));
+  result = ap.override_if_specified("", boost::filesystem::path("yaml-entry"));
+  CPPUNIT_ASSERT_MESSAGE("cargs override_if_specified chooses yaml with NULL alternative",
+                         !result.string().compare("yaml-entry"));
+  result = ap.override_if_specified("", boost::filesystem::path());
+  CPPUNIT_ASSERT_MESSAGE("cargs override_if_specified quietly returns NULL if both entries are NULL",
+                         result.string().empty());
+  result = ap.override_if_specified("cli-entry", boost::filesystem::path("yaml-entry"));
+  CPPUNIT_ASSERT_MESSAGE("cargs override_if_specified prefers CLI entry", !result.string().compare("cli-entry"));
+}
 void snakemake_unit_tests::cargsTest::test_cargs_add_contents_to_vector() {
   std::vector<std::string> vec1, vec2;
   vec1.push_back("oldarg");
