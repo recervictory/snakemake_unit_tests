@@ -32,6 +32,11 @@ class yaml_reader {
    */
   explicit yaml_reader(const std::string &filename) { load_file(filename); }
   /*!
+    @brief copy constructor
+    @param obj existing yaml reader
+   */
+  yaml_reader(const yaml_reader &obj) : _data(YAML::Clone(obj._data)) {}
+  /*!
     @brief destructor
    */
   ~yaml_reader() throw() {}
@@ -65,7 +70,8 @@ class yaml_reader {
       for (unsigned i = 1; i <= queries.size(); ++i) {
         o << "::" << queries.at(i);
       }
-      throw std::runtime_error("invalid number of results for entry query " + o.str() + "\": found " + std::to_string(all_results.size()));
+      throw std::runtime_error("invalid number of results for entry query " + o.str() + "\": found " +
+                               std::to_string(all_results.size()));
     }
     return *all_results.begin();
   }
