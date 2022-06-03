@@ -32,9 +32,10 @@ void snakemake_unit_tests::rule_blockTest::test_rule_block_default_constructor()
   CPPUNIT_ASSERT(b._docstring.empty());
   CPPUNIT_ASSERT(b._named_blocks.empty());
   CPPUNIT_ASSERT(b._code_chunk.empty());
-  CPPUNIT_ASSERT(b._local_indentation == 0);
-  CPPUNIT_ASSERT(b._resolution == UNRESOLVED);
-  CPPUNIT_ASSERT(b._python_tag == 0);
+  CPPUNIT_ASSERT_EQUAL(0u, b._local_indentation);
+  CPPUNIT_ASSERT_EQUAL(UNRESOLVED, b._resolution);
+  CPPUNIT_ASSERT(!b._queried_by_python);
+  CPPUNIT_ASSERT_EQUAL(0u, b._python_tag);
   CPPUNIT_ASSERT(b._resolved_included_filename.string().empty());
 }
 void snakemake_unit_tests::rule_blockTest::test_rule_block_copy_constructor() {
@@ -49,11 +50,27 @@ void snakemake_unit_tests::rule_blockTest::test_rule_block_copy_constructor() {
   b1._code_chunk.push_back("{some other thing;}");
   b1._local_indentation = 42;
   b1._resolution = RESOLVED_INCLUDED;
+  b1._queried_by_python = true;
   b1._python_tag = 333;
   b1._resolved_included_filename = "thing1/thing2/thing3";
   rule_block b2(b1);
   CPPUNIT_ASSERT(!b2._rule_name.compare("rulename"));
   CPPUNIT_ASSERT(!b2._base_rule_name.compare("baserulename"));
+  CPPUNIT_ASSERT(b2._rule_is_checkpoint);
+  CPPUNIT_ASSERT(!b2._docstring.compare("text goes here"));
+  CPPUNIT_ASSERT(b2._named_blocks.size() == 2u);
+  CPPUNIT_ASSERT(b2._named_blocks.find("thing1") != b2._named_blocks.end());
+  CPPUNIT_ASSERT(!b2._named_blocks["thing1"].compare("thing2"));
+  CPPUNIT_ASSERT(b2._named_blocks.find("thing2") != b2._named_blocks.end());
+  CPPUNIT_ASSERT(!b2._named_blocks["thing2"].compare("thing3"));
+  CPPUNIT_ASSERT(b2._code_chunk.size() == 2u);
+  CPPUNIT_ASSERT(!b2._code_chunk.at(0).compare("code goes here;"));
+  CPPUNIT_ASSERT(!b2._code_chunk.at(1).compare("{some other thing;}"));
+  CPPUNIT_ASSERT_EQUAL(42u, b2._local_indentation);
+  CPPUNIT_ASSERT_EQUAL(RESOLVED_INCLUDED, b2._resolution);
+  CPPUNIT_ASSERT(b2._queried_by_python);
+  CPPUNIT_ASSERT_EQUAL(333u, b2._python_tag);
+  CPPUNIT_ASSERT(!b2._resolved_included_filename.compare("thing1/thing2/thing3"));
 }
 void snakemake_unit_tests::rule_blockTest::test_rule_block_load_content_block() {}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_consume_rule_contents() {}
