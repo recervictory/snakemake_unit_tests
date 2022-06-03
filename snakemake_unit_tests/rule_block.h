@@ -42,6 +42,7 @@ class rule_block {
         _docstring(""),
         _local_indentation(0),
         _resolution(UNRESOLVED),
+        _queried_by_python(false),
         _python_tag(0) {}
   /*!
     @brief copy constructor
@@ -56,6 +57,7 @@ class rule_block {
         _code_chunk(obj._code_chunk),
         _local_indentation(obj._local_indentation),
         _resolution(obj._resolution),
+        _queried_by_python(obj._queried_by_python),
         _python_tag(obj._python_tag),
         _resolved_included_filename(obj._resolved_included_filename) {}
   /*!
@@ -78,9 +80,8 @@ class rule_block {
     this function will parse out a single rule from a snakemake file.
     it is designed to be called until it returns false.
    */
-  bool load_content_block(const std::vector<std::string> &loaded_lines,
-                          const boost::filesystem::path &filename, bool verbose,
-                          unsigned *current_line);
+  bool load_content_block(const std::vector<std::string> &loaded_lines, const boost::filesystem::path &filename,
+                          bool verbose, unsigned *current_line);
 
   /*!
     @brief having found a rule declaration, load its blocks
@@ -96,10 +97,8 @@ class rule_block {
     block_base_increment added to allow grabbing block-like structures
     at global scope (e.g. 'wildcard_constraints:')
    */
-  bool consume_rule_contents(const std::vector<std::string> &loaded_lines,
-                             const boost::filesystem::path &filename,
-                             bool verbose, unsigned *current_line,
-                             unsigned block_base_increment);
+  bool consume_rule_contents(const std::vector<std::string> &loaded_lines, const boost::filesystem::path &filename,
+                             bool verbose, unsigned *current_line, unsigned block_base_increment);
 
   /*!
     @brief set the name of the rule
@@ -177,9 +176,7 @@ class rule_block {
     @brief get named blocks of rule body
     @return named blocks of rule body, or empty map
    */
-  const std::map<std::string, std::string> &get_named_blocks() const {
-    return _named_blocks;
-  }
+  const std::map<std::string, std::string> &get_named_blocks() const { return _named_blocks; }
 
   /*!
     @brief get local indentation of rule block
@@ -206,14 +203,9 @@ class rule_block {
     // local indentation *does not need to be equal*
     if (get_rule_name().compare(obj.get_rule_name())) return false;
     if (get_base_rule_name().compare(obj.get_base_rule_name())) return false;
-    if (get_named_blocks().size() != obj.get_named_blocks().size())
-      return false;
-    if (!std::equal(get_named_blocks().begin(), get_named_blocks().end(),
-                    obj.get_named_blocks().begin()))
-      return false;
-    if (!std::equal(get_code_chunk().begin(), get_code_chunk().end(),
-                    obj.get_code_chunk().begin()))
-      return false;
+    if (get_named_blocks().size() != obj.get_named_blocks().size()) return false;
+    if (!std::equal(get_named_blocks().begin(), get_named_blocks().end(), obj.get_named_blocks().begin())) return false;
+    if (!std::equal(get_code_chunk().begin(), get_code_chunk().end(), obj.get_code_chunk().begin())) return false;
     return true;
   }
   /*!
@@ -229,7 +221,7 @@ class rule_block {
     @brief whether the object's content needs a python pass to resolve
     @return whether the object's content needs a python pass to resolve
    */
-  bool resolved() const { return _resolution != UNRESOLVED; }
+  bool resolved() const { return _resolution != UNRESOLVED && _queried_by_python; }
 
   /*!
     @brief whether the object's contents should be included in the output
@@ -264,7 +256,7 @@ class rule_block {
     @return whether the reporting terminated upon first instance
     of an unresolved include directive
    */
-  bool report_python_logging_code(std::ostream &out) const;
+  bool report_python_logging_code(std::ostream &out);
   /*!
     @brief using python tag output, update resolution status
     @param tag_values loaded key(:value) pairs from python output
@@ -275,9 +267,7 @@ class rule_block {
     @brief for include statements, get actual filename for inclusion
     @return resolved filename
    */
-  const boost::filesystem::path &get_resolved_included_filename() const {
-    return _resolved_included_filename;
-  }
+  const boost::filesystem::path &get_resolved_included_filename() const { return _resolved_included_filename; }
   /*!
     @brief if this is a rule, is it a checkpoint
     @return whether, if a rule, this is a checkpoint
@@ -301,6 +291,7 @@ class rule_block {
   void report_rulesdot_rules(std::map<std::string, bool> *target) const;
 
  private:
+  friend class rule_blockTest;
   /*!
     @brief return a string containing some number of whitespaces
     @param count total whitespace indentation to apply
@@ -378,6 +369,13 @@ class rule_block {
     this can be: UNRESOLVED, RESOLVED_INCLUDED, RESOLVED_EXCLUDED
    */
   block_status _resolution;
+  /*!
+    @brief whether the block has been queried by python at least once
+
+    the idea is: resolution status can only be known for certain if the
+    tag has been emitted at least one time
+  */
+  bool _queried_by_python;
   /*!
     @brief tag for python interpreter tracking
 
