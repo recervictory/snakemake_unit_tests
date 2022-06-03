@@ -264,6 +264,10 @@ bool snakemake_unit_tests::snakemake_file::fully_resolved() const {
 
 bool snakemake_unit_tests::snakemake_file::contains_blockers() const {
   bool res = _updated_last_round;
+  for (std::list<boost::shared_ptr<rule_block> >::const_iterator iter = _blocks.begin(); iter != _blocks.end();
+       ++iter) {
+    res |= !(*iter)->resolved();
+  }
   for (std::map<boost::filesystem::path, boost::shared_ptr<snakemake_file> >::const_iterator iter =
            _included_files.begin();
        iter != _included_files.end(); ++iter) {

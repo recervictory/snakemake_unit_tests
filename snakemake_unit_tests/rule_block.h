@@ -42,6 +42,7 @@ class rule_block {
         _docstring(""),
         _local_indentation(0),
         _resolution(UNRESOLVED),
+        _queried_by_python(false),
         _python_tag(0) {}
   /*!
     @brief copy constructor
@@ -56,6 +57,7 @@ class rule_block {
         _code_chunk(obj._code_chunk),
         _local_indentation(obj._local_indentation),
         _resolution(obj._resolution),
+        _queried_by_python(obj._queried_by_python),
         _python_tag(obj._python_tag),
         _resolved_included_filename(obj._resolved_included_filename) {}
   /*!
@@ -219,7 +221,7 @@ class rule_block {
     @brief whether the object's content needs a python pass to resolve
     @return whether the object's content needs a python pass to resolve
    */
-  bool resolved() const { return _resolution != UNRESOLVED; }
+  bool resolved() const { return _resolution != UNRESOLVED && _queried_by_python; }
 
   /*!
     @brief whether the object's contents should be included in the output
@@ -254,7 +256,7 @@ class rule_block {
     @return whether the reporting terminated upon first instance
     of an unresolved include directive
    */
-  bool report_python_logging_code(std::ostream &out) const;
+  bool report_python_logging_code(std::ostream &out);
   /*!
     @brief using python tag output, update resolution status
     @param tag_values loaded key(:value) pairs from python output
@@ -367,6 +369,13 @@ class rule_block {
     this can be: UNRESOLVED, RESOLVED_INCLUDED, RESOLVED_EXCLUDED
    */
   block_status _resolution;
+  /*!
+    @brief whether the block has been queried by python at least once
+
+    the idea is: resolution status can only be known for certain if the
+    tag has been emitted at least one time
+  */
+  bool _queried_by_python;
   /*!
     @brief tag for python interpreter tracking
 
