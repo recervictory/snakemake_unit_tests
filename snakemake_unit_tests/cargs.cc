@@ -93,7 +93,7 @@ snakemake_unit_tests::params snakemake_unit_tests::cargs::set_parameters() const
         p.byte_comparisons = vector_to_map<std::string>(p.config.get_sequence("byte-comparisons"));
       }
     } else {
-      throw std::runtime_error("configuration file \"" + p.config.string() + "\" is not a regular file");
+      throw std::runtime_error("configuration file \"" + p.config_filename.string() + "\" is not a regular file");
     }
   }
   // load command line options
