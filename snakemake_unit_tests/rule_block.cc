@@ -168,7 +168,7 @@ bool snakemake_unit_tests::rule_block::consume_rule_contents(const std::vector<s
 
 bool snakemake_unit_tests::rule_block::contains_include_directive() const {
   // what is an include directive?
-  const boost::regex include_directive("^( *)include: *(.*) *$");
+  const boost::regex include_directive("^( *)include: *(.*[^ ]) *$");
   if (get_code_chunk().size() == 1) {
     boost::smatch include_match;
     return boost::regex_match(*get_code_chunk().begin(), include_match, include_directive);
@@ -178,7 +178,7 @@ bool snakemake_unit_tests::rule_block::contains_include_directive() const {
 
 std::string snakemake_unit_tests::rule_block::get_filename_expression() const {
   // what is an include directive?
-  const boost::regex include_directive("^( *)include: *(.*) *$");
+  const boost::regex include_directive("^( *)include: *(.*[^ ]) *$");
   if (get_code_chunk().size() == 1) {
     boost::smatch include_match;
     if (boost::regex_match(*get_code_chunk().begin(), include_match, include_directive)) {
@@ -216,7 +216,7 @@ std::string snakemake_unit_tests::rule_block::get_standard_filename() const {
 
 unsigned snakemake_unit_tests::rule_block::get_include_depth() const {
   // what is an include directive?
-  const boost::regex include_directive("^( *)include: *(.*) *$");
+  const boost::regex include_directive("^( *)include: *(.*[^ ]) *$");
   if (get_code_chunk().size() == 1) {
     boost::smatch include_match;
     if (boost::regex_match(*get_code_chunk().begin(), include_match, include_directive)) {
