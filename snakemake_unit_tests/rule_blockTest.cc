@@ -94,7 +94,6 @@ void snakemake_unit_tests::rule_blockTest::test_rule_block_get_base_rule_name() 
   b._base_rule_name = "starter";
   CPPUNIT_ASSERT(!b.get_base_rule_name().compare("starter"));
 }
-void snakemake_unit_tests::rule_blockTest::test_rule_block_is_simple_include_directive() {}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_contains_include_directive() {
   rule_block b;
   b._code_chunk.push_back("include: stuff");

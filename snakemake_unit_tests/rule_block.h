@@ -127,12 +127,6 @@ class rule_block {
   const std::string &get_base_rule_name() const { return _base_rule_name; }
 
   /*!
-    @brief determine whether this block is a simple snakemake include directive
-    @return whether the block is a simple include directive, hopefully
-   */
-  bool is_simple_include_directive() const;
-
-  /*!
     @brief determine whether this block contains something that looks like
     an include directive but that doesn't conform to basic include syntax
     @return whether a non-standard include directive is in effect

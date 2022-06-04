@@ -190,16 +190,6 @@ std::string snakemake_unit_tests::rule_block::get_filename_expression() const {
       "that does not match include directive pattern");
 }
 
-bool snakemake_unit_tests::rule_block::is_simple_include_directive() const {
-  // what is an include directive?
-  const boost::regex include_directive("^( *)include: *\"(.*)\" *$");
-  if (get_code_chunk().size() == 1) {
-    boost::smatch include_match;
-    return boost::regex_match(*get_code_chunk().begin(), include_match, include_directive);
-  }
-  return false;
-}
-
 std::string snakemake_unit_tests::rule_block::get_standard_filename() const {
   // what is an include directive?
   const boost::regex include_directive("^( *)include: *\"(.*)\" *$");
