@@ -316,7 +316,20 @@ void snakemake_unit_tests::rule_blockTest::test_rule_block_inequality_operator()
   b2._resolved_included_filename = "thing1/thing2/thing3";
   CPPUNIT_ASSERT(!(b1 != b2));
 }
-void snakemake_unit_tests::rule_blockTest::test_rule_block_resolved() {}
+void snakemake_unit_tests::rule_blockTest::test_rule_block_resolved() {
+  rule_block b;
+  CPPUNIT_ASSERT(!b.resolved());
+  b._resolution = RESOLVED_INCLUDED;
+  CPPUNIT_ASSERT(!b.resolved());
+  b._resolution = RESOLVED_EXCLUDED;
+  CPPUNIT_ASSERT(!b.resolved());
+  b._queried_by_python = true;
+  CPPUNIT_ASSERT(b.resolved());
+  b._resolution = RESOLVED_INCLUDED;
+  CPPUNIT_ASSERT(b.resolved());
+  b._resolution = UNRESOLVED;
+  CPPUNIT_ASSERT(!b.resolved());
+}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_included() {}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_set_resolution() {}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_get_resolution_status() {}
