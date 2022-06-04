@@ -150,11 +150,8 @@ bool snakemake_unit_tests::rule_block::consume_rule_contents(const std::vector<s
         }
       } else if (_named_blocks.empty() &&
                  (line.at(line.find_first_not_of(" \t")) == '\'' || line.at(line.find_first_not_of(" \t")) == '"')) {
-        if (_docstring.empty()) {
-          _docstring = line;
-        } else {
-          _docstring += "\n" + line;
-        }
+        // multiline string literals are aggregated in the lexical parser
+        _docstring = line;
       } else {
         std::cerr << "warning: in a rule parse, the line \"" << line
                   << "\" is found floating and is removed. if this behavior "

@@ -140,23 +140,68 @@ void snakemake_unit_tests::rule_blockTest::test_rule_block_print_contents() {
     -- if there's a base rule name, make a derived rule declaration
     -- else make a standard rule declaration
     -- if there's a docstring, print the docstring
-    --- this is probably deprecated
-    -- first, report input and output blocks, in order, if present
-    -- next, report any blocks that are not specifically enumerated below
-    -- finally, report the following blocks in order:
-    --- cwl
-    --- run
-    --- script
-    --- shell
-    --- wrapper
-    -- then emit two blank lines to match snakefmt convention
+    -- report any rule block sections (e.g. input, output, shell) in order they were encountered
     - else emit something that is treated as a snakemake metacontent block
     -- e.g. global wildcard_constraints
 
-    is the above behavior sufficient? how do we handle the situation where
-    upstream injects new low priority blocks in particular?
+    behavior of emitting in order detected in input is new. this will hopefully make the
+    code substantially more resilient to upstream changes in snakemake behavior, as the order
+    should generally be guaranteed valid for whatever version of snakemake was used to run
+    the test pipeline.
    */
+  rule_block b;
+  // test logical order of determining what to report
+  b._code_chunk.push_back("code chunk line 1");
+  b._code_chunk.push_back("   code chunk line 2");
+  b._rule_name = "myrulename";
+  b._base_rule_name = "parentrulename";
+  b._docstring = "      '''here's some commentary'''";
+  b._named_blocks.push_back(std::make_pair("input", "\n          'filename1',\n          'filename2',"));
+  b._named_blocks.push_back(std::make_pair("output", "\n          'filename3',"));
+  b._named_blocks.push_back(std::make_pair("shell", "\n          'cat {input} > {output}'"));
+  b._local_indentation = 2u;
+  // since a code chunk is present, it should prefer to report the code chunk
+  std::ostringstream o1, o2, o3, o4;
+  std::string expected = "";
+  b.print_contents(o1);
+  CPPUNIT_ASSERT(!o1.str().compare("code chunk line 1\n   code chunk line 2\n"));
+  // remove code chunk; should turn it into a derived rule
+  b._code_chunk.clear();
+  b.print_contents(o2);
+  expected =
+      "  use rule parentrulename as myrulename with:\n"
+      "      '''here's some commentary'''\n"
+      "      input:\n          'filename1',\n"
+      "          'filename2',\n"
+      "      output:\n          'filename3',\n"
+      "      shell:\n          'cat {input} > {output}'\n\n\n";
+  CPPUNIT_ASSERT(!o2.str().compare(expected));
+  // remove base rule name; should turn it into a standard rule
+  b._base_rule_name = "";
+  b.print_contents(o3);
+  expected =
+      "  rule myrulename:\n"
+      "      '''here's some commentary'''\n"
+      "      input:\n          'filename1',\n"
+      "          'filename2',\n"
+      "      output:\n          'filename3',\n"
+      "      shell:\n          'cat {input} > {output}'\n\n\n";
+  CPPUNIT_ASSERT(!o3.str().compare(expected));
+  // remove rule name; should turn it into floating snakemake content directives;
+  //   obviously these are not actually global directives, but the point remains.
+  //   note that this is expected to preserve the indentation of lines after the
+  //   block name tag exactly; so since this is reusing the example above, the
+  //   resulting indentation is not pythonic.
+  b._rule_name = "";
+  b.print_contents(o4);
+  expected =
+      "  input:\n          'filename1',\n"
+      "          'filename2',\n"
+      "  output:\n          'filename3',\n"
+      "  shell:\n          'cat {input} > {output}'\n";
+  CPPUNIT_ASSERT(!o4.str().compare(expected));
 }
+
 void snakemake_unit_tests::rule_blockTest::test_rule_block_get_code_chunk() {
   rule_block b;
   std::vector<std::string> data, result;
