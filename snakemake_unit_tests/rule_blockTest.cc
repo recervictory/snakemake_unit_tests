@@ -233,8 +233,23 @@ void snakemake_unit_tests::rule_blockTest::test_rule_block_get_named_blocks() {
   result = b.get_named_blocks();
   CPPUNIT_ASSERT(result.empty());
 }
-void snakemake_unit_tests::rule_blockTest::test_rule_block_get_local_indentation() {}
-void snakemake_unit_tests::rule_blockTest::test_rule_block_add_code_chunk() {}
+void snakemake_unit_tests::rule_blockTest::test_rule_block_get_local_indentation() {
+  rule_block b;
+  b._local_indentation = 4u;
+  CPPUNIT_ASSERT_EQUAL(4u, b.get_local_indentation());
+  b._local_indentation = 0u;
+  CPPUNIT_ASSERT_EQUAL(0u, b.get_local_indentation());
+}
+void snakemake_unit_tests::rule_blockTest::test_rule_block_add_code_chunk() {
+  rule_block b;
+  b.add_code_chunk("  thing1;\n");
+  CPPUNIT_ASSERT(b._code_chunk.size() == 1);
+  CPPUNIT_ASSERT(!b._code_chunk.at(0).compare("  thing1;\n"));
+  b.add_code_chunk("  thing2;\n");
+  CPPUNIT_ASSERT(b._code_chunk.size() == 2);
+  CPPUNIT_ASSERT(!b._code_chunk.at(0).compare("  thing1;\n"));
+  CPPUNIT_ASSERT(!b._code_chunk.at(1).compare("  thing2;\n"));
+}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_equality_operator() {}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_inequality_operator() {}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_resolved() {}
