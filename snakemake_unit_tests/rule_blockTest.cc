@@ -218,7 +218,21 @@ void snakemake_unit_tests::rule_blockTest::test_rule_block_get_code_chunk() {
   result = b.get_code_chunk();
   CPPUNIT_ASSERT(result.empty());
 }
-void snakemake_unit_tests::rule_blockTest::test_rule_block_get_named_blocks() {}
+void snakemake_unit_tests::rule_blockTest::test_rule_block_get_named_blocks() {
+  rule_block b;
+  std::vector<std::pair<std::string, std::string> > result;
+  b._named_blocks.push_back(std::make_pair("input", "  name1\n  name2"));
+  b._named_blocks.push_back(std::make_pair("output", "  name3"));
+  result = b.get_named_blocks();
+  CPPUNIT_ASSERT(result.size() == 2u);
+  CPPUNIT_ASSERT(!result.at(0).first.compare("input"));
+  CPPUNIT_ASSERT(!result.at(0).second.compare("  name1\n  name2"));
+  CPPUNIT_ASSERT(!result.at(1).first.compare("output"));
+  CPPUNIT_ASSERT(!result.at(1).second.compare("  name3"));
+  b._named_blocks.clear();
+  result = b.get_named_blocks();
+  CPPUNIT_ASSERT(result.empty());
+}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_get_local_indentation() {}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_add_code_chunk() {}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_equality_operator() {}
