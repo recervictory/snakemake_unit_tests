@@ -131,7 +131,22 @@ void snakemake_unit_tests::rule_blockTest::test_rule_block_get_filename_expressi
   b.get_filename_expression();
 }
 void snakemake_unit_tests::rule_blockTest::test_rule_block_print_contents() {}
-void snakemake_unit_tests::rule_blockTest::test_rule_block_get_code_chunk() {}
+void snakemake_unit_tests::rule_blockTest::test_rule_block_get_code_chunk() {
+  rule_block b;
+  std::vector<std::string> data, result;
+  data.push_back("line1");
+  data.push_back("line2");
+  data.push_back("line3");
+  b._code_chunk = data;
+  result = b.get_code_chunk();
+  CPPUNIT_ASSERT(result.size() == 3u);
+  CPPUNIT_ASSERT(!result.at(0).compare("line1"));
+  CPPUNIT_ASSERT(!result.at(1).compare("line2"));
+  CPPUNIT_ASSERT(!result.at(2).compare("line3"));
+  b._code_chunk.clear();
+  result = b.get_code_chunk();
+  CPPUNIT_ASSERT(result.empty());
+}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_get_named_blocks() {}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_get_local_indentation() {}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_add_code_chunk() {}
