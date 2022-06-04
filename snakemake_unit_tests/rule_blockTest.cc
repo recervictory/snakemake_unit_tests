@@ -330,7 +330,14 @@ void snakemake_unit_tests::rule_blockTest::test_rule_block_resolved() {
   b._resolution = UNRESOLVED;
   CPPUNIT_ASSERT(!b.resolved());
 }
-void snakemake_unit_tests::rule_blockTest::test_rule_block_included() {}
+void snakemake_unit_tests::rule_blockTest::test_rule_block_included() {
+  rule_block b;
+  CPPUNIT_ASSERT(!b.included());
+  b._resolution = RESOLVED_EXCLUDED;
+  CPPUNIT_ASSERT(!b.included());
+  b._resolution = RESOLVED_INCLUDED;
+  CPPUNIT_ASSERT(b.included());
+}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_set_resolution() {}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_get_resolution_status() {}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_set_interpreter_tag() {}
