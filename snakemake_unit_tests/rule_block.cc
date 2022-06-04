@@ -299,6 +299,8 @@ void snakemake_unit_tests::rule_block::print_contents(std::ostream &out) const {
     low_priority_blocks["script"] = true;
     low_priority_blocks["wrapper"] = true;
     low_priority_blocks["cwl"] = true;
+    low_priority_blocks["notebook"] = true;
+    low_priority_blocks["template_engine"] = true;
     // get first blocks
     for (std::map<std::string, std::string>::const_iterator iter = get_named_blocks().begin();
          iter != get_named_blocks().end(); ++iter) {
