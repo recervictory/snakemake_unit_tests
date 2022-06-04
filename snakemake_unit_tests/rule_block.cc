@@ -128,7 +128,7 @@ bool snakemake_unit_tests::rule_block::consume_rule_contents(const std::vector<s
                         << "\"" << std::endl;
             }
             // the block is aggregated. add it to the rule block
-            _named_blocks[block_name] = block_contents;
+            _named_blocks.push_back(std::make_pair(block_name, block_contents));
             // proceed to the next possible block
             break;
           } else {
@@ -139,12 +139,12 @@ bool snakemake_unit_tests::rule_block::consume_rule_contents(const std::vector<s
         }
         if (*current_line >= loaded_lines.size()) {
           // catch dangling blocks at the end of files
-          if (_named_blocks.find(block_name) == _named_blocks.end()) {
+          if (_named_blocks.empty() || _named_blocks.rbegin()->first.compare(block_name)) {
             if (verbose) {
               std::cout << "storing a terminal block with name \"" << block_name << "\" and contents \""
                         << block_contents << "\"" << std::endl;
             }
-            _named_blocks[block_name] = block_contents;
+            _named_blocks.push_back(std::make_pair(block_name, block_contents));
           }
           return true;
         }
@@ -228,7 +228,7 @@ bool snakemake_unit_tests::rule_block::report_python_logging_code(std::ostream &
     // rule name is empty but blocks are not.
     // switching to direct snakemake interpretation, in which case these
     // need to be included
-    for (std::map<std::string, std::string>::const_iterator iter = get_named_blocks().begin();
+    for (std::vector<std::pair<std::string, std::string> >::const_iterator iter = get_named_blocks().begin();
          iter != get_named_blocks().end(); ++iter) {
       if (!(out << indentation(get_local_indentation()) << iter->first << ":" << iter->second << std::endl))
         throw std::runtime_error("snakemake directive printing failure");
@@ -290,47 +290,17 @@ void snakemake_unit_tests::rule_block::print_contents(std::ostream &out) const {
         throw std::runtime_error("docstring printing failure");
       }
     }
-    // enforce restrictions on block order
-    std::map<std::string, bool> high_priority_blocks, low_priority_blocks;
-    high_priority_blocks["input"] = true;
-    high_priority_blocks["output"] = true;
-    low_priority_blocks["run"] = true;
-    low_priority_blocks["shell"] = true;
-    low_priority_blocks["script"] = true;
-    low_priority_blocks["wrapper"] = true;
-    low_priority_blocks["cwl"] = true;
-    low_priority_blocks["notebook"] = true;
-    low_priority_blocks["template_engine"] = true;
-    // get first blocks
-    for (std::map<std::string, std::string>::const_iterator iter = get_named_blocks().begin();
+    // report all blocks in the order they were encountered
+    for (std::vector<std::pair<std::string, std::string> >::const_iterator iter = get_named_blocks().begin();
          iter != get_named_blocks().end(); ++iter) {
-      if (high_priority_blocks.find(iter->first) != high_priority_blocks.end()) {
-        if (!(out << indentation(get_local_indentation() + 4) << iter->first << ":" << iter->second << std::endl))
-          throw std::runtime_error("named block printing failure");
-      }
-    }
-    // get intermediate blocks
-    for (std::map<std::string, std::string>::const_iterator iter = get_named_blocks().begin();
-         iter != get_named_blocks().end(); ++iter) {
-      if (high_priority_blocks.find(iter->first) == high_priority_blocks.end() &&
-          low_priority_blocks.find(iter->first) == low_priority_blocks.end()) {
-        if (!(out << indentation(get_local_indentation() + 4) << iter->first << ":" << iter->second << std::endl))
-          throw std::runtime_error("named block printing failure");
-      }
-    }
-    // get last blocks
-    for (std::map<std::string, std::string>::const_iterator iter = get_named_blocks().begin();
-         iter != get_named_blocks().end(); ++iter) {
-      if (low_priority_blocks.find(iter->first) != low_priority_blocks.end()) {
-        if (!(out << indentation(get_local_indentation() + 4) << iter->first << ":" << iter->second << std::endl))
-          throw std::runtime_error("named block printing failure");
-      }
+      if (!(out << indentation(get_local_indentation() + 4) << iter->first << ":" << iter->second << std::endl))
+        throw std::runtime_error("named block printing failure");
     }
     // for snakefmt compatibility: emit two empty lines at the end of a rule
     if (!(out << std::endl << std::endl)) throw std::runtime_error("rule padding printing error");
   } else {
     // snakemake metacontent block
-    for (std::map<std::string, std::string>::const_iterator iter = get_named_blocks().begin();
+    for (std::vector<std::pair<std::string, std::string> >::const_iterator iter = get_named_blocks().begin();
          iter != get_named_blocks().end(); ++iter) {
       if (!(out << indentation(get_local_indentation()) << iter->first << ":" << iter->second << std::endl))
         throw std::runtime_error("named block printing failure");
@@ -369,8 +339,8 @@ void snakemake_unit_tests::rule_block::report_rulesdot_rules(std::map<std::strin
   boost::regex pattern("rules\\.([^\\.]+)\\.");
   boost::sregex_token_iterator end;
   // scan both code chunk and block contents
-  for (std::map<std::string, std::string>::const_iterator iter = _named_blocks.begin(); iter != _named_blocks.end();
-       ++iter) {
+  for (std::vector<std::pair<std::string, std::string> >::const_iterator iter = _named_blocks.begin();
+       iter != _named_blocks.end(); ++iter) {
     boost::sregex_token_iterator finder(iter->second.begin(), iter->second.end(), pattern, 0);
     for (; finder != end; ++finder) {
       (*target)[finder->str().substr(6, finder->str().size() - 7)] = true;

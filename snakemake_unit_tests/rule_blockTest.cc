@@ -44,8 +44,8 @@ void snakemake_unit_tests::rule_blockTest::test_rule_block_copy_constructor() {
   b1._base_rule_name = "baserulename";
   b1._rule_is_checkpoint = true;
   b1._docstring = "text goes here";
-  b1._named_blocks["thing1"] = "thing2";
-  b1._named_blocks["thing2"] = "thing3";
+  b1._named_blocks.push_back(std::make_pair("thing1", "thing2"));
+  b1._named_blocks.push_back(std::make_pair("thing2", "thing3"));
   b1._code_chunk.push_back("code goes here;");
   b1._code_chunk.push_back("{some other thing;}");
   b1._local_indentation = 42;
@@ -59,10 +59,10 @@ void snakemake_unit_tests::rule_blockTest::test_rule_block_copy_constructor() {
   CPPUNIT_ASSERT(b2._rule_is_checkpoint);
   CPPUNIT_ASSERT(!b2._docstring.compare("text goes here"));
   CPPUNIT_ASSERT(b2._named_blocks.size() == 2u);
-  CPPUNIT_ASSERT(b2._named_blocks.find("thing1") != b2._named_blocks.end());
-  CPPUNIT_ASSERT(!b2._named_blocks["thing1"].compare("thing2"));
-  CPPUNIT_ASSERT(b2._named_blocks.find("thing2") != b2._named_blocks.end());
-  CPPUNIT_ASSERT(!b2._named_blocks["thing2"].compare("thing3"));
+  CPPUNIT_ASSERT(!b2._named_blocks.at(0).first.compare("thing1"));
+  CPPUNIT_ASSERT(!b2._named_blocks.at(0).second.compare("thing2"));
+  CPPUNIT_ASSERT(!b2._named_blocks.at(1).first.compare("thing2"));
+  CPPUNIT_ASSERT(!b2._named_blocks.at(1).second.compare("thing3"));
   CPPUNIT_ASSERT(b2._code_chunk.size() == 2u);
   CPPUNIT_ASSERT(!b2._code_chunk.at(0).compare("code goes here;"));
   CPPUNIT_ASSERT(!b2._code_chunk.at(1).compare("{some other thing;}"));
@@ -130,7 +130,33 @@ void snakemake_unit_tests::rule_blockTest::test_rule_block_get_filename_expressi
   b._code_chunk.push_back("here's some weird statement that isn't an include");
   b.get_filename_expression();
 }
-void snakemake_unit_tests::rule_blockTest::test_rule_block_print_contents() {}
+void snakemake_unit_tests::rule_blockTest::test_rule_block_print_contents() {
+  /*
+    print_contents probes the content of the rule_block and decides what to emit
+    depending on what it finds
+
+    - if there's a code block, print the code block directly
+    - else if there's a rule name:
+    -- if there's a base rule name, make a derived rule declaration
+    -- else make a standard rule declaration
+    -- if there's a docstring, print the docstring
+    --- this is probably deprecated
+    -- first, report input and output blocks, in order, if present
+    -- next, report any blocks that are not specifically enumerated below
+    -- finally, report the following blocks in order:
+    --- cwl
+    --- run
+    --- script
+    --- shell
+    --- wrapper
+    -- then emit two blank lines to match snakefmt convention
+    - else emit something that is treated as a snakemake metacontent block
+    -- e.g. global wildcard_constraints
+
+    is the above behavior sufficient? how do we handle the situation where
+    upstream injects new low priority blocks in particular?
+   */
+}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_get_code_chunk() {
   rule_block b;
   std::vector<std::string> data, result;

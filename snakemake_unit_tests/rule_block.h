@@ -15,6 +15,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "boost/filesystem.hpp"
@@ -156,9 +157,9 @@ class rule_block {
 
   /*!
     @brief get named blocks of rule body
-    @return named blocks of rule body, or empty map
+    @return named blocks of rule body, or empty vector
    */
-  const std::map<std::string, std::string> &get_named_blocks() const { return _named_blocks; }
+  const std::vector<std::pair<std::string, std::string> > &get_named_blocks() const { return _named_blocks; }
 
   /*!
     @brief get local indentation of rule block
@@ -325,10 +326,11 @@ class rule_block {
   /*!
     @brief arbitrary named blocks and their contents
 
-    input and output blocks need to be handled specially,
-    but the others can be arbitrarily specified.
+    ordering of blocks in rules is respected to prevent complications
+    with intrinsic ordering requirements in snakemake and new snakemake
+    features upstream
    */
-  std::map<std::string, std::string> _named_blocks;
+  std::vector<std::pair<std::string, std::string> > _named_blocks;
   /*!
     @brief arbitrary python code chunk that can exist between rules
 
