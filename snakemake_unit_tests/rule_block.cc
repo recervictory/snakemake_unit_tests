@@ -28,10 +28,6 @@ bool snakemake_unit_tests::rule_block::load_content_block(const std::vector<std:
     if (verbose) {
       std::cout << "considering line \"" << line << "\"" << std::endl;
     }
-    // remove_comments_and_docstrings is deprecated by lexical parser
-    if (verbose) {
-      std::cout << "line reduced to \"" << line << "\"" << std::endl;
-    }
     if (line.empty() || line.find_first_not_of(" ") == std::string::npos) continue;
     // if the line is a valid rule declaration
     boost::smatch regex_result;

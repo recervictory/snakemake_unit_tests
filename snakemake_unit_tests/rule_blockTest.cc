@@ -79,7 +79,26 @@ void snakemake_unit_tests::rule_blockTest::test_rule_block_get_rule_name() {}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_set_base_rule_name() {}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_get_base_rule_name() {}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_is_simple_include_directive() {}
-void snakemake_unit_tests::rule_blockTest::test_rule_block_contains_include_directive() {}
+void snakemake_unit_tests::rule_blockTest::test_rule_block_contains_include_directive() {
+  rule_block b;
+  b._code_chunk.push_back("include: stuff");
+  CPPUNIT_ASSERT(b.contains_include_directive());
+  b._code_chunk.at(0) = "include: \"stuff\"";
+  CPPUNIT_ASSERT(b.contains_include_directive());
+  b._code_chunk.at(0) = "   include: thing";
+  CPPUNIT_ASSERT(b.contains_include_directive());
+  b._code_chunk.at(0) = "include: \"thing\"   ";
+  CPPUNIT_ASSERT(b.contains_include_directive());
+  b._code_chunk.at(0) = "include thing";
+  CPPUNIT_ASSERT(!b.contains_include_directive());
+  b._code_chunk.at(0) = "sinclude: thing";
+  CPPUNIT_ASSERT(!b.contains_include_directive());
+  // note that this code chunk is technically impossible,
+  // as individual python statements should be stored individually
+  b._code_chunk.at(0) = "include: thing";
+  b._code_chunk.push_back("include: otherthing");
+  CPPUNIT_ASSERT(!b.contains_include_directive());
+}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_get_filename_expression() {}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_get_include_depth() {}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_get_standard_filename() {}
