@@ -21,8 +21,6 @@ bool snakemake_unit_tests::rule_block::load_content_block(const std::vector<std:
   const boost::regex standard_rule_declaration("^( *)rule ([^ ]+):.*$");
   const boost::regex checkpoint_rule_declaration("^( *)checkpoint ([^ ]+):.*$");
   const boost::regex derived_rule_declaration("^( *)use rule ([^ ]+) as ([^ ]+) with:.*$");
-  const boost::regex wildcard_constraints("^( *)wildcard_constraints:.*$");
-  const boost::regex configfile("^( *)configfile:.*$");
   if (*current_line >= loaded_lines.size()) return false;
   while (*current_line < loaded_lines.size()) {
     line = loaded_lines.at(*current_line);
@@ -59,19 +57,8 @@ bool snakemake_unit_tests::rule_block::load_content_block(const std::vector<std:
       // are available.
       set_base_rule_name(regex_result[2]);
       return consume_rule_contents(loaded_lines, filename, verbose, current_line, 4);
-    } else if (boost::regex_match(line, regex_result, wildcard_constraints) ||
-               boost::regex_match(line, regex_result, configfile)) {
-      // assorted specifically handled snakemake directives
-      if (verbose) {
-        std::cout << "adding snakemake directive \"" << line << "\"" << std::endl;
-      }
-      _local_indentation += regex_result[1].str().size();
-      --*current_line;
-      return consume_rule_contents(loaded_lines, filename, verbose, current_line, 0);
     } else {
-      // new to refactor: this is arbitrary python and we're leaving it like
-      // that
-      // TODO(cpalmer718): refactor include directives out of python directives
+      // new to refactor: this is arbitrary python and we're leaving it like that
       if (verbose) {
         std::cout << "adding code chunk \"" << line << "\"" << std::endl;
       }
