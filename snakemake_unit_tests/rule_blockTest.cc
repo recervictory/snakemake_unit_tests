@@ -99,7 +99,22 @@ void snakemake_unit_tests::rule_blockTest::test_rule_block_contains_include_dire
   b._code_chunk.push_back("include: otherthing");
   CPPUNIT_ASSERT(!b.contains_include_directive());
 }
-void snakemake_unit_tests::rule_blockTest::test_rule_block_get_filename_expression() {}
+void snakemake_unit_tests::rule_blockTest::test_rule_block_get_filename_expression() {
+  rule_block b;
+  b._code_chunk.push_back("include: stuff");
+  CPPUNIT_ASSERT(!b.get_filename_expression().compare("stuff"));
+  b._code_chunk.at(0) = "include: \"stuff\"";
+  CPPUNIT_ASSERT(!b.get_filename_expression().compare("\"stuff\""));
+  b._code_chunk.at(0) = "   include: thing";
+  CPPUNIT_ASSERT(!b.get_filename_expression().compare("thing"));
+  b._code_chunk.at(0) = "include: \"thing\"   ";
+  CPPUNIT_ASSERT(!b.get_filename_expression().compare("\"thing\""));
+}
+void snakemake_unit_tests::rule_blockTest::test_rule_block_get_filename_expression_invalid_statement() {
+  rule_block b;
+  b._code_chunk.push_back("here's some weird statement that isn't an include");
+  b.get_filename_expression();
+}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_get_include_depth() {}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_get_standard_filename() {}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_print_contents() {}
