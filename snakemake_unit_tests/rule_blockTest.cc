@@ -250,8 +250,72 @@ void snakemake_unit_tests::rule_blockTest::test_rule_block_add_code_chunk() {
   CPPUNIT_ASSERT(!b._code_chunk.at(0).compare("  thing1;\n"));
   CPPUNIT_ASSERT(!b._code_chunk.at(1).compare("  thing2;\n"));
 }
-void snakemake_unit_tests::rule_blockTest::test_rule_block_equality_operator() {}
-void snakemake_unit_tests::rule_blockTest::test_rule_block_inequality_operator() {}
+void snakemake_unit_tests::rule_blockTest::test_rule_block_equality_operator() {
+  rule_block b1, b2;
+  CPPUNIT_ASSERT(b1 == b2);
+  CPPUNIT_ASSERT(b1 == b1);
+  b1._rule_name = "rulename";
+  b1._base_rule_name = "baserulename";
+  b1._rule_is_checkpoint = true;
+  b1._docstring = "text goes here";
+  b1._named_blocks.push_back(std::make_pair("thing1", "thing2"));
+  b1._named_blocks.push_back(std::make_pair("thing2", "thing3"));
+  b1._code_chunk.push_back("code goes here;");
+  b1._code_chunk.push_back("{some other thing;}");
+  b1._local_indentation = 42;
+  b1._resolution = RESOLVED_INCLUDED;
+  b1._queried_by_python = true;
+  b1._python_tag = 333;
+  b1._resolved_included_filename = "thing1/thing2/thing3";
+  CPPUNIT_ASSERT(!(b1 == b2));
+  b2._rule_name = "rulename";
+  b2._base_rule_name = "baserulename";
+  b2._rule_is_checkpoint = true;
+  b2._docstring = "text goes here";
+  b2._named_blocks.push_back(std::make_pair("thing1", "thing2"));
+  b2._named_blocks.push_back(std::make_pair("thing2", "thing3"));
+  b2._code_chunk.push_back("code goes here;");
+  b2._code_chunk.push_back("{some other thing;}");
+  b2._local_indentation = 42;
+  b2._resolution = RESOLVED_INCLUDED;
+  b2._queried_by_python = true;
+  b2._python_tag = 333;
+  b2._resolved_included_filename = "thing1/thing2/thing3";
+  CPPUNIT_ASSERT(b1 == b2);
+}
+void snakemake_unit_tests::rule_blockTest::test_rule_block_inequality_operator() {
+  rule_block b1, b2;
+  CPPUNIT_ASSERT(!(b1 != b2));
+  CPPUNIT_ASSERT(!(b1 != b1));
+  b1._rule_name = "rulename";
+  b1._base_rule_name = "baserulename";
+  b1._rule_is_checkpoint = true;
+  b1._docstring = "text goes here";
+  b1._named_blocks.push_back(std::make_pair("thing1", "thing2"));
+  b1._named_blocks.push_back(std::make_pair("thing2", "thing3"));
+  b1._code_chunk.push_back("code goes here;");
+  b1._code_chunk.push_back("{some other thing;}");
+  b1._local_indentation = 42;
+  b1._resolution = RESOLVED_INCLUDED;
+  b1._queried_by_python = true;
+  b1._python_tag = 333;
+  b1._resolved_included_filename = "thing1/thing2/thing3";
+  CPPUNIT_ASSERT(b1 != b2);
+  b2._rule_name = "rulename";
+  b2._base_rule_name = "baserulename";
+  b2._rule_is_checkpoint = true;
+  b2._docstring = "text goes here";
+  b2._named_blocks.push_back(std::make_pair("thing1", "thing2"));
+  b2._named_blocks.push_back(std::make_pair("thing2", "thing3"));
+  b2._code_chunk.push_back("code goes here;");
+  b2._code_chunk.push_back("{some other thing;}");
+  b2._local_indentation = 42;
+  b2._resolution = RESOLVED_INCLUDED;
+  b2._queried_by_python = true;
+  b2._python_tag = 333;
+  b2._resolved_included_filename = "thing1/thing2/thing3";
+  CPPUNIT_ASSERT(!(b1 != b2));
+}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_resolved() {}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_included() {}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_set_resolution() {}
