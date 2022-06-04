@@ -143,12 +143,6 @@ class rule_block {
   std::string get_filename_expression() const;
 
   /*!
-    @brief if the block is an include directive, get the file that is included
-    @return the included filename
-   */
-  std::string get_standard_filename() const;
-
-  /*!
     @brief report mildly formatted contents to a stream
     @param out an open stream to which to write formatted contents
    */

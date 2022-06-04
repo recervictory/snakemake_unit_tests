@@ -130,7 +130,6 @@ void snakemake_unit_tests::rule_blockTest::test_rule_block_get_filename_expressi
   b._code_chunk.push_back("here's some weird statement that isn't an include");
   b.get_filename_expression();
 }
-void snakemake_unit_tests::rule_blockTest::test_rule_block_get_standard_filename() {}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_print_contents() {}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_get_code_chunk() {}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_get_named_blocks() {}

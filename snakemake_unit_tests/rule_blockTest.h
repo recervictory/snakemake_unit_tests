@@ -38,7 +38,6 @@ class rule_blockTest : public CppUnit::TestFixture {
   CPPUNIT_TEST(test_rule_block_contains_include_directive);
   CPPUNIT_TEST_EXCEPTION(test_rule_block_get_filename_expression_invalid_statement, std::runtime_error);
   CPPUNIT_TEST(test_rule_block_get_filename_expression);
-  CPPUNIT_TEST(test_rule_block_get_standard_filename);
   CPPUNIT_TEST(test_rule_block_print_contents);
   CPPUNIT_TEST(test_rule_block_get_code_chunk);
   CPPUNIT_TEST(test_rule_block_get_named_blocks);
@@ -79,7 +78,6 @@ class rule_blockTest : public CppUnit::TestFixture {
   void test_rule_block_contains_include_directive();
   void test_rule_block_get_filename_expression();
   void test_rule_block_get_filename_expression_invalid_statement();
-  void test_rule_block_get_standard_filename();
   void test_rule_block_print_contents();
   void test_rule_block_get_code_chunk();
   void test_rule_block_get_named_blocks();
