@@ -355,8 +355,23 @@ void snakemake_unit_tests::rule_blockTest::test_rule_block_get_resolution_status
   b._resolution = RESOLVED_INCLUDED;
   CPPUNIT_ASSERT(b.get_resolution_status() == RESOLVED_INCLUDED);
 }
-void snakemake_unit_tests::rule_blockTest::test_rule_block_set_interpreter_tag() {}
-void snakemake_unit_tests::rule_blockTest::test_rule_block_get_interpreter_tag() {}
+void snakemake_unit_tests::rule_blockTest::test_rule_block_set_interpreter_tag() {
+  rule_block b;
+  b.set_interpreter_tag(10u);
+  CPPUNIT_ASSERT_EQUAL(10u, b._python_tag);
+  b.set_interpreter_tag(20u);
+  CPPUNIT_ASSERT_EQUAL(20u, b._python_tag);
+  b.set_interpreter_tag(0u);
+  CPPUNIT_ASSERT_EQUAL(0u, b._python_tag);
+}
+void snakemake_unit_tests::rule_blockTest::test_rule_block_get_interpreter_tag() {
+  rule_block b;
+  CPPUNIT_ASSERT_EQUAL(0u, b.get_interpreter_tag());
+  b._python_tag = 10u;
+  CPPUNIT_ASSERT_EQUAL(10u, b.get_interpreter_tag());
+  b._python_tag = 20u;
+  CPPUNIT_ASSERT_EQUAL(20u, b.get_interpreter_tag());
+}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_report_python_logging_code() {}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_update_resolution() {}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_get_resolved_included_filename() {}
