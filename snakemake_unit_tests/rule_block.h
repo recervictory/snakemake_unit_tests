@@ -149,12 +149,6 @@ class rule_block {
   std::string get_filename_expression() const;
 
   /*!
-    @brief determine how much indentation an include directive enjoyed
-    @return indentation of include directive
-   */
-  unsigned get_include_depth() const;
-
-  /*!
     @brief if the block is an include directive, get the file that is included
     @return the included filename
    */

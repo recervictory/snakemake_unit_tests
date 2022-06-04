@@ -214,20 +214,6 @@ std::string snakemake_unit_tests::rule_block::get_standard_filename() const {
       "that does not match include directive pattern");
 }
 
-unsigned snakemake_unit_tests::rule_block::get_include_depth() const {
-  // what is an include directive?
-  const boost::regex include_directive("^( *)include: *(.*[^ ]) *$");
-  if (get_code_chunk().size() == 1) {
-    boost::smatch include_match;
-    if (boost::regex_match(*get_code_chunk().begin(), include_match, include_directive)) {
-      return include_match[1].str().size();
-    }
-  }
-  throw std::runtime_error(
-      "get_include_depth() called in code block "
-      "that does not match include directive pattern");
-}
-
 bool snakemake_unit_tests::rule_block::report_python_logging_code(std::ostream &out) {
   _queried_by_python = true;
   // report contents. may eventually be used for printing to custom snakefile
