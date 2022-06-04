@@ -115,7 +115,22 @@ void snakemake_unit_tests::rule_blockTest::test_rule_block_get_filename_expressi
   b._code_chunk.push_back("here's some weird statement that isn't an include");
   b.get_filename_expression();
 }
-void snakemake_unit_tests::rule_blockTest::test_rule_block_get_include_depth() {}
+void snakemake_unit_tests::rule_blockTest::test_rule_block_get_include_depth() {
+  rule_block b;
+  b._code_chunk.push_back("include: stuff");
+  CPPUNIT_ASSERT_EQUAL(0u, b.get_include_depth());
+  b._code_chunk.at(0) = "include: \"stuff\"";
+  CPPUNIT_ASSERT_EQUAL(0u, b.get_include_depth());
+  b._code_chunk.at(0) = "   include: thing";
+  CPPUNIT_ASSERT_EQUAL(3u, b.get_include_depth());
+  b._code_chunk.at(0) = "include: \"thing\"   ";
+  CPPUNIT_ASSERT_EQUAL(0u, b.get_include_depth());
+}
+void snakemake_unit_tests::rule_blockTest::test_rule_block_get_include_depth_invalid_statement() {
+  rule_block b;
+  b._code_chunk.push_back("here's some weird statement that isn't an include");
+  b.get_include_depth();
+}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_get_standard_filename() {}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_print_contents() {}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_get_code_chunk() {}
