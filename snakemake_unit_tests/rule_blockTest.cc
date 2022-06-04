@@ -74,10 +74,26 @@ void snakemake_unit_tests::rule_blockTest::test_rule_block_copy_constructor() {
 }
 void snakemake_unit_tests::rule_blockTest::test_rule_block_load_content_block() {}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_consume_rule_contents() {}
-void snakemake_unit_tests::rule_blockTest::test_rule_block_set_rule_name() {}
-void snakemake_unit_tests::rule_blockTest::test_rule_block_get_rule_name() {}
-void snakemake_unit_tests::rule_blockTest::test_rule_block_set_base_rule_name() {}
-void snakemake_unit_tests::rule_blockTest::test_rule_block_get_base_rule_name() {}
+void snakemake_unit_tests::rule_blockTest::test_rule_block_set_rule_name() {
+  rule_block b;
+  b.set_rule_name("dothething");
+  CPPUNIT_ASSERT(!b._rule_name.compare("dothething"));
+}
+void snakemake_unit_tests::rule_blockTest::test_rule_block_get_rule_name() {
+  rule_block b;
+  b._rule_name = "myfunrule";
+  CPPUNIT_ASSERT(!b.get_rule_name().compare("myfunrule"));
+}
+void snakemake_unit_tests::rule_blockTest::test_rule_block_set_base_rule_name() {
+  rule_block b;
+  b.set_base_rule_name("mybaserule");
+  CPPUNIT_ASSERT(!b._base_rule_name.compare("mybaserule"));
+}
+void snakemake_unit_tests::rule_blockTest::test_rule_block_get_base_rule_name() {
+  rule_block b;
+  b._base_rule_name = "starter";
+  CPPUNIT_ASSERT(!b.get_base_rule_name().compare("starter"));
+}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_is_simple_include_directive() {}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_contains_include_directive() {
   rule_block b;
