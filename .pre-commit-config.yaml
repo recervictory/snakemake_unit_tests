@@ -15,15 +15,15 @@ repos:
 
 ## Python support
 - repo: https://github.com/psf/black
-  rev: 19.10b0
+  rev: 22.3.0
   hooks:
   - id: black
 - repo: https://gitlab.com/PyCQA/flake8
-  rev: 3.8.3
+  rev: 4.0.1
   hooks:
   - id: flake8
     exclude: ^inst/test.py
 - repo: https://github.com/timothycrosley/isort
-  rev: 5.5.3
+  rev: 5.10.1
   hooks:
   - id: isort
