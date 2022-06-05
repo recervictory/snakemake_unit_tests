@@ -483,6 +483,24 @@ void snakemake_unit_tests::rule_blockTest::test_rule_block_apply_indentation() {
   std::string expected = "here is some content:\n       there's some stuff here\n         ok?";
   CPPUNIT_ASSERT(!result.compare(expected));
 }
-void snakemake_unit_tests::rule_blockTest::test_rule_block_clear() {}
+void snakemake_unit_tests::rule_blockTest::test_rule_block_clear() {
+  rule_block b1;
+  b1._rule_name = "rulename";
+  b1._base_rule_name = "baserulename";
+  b1._rule_is_checkpoint = true;
+  b1._docstring = "text goes here";
+  b1._named_blocks.push_back(std::make_pair("thing1", "thing2"));
+  b1._named_blocks.push_back(std::make_pair("thing2", "thing3"));
+  b1._code_chunk.push_back("code goes here;");
+  b1._code_chunk.push_back("{some other thing;}");
+  b1._local_indentation = 42;
+  b1._resolution = RESOLVED_INCLUDED;
+  b1._queried_by_python = true;
+  b1._python_tag = 333;
+  b1._resolved_included_filename = "thing1/thing2/thing3";
+  rule_block b2;
+  b1.clear();
+  CPPUNIT_ASSERT(b1 == b2);
+}
 
 CPPUNIT_TEST_SUITE_REGISTRATION(snakemake_unit_tests::rule_blockTest);
