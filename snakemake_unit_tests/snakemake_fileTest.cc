@@ -45,10 +45,6 @@ void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_get_snakefile
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_loaded_files() {}
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_set_update_status() {}
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_report_rules() {}
-void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_query_rule_checkpoint() {}
-void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_aggregate_rulesdot() {}
-void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_recursively_query_rulesdot() {}
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_get_base_rule_name() {}
-void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_get_rulesdot() {}
 
 CPPUNIT_TEST_SUITE_REGISTRATION(snakemake_unit_tests::snakemake_fileTest);

@@ -47,11 +47,7 @@ class snakemake_fileTest : public CppUnit::TestFixture {
   CPPUNIT_TEST(test_snakemake_file_loaded_files);
   CPPUNIT_TEST(test_snakemake_file_set_update_status);
   CPPUNIT_TEST(test_snakemake_file_report_rules);
-  CPPUNIT_TEST(test_snakemake_file_query_rule_checkpoint);
-  CPPUNIT_TEST(test_snakemake_file_aggregate_rulesdot);
-  CPPUNIT_TEST(test_snakemake_file_recursively_query_rulesdot);
   CPPUNIT_TEST(test_snakemake_file_get_base_rule_name);
-  CPPUNIT_TEST(test_snakemake_file_get_rulesdot);
   CPPUNIT_TEST_SUITE_END();
 
  public:
@@ -80,11 +76,7 @@ class snakemake_fileTest : public CppUnit::TestFixture {
   void test_snakemake_file_loaded_files();
   void test_snakemake_file_set_update_status();
   void test_snakemake_file_report_rules();
-  void test_snakemake_file_query_rule_checkpoint();
-  void test_snakemake_file_aggregate_rulesdot();
-  void test_snakemake_file_recursively_query_rulesdot();
   void test_snakemake_file_get_base_rule_name();
-  void test_snakemake_file_get_rulesdot();
 
  private:
   char *_tmp_dir;
