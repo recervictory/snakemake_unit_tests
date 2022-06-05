@@ -280,10 +280,22 @@ void snakemake_unit_tests::rule_block::print_contents(std::ostream &out) const {
       }
     }
     // report all blocks in the order they were encountered
+    std::map<std::string, bool> forbidden_blocks;
+    /*
+      new: in snakemake 6.15.0, support for a 'default_target' rule block entry
+      was added, to override the behavior of snakemake running the first rule it encounters
+      when no additional information is provided in the snakemake invocation. this functionality
+      seems to largely have no impact on the unit tester, but it's also antithetical to how
+      this testing regime is structured. as such, it is the inaugural member of a named block exclusion
+      list, against which the output is filtered.
+     */
+    forbidden_blocks["default_target"] = true;
     for (std::vector<std::pair<std::string, std::string> >::const_iterator iter = get_named_blocks().begin();
          iter != get_named_blocks().end(); ++iter) {
-      if (!(out << indentation(get_local_indentation() + 4) << iter->first << ":" << iter->second << std::endl))
-        throw std::runtime_error("named block printing failure");
+      if (forbidden_blocks.find(iter->first) == forbidden_blocks.end()) {
+        if (!(out << indentation(get_local_indentation() + 4) << iter->first << ":" << iter->second << std::endl))
+          throw std::runtime_error("named block printing failure");
+      }
     }
     // for snakefmt compatibility: emit two empty lines at the end of a rule
     if (!(out << std::endl << std::endl)) throw std::runtime_error("rule padding printing error");

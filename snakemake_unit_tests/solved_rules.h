@@ -35,18 +35,13 @@ class recipe {
   /*!
     @brief constructor
    */
-  recipe() : _rule_name(""), _rule_is_checkpoint(false), _checkpoint_update(false), _log("") {}
+  recipe() : _rule_name(""), _log("") {}
   /*!
     @brief copy constructor
     @param obj existing recipe object
    */
   recipe(const recipe &obj)
-      : _rule_name(obj._rule_name),
-        _rule_is_checkpoint(obj._rule_is_checkpoint),
-        _checkpoint_update(obj._checkpoint_update),
-        _inputs(obj._inputs),
-        _outputs(obj._outputs),
-        _log(obj._log) {}
+      : _rule_name(obj._rule_name), _inputs(obj._inputs), _outputs(obj._outputs), _log(obj._log) {}
   /*!
     @brief destructor
    */
@@ -62,26 +57,6 @@ class recipe {
     @param s new rule name
    */
   void set_rule_name(const std::string &s) { _rule_name = s; }
-  /*!
-    @brief if this rule is a checkpoint
-    @return if this rule is a checkpoint
-  */
-  bool is_checkpoint() const { return _rule_is_checkpoint; }
-  /*!
-    @brief set checkpoint status
-    @param b new setting for checkpoint indicator
-   */
-  void set_checkpoint(bool b) { _rule_is_checkpoint = b; }
-  /*!
-    @brief if this rule is affected by a checkpoint
-    @return if this rule is affected by a checkpoint
-  */
-  bool is_checkpoint_update() const { return _checkpoint_update; }
-  /*!
-    @brief set checkpoint affectedness status
-    @param b new setting for checkpoint affectedness indicator
-   */
-  void set_checkpoint_update(bool b) { _checkpoint_update = b; }
   /*!
     @brief access list of input files
     @return vector storing all input filenames; may be empty
@@ -127,20 +102,6 @@ class recipe {
     @brief extracted name of rule from log file
    */
   std::string _rule_name;
-  /*!
-    @brief whether the rule is a checkpoint
-
-    note that there are indications (28 Apr 2021) of checkpoints not functioning
-    on cluster systems, so their use is somewhat dubious
-   */
-  bool _rule_is_checkpoint;
-  /*!
-    @brief whether this rule is affected by upstream checkpoints
-
-    this is part of the snakemake logging system, but unfortunately doesn't
-    exactly define what step(s) are implicated upstream
-   */
-  bool _checkpoint_update;
   /*!
     @brief snakemake solved input files to rule
 

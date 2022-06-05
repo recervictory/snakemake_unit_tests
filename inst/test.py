@@ -49,6 +49,8 @@ def test_function():
                 "mamba",
                 "--snakefile",
                 "{}/{}".format(rundir, snakefile_relative_path),
+                "--allowed-rules",
+                rulename,
                 "--directory",
                 "{}/{}".format(rundir, snakemake_exec_path),
             ]
