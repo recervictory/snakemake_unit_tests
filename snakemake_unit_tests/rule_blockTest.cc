@@ -98,34 +98,6 @@ void snakemake_unit_tests::rule_blockTest::test_rule_block_copy_constructor() {
   CPPUNIT_ASSERT_EQUAL(333u, b2._python_tag);
   CPPUNIT_ASSERT(!b2._resolved_included_filename.compare("thing1/thing2/thing3"));
 }
-/*
-_snakefile_lines.push_back("rule myrule:");
-_snakefile_lines.push_back("    ''' here is my docstring '''");
-_snakefile_lines.push_back("    input:");
-_snakefile_lines.push_back("       'input1.txt',");
-_snakefile_lines.push_back("       'input2.txt',");
-_snakefile_lines.push_back("    output:");
-_snakefile_lines.push_back("       'output1.txt',");
-_snakefile_lines.push_back("    shell:");
-_snakefile_lines.push_back("       'echo \"do the thing\" > {output}");
-_snakefile_lines.push_back("");
-_snakefile_lines.push_back("");
-_snakefile_lines.push_back("use rule myrule as myderivedrule with:");
-_snakefile_lines.push_back("    output:");
-_snakefile_lines.push_back("       'output2.txt',");
-_snakefile_lines.push_back("");
-_snakefile_lines.push_back("");
-_snakefile_lines.push_back("localrules: mylocalrule");
-_snakefile_lines.push_back("if True:");
-_snakefile_lines.push_back("    checkpoint mycheckpoint:");
-_snakefile_lines.push_back("        ''' here's another docstring\nwith multiple lines '''");
-_snakefile_lines.push_back("        input: 'input3.txt',");
-_snakefile_lines.push_back("        output: 'output3.txt',");
-_snakefile_lines.push_back("        shell: 'touch {output}'");
-_snakefile_lines.push_back("");
-_snakefile_lines.push_back("");
-_snakefile_lines.push_back("configfile: \"myconfigfile.yaml\"");
-*/
 void snakemake_unit_tests::rule_blockTest::test_rule_block_load_content_block() {
   rule_block standard_rule, derived_rule, localrules, python_if, checkpoint, configfile;
   unsigned current_line = 0u;
