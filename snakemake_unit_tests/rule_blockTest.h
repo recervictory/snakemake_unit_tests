@@ -57,6 +57,7 @@ class rule_blockTest : public CppUnit::TestFixture {
   CPPUNIT_TEST(test_rule_block_is_checkpoint);
   CPPUNIT_TEST(test_rule_block_set_checkpoint);
   CPPUNIT_TEST(test_rule_block_report_rulesdot_rules);
+  CPPUNIT_TEST_EXCEPTION(test_rule_block_report_rulesdot_rules_null_pointer, std::runtime_error);
   CPPUNIT_TEST(test_rule_block_indentation);
   CPPUNIT_TEST(test_rule_block_apply_indentation);
   CPPUNIT_TEST(test_rule_block_clear);
@@ -97,6 +98,7 @@ class rule_blockTest : public CppUnit::TestFixture {
   void test_rule_block_is_checkpoint();
   void test_rule_block_set_checkpoint();
   void test_rule_block_report_rulesdot_rules();
+  void test_rule_block_report_rulesdot_rules_null_pointer();
   void test_rule_block_indentation();
   void test_rule_block_apply_indentation();
   void test_rule_block_clear();

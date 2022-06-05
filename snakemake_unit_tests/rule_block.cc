@@ -332,7 +332,7 @@ std::string snakemake_unit_tests::rule_block::apply_indentation(const std::strin
 
 void snakemake_unit_tests::rule_block::report_rulesdot_rules(std::map<std::string, bool> *target) const {
   if (!target) throw std::runtime_error("null pointer provided to report_rulesdot_rules");
-  boost::regex pattern("rules\\.([^\\.]+)\\.");
+  boost::regex pattern("rules\\.([a-zA-Z0-9_]+)\\.");
   boost::sregex_token_iterator end;
   // scan both code chunk and block contents
   for (std::vector<std::pair<std::string, std::string> >::const_iterator iter = _named_blocks.begin();
