@@ -458,8 +458,19 @@ void snakemake_unit_tests::rule_blockTest::test_rule_block_get_resolved_included
   b._resolved_included_filename = "filename2";
   CPPUNIT_ASSERT(!b.get_resolved_included_filename().compare("filename2"));
 }
-void snakemake_unit_tests::rule_blockTest::test_rule_block_is_checkpoint() {}
-void snakemake_unit_tests::rule_blockTest::test_rule_block_set_checkpoint() {}
+void snakemake_unit_tests::rule_blockTest::test_rule_block_is_checkpoint() {
+  rule_block b;
+  CPPUNIT_ASSERT(!b.is_checkpoint());
+  b._rule_is_checkpoint = true;
+  CPPUNIT_ASSERT(b.is_checkpoint());
+}
+void snakemake_unit_tests::rule_blockTest::test_rule_block_set_checkpoint() {
+  rule_block b;
+  b.set_checkpoint(true);
+  CPPUNIT_ASSERT(b._rule_is_checkpoint);
+  b.set_checkpoint(false);
+  CPPUNIT_ASSERT(!b._rule_is_checkpoint);
+}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_report_rulesdot_rules() {}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_indentation() {}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_apply_indentation() {}
