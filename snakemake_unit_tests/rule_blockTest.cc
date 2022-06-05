@@ -417,7 +417,39 @@ void snakemake_unit_tests::rule_blockTest::test_rule_block_report_python_logging
       "  shell:\n          'cat {input} > {output}'\n";
   CPPUNIT_ASSERT(!o5.str().compare(expected));
 }
-void snakemake_unit_tests::rule_blockTest::test_rule_block_update_resolution() {}
+void snakemake_unit_tests::rule_blockTest::test_rule_block_update_resolution() {
+  /*
+    rule_block objects scan the results of a python logging pass and
+    look to see if there's any informative information in the results
+    regarding their unique python tag. code elements that don't include
+    interesting things (snakemake rules and include directives) have tag
+    identity 0 and are always flagged as included after the first python pass.
+   */
+  std::map<std::string, std::string> tag_results;
+  tag_results["tag1"] = "filename1";
+  tag_results["tag2"] = "filename2";
+  tag_results["tag3"] = "";
+  rule_block b;
+  b._python_tag = 1u;
+  CPPUNIT_ASSERT(!b.update_resolution(tag_results));
+  CPPUNIT_ASSERT(!b._resolved_included_filename.compare("filename1"));
+  CPPUNIT_ASSERT(b._resolution == RESOLVED_INCLUDED);
+  CPPUNIT_ASSERT(b.update_resolution(tag_results));
+  CPPUNIT_ASSERT(!b._resolved_included_filename.compare("filename1"));
+  CPPUNIT_ASSERT(b._resolution == RESOLVED_INCLUDED);
+  b._python_tag = 2u;
+  CPPUNIT_ASSERT(!b.update_resolution(tag_results));
+  CPPUNIT_ASSERT(!b._resolved_included_filename.compare("filename2"));
+  CPPUNIT_ASSERT(b._resolution == RESOLVED_INCLUDED);
+  b._python_tag = 3u;
+  CPPUNIT_ASSERT(b.update_resolution(tag_results));
+  CPPUNIT_ASSERT(b._resolution == RESOLVED_INCLUDED);
+  b._python_tag = 4u;
+  CPPUNIT_ASSERT(b.update_resolution(tag_results));
+  CPPUNIT_ASSERT(b._resolution == RESOLVED_EXCLUDED);
+  b._python_tag = 0u;
+  CPPUNIT_ASSERT(b.update_resolution(tag_results));
+}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_get_resolved_included_filename() {}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_is_checkpoint() {}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_set_checkpoint() {}
