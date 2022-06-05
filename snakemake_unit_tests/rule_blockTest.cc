@@ -8,13 +8,6 @@
 #include "snakemake_unit_tests/rule_blockTest.h"
 
 void snakemake_unit_tests::rule_blockTest::setUp() {
-  unsigned buffer_size = std::filesystem::temp_directory_path().string().size() + 20;
-  _tmp_dir = new char[buffer_size];
-  strncpy(_tmp_dir, (std::filesystem::temp_directory_path().string() + "/sutRBTXXXXXX").c_str(), buffer_size);
-  char *res = mkdtemp(_tmp_dir);
-  if (!res) {
-    throw std::runtime_error("rule_blockTest mkdtemp failed");
-  }
   _snakefile_lines.push_back("rule myrule:");
   _snakefile_lines.push_back("    ''' here is my docstring '''");
   _snakefile_lines.push_back("    input:");
@@ -43,12 +36,7 @@ void snakemake_unit_tests::rule_blockTest::setUp() {
   _snakefile_lines.push_back("configfile: \"myconfigfile.yaml\"");
 }
 
-void snakemake_unit_tests::rule_blockTest::tearDown() {
-  if (_tmp_dir) {
-    std::filesystem::remove_all(std::filesystem::path(_tmp_dir));
-    delete[] _tmp_dir;
-  }
-}
+void snakemake_unit_tests::rule_blockTest::tearDown() {}
 
 void snakemake_unit_tests::rule_blockTest::test_rule_block_default_constructor() {
   rule_block b;
