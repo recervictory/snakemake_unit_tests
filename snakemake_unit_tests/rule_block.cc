@@ -280,10 +280,22 @@ void snakemake_unit_tests::rule_block::print_contents(std::ostream &out) const {
       }
     }
     // report all blocks in the order they were encountered
+    std::map<std::string, bool> forbidden_blocks;
+    /*
+      new: in snakemake 6.15.0, support for a 'default_target' rule block entry
+      was added, to override the behavior of snakemake running the first rule it encounters
+      when no additional information is provided in the snakemake invocation. this functionality
+      seems to largely have no impact on the unit tester, but it's also antithetical to how
+      this testing regime is structured. as such, it is the inaugural member of a named block exclusion
+      list, against which the output is filtered.
+     */
+    forbidden_blocks["default_target"] = true;
     for (std::vector<std::pair<std::string, std::string> >::const_iterator iter = get_named_blocks().begin();
          iter != get_named_blocks().end(); ++iter) {
-      if (!(out << indentation(get_local_indentation() + 4) << iter->first << ":" << iter->second << std::endl))
-        throw std::runtime_error("named block printing failure");
+      if (forbidden_blocks.find(iter->first) == forbidden_blocks.end()) {
+        if (!(out << indentation(get_local_indentation() + 4) << iter->first << ":" << iter->second << std::endl))
+          throw std::runtime_error("named block printing failure");
+      }
     }
     // for snakefmt compatibility: emit two empty lines at the end of a rule
     if (!(out << std::endl << std::endl)) throw std::runtime_error("rule padding printing error");
@@ -321,24 +333,4 @@ std::string snakemake_unit_tests::rule_block::apply_indentation(const std::strin
     cur = loc + 1 + indent.size();
   }
   return res;
-}
-
-void snakemake_unit_tests::rule_block::report_rulesdot_rules(std::map<std::string, bool> *target) const {
-  if (!target) throw std::runtime_error("null pointer provided to report_rulesdot_rules");
-  boost::regex pattern("rules\\.([a-zA-Z0-9_]+)\\.");
-  boost::sregex_token_iterator end;
-  // scan both code chunk and block contents
-  for (std::vector<std::pair<std::string, std::string> >::const_iterator iter = _named_blocks.begin();
-       iter != _named_blocks.end(); ++iter) {
-    boost::sregex_token_iterator finder(iter->second.begin(), iter->second.end(), pattern, 0);
-    for (; finder != end; ++finder) {
-      (*target)[finder->str().substr(6, finder->str().size() - 7)] = true;
-    }
-  }
-  for (std::vector<std::string>::const_iterator iter = _code_chunk.begin(); iter != _code_chunk.end(); ++iter) {
-    boost::sregex_token_iterator finder(iter->begin(), iter->end(), pattern, 0);
-    for (; finder != end; ++finder) {
-      (*target)[finder->str().substr(6, finder->str().size() - 7)] = true;
-    }
-  }
 }

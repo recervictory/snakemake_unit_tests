@@ -12,10 +12,8 @@ void snakemake_unit_tests::solved_rules::load_file(const std::string &filename) 
   std::ifstream input;
   std::string line = "";
   std::vector<std::string> input_filenames, output_filenames;
-  std::map<std::string, bool> affected_by_checkpoint;
   const boost::regex standard_rule_declaration("^rule ([^ ]+):.*$");
   const boost::regex checkpoint_declaration("^checkpoint ([^ ]+):.*$");
-  const boost::regex checkpoint_impact_flag("^Updating job ([^\\.]+)\\.");
   boost::smatch regex_result;
   try {
     // open log file
@@ -26,18 +24,11 @@ void snakemake_unit_tests::solved_rules::load_file(const std::string &filename) 
       getline(input, line);
       // if the line is a valid rule declaration
       if (boost::regex_match(line, regex_result, standard_rule_declaration) ||
-          boost::regex_match(line, regex_result, checkpoint_declaration)) {
-        // set apparent rule name
+          boost::regex_match(line, regex_result, checkpoint_declaration)) {  // set apparent rule name
         // for magical reasons, this regex seems to be working where
         // the include directive one wasn't; has to do with '/'?
         boost::shared_ptr<recipe> rep(new recipe);
         rep->set_rule_name(regex_result[1]);
-        if (line.find("checkpoint") == 0) {
-          rep->set_checkpoint(true);
-        }
-        if (affected_by_checkpoint.find(regex_result[1]) != affected_by_checkpoint.end()) {
-          rep->set_checkpoint_update(true);
-        }
         // scan for remaining rule content lines
         while (input.peek() != EOF) {
           getline(input, line);
@@ -72,7 +63,8 @@ void snakemake_unit_tests::solved_rules::load_file(const std::string &filename) 
             rep->set_log(line.substr(9));
           } else if (line.find("    jobid:") == 0 || line.find("    wildcards:") == 0 ||
                      line.find("    benchmark:") == 0 || line.find("    resources:") == 0 ||
-                     line.find("    threads:") == 0 || line.find("    priority:") == 0) {
+                     line.find("    threads:") == 0 || line.find("    priority:") == 0 ||
+                     line.find("    reason:") == 0) {
             // other recognized solution annotations;
             // for the moment, do nothing with them
           } else {
@@ -93,8 +85,6 @@ void snakemake_unit_tests::solved_rules::load_file(const std::string &filename) 
           }
           _output_lookup[*iter] = rep;
         }
-      } else if (boost::regex_match(line, regex_result, checkpoint_impact_flag)) {
-        affected_by_checkpoint[regex_result[1]] = true;
       }
     }
     input.close();
@@ -134,10 +124,39 @@ void snakemake_unit_tests::solved_rules::emit_tests(
   std::map<std::string, bool> test_history;
   for (std::vector<boost::shared_ptr<recipe>>::const_iterator iter = _recipes.begin(); iter != _recipes.end(); ++iter) {
     if (test_history.find((*iter)->get_rule_name()) == test_history.end()) {
-      create_workspace(*iter, sf, output_test_dir, test_parent_path, pipeline_top_dir, pipeline_run_dir, inst_test_py,
-                       exclude_rules, added_files, added_directories, update_snakefiles, update_added_content,
-                       update_inputs, update_outputs, update_pytest, include_entire_dag);
+      bool deployment_successful = false;
+      std::map<std::string, bool> missing_rules;
+      std::map<boost::shared_ptr<recipe>, bool> missing_recipes;
+      do {
+        create_workspace(*iter, sf, output_test_dir, test_parent_path, pipeline_top_dir, pipeline_run_dir, inst_test_py,
+                         missing_recipes, exclude_rules, added_files, added_directories, update_snakefiles,
+                         update_added_content, update_inputs, update_outputs, update_pytest, include_entire_dag);
+        // new: deal with the fact that certain kinds of rule relationships (e.g. rulesdot) cannot be
+        // reliably detected with this program's approach to querying snakefiles
+        std::vector<std::string> snakemake_exec;
+        std::cout << "executing snakemake command: \"cd "
+                  << (test_parent_path / (*iter)->get_rule_name() / "workspace").string() << " && snakemake -nFs "
+                  << sf.get_snakefile_relative_path().string() << "\"" << std::endl;
+        snakemake_exec = sf.exec("cd " + (test_parent_path / (*iter)->get_rule_name() / "workspace").string() +
+                                     " && snakemake -nFs " + sf.get_snakefile_relative_path().string(),
+                                 false);
+        // try to find snakemake errors that report rules missing from dag
+        unsigned initial_missing_count = missing_rules.size();
+        find_missing_rules(snakemake_exec, &missing_rules);
+        if (missing_rules.size() == initial_missing_count) {
+          deployment_successful = true;
+        } else {
+          for (std::vector<boost::shared_ptr<recipe>>::const_iterator rec_iter = _recipes.begin();
+               rec_iter != _recipes.end(); ++rec_iter) {
+            if (missing_rules.find((*rec_iter)->get_rule_name()) != missing_rules.end()) {
+              missing_recipes[*rec_iter] = true;
+            }
+          }
+        }
+      } while (!deployment_successful);
       test_history[(*iter)->get_rule_name()] = true;
+      // new: remove evidence of having run snakemake in-place
+      boost::filesystem::remove_all(test_parent_path / (*iter)->get_rule_name() / "workspace/.snakemake");
     }
   }
   // emit common.py in the test_parent_path; no modifications needed
@@ -149,35 +168,20 @@ void snakemake_unit_tests::solved_rules::emit_tests(
   }
 }
 
-void snakemake_unit_tests::solved_rules::aggregate_dependencies(
-    const snakemake_file &sf, const boost::shared_ptr<recipe> &rec, bool include_entire_dag,
-    std::map<boost::shared_ptr<recipe>, bool> *target) const {
-  // what makes an input dependency unavoidable?
-  // - it is called in the input block as 'rules.rulename.whatever'
-  // - it is a checkpoint
-  // for each output, find the generating rule
-
-  // 'rules.' notation
-  std::map<std::string, bool> rulesdot_names;
-  sf.recursively_query_rulesdot(rec->get_rule_name(), &rulesdot_names);
-  for (std::map<std::string, bool>::const_iterator iter = rulesdot_names.begin(); iter != rulesdot_names.end();
-       ++iter) {
-    // have to find the recipe, regrettably
-    for (std::vector<boost::shared_ptr<recipe>>::const_iterator finder = _recipes.begin(); finder != _recipes.end();
-         ++finder) {
-      if (!(*finder)->get_rule_name().compare(iter->first)) {
-        (*target)[*finder] = true;
-        break;
-      }
+void snakemake_unit_tests::solved_rules::find_missing_rules(const std::vector<std::string> &snakemake_exec,
+                                                            std::map<std::string, bool> *target) const {
+  if (!target) throw std::runtime_error("null pointer to solved_rules::find_missing_rules");
+  // target error pattern is: "'(Rules|Checkpoints)' object has no attribute 'RULENAME'"
+  const boost::regex rule_missing("^.*'Rules' object has no attribute '([^']+)'.*\n$");
+  const boost::regex checkpoint_missing("^.*'Checkpoints' object has no attribute '([^']+)'.*\n$");
+  for (std::vector<std::string>::const_iterator iter = snakemake_exec.begin(); iter != snakemake_exec.end(); ++iter) {
+    boost::smatch regex_result;
+    std::cout << "probing line \"" << *iter << "\"" << std::endl;
+    if (boost::regex_match(*iter, regex_result, rule_missing) ||
+        boost::regex_match(*iter, regex_result, checkpoint_missing)) {
+      std::cout << "\tfound missing rule: \"" << regex_result[1].str() << "\"" << std::endl;
+      target->insert(std::make_pair(regex_result[1].str(), true));
     }
-  }
-  // checkpoints, and other things that require entire DAG inclusions in the
-  // worst case
-  std::map<boost::shared_ptr<recipe>, bool> candidates;
-  // only update the full dag if the log reports that this particular rule was
-  // updated
-  if (include_entire_dag) {
-    add_dag_from_leaf(rec, include_entire_dag, target);
   }
 }
 
@@ -202,35 +206,20 @@ void snakemake_unit_tests::solved_rules::create_workspace(
     const boost::shared_ptr<recipe> &rec, const snakemake_file &sf, const boost::filesystem::path &output_test_dir,
     const boost::filesystem::path &test_parent_path, const boost::filesystem::path &pipeline_top_dir,
     const boost::filesystem::path &pipeline_run_dir, const boost::filesystem::path &inst_test_py,
+    const std::map<boost::shared_ptr<recipe>, bool> &extra_required_recipes,
     const std::map<std::string, bool> &exclude_rules, const std::vector<boost::filesystem::path> &added_files,
     const std::vector<boost::filesystem::path> &added_directories, bool update_snakefiles, bool update_added_content,
     bool update_inputs, bool update_outputs, bool update_pytest, bool include_entire_dag) const {
   // new: deal with rule structures that drag a certain number of upstream
   // recipes with them:
-  //  - rules.
-  //  - checkpoints
   //  - scattergather
-  std::map<boost::shared_ptr<recipe>, bool> dependent_recipes, orphaned_checkpoints;
+  // formerly, this was supposed to handle rules. and checkpoints; that has been migrated elsewhere
+  std::map<boost::shared_ptr<recipe>, bool> dependent_recipes = extra_required_recipes;
   std::map<std::string, bool> dependent_rulenames;
   std::vector<boost::filesystem::path> extra_comparison_exclusions;
   dependent_recipes[rec] = true;
-  aggregate_dependencies(sf, rec, include_entire_dag, &dependent_recipes);
-  for (std::vector<boost::shared_ptr<recipe>>::const_iterator iter = _recipes.begin(); iter != _recipes.end(); ++iter) {
-    if (rec->is_checkpoint_update() && (*iter)->is_checkpoint() &&
-        dependent_recipes.find(*iter) == dependent_recipes.end()) {
-      // add checkpoint rule itself to dependent_rulenames
-      orphaned_checkpoints[*iter] = true;
-      // copy all of this checkpoint's output files to the
-      // comparison exclusion set
-      for (std::vector<boost::filesystem::path>::const_iterator out_iter = (*iter)->get_outputs().begin();
-           out_iter != (*iter)->get_outputs().end(); ++out_iter) {
-        extra_comparison_exclusions.push_back(*out_iter);
-      }
-    }
-  }
-  for (std::map<boost::shared_ptr<recipe>, bool>::const_iterator iter = orphaned_checkpoints.begin();
-       iter != orphaned_checkpoints.end(); ++iter) {
-    dependent_recipes[iter->first] = iter->second;
+  if (include_entire_dag) {
+    add_dag_from_leaf(rec, include_entire_dag, &dependent_recipes);
   }
   for (std::map<boost::shared_ptr<recipe>, bool>::const_iterator iter = dependent_recipes.begin();
        iter != dependent_recipes.end(); ++iter) {
@@ -259,11 +248,17 @@ void snakemake_unit_tests::solved_rules::create_workspace(
     }
     if (update_inputs) {
       // copy *input* to workspace
-      // new: respect inputs to all dependent rules (for checkpoints)
+      // new: respect outputs to all dependent rules (e.g. for checkpoints)
       for (std::map<boost::shared_ptr<recipe>, bool>::const_iterator iter = dependent_recipes.begin();
            iter != dependent_recipes.end(); ++iter) {
-        copy_contents(iter->first->get_inputs(), pipeline_top_dir / pipeline_run_dir, workspace_path / pipeline_run_dir,
-                      rec->get_rule_name());
+        if (!iter->first->get_rule_name().compare(rec->get_rule_name())) {
+          copy_contents(iter->first->get_inputs(), pipeline_top_dir / pipeline_run_dir,
+                        workspace_path / pipeline_run_dir, rec->get_rule_name());
+        } else {
+          // upstream rules should have their *outputs* emitted as *input* to the unit test
+          copy_contents(iter->first->get_outputs(), pipeline_top_dir / pipeline_run_dir,
+                        workspace_path / pipeline_run_dir, rec->get_rule_name());
+        }
       }
     }
     if (update_added_content) {

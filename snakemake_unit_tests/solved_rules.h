@@ -35,18 +35,13 @@ class recipe {
   /*!
     @brief constructor
    */
-  recipe() : _rule_name(""), _rule_is_checkpoint(false), _checkpoint_update(false), _log("") {}
+  recipe() : _rule_name(""), _log("") {}
   /*!
     @brief copy constructor
     @param obj existing recipe object
    */
   recipe(const recipe &obj)
-      : _rule_name(obj._rule_name),
-        _rule_is_checkpoint(obj._rule_is_checkpoint),
-        _checkpoint_update(obj._checkpoint_update),
-        _inputs(obj._inputs),
-        _outputs(obj._outputs),
-        _log(obj._log) {}
+      : _rule_name(obj._rule_name), _inputs(obj._inputs), _outputs(obj._outputs), _log(obj._log) {}
   /*!
     @brief destructor
    */
@@ -62,26 +57,6 @@ class recipe {
     @param s new rule name
    */
   void set_rule_name(const std::string &s) { _rule_name = s; }
-  /*!
-    @brief if this rule is a checkpoint
-    @return if this rule is a checkpoint
-  */
-  bool is_checkpoint() const { return _rule_is_checkpoint; }
-  /*!
-    @brief set checkpoint status
-    @param b new setting for checkpoint indicator
-   */
-  void set_checkpoint(bool b) { _rule_is_checkpoint = b; }
-  /*!
-    @brief if this rule is affected by a checkpoint
-    @return if this rule is affected by a checkpoint
-  */
-  bool is_checkpoint_update() const { return _checkpoint_update; }
-  /*!
-    @brief set checkpoint affectedness status
-    @param b new setting for checkpoint affectedness indicator
-   */
-  void set_checkpoint_update(bool b) { _checkpoint_update = b; }
   /*!
     @brief access list of input files
     @return vector storing all input filenames; may be empty
@@ -126,20 +101,6 @@ class recipe {
     @brief extracted name of rule from log file
    */
   std::string _rule_name;
-  /*!
-    @brief whether the rule is a checkpoint
-
-    note that there are indications (28 Apr 2021) of checkpoints not functioning
-    on cluster systems, so their use is somewhat dubious
-   */
-  bool _rule_is_checkpoint;
-  /*!
-    @brief whether this rule is affected by upstream checkpoints
-
-    this is part of the snakemake logging system, but unfortunately doesn't
-    exactly define what step(s) are implicated upstream
-   */
-  bool _checkpoint_update;
   /*!
     @brief snakemake solved input files to rule
 
@@ -250,6 +211,9 @@ class solved_rules {
     @param test_inst_py snakemake_unit_tests installed test.py script
     installation files (when conda mode is enabled, this will default to
     $CONDA_PREFIX/share/snakemake_unit_tests/inst)
+    @param extra_required_recipes map of recipes to spike into the snakefile
+    in addition to target rule. this is the intended injection point for
+    ad hoc `rules.`-style rule handling
     @param exclude_rules map of rules to skip tests for
     @param added_files vector of additional files to add to test workspaces
     @param added_directories vector of additional directories to add to test
@@ -267,6 +231,7 @@ class solved_rules {
                         const boost::filesystem::path &output_test_dir, const boost::filesystem::path &test_parent_path,
                         const boost::filesystem::path &pipeline_top_dir,
                         const boost::filesystem::path &pipeline_run_dir, const boost::filesystem::path &test_inst_py,
+                        const std::map<boost::shared_ptr<recipe>, bool> &extra_required_recipes,
                         const std::map<std::string, bool> &exclude_rules,
                         const std::vector<boost::filesystem::path> &added_files,
                         const std::vector<boost::filesystem::path> &added_directories, bool update_snakefiles,
@@ -335,15 +300,13 @@ class solved_rules {
                                        const boost::filesystem::path &test_dir,
                                        const boost::filesystem::path &inst_launcher_script) const;
   /*!
-    @brief determine unavoidable dependencies for query rule
-    @param sf snakemake top level file with all rules
-    @param rec query rule
-    @param include_entire_dag controls whether to override default
-    behavior and emit all rules, instead of just the target
-    @param target full set of unavoidable dependencies
+    @brief parse output of test snakemake run to determine whether rules are missing from dag
+    @param snakemake_exec stored output of test snakemake execution
+    @param target any rule names found in informative snakemake errors
+
+    this fallback method is designed specifically to handle toxic uses of snakemake `rules.` notation
    */
-  void aggregate_dependencies(const snakemake_file &sf, const boost::shared_ptr<recipe> &rec, bool include_entire_dag,
-                              std::map<boost::shared_ptr<recipe>, bool> *target) const;
+  void find_missing_rules(const std::vector<std::string> &snakemake_exec, std::map<std::string, bool> *target) const;
   /*!
     @brief add rules and all dependencies starting from a particular leaf
     @param rec leaf to start adding things from

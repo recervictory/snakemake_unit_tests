@@ -1,0 +1,9 @@
+output-test-dir: snakemake_unit_tests/tests/examples/test1/output
+snakefile: snakemake_unit_tests/tests/examples/test1/input/workflow/Snakefile
+pipeline-dir: snakemake_unit_tests/tests/examples/test1/input
+inst-dir: snakemake_unit_tests/inst
+snakemake-log: snakemake_unit_tests/tests/examples/test1/input/run.log
+added-files: ~
+added-directories: ~
+exclude-rules:
+  - all
