@@ -472,8 +472,17 @@ void snakemake_unit_tests::rule_blockTest::test_rule_block_set_checkpoint() {
   CPPUNIT_ASSERT(!b._rule_is_checkpoint);
 }
 void snakemake_unit_tests::rule_blockTest::test_rule_block_report_rulesdot_rules() {}
-void snakemake_unit_tests::rule_blockTest::test_rule_block_indentation() {}
-void snakemake_unit_tests::rule_blockTest::test_rule_block_apply_indentation() {}
+void snakemake_unit_tests::rule_blockTest::test_rule_block_indentation() {
+  rule_block b;
+  CPPUNIT_ASSERT(!b.indentation(10u).compare("          "));
+}
+void snakemake_unit_tests::rule_blockTest::test_rule_block_apply_indentation() {
+  rule_block b;
+  std::string test_str = "here is some content:\n  there's some stuff here\n    ok?";
+  std::string result = b.apply_indentation(test_str, 5);
+  std::string expected = "here is some content:\n       there's some stuff here\n         ok?";
+  CPPUNIT_ASSERT(!result.compare(expected));
+}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_clear() {}
 
 CPPUNIT_TEST_SUITE_REGISTRATION(snakemake_unit_tests::rule_blockTest);
