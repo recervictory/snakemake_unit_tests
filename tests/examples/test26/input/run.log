@@ -28,4 +28,4 @@ localrule all:
 [Wed May  5 09:45:18 2021]
 Finished job 0.
 2 of 2 steps (100%) done
-Complete log: /Users/palmercd/Development/snakemake_unit_tests/tests/examples/test26/input/.snakemake/log/2021-05-05T094517.844230.snakemake.log
+Complete log: snakemake_unit_tests/tests/examples/test26/input/.snakemake/log/2021-05-05T094517.844230.snakemake.log
