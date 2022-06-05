@@ -43,8 +43,7 @@ class snakemake_file {
   an initialized counter
   @param ptr pre-initialized counter, from root file
  */
-  explicit snakemake_file(boost::shared_ptr<unsigned> ptr)
-      : _tag_counter(ptr), _updated_last_round(true) {}
+  explicit snakemake_file(boost::shared_ptr<unsigned> ptr) : _tag_counter(ptr), _updated_last_round(true) {}
   /*!
   @brief copy constructor
   @param obj existing snakemake_file object
@@ -69,10 +68,8 @@ class snakemake_file {
   rules back upstream
   @param verbose whether to emit verbose logging output
  */
-  void load_everything(const boost::filesystem::path &filename,
-                       const boost::filesystem::path &base_dir,
-                       std::map<std::string, bool> *exclude_rules,
-                       bool verbose);
+  void load_everything(const boost::filesystem::path &filename, const boost::filesystem::path &base_dir,
+                       std::map<std::string, bool> *exclude_rules, bool verbose);
 
   /*!
  @brief parse a snakemake file
@@ -82,18 +79,16 @@ class snakemake_file {
  @param verbose whether to emit verbose
  logging output
 */
-  void parse_file(
-      const std::vector<std::string> &loaded_lines,
-      std::list<boost::shared_ptr<rule_block>>::iterator insertion_point,
-      const boost::filesystem::path &filename, bool verbose);
+  void parse_file(const std::vector<std::string> &loaded_lines,
+                  std::list<boost::shared_ptr<rule_block>>::iterator insertion_point,
+                  const boost::filesystem::path &filename, bool verbose);
 
   /*!
   @brief load all lines from a file into memory
   @param filename name of file to load
   @param target where to store the loaded lines
  */
-  void load_lines(const boost::filesystem::path &filename,
-                  std::vector<std::string> *target) const;
+  void load_lines(const boost::filesystem::path &filename, std::vector<std::string> *target) const;
 
   /*!
   @brief report on internal discrepancies in the snakefile load results
@@ -121,9 +116,7 @@ class snakemake_file {
   @brief get const access to internal block representation
   @return const reference to internal block list
  */
-  const std::list<boost::shared_ptr<rule_block>> &get_blocks() const {
-    return _blocks;
-  }
+  const std::list<boost::shared_ptr<rule_block>> &get_blocks() const { return _blocks; }
 
   /*!
   @brief get mutable access to internal block representation
@@ -137,8 +130,7 @@ class snakemake_file {
   @param out open output stream to which to write data
   @return how many target rules are present in this file
  */
-  unsigned report_single_rule(const std::map<std::string, bool> &rule_names,
-                              std::ostream &out) const;
+  unsigned report_single_rule(const std::map<std::string, bool> &rule_names, std::ostream &out) const;
 
   /*!
   @brief whether the object's rules are unambiguously resolved
@@ -171,10 +163,8 @@ class snakemake_file {
   this is the top level entry point for a recursion pass through python
   reporting. this should only be called from the primary caller.
  */
-  bool resolve_with_python(const boost::filesystem::path &workspace,
-                           const boost::filesystem::path &pipeline_top_dir,
-                           const boost::filesystem::path &pipeline_run_dir,
-                           bool verbose, bool disable_resolution);
+  bool resolve_with_python(const boost::filesystem::path &workspace, const boost::filesystem::path &pipeline_top_dir,
+                           const boost::filesystem::path &pipeline_run_dir, bool verbose, bool disable_resolution);
 
   /*!
   @brief run the current rule set through python once
@@ -189,20 +179,19 @@ class snakemake_file {
   this is the recursive entry point for a recursion pass through python
   reporting. this should be called for each file in turn.
  */
-  bool process_python_results(
-      const boost::filesystem::path &workspace,
-      const boost::filesystem::path &pipeline_run_dir, bool verbose,
-      const std::map<std::string, std::string> &tag_values,
-      const boost::filesystem::path &output_name);
+  bool process_python_results(const boost::filesystem::path &workspace, const boost::filesystem::path &pipeline_run_dir,
+                              bool verbose, const std::map<std::string, std::string> &tag_values,
+                              const boost::filesystem::path &output_name);
 
   /*!
   @brief execute a system command and capture its results
   @param cmd system command to execute
+  @param fail_on_error whether python errors should trigger immediate exception
   @return captured results, line by line
 
   https://stackoverflow.com/questions/478898/how-do-i-execute-a-command-and-get-the-output-of-the-command-within-c-using-po
  */
-  std::vector<std::string> exec(const std::string &cmd) const;
+  std::vector<std::string> exec(const std::string &cmd, bool fail_on_error) const;
   /*!
   @brief parse python reporting output to tags or tags and values
   @param vec captured lines from python output
@@ -210,9 +199,7 @@ class snakemake_file {
 
   null strings in map value corresponds to rule tags
  */
-  void capture_python_tag_values(
-      const std::vector<std::string> &vec,
-      std::map<std::string, std::string> *target) const;
+  void capture_python_tag_values(const std::vector<std::string> &vec, std::map<std::string, std::string> *target) const;
   /*!
   @brief resolve derived rules and check for sanity
   @param exclude_rules flagged rules to be excluded
@@ -228,15 +215,12 @@ class snakemake_file {
 
   path is relative to pipeline top level
  */
-  const boost::filesystem::path &get_snakefile_relative_path() const {
-    return _snakefile_relative_path;
-  }
+  const boost::filesystem::path &get_snakefile_relative_path() const { return _snakefile_relative_path; }
   /*!
   @brief provide access to loaded file map
   @return const reference to loaded file map
  */
-  const std::map<boost::filesystem::path, boost::shared_ptr<snakemake_file>>
-      &loaded_files() const {
+  const std::map<boost::filesystem::path, boost::shared_ptr<snakemake_file>> &loaded_files() const {
     return _included_files;
   }
   /*!
@@ -245,9 +229,7 @@ class snakemake_file {
  */
   void set_update_status(bool b) {
     _updated_last_round = b;
-    for (std::map<boost::filesystem::path,
-                  boost::shared_ptr<snakemake_file>>::iterator iter =
-             _included_files.begin();
+    for (std::map<boost::filesystem::path, boost::shared_ptr<snakemake_file>>::iterator iter = _included_files.begin();
          iter != _included_files.end(); ++iter) {
       iter->second->set_update_status(b);
     }
@@ -257,31 +239,7 @@ class snakemake_file {
   @brief report loaded rules in this file and all dependencies
   @param aggregated_rules target for reporting
  */
-  void report_rules(
-      std::map<std::string, std::vector<boost::shared_ptr<rule_block>>>
-          *aggregated_rules) const;
-
-  /*!
-  @brief query rule for whether it's a checkpoint
-  @param rule_name name of rule to query
-  @param target where to store checkpoint status
-  @return whether the rule was found
- */
-  bool query_rule_checkpoint(const std::string &rule_name, bool *target) const;
-
-  /*!
-  @brief collect 'rules.' dependency data for all loaded rules
- */
-  void aggregate_rulesdot();
-
-  /*!
-  @brief query rule for any 'rules.' references, including those
-  of dependencies pulled in by 'rules.'
-  @param rule_name name of rule to query
-  @param target where to store detected 'rules.' rulenames
- */
-  void recursively_query_rulesdot(const std::string &rule_name,
-                                  std::map<std::string, bool> *target) const;
+  void report_rules(std::map<std::string, std::vector<boost::shared_ptr<rule_block>>> *aggregated_rules) const;
 
   /*!
     @brief for a single rule, get base rule name
@@ -290,15 +248,6 @@ class snakemake_file {
     @return whether the rule was found
   */
   bool get_base_rule_name(const std::string &name, std::string *target) const;
-
-  /*!
-  @brief for a single rule, get 'rules.' dependencies
-  @param name name of rule to query
-  @param target where to store detected 'rules.' rulenames
-  @return whether the rule was found
- */
-  bool get_rulesdot(const std::string &name,
-                    std::vector<std::string> *target) const;
 
  private:
   /*!
@@ -312,8 +261,7 @@ class snakemake_file {
   /*!
   @brief included files to report on print statements
  */
-  std::map<boost::filesystem::path, boost::shared_ptr<snakemake_file>>
-      _included_files;
+  std::map<boost::filesystem::path, boost::shared_ptr<snakemake_file>> _included_files;
   /*!
   @brief report of the 'rules.' dependencies of each rule
  */

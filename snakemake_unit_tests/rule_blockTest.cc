@@ -632,27 +632,6 @@ void snakemake_unit_tests::rule_blockTest::test_rule_block_set_checkpoint() {
   b.set_checkpoint(false);
   CPPUNIT_ASSERT(!b._rule_is_checkpoint);
 }
-void snakemake_unit_tests::rule_blockTest::test_rule_block_report_rulesdot_rules() {
-  // the function this test covers is imperfect, and is flagged for removal
-  rule_block b;
-  // look for things that look like 'rules.RULENAME.' in both block contents and code
-  b._code_chunk.push_back("this is some nonsense");
-  b._code_chunk.push_back("as is rules.badrule1.output[0]");
-  b._code_chunk.push_back("  that also goes for rules named rules.badrule2.input[1]");
-  b._named_blocks.push_back(std::make_pair("input", "\n  somestuff\n  rules.badrule3.params[1]"));
-  b._named_blocks.push_back(std::make_pair("output", "\n nothing to see here"));
-  b._named_blocks.push_back(std::make_pair("params", "\n rules. pattern matching is hard."));
-  std::map<std::string, bool> result;
-  b.report_rulesdot_rules(&result);
-  CPPUNIT_ASSERT(result.size() == 3);
-  CPPUNIT_ASSERT(result.find("badrule1") != result.end());
-  CPPUNIT_ASSERT(result.find("badrule2") != result.end());
-  CPPUNIT_ASSERT(result.find("badrule3") != result.end());
-}
-void snakemake_unit_tests::rule_blockTest::test_rule_block_report_rulesdot_rules_null_pointer() {
-  rule_block b;
-  b.report_rulesdot_rules(NULL);
-}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_indentation() {
   rule_block b;
   CPPUNIT_ASSERT(!b.indentation(10u).compare("          "));

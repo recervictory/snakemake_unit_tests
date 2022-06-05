@@ -97,10 +97,6 @@ int main(int argc, const char** const argv) {
   // refactor: move postflight snakefile checks to after the python passes
   sf.postflight_checks(&p.exclude_rules);
 
-  // rules. support: compile rules. references in rule blocks
-  // new: collect 'rules.' dependencies in map
-  sf.aggregate_rulesdot();
-
   // iterate over the solved rules, emitting them with modifiers as desired
   sr.emit_tests(sf, p.output_test_dir, p.pipeline_top_dir, p.pipeline_run_dir, p.inst_dir, p.exclude_rules,
                 p.added_files, p.added_directories, p.update_snakefiles || p.update_all,

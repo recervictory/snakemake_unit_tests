@@ -347,7 +347,7 @@ bool snakemake_unit_tests::snakemake_file::resolve_with_python(const boost::file
       std::cout << "\texecuting snakemake" << std::endl;
     }
     std::vector<std::string> results =
-        exec("cd " + (workspace / pipeline_run_dir).string() + " && snakemake -nFs " + adjusted_snakefile);
+        exec("cd " + (workspace / pipeline_run_dir).string() + " && snakemake -nFs " + adjusted_snakefile, true);
     // capture the resulting tags for updating completion status
     std::map<std::string, std::string> tag_values;
     capture_python_tag_values(results, &tag_values);
@@ -438,7 +438,7 @@ bool snakemake_unit_tests::snakemake_file::process_python_results(const boost::f
   return true;
 }
 
-std::vector<std::string> snakemake_unit_tests::snakemake_file::exec(const std::string &cmd) const {
+std::vector<std::string> snakemake_unit_tests::snakemake_file::exec(const std::string &cmd, bool fail_on_error) const {
   // https://stackoverflow.com/questions/478898/how-do-i-execute-a-command-and-get-the-output-of-the-command-within-c-using-po
   std::array<char, 128> buffer;
   std::vector<std::string> result;
@@ -466,7 +466,7 @@ std::vector<std::string> snakemake_unit_tests::snakemake_file::exec(const std::s
           "output from python3 "
           "to the snakemake_unit_tests repository for feedback.");
     }
-    if (!WIFEXITED(status)) {
+    if (!WIFEXITED(status) && fail_on_error) {
       for (std::vector<std::string>::const_iterator iter = result.begin(); iter != result.end(); ++iter) {
         std::cerr << *iter;
       }
@@ -479,7 +479,7 @@ std::vector<std::string> snakemake_unit_tests::snakemake_file::exec(const std::s
           "snakemake_unit_tests "
           "repository.");
     }
-    if (WEXITSTATUS(status)) {
+    if (WEXITSTATUS(status) && fail_on_error) {
       for (std::vector<std::string>::const_iterator iter = result.begin(); iter != result.end(); ++iter) {
         std::cerr << *iter;
       }
@@ -518,92 +518,6 @@ void snakemake_unit_tests::snakemake_file::capture_python_tag_values(const std::
       continue;
     }
   }
-}
-
-bool snakemake_unit_tests::snakemake_file::query_rule_checkpoint(const std::string &rule_name, bool *target) const {
-  if (!target) throw std::runtime_error("null pointer to query_rule_checkpoint");
-  for (std::list<boost::shared_ptr<rule_block> >::const_iterator iter = _blocks.begin(); iter != _blocks.end();
-       ++iter) {
-    // new: respect blocks' reports of inclusion status
-    if (!(*iter)->included()) continue;
-    // python code. scan for remaining include directives
-    if (!(*iter)->get_rule_name().compare(rule_name)) {
-      *target = (*iter)->is_checkpoint();
-      return true;
-    }
-  }
-  for (std::map<boost::filesystem::path, boost::shared_ptr<snakemake_file> >::const_iterator mapper =
-           loaded_files().begin();
-       mapper != loaded_files().end(); ++mapper) {
-    if (mapper->second->query_rule_checkpoint(rule_name, target)) return true;
-  }
-  return false;
-}
-
-void snakemake_unit_tests::snakemake_file::aggregate_rulesdot() {
-  for (std::list<boost::shared_ptr<rule_block> >::const_iterator iter = _blocks.begin(); iter != _blocks.end();
-       ++iter) {
-    // new: respect blocks' reports of inclusion status
-    if (!(*iter)->included()) {
-      continue;
-    }
-    std::map<std::string, bool> target;
-    (*iter)->report_rulesdot_rules(&target);
-    std::vector<std::string> vec;
-    for (std::map<std::string, bool>::const_iterator miter = target.begin(); miter != target.end(); ++miter) {
-      vec.push_back(miter->first);
-    }
-    _rulesdot[(*iter)->get_rule_name()] = vec;
-  }
-  for (std::map<boost::filesystem::path, boost::shared_ptr<snakemake_file> >::const_iterator mapper =
-           loaded_files().begin();
-       mapper != loaded_files().end(); ++mapper) {
-    mapper->second->aggregate_rulesdot();
-  }
-}
-
-void snakemake_unit_tests::snakemake_file::recursively_query_rulesdot(const std::string &rule_name,
-                                                                      std::map<std::string, bool> *target) const {
-  if (!target) throw std::runtime_error("null pointer to query_rule_rulesdot");
-  std::map<std::string, bool> already_found;
-  std::deque<std::string> next_up;
-  std::string current_query = "";
-  std::vector<std::string> res;
-  next_up.push_back(rule_name);
-  while (!next_up.empty()) {
-    current_query = next_up.front();
-    next_up.pop_front();
-    if (already_found.find(current_query) != already_found.end()) {
-      continue;
-    }
-    already_found[current_query] = true;
-    if (!get_rulesdot(current_query, &res))
-      throw std::runtime_error("no aggregated rules. data available for rule \"" + rule_name +
-                               "\"; "
-                               "did you forget to call aggregate_rulesdot?");
-    for (std::vector<std::string>::const_iterator iter = res.begin(); iter != res.end(); ++iter) {
-      if (already_found.find(*iter) == already_found.end()) {
-        (*target)[*iter] = true;
-        next_up.push_back(*iter);
-      }
-    }
-  }
-}
-
-bool snakemake_unit_tests::snakemake_file::get_rulesdot(const std::string &name,
-                                                        std::vector<std::string> *target) const {
-  if (!target) throw std::runtime_error("null pointer to get_rulesdot");
-  std::map<std::string, std::vector<std::string> >::const_iterator finder;
-  if ((finder = _rulesdot.find(name)) != _rulesdot.end()) {
-    *target = finder->second;
-    return true;
-  }
-  for (std::map<boost::filesystem::path, boost::shared_ptr<snakemake_file> >::const_iterator iter =
-           _included_files.begin();
-       iter != _included_files.end(); ++iter) {
-    if (iter->second->get_rulesdot(name, target)) return true;
-  }
-  return false;
 }
 
 bool snakemake_unit_tests::snakemake_file::get_base_rule_name(const std::string &name, std::string *target) const {
