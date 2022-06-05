@@ -122,6 +122,7 @@ class recipe {
   }
 
  private:
+  friend class solved_rulesTest;
   /*!
     @brief extracted name of rule from log file
    */
@@ -355,6 +356,7 @@ class solved_rules {
                          std::map<boost::shared_ptr<recipe>, bool> *target) const;
 
  private:
+  friend class solved_rulesTest;
   /*!
     @brief abstract set of solved recipe entries in a log file
    */
