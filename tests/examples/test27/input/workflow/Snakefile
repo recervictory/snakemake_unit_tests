@@ -1,0 +1,18 @@
+rule simple_rule1:
+    input:
+        "input1.txt",
+    output:
+        "output1.txt",
+    shell:
+        "cp {input} {output}"
+
+def my_input_function(wildcards):
+    return rules.simple_rule1.output
+
+rule simple_rule2:
+    input:
+        my_input_function,
+    output:
+        "output2.txt",
+    shell:
+        "cp {input} {output}"

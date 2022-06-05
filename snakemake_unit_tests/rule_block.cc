@@ -322,23 +322,3 @@ std::string snakemake_unit_tests::rule_block::apply_indentation(const std::strin
   }
   return res;
 }
-
-void snakemake_unit_tests::rule_block::report_rulesdot_rules(std::map<std::string, bool> *target) const {
-  if (!target) throw std::runtime_error("null pointer provided to report_rulesdot_rules");
-  boost::regex pattern("rules\\.([a-zA-Z0-9_]+)\\.");
-  boost::sregex_token_iterator end;
-  // scan both code chunk and block contents
-  for (std::vector<std::pair<std::string, std::string> >::const_iterator iter = _named_blocks.begin();
-       iter != _named_blocks.end(); ++iter) {
-    boost::sregex_token_iterator finder(iter->second.begin(), iter->second.end(), pattern, 0);
-    for (; finder != end; ++finder) {
-      (*target)[finder->str().substr(6, finder->str().size() - 7)] = true;
-    }
-  }
-  for (std::vector<std::string>::const_iterator iter = _code_chunk.begin(); iter != _code_chunk.end(); ++iter) {
-    boost::sregex_token_iterator finder(iter->begin(), iter->end(), pattern, 0);
-    for (; finder != end; ++finder) {
-      (*target)[finder->str().substr(6, finder->str().size() - 7)] = true;
-    }
-  }
-}

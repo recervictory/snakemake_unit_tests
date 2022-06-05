@@ -252,13 +252,6 @@ class rule_block {
    */
   void set_checkpoint(bool b) { _rule_is_checkpoint = b; }
 
-  /*!
-    @brief scan block contents for 'rules.' calls and report implicated
-    rulenames
-    @param target where to store any detected rules
-  */
-  void report_rulesdot_rules(std::map<std::string, bool> *target) const;
-
  private:
   friend class rule_blockTest;
   /*!
