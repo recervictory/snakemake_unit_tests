@@ -251,6 +251,9 @@ class solved_rules {
     @param test_inst_py snakemake_unit_tests installed test.py script
     installation files (when conda mode is enabled, this will default to
     $CONDA_PREFIX/share/snakemake_unit_tests/inst)
+    @param extra_required_recipes map of recipes to spike into the snakefile
+    in addition to target rule. this is the intended injection point for
+    ad hoc `rules.`-style rule handling
     @param exclude_rules map of rules to skip tests for
     @param added_files vector of additional files to add to test workspaces
     @param added_directories vector of additional directories to add to test
@@ -268,6 +271,7 @@ class solved_rules {
                         const boost::filesystem::path &output_test_dir, const boost::filesystem::path &test_parent_path,
                         const boost::filesystem::path &pipeline_top_dir,
                         const boost::filesystem::path &pipeline_run_dir, const boost::filesystem::path &test_inst_py,
+                        const std::map<boost::shared_ptr<recipe>, bool> &extra_required_recipes,
                         const std::map<std::string, bool> &exclude_rules,
                         const std::vector<boost::filesystem::path> &added_files,
                         const std::vector<boost::filesystem::path> &added_directories, bool update_snakefiles,
@@ -336,15 +340,13 @@ class solved_rules {
                                        const boost::filesystem::path &test_dir,
                                        const boost::filesystem::path &inst_launcher_script) const;
   /*!
-    @brief determine unavoidable dependencies for query rule
-    @param sf snakemake top level file with all rules
-    @param rec query rule
-    @param include_entire_dag controls whether to override default
-    behavior and emit all rules, instead of just the target
-    @param target full set of unavoidable dependencies
+    @brief parse output of test snakemake run to determine whether rules are missing from dag
+    @param snakemake_exec stored output of test snakemake execution
+    @param target any rule names found in informative snakemake errors
+
+    this fallback method is designed specifically to handle toxic uses of snakemake `rules.` notation
    */
-  void aggregate_dependencies(const snakemake_file &sf, const boost::shared_ptr<recipe> &rec, bool include_entire_dag,
-                              std::map<boost::shared_ptr<recipe>, bool> *target) const;
+  void find_missing_rules(const std::vector<std::string> &snakemake_exec, std::map<std::string, bool> *target) const;
   /*!
     @brief add rules and all dependencies starting from a particular leaf
     @param rec leaf to start adding things from

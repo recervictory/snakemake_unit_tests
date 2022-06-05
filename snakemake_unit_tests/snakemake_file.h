@@ -186,11 +186,12 @@ class snakemake_file {
   /*!
   @brief execute a system command and capture its results
   @param cmd system command to execute
+  @param fail_on_error whether python errors should trigger immediate exception
   @return captured results, line by line
 
   https://stackoverflow.com/questions/478898/how-do-i-execute-a-command-and-get-the-output-of-the-command-within-c-using-po
  */
-  std::vector<std::string> exec(const std::string &cmd) const;
+  std::vector<std::string> exec(const std::string &cmd, bool fail_on_error) const;
   /*!
   @brief parse python reporting output to tags or tags and values
   @param vec captured lines from python output
@@ -241,41 +242,12 @@ class snakemake_file {
   void report_rules(std::map<std::string, std::vector<boost::shared_ptr<rule_block>>> *aggregated_rules) const;
 
   /*!
-  @brief query rule for whether it's a checkpoint
-  @param rule_name name of rule to query
-  @param target where to store checkpoint status
-  @return whether the rule was found
- */
-  bool query_rule_checkpoint(const std::string &rule_name, bool *target) const;
-
-  /*!
-  @brief collect 'rules.' dependency data for all loaded rules
- */
-  void aggregate_rulesdot();
-
-  /*!
-  @brief query rule for any 'rules.' references, including those
-  of dependencies pulled in by 'rules.'
-  @param rule_name name of rule to query
-  @param target where to store detected 'rules.' rulenames
- */
-  void recursively_query_rulesdot(const std::string &rule_name, std::map<std::string, bool> *target) const;
-
-  /*!
     @brief for a single rule, get base rule name
     @param name name of rule to query
     @param target where to store detected parent, or empty string
     @return whether the rule was found
   */
   bool get_base_rule_name(const std::string &name, std::string *target) const;
-
-  /*!
-  @brief for a single rule, get 'rules.' dependencies
-  @param name name of rule to query
-  @param target where to store detected 'rules.' rulenames
-  @return whether the rule was found
- */
-  bool get_rulesdot(const std::string &name, std::vector<std::string> *target) const;
 
  private:
   friend class snakemake_fileTest;
