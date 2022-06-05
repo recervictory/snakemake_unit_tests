@@ -372,7 +372,51 @@ void snakemake_unit_tests::rule_blockTest::test_rule_block_get_interpreter_tag()
   b._python_tag = 20u;
   CPPUNIT_ASSERT_EQUAL(20u, b.get_interpreter_tag());
 }
-void snakemake_unit_tests::rule_blockTest::test_rule_block_report_python_logging_code() {}
+void snakemake_unit_tests::rule_blockTest::test_rule_block_report_python_logging_code() {
+  /*
+    the logic for determining which type of information is emitted
+    follows similar logic as in print_contents. only major difference
+    is that the presence of an include statement causes different behaviors
+    for a code chunk.
+   */
+  rule_block b;
+  // test logical order of determining what to report
+  b._code_chunk.push_back("code chunk line 1");
+  b._code_chunk.push_back("   code chunk line 2");
+  b._rule_name = "myrulename";
+  // base rule name doesn't control anything, unlike in print_contents
+  b._named_blocks.push_back(std::make_pair("input", "\n          'filename1',\n          'filename2',"));
+  b._named_blocks.push_back(std::make_pair("output", "\n          'filename3',"));
+  b._named_blocks.push_back(std::make_pair("shell", "\n          'cat {input} > {output}'"));
+  b._local_indentation = 2u;
+  b._python_tag = 22u;
+  std::ostringstream o1, o2, o3, o4, o5;
+  std::string expected = "";
+  CPPUNIT_ASSERT(!b.report_python_logging_code(o1));
+  CPPUNIT_ASSERT(b._queried_by_python);
+  expected = "code chunk line 1\n   code chunk line 2\n";
+  CPPUNIT_ASSERT(!o1.str().compare(expected));
+  b._code_chunk.clear();
+  b._code_chunk.push_back("    include: \"myname.smk\"");
+  CPPUNIT_ASSERT(b.report_python_logging_code(o2));
+  expected = "    print(\"tag22: {}\".format(\"myname.smk\"))\n";
+  CPPUNIT_ASSERT(!o2.str().compare(expected));
+  b._resolution = RESOLVED_INCLUDED;
+  CPPUNIT_ASSERT(!b.report_python_logging_code(o3));
+  expected = "    include: \"myname.smk\"\n    print(\"tag22: {}\".format(\"myname.smk\"))\n";
+  CPPUNIT_ASSERT(!o3.str().compare(expected));
+  b._code_chunk.clear();
+  CPPUNIT_ASSERT(!b.report_python_logging_code(o4));
+  expected = "  print(\"tag22\")\n\n\n";
+  CPPUNIT_ASSERT(!o4.str().compare(expected));
+  b._rule_name = "";
+  CPPUNIT_ASSERT(!b.report_python_logging_code(o5));
+  expected =
+      "  input:\n          'filename1',\n          'filename2',\n"
+      "  output:\n          'filename3',\n"
+      "  shell:\n          'cat {input} > {output}'\n";
+  CPPUNIT_ASSERT(!o5.str().compare(expected));
+}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_update_resolution() {}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_get_resolved_included_filename() {}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_is_checkpoint() {}
