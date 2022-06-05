@@ -135,4 +135,4 @@ localrule all:
 [Fri Apr 30 16:43:47 2021]
 Finished job 0.
 11 of 11 steps (100%) done
-Complete log: /Users/palmercd/Development/snakemake_unit_tests/tests/examples/test24/input/.snakemake/log/2021-04-30T164346.922603.snakemake.log
+Complete log: snakemake_unit_tests/tests/examples/test24/input/.snakemake/log/2021-04-30T164346.922603.snakemake.log

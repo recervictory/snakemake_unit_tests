@@ -17,4 +17,4 @@ rule simple_rule2:
 [Sat Mar 27 16:51:21 2021]
 Finished job 0.
 1 of 1 steps (100%) done
-Complete log: /Users/palmercd/Development/snakemake_unit_tests/tests/examples/test4/input/.snakemake/log/2021-03-27T165121.316159.snakemake.log
+Complete log: snakemake_unit_tests/tests/examples/test4/input/.snakemake/log/2021-03-27T165121.316159.snakemake.log

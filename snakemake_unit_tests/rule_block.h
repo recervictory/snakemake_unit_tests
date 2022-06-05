@@ -15,6 +15,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "boost/filesystem.hpp"
@@ -68,11 +69,6 @@ class rule_block {
   /*!
     @brief load a rule block or python chunk from a snakemake file vector
     @param loaded_lines vector of snakemake file lines to process
-    @param filename name of the loaded snakemake file. only used for
-    informative error messages
-    defaulting to 0 for standard file loads and incrementing by
-    4 for each level of indentation the include directive had
-    within its python block
     @param verbose whether to report verbose logging output
     @param current_line currently probed line tracker
     @return whether a rule was successfully loaded
@@ -80,25 +76,16 @@ class rule_block {
     this function will parse out a single rule from a snakemake file.
     it is designed to be called until it returns false.
    */
-  bool load_content_block(const std::vector<std::string> &loaded_lines, const boost::filesystem::path &filename,
-                          bool verbose, unsigned *current_line);
+  bool load_content_block(const std::vector<std::string> &loaded_lines, bool verbose, unsigned *current_line);
 
   /*!
     @brief having found a rule declaration, load its blocks
     @param loaded_lines vector of snakemake lines to process
-    @param filename name of the loaded snakemake file. only used
-    for informative error messages
     @param verbose whether to report verbose logging output
     @param current_line currently probed line tracker
-    @param block_base_increment indentation of block tag lines relative
-    to parent rule declaration line (default is 4 with snakefmt)
     @return whether a rule was successfully loaded
-
-    block_base_increment added to allow grabbing block-like structures
-    at global scope (e.g. 'wildcard_constraints:')
    */
-  bool consume_rule_contents(const std::vector<std::string> &loaded_lines, const boost::filesystem::path &filename,
-                             bool verbose, unsigned *current_line, unsigned block_base_increment);
+  bool consume_rule_contents(const std::vector<std::string> &loaded_lines, bool verbose, unsigned *current_line);
 
   /*!
     @brief set the name of the rule
@@ -127,12 +114,6 @@ class rule_block {
   const std::string &get_base_rule_name() const { return _base_rule_name; }
 
   /*!
-    @brief determine whether this block is a simple snakemake include directive
-    @return whether the block is a simple include directive, hopefully
-   */
-  bool is_simple_include_directive() const;
-
-  /*!
     @brief determine whether this block contains something that looks like
     an include directive but that doesn't conform to basic include syntax
     @return whether a non-standard include directive is in effect
@@ -149,18 +130,6 @@ class rule_block {
   std::string get_filename_expression() const;
 
   /*!
-    @brief determine how much indentation an include directive enjoyed
-    @return indentation of include directive
-   */
-  unsigned get_include_depth() const;
-
-  /*!
-    @brief if the block is an include directive, get the file that is included
-    @return the included filename
-   */
-  std::string get_standard_filename() const;
-
-  /*!
     @brief report mildly formatted contents to a stream
     @param out an open stream to which to write formatted contents
    */
@@ -174,9 +143,9 @@ class rule_block {
 
   /*!
     @brief get named blocks of rule body
-    @return named blocks of rule body, or empty map
+    @return named blocks of rule body, or empty vector
    */
-  const std::map<std::string, std::string> &get_named_blocks() const { return _named_blocks; }
+  const std::vector<std::pair<std::string, std::string> > &get_named_blocks() const { return _named_blocks; }
 
   /*!
     @brief get local indentation of rule block
@@ -343,10 +312,11 @@ class rule_block {
   /*!
     @brief arbitrary named blocks and their contents
 
-    input and output blocks need to be handled specially,
-    but the others can be arbitrarily specified.
+    ordering of blocks in rules is respected to prevent complications
+    with intrinsic ordering requirements in snakemake and new snakemake
+    features upstream
    */
-  std::map<std::string, std::string> _named_blocks;
+  std::vector<std::pair<std::string, std::string> > _named_blocks;
   /*!
     @brief arbitrary python code chunk that can exist between rules
 

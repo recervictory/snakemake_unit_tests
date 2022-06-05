@@ -30,16 +30,15 @@ class rule_blockTest : public CppUnit::TestFixture {
   CPPUNIT_TEST(test_rule_block_default_constructor);
   CPPUNIT_TEST(test_rule_block_copy_constructor);
   CPPUNIT_TEST(test_rule_block_load_content_block);
-  CPPUNIT_TEST(test_rule_block_consume_rule_contents);
+  CPPUNIT_TEST_EXCEPTION(test_rule_block_load_content_block_null_pointer, std::runtime_error);
+  CPPUNIT_TEST_EXCEPTION(test_rule_block_consume_rule_contents_null_pointer, std::runtime_error);
   CPPUNIT_TEST(test_rule_block_set_rule_name);
   CPPUNIT_TEST(test_rule_block_get_rule_name);
   CPPUNIT_TEST(test_rule_block_set_base_rule_name);
   CPPUNIT_TEST(test_rule_block_get_base_rule_name);
-  CPPUNIT_TEST(test_rule_block_is_simple_include_directive);
   CPPUNIT_TEST(test_rule_block_contains_include_directive);
+  CPPUNIT_TEST_EXCEPTION(test_rule_block_get_filename_expression_invalid_statement, std::runtime_error);
   CPPUNIT_TEST(test_rule_block_get_filename_expression);
-  CPPUNIT_TEST(test_rule_block_get_include_depth);
-  CPPUNIT_TEST(test_rule_block_get_standard_filename);
   CPPUNIT_TEST(test_rule_block_print_contents);
   CPPUNIT_TEST(test_rule_block_get_code_chunk);
   CPPUNIT_TEST(test_rule_block_get_named_blocks);
@@ -59,6 +58,7 @@ class rule_blockTest : public CppUnit::TestFixture {
   CPPUNIT_TEST(test_rule_block_is_checkpoint);
   CPPUNIT_TEST(test_rule_block_set_checkpoint);
   CPPUNIT_TEST(test_rule_block_report_rulesdot_rules);
+  CPPUNIT_TEST_EXCEPTION(test_rule_block_report_rulesdot_rules_null_pointer, std::runtime_error);
   CPPUNIT_TEST(test_rule_block_indentation);
   CPPUNIT_TEST(test_rule_block_apply_indentation);
   CPPUNIT_TEST(test_rule_block_clear);
@@ -72,16 +72,15 @@ class rule_blockTest : public CppUnit::TestFixture {
   void test_rule_block_default_constructor();
   void test_rule_block_copy_constructor();
   void test_rule_block_load_content_block();
-  void test_rule_block_consume_rule_contents();
+  void test_rule_block_load_content_block_null_pointer();
+  void test_rule_block_consume_rule_contents_null_pointer();
   void test_rule_block_set_rule_name();
   void test_rule_block_get_rule_name();
   void test_rule_block_set_base_rule_name();
   void test_rule_block_get_base_rule_name();
-  void test_rule_block_is_simple_include_directive();
   void test_rule_block_contains_include_directive();
   void test_rule_block_get_filename_expression();
-  void test_rule_block_get_include_depth();
-  void test_rule_block_get_standard_filename();
+  void test_rule_block_get_filename_expression_invalid_statement();
   void test_rule_block_print_contents();
   void test_rule_block_get_code_chunk();
   void test_rule_block_get_named_blocks();
@@ -101,12 +100,14 @@ class rule_blockTest : public CppUnit::TestFixture {
   void test_rule_block_is_checkpoint();
   void test_rule_block_set_checkpoint();
   void test_rule_block_report_rulesdot_rules();
+  void test_rule_block_report_rulesdot_rules_null_pointer();
   void test_rule_block_indentation();
   void test_rule_block_apply_indentation();
   void test_rule_block_clear();
 
  private:
   char *_tmp_dir;
+  std::vector<std::string> _snakefile_lines;
 };
 }  // namespace snakemake_unit_tests
 

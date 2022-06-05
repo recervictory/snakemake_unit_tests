@@ -199,7 +199,7 @@ void snakemake_unit_tests::snakemake_file::parse_file(
   unsigned current_line = 0;
   while (current_line < loaded_lines.size()) {
     boost::shared_ptr<rule_block> rb(new rule_block);
-    if (rb->load_content_block(loaded_lines, filename, verbose, &current_line)) {
+    if (rb->load_content_block(loaded_lines, verbose, &current_line)) {
       // set python interpreter resolution status
       // rules should all be set to unresolved before first pass
       if (!rb->get_rule_name().empty()) {
