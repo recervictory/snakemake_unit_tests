@@ -30,7 +30,8 @@ class rule_blockTest : public CppUnit::TestFixture {
   CPPUNIT_TEST(test_rule_block_default_constructor);
   CPPUNIT_TEST(test_rule_block_copy_constructor);
   CPPUNIT_TEST(test_rule_block_load_content_block);
-  CPPUNIT_TEST(test_rule_block_consume_rule_contents);
+  CPPUNIT_TEST_EXCEPTION(test_rule_block_load_content_block_null_pointer, std::runtime_error);
+  CPPUNIT_TEST_EXCEPTION(test_rule_block_consume_rule_contents_null_pointer, std::runtime_error);
   CPPUNIT_TEST(test_rule_block_set_rule_name);
   CPPUNIT_TEST(test_rule_block_get_rule_name);
   CPPUNIT_TEST(test_rule_block_set_base_rule_name);
@@ -71,7 +72,8 @@ class rule_blockTest : public CppUnit::TestFixture {
   void test_rule_block_default_constructor();
   void test_rule_block_copy_constructor();
   void test_rule_block_load_content_block();
-  void test_rule_block_consume_rule_contents();
+  void test_rule_block_load_content_block_null_pointer();
+  void test_rule_block_consume_rule_contents_null_pointer();
   void test_rule_block_set_rule_name();
   void test_rule_block_get_rule_name();
   void test_rule_block_set_base_rule_name();
@@ -105,6 +107,7 @@ class rule_blockTest : public CppUnit::TestFixture {
 
  private:
   char *_tmp_dir;
+  std::vector<std::string> _snakefile_lines;
 };
 }  // namespace snakemake_unit_tests
 

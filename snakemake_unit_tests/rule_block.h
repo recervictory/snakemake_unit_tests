@@ -69,11 +69,6 @@ class rule_block {
   /*!
     @brief load a rule block or python chunk from a snakemake file vector
     @param loaded_lines vector of snakemake file lines to process
-    @param filename name of the loaded snakemake file. only used for
-    informative error messages
-    defaulting to 0 for standard file loads and incrementing by
-    4 for each level of indentation the include directive had
-    within its python block
     @param verbose whether to report verbose logging output
     @param current_line currently probed line tracker
     @return whether a rule was successfully loaded
@@ -81,21 +76,16 @@ class rule_block {
     this function will parse out a single rule from a snakemake file.
     it is designed to be called until it returns false.
    */
-  bool load_content_block(const std::vector<std::string> &loaded_lines, const boost::filesystem::path &filename,
-                          bool verbose, unsigned *current_line);
+  bool load_content_block(const std::vector<std::string> &loaded_lines, bool verbose, unsigned *current_line);
 
   /*!
     @brief having found a rule declaration, load its blocks
     @param loaded_lines vector of snakemake lines to process
-    @param filename name of the loaded snakemake file. only used
-    for informative error messages
     @param verbose whether to report verbose logging output
     @param current_line currently probed line tracker
-    to parent rule declaration line (default is 4 with snakefmt)
     @return whether a rule was successfully loaded
    */
-  bool consume_rule_contents(const std::vector<std::string> &loaded_lines, const boost::filesystem::path &filename,
-                             bool verbose, unsigned *current_line);
+  bool consume_rule_contents(const std::vector<std::string> &loaded_lines, bool verbose, unsigned *current_line);
 
   /*!
     @brief set the name of the rule

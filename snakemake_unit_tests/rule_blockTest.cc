@@ -15,6 +15,32 @@ void snakemake_unit_tests::rule_blockTest::setUp() {
   if (!res) {
     throw std::runtime_error("rule_blockTest mkdtemp failed");
   }
+  _snakefile_lines.push_back("rule myrule:");
+  _snakefile_lines.push_back("    ''' here is my docstring '''");
+  _snakefile_lines.push_back("    input:");
+  _snakefile_lines.push_back("       'input1.txt',");
+  _snakefile_lines.push_back("       'input2.txt',");
+  _snakefile_lines.push_back("    output:");
+  _snakefile_lines.push_back("       'output1.txt',");
+  _snakefile_lines.push_back("    shell:");
+  _snakefile_lines.push_back("       'echo \"do the thing\" > {output}");
+  _snakefile_lines.push_back("");
+  _snakefile_lines.push_back("");
+  _snakefile_lines.push_back("use rule myrule as myderivedrule with:");
+  _snakefile_lines.push_back("    output:");
+  _snakefile_lines.push_back("       'output2.txt',");
+  _snakefile_lines.push_back("");
+  _snakefile_lines.push_back("");
+  _snakefile_lines.push_back("localrules: mylocalrule");
+  _snakefile_lines.push_back("if True:");
+  _snakefile_lines.push_back("    checkpoint mycheckpoint:");
+  _snakefile_lines.push_back("        ''' here's another docstring\nwith multiple lines '''");
+  _snakefile_lines.push_back("        input: 'input3.txt',");
+  _snakefile_lines.push_back("        output: 'output3.txt',");
+  _snakefile_lines.push_back("        shell: 'touch {output}'");
+  _snakefile_lines.push_back("");
+  _snakefile_lines.push_back("");
+  _snakefile_lines.push_back("configfile: \"myconfigfile.yaml\"");
 }
 
 void snakemake_unit_tests::rule_blockTest::tearDown() {
@@ -72,8 +98,143 @@ void snakemake_unit_tests::rule_blockTest::test_rule_block_copy_constructor() {
   CPPUNIT_ASSERT_EQUAL(333u, b2._python_tag);
   CPPUNIT_ASSERT(!b2._resolved_included_filename.compare("thing1/thing2/thing3"));
 }
-void snakemake_unit_tests::rule_blockTest::test_rule_block_load_content_block() {}
-void snakemake_unit_tests::rule_blockTest::test_rule_block_consume_rule_contents() {}
+/*
+_snakefile_lines.push_back("rule myrule:");
+_snakefile_lines.push_back("    ''' here is my docstring '''");
+_snakefile_lines.push_back("    input:");
+_snakefile_lines.push_back("       'input1.txt',");
+_snakefile_lines.push_back("       'input2.txt',");
+_snakefile_lines.push_back("    output:");
+_snakefile_lines.push_back("       'output1.txt',");
+_snakefile_lines.push_back("    shell:");
+_snakefile_lines.push_back("       'echo \"do the thing\" > {output}");
+_snakefile_lines.push_back("");
+_snakefile_lines.push_back("");
+_snakefile_lines.push_back("use rule myrule as myderivedrule with:");
+_snakefile_lines.push_back("    output:");
+_snakefile_lines.push_back("       'output2.txt',");
+_snakefile_lines.push_back("");
+_snakefile_lines.push_back("");
+_snakefile_lines.push_back("localrules: mylocalrule");
+_snakefile_lines.push_back("if True:");
+_snakefile_lines.push_back("    checkpoint mycheckpoint:");
+_snakefile_lines.push_back("        ''' here's another docstring\nwith multiple lines '''");
+_snakefile_lines.push_back("        input: 'input3.txt',");
+_snakefile_lines.push_back("        output: 'output3.txt',");
+_snakefile_lines.push_back("        shell: 'touch {output}'");
+_snakefile_lines.push_back("");
+_snakefile_lines.push_back("");
+_snakefile_lines.push_back("configfile: \"myconfigfile.yaml\"");
+*/
+void snakemake_unit_tests::rule_blockTest::test_rule_block_load_content_block() {
+  rule_block standard_rule, derived_rule, localrules, python_if, checkpoint, configfile;
+  unsigned current_line = 0u;
+  standard_rule.load_content_block(_snakefile_lines, false, &current_line);
+  CPPUNIT_ASSERT(!standard_rule._rule_name.compare("myrule"));
+  CPPUNIT_ASSERT(standard_rule._base_rule_name.empty());
+  CPPUNIT_ASSERT(!standard_rule._rule_is_checkpoint);
+  CPPUNIT_ASSERT(!standard_rule._docstring.compare("    ''' here is my docstring '''"));
+  CPPUNIT_ASSERT(standard_rule._named_blocks.size() == 3u);
+  CPPUNIT_ASSERT(!standard_rule._named_blocks.at(0).first.compare("input"));
+  CPPUNIT_ASSERT(!standard_rule._named_blocks.at(0).second.compare("\n       'input1.txt',\n       'input2.txt',"));
+  CPPUNIT_ASSERT(!standard_rule._named_blocks.at(1).first.compare("output"));
+  CPPUNIT_ASSERT(!standard_rule._named_blocks.at(1).second.compare("\n       'output1.txt',"));
+  CPPUNIT_ASSERT(!standard_rule._named_blocks.at(2).first.compare("shell"));
+  CPPUNIT_ASSERT(!standard_rule._named_blocks.at(2).second.compare("\n       'echo \"do the thing\" > {output}"));
+  CPPUNIT_ASSERT(standard_rule._code_chunk.empty());
+  CPPUNIT_ASSERT_EQUAL(0u, standard_rule._local_indentation);
+  CPPUNIT_ASSERT(standard_rule._resolution == UNRESOLVED);
+  CPPUNIT_ASSERT(!standard_rule._queried_by_python);
+  CPPUNIT_ASSERT_EQUAL(0u, standard_rule._python_tag);
+  CPPUNIT_ASSERT(standard_rule._resolved_included_filename.string().empty());
+  CPPUNIT_ASSERT_EQUAL(11u, current_line);
+  derived_rule.load_content_block(_snakefile_lines, false, &current_line);
+  CPPUNIT_ASSERT(!derived_rule._rule_name.compare("myderivedrule"));
+  CPPUNIT_ASSERT(!derived_rule._base_rule_name.compare("myrule"));
+  CPPUNIT_ASSERT(!derived_rule._rule_is_checkpoint);
+  CPPUNIT_ASSERT(derived_rule._docstring.empty());
+  CPPUNIT_ASSERT(derived_rule._named_blocks.size() == 1u);
+  CPPUNIT_ASSERT(!derived_rule._named_blocks.at(0).first.compare("output"));
+  CPPUNIT_ASSERT(!derived_rule._named_blocks.at(0).second.compare("\n       'output2.txt',"));
+  CPPUNIT_ASSERT(derived_rule._code_chunk.empty());
+  CPPUNIT_ASSERT_EQUAL(0u, derived_rule._local_indentation);
+  CPPUNIT_ASSERT(derived_rule._resolution == UNRESOLVED);
+  CPPUNIT_ASSERT(!derived_rule._queried_by_python);
+  CPPUNIT_ASSERT_EQUAL(0u, derived_rule._python_tag);
+  CPPUNIT_ASSERT(derived_rule._resolved_included_filename.string().empty());
+  CPPUNIT_ASSERT_EQUAL(16u, current_line);
+  localrules.load_content_block(_snakefile_lines, false, &current_line);
+  CPPUNIT_ASSERT(localrules._rule_name.empty());
+  CPPUNIT_ASSERT(localrules._base_rule_name.empty());
+  CPPUNIT_ASSERT(!localrules._rule_is_checkpoint);
+  CPPUNIT_ASSERT(localrules._docstring.empty());
+  CPPUNIT_ASSERT(localrules._named_blocks.empty());
+  CPPUNIT_ASSERT(localrules._code_chunk.size() == 1u);
+  CPPUNIT_ASSERT(!localrules._code_chunk.at(0).compare("localrules: mylocalrule"));
+  CPPUNIT_ASSERT_EQUAL(0u, localrules._local_indentation);
+  CPPUNIT_ASSERT(localrules._resolution == UNRESOLVED);
+  CPPUNIT_ASSERT(!localrules._queried_by_python);
+  CPPUNIT_ASSERT_EQUAL(0u, localrules._python_tag);
+  CPPUNIT_ASSERT(localrules._resolved_included_filename.string().empty());
+  CPPUNIT_ASSERT_EQUAL(17u, current_line);
+  python_if.load_content_block(_snakefile_lines, false, &current_line);
+  CPPUNIT_ASSERT(python_if._rule_name.empty());
+  CPPUNIT_ASSERT(python_if._base_rule_name.empty());
+  CPPUNIT_ASSERT(!python_if._rule_is_checkpoint);
+  CPPUNIT_ASSERT(python_if._docstring.empty());
+  CPPUNIT_ASSERT(python_if._named_blocks.empty());
+  CPPUNIT_ASSERT(python_if._code_chunk.size() == 1u);
+  CPPUNIT_ASSERT(!python_if._code_chunk.at(0).compare("if True:"));
+  CPPUNIT_ASSERT_EQUAL(0u, python_if._local_indentation);
+  CPPUNIT_ASSERT(python_if._resolution == UNRESOLVED);
+  CPPUNIT_ASSERT(!python_if._queried_by_python);
+  CPPUNIT_ASSERT_EQUAL(0u, python_if._python_tag);
+  CPPUNIT_ASSERT(python_if._resolved_included_filename.string().empty());
+  CPPUNIT_ASSERT_EQUAL(18u, current_line);
+  checkpoint.load_content_block(_snakefile_lines, false, &current_line);
+  CPPUNIT_ASSERT(!checkpoint._rule_name.compare("mycheckpoint"));
+  CPPUNIT_ASSERT(checkpoint._base_rule_name.empty());
+  CPPUNIT_ASSERT(checkpoint._rule_is_checkpoint);
+  CPPUNIT_ASSERT(!checkpoint._docstring.compare("        ''' here's another docstring\nwith multiple lines '''"));
+  CPPUNIT_ASSERT(checkpoint._named_blocks.size() == 3u);
+  CPPUNIT_ASSERT(!checkpoint._named_blocks.at(0).first.compare("input"));
+  CPPUNIT_ASSERT(!checkpoint._named_blocks.at(0).second.compare(" 'input3.txt',"));
+  CPPUNIT_ASSERT(!checkpoint._named_blocks.at(1).first.compare("output"));
+  CPPUNIT_ASSERT(!checkpoint._named_blocks.at(1).second.compare(" 'output3.txt',"));
+  CPPUNIT_ASSERT(!checkpoint._named_blocks.at(2).first.compare("shell"));
+  CPPUNIT_ASSERT(!checkpoint._named_blocks.at(2).second.compare(" 'touch {output}'"));
+  CPPUNIT_ASSERT(checkpoint._code_chunk.empty());
+  CPPUNIT_ASSERT_EQUAL(4u, checkpoint._local_indentation);
+  CPPUNIT_ASSERT(checkpoint._resolution == UNRESOLVED);
+  CPPUNIT_ASSERT(!checkpoint._queried_by_python);
+  CPPUNIT_ASSERT_EQUAL(0u, checkpoint._python_tag);
+  CPPUNIT_ASSERT(checkpoint._resolved_included_filename.string().empty());
+  CPPUNIT_ASSERT_EQUAL(25u, current_line);
+  configfile.load_content_block(_snakefile_lines, false, &current_line);
+  CPPUNIT_ASSERT(configfile._rule_name.empty());
+  CPPUNIT_ASSERT(configfile._base_rule_name.empty());
+  CPPUNIT_ASSERT(!configfile._rule_is_checkpoint);
+  CPPUNIT_ASSERT(configfile._docstring.empty());
+  CPPUNIT_ASSERT(configfile._named_blocks.empty());
+  CPPUNIT_ASSERT(configfile._code_chunk.size() == 1);
+  CPPUNIT_ASSERT(!configfile._code_chunk.at(0).compare("configfile: \"myconfigfile.yaml\""));
+  CPPUNIT_ASSERT_EQUAL(0u, configfile._local_indentation);
+  CPPUNIT_ASSERT(configfile._resolution == UNRESOLVED);
+  CPPUNIT_ASSERT(!configfile._queried_by_python);
+  CPPUNIT_ASSERT_EQUAL(0u, configfile._python_tag);
+  CPPUNIT_ASSERT(configfile._resolved_included_filename.string().empty());
+  CPPUNIT_ASSERT_EQUAL(26u, current_line);
+}
+void snakemake_unit_tests::rule_blockTest::test_rule_block_load_content_block_null_pointer() {
+  rule_block b;
+  b.load_content_block(_snakefile_lines, false, NULL);
+}
+// consume_rule_contents is only ever called from within load_content_block, so for
+// simplicity let's assume that it will be covered from within the tests for the calling function
+void snakemake_unit_tests::rule_blockTest::test_rule_block_consume_rule_contents_null_pointer() {
+  rule_block b;
+  b.consume_rule_contents(_snakefile_lines, false, NULL);
+}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_set_rule_name() {
   rule_block b;
   b.set_rule_name("dothething");

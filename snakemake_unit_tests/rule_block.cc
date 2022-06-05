@@ -9,8 +9,7 @@
 
 #include "snakemake_unit_tests/rule_block.h"
 
-bool snakemake_unit_tests::rule_block::load_content_block(const std::vector<std::string> &loaded_lines,
-                                                          const boost::filesystem::path &filename, bool verbose,
+bool snakemake_unit_tests::rule_block::load_content_block(const std::vector<std::string> &loaded_lines, bool verbose,
                                                           unsigned *current_line) {
   if (!current_line) throw std::runtime_error("null pointer for counter passed to load_content_block");
   // clear out internals, just to be safe
@@ -41,7 +40,7 @@ bool snakemake_unit_tests::rule_block::load_content_block(const std::vector<std:
         set_checkpoint(true);
       }
       _local_indentation = regex_result[1].str().size();
-      return consume_rule_contents(loaded_lines, filename, verbose, current_line);
+      return consume_rule_contents(loaded_lines, verbose, current_line);
     } else if (boost::regex_match(line, regex_result, derived_rule_declaration)) {
       if (verbose) {
         std::cout << "consuming derived rule with name \"" << regex_result[3] << "\"" << std::endl;
@@ -52,7 +51,7 @@ bool snakemake_unit_tests::rule_block::load_content_block(const std::vector<std:
       // fields. setting those certain fields must be deferred until all rules
       // are available.
       set_base_rule_name(regex_result[2]);
-      return consume_rule_contents(loaded_lines, filename, verbose, current_line);
+      return consume_rule_contents(loaded_lines, verbose, current_line);
     } else {
       // new to refactor: this is arbitrary python and we're leaving it like that
       if (verbose) {
@@ -66,8 +65,7 @@ bool snakemake_unit_tests::rule_block::load_content_block(const std::vector<std:
   return !_rule_name.empty() || !_code_chunk.empty();
 }
 
-bool snakemake_unit_tests::rule_block::consume_rule_contents(const std::vector<std::string> &loaded_lines,
-                                                             const boost::filesystem::path &filename, bool verbose,
+bool snakemake_unit_tests::rule_block::consume_rule_contents(const std::vector<std::string> &loaded_lines, bool verbose,
                                                              unsigned *current_line) {
   std::ostringstream regex_formatter;
   regex_formatter << "^" << indentation(get_local_indentation() + 4) << "([a-zA-Z_\\-]+):(.*)$";
@@ -83,10 +81,6 @@ bool snakemake_unit_tests::rule_block::consume_rule_contents(const std::vector<s
     ++*current_line;
     if (verbose) {
       std::cout << "considering (in block) line \"" << line << "\"" << std::endl;
-    }
-    // remove_comments_and_docstrings is deprecated by lexical parser
-    if (verbose) {
-      std::cout << "line reduced (in block) to \"" << line << "\"" << std::endl;
     }
     if (line.empty() || line.find_first_not_of(" ") == std::string::npos) continue;
 
