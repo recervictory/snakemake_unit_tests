@@ -91,15 +91,11 @@ class rule_block {
     for informative error messages
     @param verbose whether to report verbose logging output
     @param current_line currently probed line tracker
-    @param block_base_increment indentation of block tag lines relative
     to parent rule declaration line (default is 4 with snakefmt)
     @return whether a rule was successfully loaded
-
-    block_base_increment added to allow grabbing block-like structures
-    at global scope (e.g. 'wildcard_constraints:')
    */
   bool consume_rule_contents(const std::vector<std::string> &loaded_lines, const boost::filesystem::path &filename,
-                             bool verbose, unsigned *current_line, unsigned block_base_increment);
+                             bool verbose, unsigned *current_line);
 
   /*!
     @brief set the name of the rule

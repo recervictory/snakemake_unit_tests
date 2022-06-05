@@ -41,7 +41,7 @@ bool snakemake_unit_tests::rule_block::load_content_block(const std::vector<std:
         set_checkpoint(true);
       }
       _local_indentation = regex_result[1].str().size();
-      return consume_rule_contents(loaded_lines, filename, verbose, current_line, 4);
+      return consume_rule_contents(loaded_lines, filename, verbose, current_line);
     } else if (boost::regex_match(line, regex_result, derived_rule_declaration)) {
       if (verbose) {
         std::cout << "consuming derived rule with name \"" << regex_result[3] << "\"" << std::endl;
@@ -52,7 +52,7 @@ bool snakemake_unit_tests::rule_block::load_content_block(const std::vector<std:
       // fields. setting those certain fields must be deferred until all rules
       // are available.
       set_base_rule_name(regex_result[2]);
-      return consume_rule_contents(loaded_lines, filename, verbose, current_line, 4);
+      return consume_rule_contents(loaded_lines, filename, verbose, current_line);
     } else {
       // new to refactor: this is arbitrary python and we're leaving it like that
       if (verbose) {
@@ -68,9 +68,9 @@ bool snakemake_unit_tests::rule_block::load_content_block(const std::vector<std:
 
 bool snakemake_unit_tests::rule_block::consume_rule_contents(const std::vector<std::string> &loaded_lines,
                                                              const boost::filesystem::path &filename, bool verbose,
-                                                             unsigned *current_line, unsigned block_base_increment) {
+                                                             unsigned *current_line) {
   std::ostringstream regex_formatter;
-  regex_formatter << "^" << indentation(get_local_indentation() + block_base_increment) << "([a-zA-Z_\\-]+):(.*)$";
+  regex_formatter << "^" << indentation(get_local_indentation() + 4) << "([a-zA-Z_\\-]+):(.*)$";
   const boost::regex named_block_tag(regex_formatter.str());
   if (!current_line) throw std::runtime_error("null pointer for counter passed to consume_rule_contents");
   std::string line = "", block_name = "", block_contents = "";
@@ -95,15 +95,14 @@ bool snakemake_unit_tests::rule_block::consume_rule_contents(const std::vector<s
     // note that this now only affects things where block base increment is
     // nonzero. if it is zero, there is only one block being processed, and it
     // terminates after that block is consumed
-    if (line.find_first_not_of(' ') <= get_local_indentation() &&
-        (block_base_increment || (!block_base_increment && !_named_blocks.empty()))) {
+    if (line.find_first_not_of(' ') <= get_local_indentation()) {
       *current_line = starting_line;
       return true;
     }
     // use pythonic indentation to flag an arbitrary number of named blocks
     line_indentation = line.find_first_not_of(" ");
     // expose this to user space?
-    if (line_indentation == get_local_indentation() + block_base_increment) {
+    if (line_indentation == get_local_indentation() + 4) {
       // enforce named tag here
       boost::smatch named_block_tag_result;
       if (boost::regex_match(line, named_block_tag_result, named_block_tag)) {
@@ -121,7 +120,7 @@ bool snakemake_unit_tests::rule_block::consume_rule_contents(const std::vector<s
           line_indentation = line.find_first_not_of(" ");
 
           // if a line that's not contents is found
-          if (line_indentation <= get_local_indentation() + block_base_increment) {
+          if (line_indentation <= get_local_indentation() + 4) {
             *current_line = starting_line;
             if (verbose) {
               std::cout << "storing a block with name \"" << block_name << "\" and contents \"" << block_contents
