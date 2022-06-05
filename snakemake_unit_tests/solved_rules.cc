@@ -12,10 +12,8 @@ void snakemake_unit_tests::solved_rules::load_file(const std::string &filename) 
   std::ifstream input;
   std::string line = "";
   std::vector<std::string> input_filenames, output_filenames;
-  std::map<std::string, bool> affected_by_checkpoint;
   const boost::regex standard_rule_declaration("^rule ([^ ]+):.*$");
   const boost::regex checkpoint_declaration("^checkpoint ([^ ]+):.*$");
-  const boost::regex checkpoint_impact_flag("^Updating job ([^\\.]+)\\.");
   boost::smatch regex_result;
   try {
     // open log file
@@ -26,18 +24,11 @@ void snakemake_unit_tests::solved_rules::load_file(const std::string &filename) 
       getline(input, line);
       // if the line is a valid rule declaration
       if (boost::regex_match(line, regex_result, standard_rule_declaration) ||
-          boost::regex_match(line, regex_result, checkpoint_declaration)) {
-        // set apparent rule name
+          boost::regex_match(line, regex_result, checkpoint_declaration)) {  // set apparent rule name
         // for magical reasons, this regex seems to be working where
         // the include directive one wasn't; has to do with '/'?
         boost::shared_ptr<recipe> rep(new recipe);
         rep->set_rule_name(regex_result[1]);
-        if (line.find("checkpoint") == 0) {
-          rep->set_checkpoint(true);
-        }
-        if (affected_by_checkpoint.find(regex_result[1]) != affected_by_checkpoint.end()) {
-          rep->set_checkpoint_update(true);
-        }
         // scan for remaining rule content lines
         while (input.peek() != EOF) {
           getline(input, line);
@@ -94,8 +85,6 @@ void snakemake_unit_tests::solved_rules::load_file(const std::string &filename) 
           }
           _output_lookup[*iter] = rep;
         }
-      } else if (boost::regex_match(line, regex_result, checkpoint_impact_flag)) {
-        affected_by_checkpoint[regex_result[1]] = true;
       }
     }
     input.close();
@@ -182,11 +171,15 @@ void snakemake_unit_tests::solved_rules::emit_tests(
 void snakemake_unit_tests::solved_rules::find_missing_rules(const std::vector<std::string> &snakemake_exec,
                                                             std::map<std::string, bool> *target) const {
   if (!target) throw std::runtime_error("null pointer to solved_rules::find_missing_rules");
-  // target error pattern is: "'Rules' object has no attribute 'RULENAME'"
+  // target error pattern is: "'(Rules|Checkpoints)' object has no attribute 'RULENAME'"
   const boost::regex rule_missing("^.*'Rules' object has no attribute '([^']+)'.*\n$");
+  const boost::regex checkpoint_missing("^.*'Checkpoints' object has no attribute '([^']+)'.*\n$");
   for (std::vector<std::string>::const_iterator iter = snakemake_exec.begin(); iter != snakemake_exec.end(); ++iter) {
     boost::smatch regex_result;
-    if (boost::regex_match(*iter, regex_result, rule_missing)) {
+    std::cout << "probing line \"" << *iter << "\"" << std::endl;
+    if (boost::regex_match(*iter, regex_result, rule_missing) ||
+        boost::regex_match(*iter, regex_result, checkpoint_missing)) {
+      std::cout << "\tfound missing rule: \"" << regex_result[1].str() << "\"" << std::endl;
       target->insert(std::make_pair(regex_result[1].str(), true));
     }
   }
@@ -219,32 +212,14 @@ void snakemake_unit_tests::solved_rules::create_workspace(
     bool update_inputs, bool update_outputs, bool update_pytest, bool include_entire_dag) const {
   // new: deal with rule structures that drag a certain number of upstream
   // recipes with them:
-  //  - rules.
-  //  - checkpoints
   //  - scattergather
-  std::map<boost::shared_ptr<recipe>, bool> dependent_recipes = extra_required_recipes, orphaned_checkpoints;
+  // formerly, this was supposed to handle rules. and checkpoints; that has been migrated elsewhere
+  std::map<boost::shared_ptr<recipe>, bool> dependent_recipes = extra_required_recipes;
   std::map<std::string, bool> dependent_rulenames;
   std::vector<boost::filesystem::path> extra_comparison_exclusions;
   dependent_recipes[rec] = true;
   if (include_entire_dag) {
     add_dag_from_leaf(rec, include_entire_dag, &dependent_recipes);
-  }
-  for (std::vector<boost::shared_ptr<recipe>>::const_iterator iter = _recipes.begin(); iter != _recipes.end(); ++iter) {
-    if (rec->is_checkpoint_update() && (*iter)->is_checkpoint() &&
-        dependent_recipes.find(*iter) == dependent_recipes.end()) {
-      // add checkpoint rule itself to dependent_rulenames
-      orphaned_checkpoints[*iter] = true;
-      // copy all of this checkpoint's output files to the
-      // comparison exclusion set
-      for (std::vector<boost::filesystem::path>::const_iterator out_iter = (*iter)->get_outputs().begin();
-           out_iter != (*iter)->get_outputs().end(); ++out_iter) {
-        extra_comparison_exclusions.push_back(*out_iter);
-      }
-    }
-  }
-  for (std::map<boost::shared_ptr<recipe>, bool>::const_iterator iter = orphaned_checkpoints.begin();
-       iter != orphaned_checkpoints.end(); ++iter) {
-    dependent_recipes[iter->first] = iter->second;
   }
   for (std::map<boost::shared_ptr<recipe>, bool>::const_iterator iter = dependent_recipes.begin();
        iter != dependent_recipes.end(); ++iter) {
@@ -273,11 +248,17 @@ void snakemake_unit_tests::solved_rules::create_workspace(
     }
     if (update_inputs) {
       // copy *input* to workspace
-      // new: respect inputs to all dependent rules (for checkpoints)
+      // new: respect outputs to all dependent rules (e.g. for checkpoints)
       for (std::map<boost::shared_ptr<recipe>, bool>::const_iterator iter = dependent_recipes.begin();
            iter != dependent_recipes.end(); ++iter) {
-        copy_contents(iter->first->get_inputs(), pipeline_top_dir / pipeline_run_dir, workspace_path / pipeline_run_dir,
-                      rec->get_rule_name());
+        if (!iter->first->get_rule_name().compare(rec->get_rule_name())) {
+          copy_contents(iter->first->get_inputs(), pipeline_top_dir / pipeline_run_dir,
+                        workspace_path / pipeline_run_dir, rec->get_rule_name());
+        } else {
+          // upstream rules should have their *outputs* emitted as *input* to the unit test
+          copy_contents(iter->first->get_outputs(), pipeline_top_dir / pipeline_run_dir,
+                        workspace_path / pipeline_run_dir, rec->get_rule_name());
+        }
       }
     }
     if (update_added_content) {
