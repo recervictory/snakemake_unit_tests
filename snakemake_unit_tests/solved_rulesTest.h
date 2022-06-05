@@ -30,10 +30,6 @@ class solved_rulesTest : public CppUnit::TestFixture {
   CPPUNIT_TEST(test_recipe_copy_constructor);
   CPPUNIT_TEST(test_recipe_get_rule_name);
   CPPUNIT_TEST(test_recipe_set_rule_name);
-  CPPUNIT_TEST(test_recipe_is_checkpoint);
-  CPPUNIT_TEST(test_recipe_set_checkpoint);
-  CPPUNIT_TEST(test_recipe_is_checkpoint_update);
-  CPPUNIT_TEST(test_recipe_set_checkpoint_update);
   CPPUNIT_TEST(test_recipe_get_inputs);
   CPPUNIT_TEST(test_recipe_add_input);
   CPPUNIT_TEST(test_recipe_get_outputs);
@@ -66,10 +62,6 @@ class solved_rulesTest : public CppUnit::TestFixture {
   void test_recipe_copy_constructor();
   void test_recipe_get_rule_name();
   void test_recipe_set_rule_name();
-  void test_recipe_is_checkpoint();
-  void test_recipe_set_checkpoint();
-  void test_recipe_is_checkpoint_update();
-  void test_recipe_set_checkpoint_update();
   void test_recipe_get_inputs();
   void test_recipe_add_input();
   void test_recipe_get_outputs();

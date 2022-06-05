@@ -28,10 +28,6 @@ void snakemake_unit_tests::solved_rulesTest::test_recipe_default_constructor() {
 void snakemake_unit_tests::solved_rulesTest::test_recipe_copy_constructor() {}
 void snakemake_unit_tests::solved_rulesTest::test_recipe_get_rule_name() {}
 void snakemake_unit_tests::solved_rulesTest::test_recipe_set_rule_name() {}
-void snakemake_unit_tests::solved_rulesTest::test_recipe_is_checkpoint() {}
-void snakemake_unit_tests::solved_rulesTest::test_recipe_set_checkpoint() {}
-void snakemake_unit_tests::solved_rulesTest::test_recipe_is_checkpoint_update() {}
-void snakemake_unit_tests::solved_rulesTest::test_recipe_set_checkpoint_update() {}
 void snakemake_unit_tests::solved_rulesTest::test_recipe_get_inputs() {}
 void snakemake_unit_tests::solved_rulesTest::test_recipe_add_input() {}
 void snakemake_unit_tests::solved_rulesTest::test_recipe_get_outputs() {}
