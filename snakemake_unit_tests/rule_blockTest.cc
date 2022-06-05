@@ -450,7 +450,14 @@ void snakemake_unit_tests::rule_blockTest::test_rule_block_update_resolution() {
   b._python_tag = 0u;
   CPPUNIT_ASSERT(b.update_resolution(tag_results));
 }
-void snakemake_unit_tests::rule_blockTest::test_rule_block_get_resolved_included_filename() {}
+void snakemake_unit_tests::rule_blockTest::test_rule_block_get_resolved_included_filename() {
+  rule_block b;
+  CPPUNIT_ASSERT(b.get_resolved_included_filename().empty());
+  b._resolved_included_filename = "filename1";
+  CPPUNIT_ASSERT(!b.get_resolved_included_filename().compare("filename1"));
+  b._resolved_included_filename = "filename2";
+  CPPUNIT_ASSERT(!b.get_resolved_included_filename().compare("filename2"));
+}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_is_checkpoint() {}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_set_checkpoint() {}
 void snakemake_unit_tests::rule_blockTest::test_rule_block_report_rulesdot_rules() {}
