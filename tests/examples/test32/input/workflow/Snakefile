@@ -1,0 +1,8 @@
+rule simple_rule:
+    input:
+        "input.txt",
+    output:
+        "output.txt",
+    default_target: True,
+    shell:
+        "cp {input} {output}"
