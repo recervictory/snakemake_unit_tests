@@ -67,7 +67,25 @@ void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_load_everythi
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_parse_file() {}
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_load_lines() {}
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_detect_known_issues() {}
-void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_print_blocks() {}
+void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_print_blocks() {
+  boost::shared_ptr<rule_block> b1(new rule_block), b2(new rule_block);
+  b1->_rule_name = "myrule";
+  b1->_named_blocks.push_back(std::make_pair("input", " 'myinfile.txt',"));
+  b1->_named_blocks.push_back(std::make_pair("output", " 'myoutfile.txt',"));
+  b1->_named_blocks.push_back(std::make_pair("shell", " 'echo thing > {output}'"));
+  b2->_code_chunk.push_back("localrules: myrule");
+  snakemake_file sf;
+  sf._blocks.push_back(b1);
+  sf._blocks.push_back(b2);
+  std::ostringstream o;
+  sf.print_blocks(o);
+  std::string expected =
+      "rule myrule:\n    input: 'myinfile.txt',\n"
+      "    output: 'myoutfile.txt',\n"
+      "    shell: 'echo thing > {output}'\n\n\n"
+      "localrules: myrule\n";
+  CPPUNIT_ASSERT(!o.str().compare(expected));
+}
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_get_blocks() {}
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_report_single_rule() {}
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_fully_resolved() {}
