@@ -48,6 +48,7 @@ class snakemake_fileTest : public CppUnit::TestFixture {
   CPPUNIT_TEST(test_snakemake_file_set_update_status);
   CPPUNIT_TEST(test_snakemake_file_report_rules);
   CPPUNIT_TEST(test_snakemake_file_get_base_rule_name);
+  CPPUNIT_TEST_EXCEPTION(test_snakemake_file_get_base_rule_name_null_pointer, std::runtime_error);
   CPPUNIT_TEST_SUITE_END();
 
  public:
@@ -76,6 +77,7 @@ class snakemake_fileTest : public CppUnit::TestFixture {
   void test_snakemake_file_set_update_status();
   void test_snakemake_file_report_rules();
   void test_snakemake_file_get_base_rule_name();
+  void test_snakemake_file_get_base_rule_name_null_pointer();
 
  private:
   char *_tmp_dir;

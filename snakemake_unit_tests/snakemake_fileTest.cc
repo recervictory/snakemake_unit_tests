@@ -95,6 +95,37 @@ void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_get_snakefile
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_loaded_files() {}
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_set_update_status() {}
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_report_rules() {}
-void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_get_base_rule_name() {}
+void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_get_base_rule_name() {
+  snakemake_file sf1;
+  boost::shared_ptr<snakemake_file> sf2(new snakemake_file);
+  boost::shared_ptr<rule_block> b1(new rule_block), b2(new rule_block), b3(new rule_block);
+  b1->_rule_name = "myrule";
+  b1->_base_rule_name = "top_level_rule";
+  b1->_named_blocks.push_back(std::make_pair("input", " 'myinfile.txt',"));
+  b1->_named_blocks.push_back(std::make_pair("output", " 'myoutfile.txt',"));
+  b1->_named_blocks.push_back(std::make_pair("shell", " 'echo thing > {output}'"));
+  b1->_resolution = RESOLVED_INCLUDED;
+  b2->_code_chunk.push_back("localrules: myrule");
+  b2->_resolution = RESOLVED_INCLUDED;
+  b3->_rule_name = "hidden_rule";
+  b3->_base_rule_name = "magical_treasure";
+  b3->_named_blocks.push_back(std::make_pair("output", " 'nextoutfile.txt',"));
+  b3->_named_blocks.push_back(std::make_pair("shell", " 'echo otherthing > {output}'"));
+  b3->_resolution = RESOLVED_INCLUDED;
+  sf1._blocks.push_back(b1);
+  sf1._blocks.push_back(b2);
+  sf2->_blocks.push_back(b3);
+  sf1._included_files["/path/to/file"] = sf2;
+  std::string result = "";
+  CPPUNIT_ASSERT(sf1.get_base_rule_name("myrule", &result));
+  CPPUNIT_ASSERT(!result.compare("top_level_rule"));
+  CPPUNIT_ASSERT(sf1.get_base_rule_name("hidden_rule", &result));
+  CPPUNIT_ASSERT(!result.compare("magical_treasure"));
+  CPPUNIT_ASSERT(!sf1.get_base_rule_name("fake_rule", &result));
+}
+void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_get_base_rule_name_null_pointer() {
+  snakemake_file sf;
+  sf.get_base_rule_name("fake_rule", NULL);
+}
 
 CPPUNIT_TEST_SUITE_REGISTRATION(snakemake_unit_tests::snakemake_fileTest);
