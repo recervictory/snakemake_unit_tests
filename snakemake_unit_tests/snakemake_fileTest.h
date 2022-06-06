@@ -34,7 +34,6 @@ class snakemake_fileTest : public CppUnit::TestFixture {
   CPPUNIT_TEST(test_snakemake_file_parse_file);
   CPPUNIT_TEST(test_snakemake_file_load_lines);
   CPPUNIT_TEST(test_snakemake_file_detect_known_issues);
-  CPPUNIT_TEST(test_snakemake_file_print_blocks);
   CPPUNIT_TEST(test_snakemake_file_get_blocks);
   CPPUNIT_TEST(test_snakemake_file_report_single_rule);
   CPPUNIT_TEST(test_snakemake_file_fully_resolved);
@@ -63,7 +62,6 @@ class snakemake_fileTest : public CppUnit::TestFixture {
   void test_snakemake_file_parse_file();
   void test_snakemake_file_load_lines();
   void test_snakemake_file_detect_known_issues();
-  void test_snakemake_file_print_blocks();
   void test_snakemake_file_get_blocks();
   void test_snakemake_file_report_single_rule();
   void test_snakemake_file_fully_resolved();

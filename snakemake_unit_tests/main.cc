@@ -65,11 +65,6 @@ int main(int argc, const char** const argv) {
   }
   sf.load_everything(boost::filesystem::path(snakefile_str), p.pipeline_top_dir, &p.exclude_rules, p.verbose);
 
-  // as a debug step, report the parsed contents of the snakefile
-  if (p.verbose) {
-    std::cout << "printing blocks..." << std::endl;
-    sf.print_blocks(std::cout);
-  }
   // parse the log file to determine the solved system of rules and outputs
   snakemake_unit_tests::solved_rules sr;
   sr.load_file(p.snakemake_log.string());
