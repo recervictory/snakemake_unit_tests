@@ -24,9 +24,45 @@ void snakemake_unit_tests::snakemake_fileTest::tearDown() {
   }
 }
 
-void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_default_constructor() {}
-void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_pointer_constructor() {}
-void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_copy_constructor() {}
+void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_default_constructor() {
+  snakemake_file sf;
+  CPPUNIT_ASSERT(sf._blocks.empty());
+  CPPUNIT_ASSERT(sf._snakefile_relative_path.string().empty());
+  CPPUNIT_ASSERT(sf._included_files.empty());
+  CPPUNIT_ASSERT(sf._tag_counter.get());
+  CPPUNIT_ASSERT_EQUAL(1u, *sf._tag_counter);
+  CPPUNIT_ASSERT(sf._updated_last_round);
+}
+void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_pointer_constructor() {
+  boost::shared_ptr<unsigned> ptr(new unsigned);
+  *ptr = 20u;
+  snakemake_file sf(ptr);
+  CPPUNIT_ASSERT(sf._blocks.empty());
+  CPPUNIT_ASSERT(sf._snakefile_relative_path.string().empty());
+  CPPUNIT_ASSERT(sf._included_files.empty());
+  CPPUNIT_ASSERT(sf._tag_counter.get());
+  CPPUNIT_ASSERT_EQUAL(20u, *sf._tag_counter);
+  CPPUNIT_ASSERT(sf._updated_last_round);
+}
+void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_copy_constructor() {
+  snakemake_file sf1;
+  boost::shared_ptr<rule_block> ptr_rb(new rule_block);
+  boost::shared_ptr<snakemake_file> ptr_sf(new snakemake_file);
+  sf1._blocks.push_back(ptr_rb);
+  sf1._snakefile_relative_path = "/my/path";
+  sf1._included_files["/other/path"] = ptr_sf;
+  *sf1._tag_counter = 55u;
+  sf1._updated_last_round = false;
+  snakemake_file sf2(sf1);
+  CPPUNIT_ASSERT(sf2._blocks.size() == 1u);
+  CPPUNIT_ASSERT(*(sf2._blocks.begin()) == ptr_rb);
+  CPPUNIT_ASSERT(!sf2._snakefile_relative_path.string().compare("/my/path"));
+  CPPUNIT_ASSERT(sf2._included_files.size() == 1u);
+  CPPUNIT_ASSERT(sf2._included_files.find("/other/path") != sf2._included_files.end());
+  CPPUNIT_ASSERT(sf2._included_files["/other/path"] == ptr_sf);
+  CPPUNIT_ASSERT_EQUAL(55u, *sf2._tag_counter);
+  CPPUNIT_ASSERT(!sf2._updated_last_round);
+}
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_load_everything() {}
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_parse_file() {}
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_load_lines() {}
