@@ -79,7 +79,7 @@ void snakemake_unit_tests::solved_rules::load_file(const std::string &filename) 
         for (std::vector<std::string>::const_iterator iter = output_filenames.begin(); iter != output_filenames.end();
              ++iter) {
           if (_output_lookup.find(*iter) != _output_lookup.end()) {
-            std::cout << "warning: output file \"" << *iter << "\" appears multiple time in the run log file."
+            std::cout << "warning: output file \"" << *iter << "\" appears multiple times in the run log file."
                       << " in theory, this behavior should be impossible; in practice, it seems like snakemake "
                       << "does not enforce unambiguous output targets if the output targets themselves are not "
                       << "requested as part of the dependency graph. with this assumption in mind, this redundant"
@@ -140,9 +140,6 @@ void snakemake_unit_tests::solved_rules::emit_tests(
         // new: deal with the fact that certain kinds of rule relationships (e.g. rulesdot) cannot be
         // reliably detected with this program's approach to querying snakefiles
         std::vector<std::string> snakemake_exec;
-        std::cout << "executing snakemake command: \"cd "
-                  << (test_parent_path / (*iter)->get_rule_name() / "workspace").string() << " && snakemake -nFs "
-                  << sf.get_snakefile_relative_path().string() << "\"" << std::endl;
         snakemake_exec = sf.exec("cd " + (test_parent_path / (*iter)->get_rule_name() / "workspace").string() +
                                      " && snakemake -nFs " + sf.get_snakefile_relative_path().string(),
                                  false);
