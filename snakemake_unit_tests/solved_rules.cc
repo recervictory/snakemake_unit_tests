@@ -182,10 +182,8 @@ void snakemake_unit_tests::solved_rules::find_missing_rules(const std::vector<st
   const boost::regex checkpoint_missing("^.*'Checkpoints' object has no attribute '([^']+)'.*\n$");
   for (std::vector<std::string>::const_iterator iter = snakemake_exec.begin(); iter != snakemake_exec.end(); ++iter) {
     boost::smatch regex_result;
-    std::cout << "probing line \"" << *iter << "\"" << std::endl;
     if (boost::regex_match(*iter, regex_result, rule_missing) ||
         boost::regex_match(*iter, regex_result, checkpoint_missing)) {
-      std::cout << "\tfound missing rule: \"" << regex_result[1].str() << "\"" << std::endl;
       target->insert(std::make_pair(regex_result[1].str(), true));
     }
   }
