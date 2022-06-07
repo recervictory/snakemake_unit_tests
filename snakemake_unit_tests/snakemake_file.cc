@@ -88,8 +88,8 @@ void snakemake_unit_tests::snakemake_file::report_rules(
     if (!(*iter)->get_rule_name().empty()) {
       // disable reporting of "all" phony target
       if (!(*iter)->get_rule_name().compare("all")) continue;
-      // allow global snakemake directives with no rulename
-      // otherwise: rule. aggregate for duplication
+      // this is only designed for tracking rules with specific unit tests emitted.
+      // duplicate counts indicate some sort of error in python logic parsing.
       if ((finder = aggregated_rules->find((*iter)->get_rule_name())) == aggregated_rules->end()) {
         finder = aggregated_rules
                      ->insert(std::make_pair((*iter)->get_rule_name(), std::vector<boost::shared_ptr<rule_block> >()))
