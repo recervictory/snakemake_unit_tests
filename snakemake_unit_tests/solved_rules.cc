@@ -139,22 +139,27 @@ void snakemake_unit_tests::solved_rules::emit_tests(
                          update_added_content, update_inputs, update_outputs, update_pytest, include_entire_dag);
         // new: deal with the fact that certain kinds of rule relationships (e.g. rulesdot) cannot be
         // reliably detected with this program's approach to querying snakefiles
-        std::vector<std::string> snakemake_exec;
-        snakemake_exec = sf.exec("cd " + (test_parent_path / (*iter)->get_rule_name() / "workspace").string() +
-                                     " && snakemake -nFs " + sf.get_snakefile_relative_path().string(),
-                                 false);
-        // try to find snakemake errors that report rules missing from dag
-        unsigned initial_missing_count = missing_rules.size();
-        find_missing_rules(snakemake_exec, &missing_rules);
-        if (missing_rules.size() == initial_missing_count) {
-          deployment_successful = true;
-        } else {
-          for (std::vector<boost::shared_ptr<recipe>>::const_iterator rec_iter = _recipes.begin();
-               rec_iter != _recipes.end(); ++rec_iter) {
-            if (missing_rules.find((*rec_iter)->get_rule_name()) != missing_rules.end()) {
-              missing_recipes[*rec_iter] = true;
+        if (exclude_rules.find((*iter)->get_rule_name()) == exclude_rules.end()) {
+          std::vector<std::string> snakemake_exec;
+          snakemake_exec = sf.exec("cd " + (test_parent_path / (*iter)->get_rule_name() / "workspace").string() +
+                                       " && snakemake -nFs " + sf.get_snakefile_relative_path().string(),
+                                   false);
+          // try to find snakemake errors that report rules missing from dag
+          unsigned initial_missing_count = missing_rules.size();
+          find_missing_rules(snakemake_exec, &missing_rules);
+          if (missing_rules.size() == initial_missing_count) {
+            deployment_successful = true;
+          } else {
+            for (std::vector<boost::shared_ptr<recipe>>::const_iterator rec_iter = _recipes.begin();
+                 rec_iter != _recipes.end(); ++rec_iter) {
+              if (missing_rules.find((*rec_iter)->get_rule_name()) != missing_rules.end()) {
+                missing_recipes[*rec_iter] = true;
+              }
             }
           }
+        } else {
+          // the rule was manually excluded in config; for evaluation purposes, that means we're done
+          deployment_successful = true;
         }
       } while (!deployment_successful);
       test_history[(*iter)->get_rule_name()] = true;
