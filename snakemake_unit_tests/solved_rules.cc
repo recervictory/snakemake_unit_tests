@@ -79,9 +79,15 @@ void snakemake_unit_tests::solved_rules::load_file(const std::string &filename) 
         for (std::vector<std::string>::const_iterator iter = output_filenames.begin(); iter != output_filenames.end();
              ++iter) {
           if (_output_lookup.find(*iter) != _output_lookup.end()) {
-            throw std::logic_error("same output file \"" + *iter +
-                                   "\" appears multiple "
-                                   "times in log file? this should be impossible");
+            std::cout << "warning: output file \"" << *iter << "\" appears multiple time in the run log file."
+                      << " in theory, this behavior should be impossible; in practice, it seems like snakemake "
+                      << "does not enforce unambiguous output targets if the output targets themselves are not "
+                      << "requested as part of the dependency graph. with this assumption in mind, this redundant"
+                      << " content is currently tolerated, in anticipation of the duplicated output files not "
+                      << "actually being used for anything. however, this is very strange behavior, and should "
+                      << "be considered a bug in the pipeline, and should be resolved; and until it is resolved, "
+                      << "snakemake_unit_tests cannot unambiguously resolve the relationship between certain "
+                      << "theoretical combinations of log entries." << std::endl;
           }
           _output_lookup[*iter] = rep;
         }
