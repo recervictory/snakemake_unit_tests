@@ -15,6 +15,7 @@ void snakemake_unit_tests::solved_rules::load_file(const std::string &filename) 
   const boost::regex standard_rule_declaration("^rule ([^ ]+):.*$");
   const boost::regex checkpoint_declaration("^checkpoint ([^ ]+):.*$");
   boost::smatch regex_result;
+  std::map<std::string, bool> toxic_output_files;
   try {
     // open log file
     input.open(filename.c_str());
@@ -79,15 +80,7 @@ void snakemake_unit_tests::solved_rules::load_file(const std::string &filename) 
         for (std::vector<std::string>::const_iterator iter = output_filenames.begin(); iter != output_filenames.end();
              ++iter) {
           if (_output_lookup.find(*iter) != _output_lookup.end()) {
-            std::cout << "warning: output file \"" << *iter << "\" appears multiple times in the run log file."
-                      << " in theory, this behavior should be impossible; in practice, it seems like snakemake "
-                      << "does not enforce unambiguous output targets if the output targets themselves are not "
-                      << "requested as part of the dependency graph. with this assumption in mind, this redundant"
-                      << " content is currently tolerated, in anticipation of the duplicated output files not "
-                      << "actually being used for anything. however, this is very strange behavior, and should "
-                      << "be considered a bug in the pipeline, and should be resolved; and until it is resolved, "
-                      << "snakemake_unit_tests cannot unambiguously resolve the relationship between certain "
-                      << "theoretical combinations of log entries." << std::endl;
+            toxic_output_files[*iter] = true;
           }
           _output_lookup[*iter] = rep;
         }
@@ -97,6 +90,22 @@ void snakemake_unit_tests::solved_rules::load_file(const std::string &filename) 
   } catch (...) {
     if (input.is_open()) input.close();
     throw;
+  }
+  if (!toxic_output_files.empty()) {
+    std::cout << "warning: at least one output file appears multiple times in the run log file."
+              << " in theory, this behavior should be impossible; in practice, it seems like snakemake "
+              << "does not enforce unambiguous output targets if the output targets themselves are not "
+              << "requested as part of the dependency graph. with this assumption in mind, this redundant"
+              << " content is currently tolerated, in anticipation of the duplicated output files not "
+              << "actually being used for anything. however, this is very strange behavior, and should "
+              << "be considered a bug in a pipeline, and should be resolved; and until it is resolved, "
+              << "snakemake_unit_tests cannot unambiguously resolve the relationship between certain "
+              << "theoretical combinations of log entries." << std::endl;
+    std::cout << "affected duplicate output files:" << std::endl;
+    for (std::map<std::string, bool>::const_iterator iter = toxic_output_files.begin();
+         iter != toxic_output_files.end(); ++iter) {
+      std::cout << " - '" << iter->first << "'" << std::endl;
+    }
   }
 }
 
