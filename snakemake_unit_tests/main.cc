@@ -65,11 +65,6 @@ int main(int argc, const char** const argv) {
   }
   sf.load_everything(boost::filesystem::path(snakefile_str), p.pipeline_top_dir, &p.exclude_rules, p.verbose);
 
-  // as a debug step, report the parsed contents of the snakefile
-  if (p.verbose) {
-    std::cout << "printing blocks..." << std::endl;
-    sf.print_blocks(std::cout);
-  }
   // parse the log file to determine the solved system of rules and outputs
   snakemake_unit_tests::solved_rules sr;
   sr.load_file(p.snakemake_log.string());
@@ -80,7 +75,9 @@ int main(int argc, const char** const argv) {
   // should not have: snakefile
   // TODO(cpalmer718): determine if workspace requires inputs or outputs?
   //   probably not, as this isn't rule-specific, I hope
-  sr.create_empty_workspace(p.output_test_dir, p.pipeline_top_dir, p.added_files, p.added_directories);
+  std::map<std::string, std::vector<std::string> > files_outside_workspace;
+  sr.create_empty_workspace(p.output_test_dir, p.pipeline_top_dir, p.added_files, p.added_directories,
+                            &files_outside_workspace);
   // do things in this location
   do {
     // scan the rule set for blockers
@@ -101,7 +98,32 @@ int main(int argc, const char** const argv) {
   sr.emit_tests(sf, p.output_test_dir, p.pipeline_top_dir, p.pipeline_run_dir, p.inst_dir, p.exclude_rules,
                 p.added_files, p.added_directories, p.update_snakefiles || p.update_all,
                 p.update_added_content || p.update_all, p.update_inputs || p.update_all,
-                p.update_outputs || p.update_all, p.update_pytest || p.update_all, p.include_entire_dag);
+                p.update_outputs || p.update_all, p.update_pytest || p.update_all, p.include_entire_dag,
+                &files_outside_workspace);
+
+  if (!files_outside_workspace.empty()) {
+    std::cout << "warning: file from outside of contained workspace detected."
+              << " for consistency, this file will *not* be copied. your unit tests "
+              << "will function, but they will not be modular in the sense that you cannot "
+              << "in most cases move them off your filesystem. to avoid this problem, "
+              << "configure your pipeline to only take inputs inside the pipeline directory itself; "
+              << "or add the impacted rule to your excluded ruleset in your configuration." << std::endl;
+    std::cout << "affected files:" << std::endl;
+    for (std::map<std::string, std::vector<std::string> >::const_iterator iter = files_outside_workspace.begin();
+         iter != files_outside_workspace.end(); ++iter) {
+      std::cout << "  - '" << iter->first << "'";
+      for (std::vector<std::string>::const_iterator fiter = iter->second.begin(); fiter != iter->second.end();
+           ++fiter) {
+        if (fiter == iter->second.begin()) {
+          std::cout << "; impacted rules/directives: ";
+        } else {
+          std::cout << ", ";
+        }
+        std::cout << *fiter;
+      }
+      std::cout << std::endl;
+    }
+  }
 
   // if requested, report final configuration settings to test directory
   if (p.update_config || p.update_all) {

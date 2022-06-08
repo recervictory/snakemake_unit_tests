@@ -97,6 +97,7 @@ class recipe {
   }
 
  private:
+  friend class solved_rulesTest;
   /*!
     @brief extracted name of rule from log file
    */
@@ -172,6 +173,9 @@ class solved_rules {
     @param update_pytest controls whether to copy pytest infrastructure
     @param include_entire_dag controls whether to override default
     behavior and emit all rules, instead of just the target
+    @param files_outside_workspace for logging, a collector for
+    files that exist outside of the self-contained workspace, which
+    will not be copied into the self-contained unit tests
   */
   void emit_tests(const snakemake_file &sf, const boost::filesystem::path &output_test_dir,
                   const boost::filesystem::path &pipeline_top_dir, const boost::filesystem::path &pipeline_run_dir,
@@ -179,7 +183,8 @@ class solved_rules {
                   const std::vector<boost::filesystem::path> &added_files,
                   const std::vector<boost::filesystem::path> &added_directories, bool update_snakefiles,
                   bool update_added_content, bool update_inputs, bool update_outputs, bool update_pytest,
-                  bool include_entire_dag) const;
+                  bool include_entire_dag,
+                  std::map<std::string, std::vector<std::string> > *files_outside_workspace) const;
   /*!
     @brief emit snakefile from parsed snakemake information
     @param sf snakemake_file object with rule definitions corresponding
@@ -226,6 +231,9 @@ class solved_rules {
     @param update_pytest controls whether to copy pytest infrastructure
     @param include_entire_dag controls whether to override default
     behavior and emit all rules, instead of just the target
+    @param files_outside_workspace for logging, a collector for
+    files that exist outside of the self-contained workspace, which
+    will not be copied into the self-contained unit tests
   */
   void create_workspace(const boost::shared_ptr<recipe> &rec, const snakemake_file &sf,
                         const boost::filesystem::path &output_test_dir, const boost::filesystem::path &test_parent_path,
@@ -236,7 +244,8 @@ class solved_rules {
                         const std::vector<boost::filesystem::path> &added_files,
                         const std::vector<boost::filesystem::path> &added_directories, bool update_snakefiles,
                         bool update_added_content, bool update_inputs, bool update_outputs, bool update_pytest,
-                        bool include_entire_dag) const;
+                        bool include_entire_dag,
+                        std::map<std::string, std::vector<std::string> > *files_outside_workspace) const;
   /*!
     @brief create an empty workspace for python testing
     @param output_test_dir output directory for tests (e.g. '.tests/')
@@ -245,11 +254,15 @@ class solved_rules {
     @param added_files vector of additional files to add to test workspaces
     @param added_directories vector of additional directories to add to test
     workspaces
+    @param files_outside_workspace for logging, a collector for
+    files that exist outside of the self-contained workspace, which
+    will not be copied into the self-contained unit tests
   */
   void create_empty_workspace(const boost::filesystem::path &output_test_dir,
                               const boost::filesystem::path &pipeline_dir,
                               const std::vector<boost::filesystem::path> &added_files,
-                              const std::vector<boost::filesystem::path> &added_directories) const;
+                              const std::vector<boost::filesystem::path> &added_directories,
+                              std::map<std::string, std::vector<std::string> > *files_outside_workspace) const;
 
   /*!
     @brief recursively remove empty workspace after python integration is
@@ -264,9 +277,13 @@ class solved_rules {
     @param source_prefix parent directory of source files/folders
     @param target_prefix directory destination of files/folders
     @param rule_name label for error reporting
+    @param files_outside_workspace for logging, a collector for
+    files that exist outside of the self-contained workspace, which
+    will not be copied into the self-contained unit tests
    */
   void copy_contents(const std::vector<boost::filesystem::path> &contents, const boost::filesystem::path &source_prefix,
-                     const boost::filesystem::path &target_prefix, const std::string &rule_name) const;
+                     const boost::filesystem::path &target_prefix, const std::string &rule_name,
+                     std::map<std::string, std::vector<std::string> > *files_outside_workspace) const;
 
   /*!
     @brief report phony all target controlling test snakemake run
@@ -318,6 +335,7 @@ class solved_rules {
                          std::map<boost::shared_ptr<recipe>, bool> *target) const;
 
  private:
+  friend class solved_rulesTest;
   /*!
     @brief abstract set of solved recipe entries in a log file
    */

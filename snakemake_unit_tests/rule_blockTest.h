@@ -102,7 +102,6 @@ class rule_blockTest : public CppUnit::TestFixture {
   void test_rule_block_clear();
 
  private:
-  char *_tmp_dir;
   std::vector<std::string> _snakefile_lines;
 };
 }  // namespace snakemake_unit_tests

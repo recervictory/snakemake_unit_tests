@@ -52,7 +52,6 @@ class snakemake_file {
       : _blocks(obj._blocks),
         _snakefile_relative_path(obj._snakefile_relative_path),
         _included_files(obj._included_files),
-        _rulesdot(obj._rulesdot),
         _tag_counter(obj._tag_counter),
         _updated_last_round(obj._updated_last_round) {}
   /*!
@@ -250,6 +249,7 @@ class snakemake_file {
   bool get_base_rule_name(const std::string &name, std::string *target) const;
 
  private:
+  friend class snakemake_fileTest;
   /*!
   @brief minimal contents of snakemake file as blocks of code
  */
@@ -262,10 +262,6 @@ class snakemake_file {
   @brief included files to report on print statements
  */
   std::map<boost::filesystem::path, boost::shared_ptr<snakemake_file>> _included_files;
-  /*!
-  @brief report of the 'rules.' dependencies of each rule
- */
-  std::map<std::string, std::vector<std::string>> _rulesdot;
   /*!
   @brief internal counter of assigned tags to rules
  */

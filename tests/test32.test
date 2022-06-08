@@ -11,6 +11,14 @@ EXPECTEDDIR="tests/examples/$TESTNAME/expected"
 SNAKEMAKE_UNIT_TESTS="./snakemake_unit_tests.out"
 INSTDIR="inst"
 
+SNAKEMAKE_VERSION="$(snakemake --version)"
+SNAKEMAKE_TARGET_VERSION="6.15.0"
+VERSION_COMPARISON=$(echo -e "${SNAKEMAKE_VERSION}\n${SNAKEMAKE_TARGET_VERSION}" | sort -V | grep -n "${SNAKEMAKE_TARGET_VERSION}" | cut -d":" -f 1)
+if [[ "$(echo ${VERSION_COMPARISON} | wc -l)" == "2" ]] || [[ "${VERSION_COMPARISON}" == "2" ]] ; then
+    echo "ok 1 - test skipped due to snakemake version < ${SNAKEMAKE_TARGET_VERSION} # SKIP"
+    exit 0
+fi
+
 ## just in case, delete existing output from previously failed tests
 rm -Rf "$OUTPUTDIR"
 
