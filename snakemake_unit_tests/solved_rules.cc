@@ -15,7 +15,7 @@ void snakemake_unit_tests::solved_rules::load_file(const std::string &filename) 
   const boost::regex standard_rule_declaration("^rule ([^ ]+):.*$");
   const boost::regex checkpoint_declaration("^checkpoint ([^ ]+):.*$");
   boost::smatch regex_result;
-  std::map<std::string, bool> toxic_output_files;
+  std::map<std::string, std::vector<std::string>> toxic_output_files;
   try {
     // open log file
     input.open(filename.c_str());
@@ -80,7 +80,12 @@ void snakemake_unit_tests::solved_rules::load_file(const std::string &filename) 
         for (std::vector<std::string>::const_iterator iter = output_filenames.begin(); iter != output_filenames.end();
              ++iter) {
           if (_output_lookup.find(*iter) != _output_lookup.end()) {
-            toxic_output_files[*iter] = true;
+            std::map<std::string, std::vector<std::string>>::iterator toxic_finder;
+            if ((toxic_finder = toxic_output_files.find(*iter)) == toxic_output_files.end()) {
+              toxic_finder = toxic_output_files.insert(std::make_pair(*iter, std::vector<std::string>())).first;
+              toxic_finder->second.push_back(_output_lookup[*iter]->get_rule_name());
+            }
+            toxic_finder->second.push_back(rep->get_rule_name());
           }
           _output_lookup[*iter] = rep;
         }
@@ -102,9 +107,19 @@ void snakemake_unit_tests::solved_rules::load_file(const std::string &filename) 
               << "snakemake_unit_tests cannot unambiguously resolve the relationship between certain "
               << "theoretical combinations of log entries." << std::endl;
     std::cout << "affected duplicate output files:" << std::endl;
-    for (std::map<std::string, bool>::const_iterator iter = toxic_output_files.begin();
+    for (std::map<std::string, std::vector<std::string>>::const_iterator iter = toxic_output_files.begin();
          iter != toxic_output_files.end(); ++iter) {
-      std::cout << " - '" << iter->first << "'" << std::endl;
+      std::cout << " - '" << iter->first << "'";
+      for (std::vector<std::string>::const_iterator riter = iter->second.begin(); riter == iter->second.end();
+           ++riter) {
+        if (riter == iter->second.begin()) {
+          std::cout << ": impacted rules: ";
+        } else {
+          std::cout << ", ";
+        }
+        std::cout << *riter;
+      }
+      std::cout << std::endl;
     }
   }
 }
