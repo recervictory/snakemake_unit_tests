@@ -110,7 +110,7 @@ void snakemake_unit_tests::solved_rules::load_file(const std::string &filename) 
     for (std::map<std::string, std::vector<std::string>>::const_iterator iter = toxic_output_files.begin();
          iter != toxic_output_files.end(); ++iter) {
       std::cout << " - '" << iter->first << "'";
-      for (std::vector<std::string>::const_iterator riter = iter->second.begin(); riter == iter->second.end();
+      for (std::vector<std::string>::const_iterator riter = iter->second.begin(); riter != iter->second.end();
            ++riter) {
         if (riter == iter->second.begin()) {
           std::cout << ": impacted rules: ";
