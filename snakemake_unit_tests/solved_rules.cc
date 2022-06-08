@@ -115,7 +115,8 @@ void snakemake_unit_tests::solved_rules::emit_tests(
     const boost::filesystem::path &inst_dir, const std::map<std::string, bool> &exclude_rules,
     const std::vector<boost::filesystem::path> &added_files,
     const std::vector<boost::filesystem::path> &added_directories, bool update_snakefiles, bool update_added_content,
-    bool update_inputs, bool update_outputs, bool update_pytest, bool include_entire_dag) const {
+    bool update_inputs, bool update_outputs, bool update_pytest, bool include_entire_dag,
+    std::map<std::string, bool> *files_outside_workspace) const {
   // create unit test output directory
   // by default, this looks like `.tests/unit`
   // but will be overridden as `output_test_dir/unit`
@@ -145,7 +146,8 @@ void snakemake_unit_tests::solved_rules::emit_tests(
       do {
         create_workspace(*iter, sf, output_test_dir, test_parent_path, pipeline_top_dir, pipeline_run_dir, inst_test_py,
                          missing_recipes, exclude_rules, added_files, added_directories, update_snakefiles,
-                         update_added_content, update_inputs, update_outputs, update_pytest, include_entire_dag);
+                         update_added_content, update_inputs, update_outputs, update_pytest, include_entire_dag,
+                         files_outside_workspace);
         // new: deal with the fact that certain kinds of rule relationships (e.g. rulesdot) cannot be
         // reliably detected with this program's approach to querying snakefiles
         if (exclude_rules.find((*iter)->get_rule_name()) == exclude_rules.end()) {
@@ -224,7 +226,8 @@ void snakemake_unit_tests::solved_rules::create_workspace(
     const std::map<boost::shared_ptr<recipe>, bool> &extra_required_recipes,
     const std::map<std::string, bool> &exclude_rules, const std::vector<boost::filesystem::path> &added_files,
     const std::vector<boost::filesystem::path> &added_directories, bool update_snakefiles, bool update_added_content,
-    bool update_inputs, bool update_outputs, bool update_pytest, bool include_entire_dag) const {
+    bool update_inputs, bool update_outputs, bool update_pytest, bool include_entire_dag,
+    std::map<std::string, bool> *files_outside_workspace) const {
   // new: deal with rule structures that drag a certain number of upstream
   // recipes with them:
   //  - scattergather
@@ -259,7 +262,7 @@ void snakemake_unit_tests::solved_rules::create_workspace(
     if (update_outputs) {
       // copy *output* to expected path
       copy_contents(rec->get_outputs(), pipeline_top_dir / pipeline_run_dir, rule_expected_path / pipeline_run_dir,
-                    rec->get_rule_name());
+                    rec->get_rule_name(), files_outside_workspace);
     }
     if (update_inputs) {
       // copy *input* to workspace
@@ -268,18 +271,18 @@ void snakemake_unit_tests::solved_rules::create_workspace(
            iter != dependent_recipes.end(); ++iter) {
         if (!iter->first->get_rule_name().compare(rec->get_rule_name())) {
           copy_contents(iter->first->get_inputs(), pipeline_top_dir / pipeline_run_dir,
-                        workspace_path / pipeline_run_dir, rec->get_rule_name());
+                        workspace_path / pipeline_run_dir, rec->get_rule_name(), files_outside_workspace);
         } else {
           // upstream rules should have their *outputs* emitted as *input* to the unit test
           copy_contents(iter->first->get_outputs(), pipeline_top_dir / pipeline_run_dir,
-                        workspace_path / pipeline_run_dir, rec->get_rule_name());
+                        workspace_path / pipeline_run_dir, rec->get_rule_name(), files_outside_workspace);
         }
       }
     }
     if (update_added_content) {
       // copy extra files and directories, if provided, to workspace
-      copy_contents(added_files, pipeline_top_dir, workspace_path, "added files");
-      copy_contents(added_directories, pipeline_top_dir, workspace_path, "added directories");
+      copy_contents(added_files, pipeline_top_dir, workspace_path, "added files", files_outside_workspace);
+      copy_contents(added_directories, pipeline_top_dir, workspace_path, "added directories", files_outside_workspace);
     }
     if (update_snakefiles) {
       // new: aggregate all possible parent rules to required derived rules
@@ -346,14 +349,15 @@ unsigned snakemake_unit_tests::solved_rules::emit_snakefile(const snakemake_file
 void snakemake_unit_tests::solved_rules::create_empty_workspace(
     const boost::filesystem::path &output_test_dir, const boost::filesystem::path &pipeline_dir,
     const std::vector<boost::filesystem::path> &added_files,
-    const std::vector<boost::filesystem::path> &added_directories) const {
+    const std::vector<boost::filesystem::path> &added_directories,
+    std::map<std::string, bool> *files_outside_workspace) const {
   // create test directory, for output from test run
   boost::filesystem::path workspace_path = output_test_dir / ".snakemake_unit_tests";
   boost::filesystem::create_directories(workspace_path);
 
   // copy extra files and directories, if provided, to workspace
-  copy_contents(added_files, pipeline_dir, workspace_path, "added files");
-  copy_contents(added_directories, pipeline_dir, workspace_path, "added directories");
+  copy_contents(added_files, pipeline_dir, workspace_path, "added files", files_outside_workspace);
+  copy_contents(added_directories, pipeline_dir, workspace_path, "added directories", files_outside_workspace);
 }
 
 void snakemake_unit_tests::solved_rules::remove_empty_workspace(const boost::filesystem::path &output_test_dir) const {
@@ -363,7 +367,8 @@ void snakemake_unit_tests::solved_rules::remove_empty_workspace(const boost::fil
 void snakemake_unit_tests::solved_rules::copy_contents(const std::vector<boost::filesystem::path> &contents,
                                                        const boost::filesystem::path &source_prefix,
                                                        const boost::filesystem::path &target_prefix,
-                                                       const std::string &rule_name) const {
+                                                       const std::string &rule_name,
+                                                       std::map<std::string, bool> *files_outside_workspace) const {
   std::map<boost::filesystem::path, bool> copied_sources;
   for (std::vector<boost::filesystem::path>::const_iterator iter = contents.begin(); iter != contents.end(); ++iter) {
     boost::filesystem::path source_file = source_prefix / *iter;
@@ -379,13 +384,8 @@ void snakemake_unit_tests::solved_rules::copy_contents(const std::vector<boost::
         target_file = target_prefix / boost::filesystem::relative(
                                           boost::filesystem::canonical(boost::filesystem::absolute(*iter)),
                                           boost::filesystem::canonical(boost::filesystem::absolute(source_prefix)));
-      } else {
-        std::cout << "warning: absolute path input file detected: \"" << iter->string()
-                  << "\". for consistency, this file will *not* be copied. your unit tests "
-                  << "will function, but they will not be modular in the sense that you cannot "
-                  << "in most cases move them off your filesystem. to avoid this problem, "
-                  << "configure your pipeline to only take inputs inside the pipeline directory itself; "
-                  << "or add the impacted rule to your excluded ruleset in your configuration." << std::endl;
+      } else if (files_outside_workspace) {
+        files_outside_workspace->insert(std::make_pair(iter->string(), true));
         continue;
       }
     }
