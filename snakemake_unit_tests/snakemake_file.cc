@@ -133,8 +133,9 @@ void snakemake_unit_tests::snakemake_file::detect_known_issues(std::map<std::str
   // and include directives are not squashed and thus expected in output.
   std::cout << "snakefile load summary" << std::endl;
   std::cout << "----------------------" << std::endl;
-  std::cout << "total loaded candidate rules: " << aggregated_rules.size() << std::endl;
-  std::cout << "rules with emitted unit tests: " << rules_not_excluded << std::endl;
+  std::cout << "total loaded candidate rules from snakefile(s): " << aggregated_rules.size() << std::endl;
+  std::cout << "rules from snakefile(s) not excluded by configuration: " << rules_not_excluded << std::endl;
+  std::cout << "\tthis number will be further reduced based on how many rules are present in the log" << std::endl;
 }
 
 void snakemake_unit_tests::snakemake_file::load_lines(const boost::filesystem::path &filename,
