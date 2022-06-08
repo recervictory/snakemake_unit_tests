@@ -75,7 +75,7 @@ int main(int argc, const char** const argv) {
   // should not have: snakefile
   // TODO(cpalmer718): determine if workspace requires inputs or outputs?
   //   probably not, as this isn't rule-specific, I hope
-  std::map<std::string, bool> files_outside_workspace;
+  std::map<std::string, std::vector<std::string> > files_outside_workspace;
   sr.create_empty_workspace(p.output_test_dir, p.pipeline_top_dir, p.added_files, p.added_directories,
                             &files_outside_workspace);
   // do things in this location
@@ -109,9 +109,19 @@ int main(int argc, const char** const argv) {
               << "configure your pipeline to only take inputs inside the pipeline directory itself; "
               << "or add the impacted rule to your excluded ruleset in your configuration." << std::endl;
     std::cout << "affected files:" << std::endl;
-    for (std::map<std::string, bool>::const_iterator iter = files_outside_workspace.begin();
+    for (std::map<std::string, std::vector<std::string> >::const_iterator iter = files_outside_workspace.begin();
          iter != files_outside_workspace.end(); ++iter) {
-      std::cout << "  - '" << iter->first << "'" << std::endl;
+      std::cout << "  - '" << iter->first << "'";
+      for (std::vector<std::string>::const_iterator fiter = iter->second.begin(); fiter != iter->second.end();
+           ++fiter) {
+        if (fiter == iter->second.begin()) {
+          std::cout << "; impacted rules/directives: ";
+        } else {
+          std::cout << ", ";
+        }
+        std::cout << *fiter;
+      }
+      std::cout << std::endl;
     }
   }
 

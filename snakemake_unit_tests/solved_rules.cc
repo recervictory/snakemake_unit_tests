@@ -131,7 +131,7 @@ void snakemake_unit_tests::solved_rules::emit_tests(
     const std::vector<boost::filesystem::path> &added_files,
     const std::vector<boost::filesystem::path> &added_directories, bool update_snakefiles, bool update_added_content,
     bool update_inputs, bool update_outputs, bool update_pytest, bool include_entire_dag,
-    std::map<std::string, bool> *files_outside_workspace) const {
+    std::map<std::string, std::vector<std::string>> *files_outside_workspace) const {
   // create unit test output directory
   // by default, this looks like `.tests/unit`
   // but will be overridden as `output_test_dir/unit`
@@ -242,7 +242,7 @@ void snakemake_unit_tests::solved_rules::create_workspace(
     const std::map<std::string, bool> &exclude_rules, const std::vector<boost::filesystem::path> &added_files,
     const std::vector<boost::filesystem::path> &added_directories, bool update_snakefiles, bool update_added_content,
     bool update_inputs, bool update_outputs, bool update_pytest, bool include_entire_dag,
-    std::map<std::string, bool> *files_outside_workspace) const {
+    std::map<std::string, std::vector<std::string>> *files_outside_workspace) const {
   // new: deal with rule structures that drag a certain number of upstream
   // recipes with them:
   //  - scattergather
@@ -365,7 +365,7 @@ void snakemake_unit_tests::solved_rules::create_empty_workspace(
     const boost::filesystem::path &output_test_dir, const boost::filesystem::path &pipeline_dir,
     const std::vector<boost::filesystem::path> &added_files,
     const std::vector<boost::filesystem::path> &added_directories,
-    std::map<std::string, bool> *files_outside_workspace) const {
+    std::map<std::string, std::vector<std::string>> *files_outside_workspace) const {
   // create test directory, for output from test run
   boost::filesystem::path workspace_path = output_test_dir / ".snakemake_unit_tests";
   boost::filesystem::create_directories(workspace_path);
@@ -379,11 +379,10 @@ void snakemake_unit_tests::solved_rules::remove_empty_workspace(const boost::fil
   boost::filesystem::remove_all(output_test_dir / ".snakemake_unit_tests");
 }
 
-void snakemake_unit_tests::solved_rules::copy_contents(const std::vector<boost::filesystem::path> &contents,
-                                                       const boost::filesystem::path &source_prefix,
-                                                       const boost::filesystem::path &target_prefix,
-                                                       const std::string &rule_name,
-                                                       std::map<std::string, bool> *files_outside_workspace) const {
+void snakemake_unit_tests::solved_rules::copy_contents(
+    const std::vector<boost::filesystem::path> &contents, const boost::filesystem::path &source_prefix,
+    const boost::filesystem::path &target_prefix, const std::string &rule_name,
+    std::map<std::string, std::vector<std::string>> *files_outside_workspace) const {
   std::map<boost::filesystem::path, bool> copied_sources;
   for (std::vector<boost::filesystem::path>::const_iterator iter = contents.begin(); iter != contents.end(); ++iter) {
     boost::filesystem::path source_file = source_prefix / *iter;
@@ -400,7 +399,12 @@ void snakemake_unit_tests::solved_rules::copy_contents(const std::vector<boost::
                                           boost::filesystem::canonical(boost::filesystem::absolute(*iter)),
                                           boost::filesystem::canonical(boost::filesystem::absolute(source_prefix)));
       } else if (files_outside_workspace) {
-        files_outside_workspace->insert(std::make_pair(iter->string(), true));
+        std::map<std::string, std::vector<std::string>>::iterator file_finder;
+        if ((file_finder = files_outside_workspace->find(iter->string())) == files_outside_workspace->end()) {
+          file_finder =
+              files_outside_workspace->insert(std::make_pair(iter->string(), std::vector<std::string>())).first;
+        }
+        file_finder->second.push_back(rule_name);
         continue;
       }
     }

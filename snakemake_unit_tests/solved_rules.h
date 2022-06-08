@@ -183,7 +183,8 @@ class solved_rules {
                   const std::vector<boost::filesystem::path> &added_files,
                   const std::vector<boost::filesystem::path> &added_directories, bool update_snakefiles,
                   bool update_added_content, bool update_inputs, bool update_outputs, bool update_pytest,
-                  bool include_entire_dag, std::map<std::string, bool> *files_outside_workspace) const;
+                  bool include_entire_dag,
+                  std::map<std::string, std::vector<std::string> > *files_outside_workspace) const;
   /*!
     @brief emit snakefile from parsed snakemake information
     @param sf snakemake_file object with rule definitions corresponding
@@ -243,7 +244,8 @@ class solved_rules {
                         const std::vector<boost::filesystem::path> &added_files,
                         const std::vector<boost::filesystem::path> &added_directories, bool update_snakefiles,
                         bool update_added_content, bool update_inputs, bool update_outputs, bool update_pytest,
-                        bool include_entire_dag, std::map<std::string, bool> *files_outside_workspace) const;
+                        bool include_entire_dag,
+                        std::map<std::string, std::vector<std::string> > *files_outside_workspace) const;
   /*!
     @brief create an empty workspace for python testing
     @param output_test_dir output directory for tests (e.g. '.tests/')
@@ -260,7 +262,7 @@ class solved_rules {
                               const boost::filesystem::path &pipeline_dir,
                               const std::vector<boost::filesystem::path> &added_files,
                               const std::vector<boost::filesystem::path> &added_directories,
-                              std::map<std::string, bool> *files_outside_workspace) const;
+                              std::map<std::string, std::vector<std::string> > *files_outside_workspace) const;
 
   /*!
     @brief recursively remove empty workspace after python integration is
@@ -281,7 +283,7 @@ class solved_rules {
    */
   void copy_contents(const std::vector<boost::filesystem::path> &contents, const boost::filesystem::path &source_prefix,
                      const boost::filesystem::path &target_prefix, const std::string &rule_name,
-                     std::map<std::string, bool> *files_outside_workspace) const;
+                     std::map<std::string, std::vector<std::string> > *files_outside_workspace) const;
 
   /*!
     @brief report phony all target controlling test snakemake run
