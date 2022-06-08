@@ -86,10 +86,10 @@ void snakemake_unit_tests::snakemake_file::report_rules(
     if (!(*iter)->included()) continue;
     // python code. scan for remaining include directives
     if (!(*iter)->get_rule_name().empty()) {
-      // disable reporting of "all" phony target
-      if (!(*iter)->get_rule_name().compare("all")) continue;
-      // allow global snakemake directives with no rulename
-      // otherwise: rule. aggregate for duplication
+      // phony global target exclusion is more properly handled in user config;
+      // no more hard override here.
+      // this is only designed for tracking rules with specific unit tests emitted.
+      // duplicate counts indicate some sort of error in python logic parsing.
       if ((finder = aggregated_rules->find((*iter)->get_rule_name())) == aggregated_rules->end()) {
         finder = aggregated_rules
                      ->insert(std::make_pair((*iter)->get_rule_name(), std::vector<boost::shared_ptr<rule_block> >()))
@@ -109,65 +109,33 @@ void snakemake_unit_tests::snakemake_file::detect_known_issues(std::map<std::str
   /*
     Known issues as implemented here
 
-    1) include directives on variables or in more complicated one line logic
-    statements
+    - there are no longer (as of 7.8.1) any snakemake features known to be actively unsupported by
+    this unit test generation program. this may change as time goes on.
 
-    2) conditional rules causing duplicate rules with the same name but
-    different contents to be loaded; snakemake wouldn't care, but this code
-    isn't smart enough to resolve yet
-
-    3) derived rules where the base rule is not detected for some reason
-    (detected during that scan)
+    - snakemake (7.8.1) does not object to multiple rules emitting colliding output files,
+    so long as the output files are not what is requested specifically as input in the DAG.
+    this is extremely problematic behavior and should be avoided in pipeline implementation.
    */
   if (!exclude_rules) throw std::runtime_error("null pointer provided to exclude_rules");
   std::map<std::string, std::vector<boost::shared_ptr<rule_block> > > aggregated_rules;
-  std::map<std::string, std::vector<boost::shared_ptr<rule_block> > >::iterator finder;
-  unsigned duplicated_rules = 0;
-  std::vector<std::string> unresolvable_duplicated_rules;
+  std::map<std::string, std::vector<boost::shared_ptr<rule_block> > >::const_iterator finder;
   report_rules(&aggregated_rules);
-
+  unsigned rules_not_excluded = 0;
   for (finder = aggregated_rules.begin(); finder != aggregated_rules.end(); ++finder) {
-    if (finder->second.size() > 1) ++duplicated_rules;
-    bool problematic = false;
-    for (unsigned i = 1; i < finder->second.size() && !problematic; ++i) {
-      if (*finder->second.at(i) != *finder->second.at(0)) {
-        bool already_excluded = false;
-        for (std::map<std::string, bool>::const_iterator miter = exclude_rules->begin();
-             miter != exclude_rules->end() && !already_excluded; ++miter) {
-          if (!miter->first.compare(finder->first)) {
-            already_excluded = true;
-          }
-        }
-        if (!already_excluded) {
-          problematic = true;
-          exclude_rules->insert(std::make_pair(finder->first, false));
-          unresolvable_duplicated_rules.push_back(finder->first);
-        }
-      }
+    if (exclude_rules->find(finder->first) == exclude_rules->end()) {
+      ++rules_not_excluded;
     }
   }
+
   // report results
   // new: suppress messages about multiple definitions and include directives
   // new format and support means that multiple definitions should be handled,
   // and include directives are not squashed and thus expected in output.
   std::cout << "snakefile load summary" << std::endl;
   std::cout << "----------------------" << std::endl;
-  std::cout << "total loaded candidate rules: " << aggregated_rules.size() << std::endl;
-  std::cout << "  of those rules, " << duplicated_rules << " had multiple entries in unconditional logic" << std::endl;
-  if (!unresolvable_duplicated_rules.empty()) {
-    std::cout << "***of these duplicate rules, " << unresolvable_duplicated_rules.size()
-              << " had incompatible duplicate content:" << std::endl;
-    for (std::vector<std::string>::const_iterator iter = unresolvable_duplicated_rules.begin();
-         iter != unresolvable_duplicated_rules.end(); ++iter) {
-      std::cout << "     " << *iter << std::endl;
-    }
-    std::cout << std::endl
-              << "sorry, " << (unresolvable_duplicated_rules.size() == 1 ? "this rule is" : "these rules are")
-              << " unsupported in the current software build. "
-              << "this information will be automatically added to exclude-rules "
-              << "to prevent inconsistent behavior" << std::endl
-              << std::endl;
-  }
+  std::cout << "total loaded candidate rules from snakefile(s): " << aggregated_rules.size() << std::endl;
+  std::cout << "rules from snakefile(s) not excluded by configuration: " << rules_not_excluded << std::endl;
+  std::cout << "\tthis number will be further reduced based on how many rules are present in the log" << std::endl;
 }
 
 void snakemake_unit_tests::snakemake_file::load_lines(const boost::filesystem::path &filename,
