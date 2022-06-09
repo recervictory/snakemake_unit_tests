@@ -1,6 +1,3 @@
-#!/usr/bin/env bash
-SNAKEMAKE_UNIT_TESTS_DIR=tests
-
 VALID_TARGETS=""
 CANDIDATE_TARGETS=""
 if [[ "$#" -gt 0 ]] ; then
