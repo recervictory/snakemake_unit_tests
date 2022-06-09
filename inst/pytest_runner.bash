@@ -9,7 +9,7 @@ fi
 for i in ${CANDIDATE_TARGETS}; do
     if [[ ! -d "${SNAKEMAKE_UNIT_TESTS_DIR}/unit/${i}" ]] ; then
         echo "rule ${i} does not seem to have a unit test installed under ${SNAKEMAKE_UNIT_TESTS_DIR}/unit"
-    else
+    elif [[ -d "${SNAKEMAKE_UNIT_TESTS_DIR}/unit/${i}/output" ]] ; then
 	echo "removing output from failed prior run for rule ${i}"
         ## remove any existing output directory from a previous failed run
         rm -Rf "${SNAKEMAKE_UNIT_TESTS_DIR}/unit/${i}/output"
