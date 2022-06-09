@@ -25,7 +25,6 @@ PYTEST_RESULTS=$(echo "${PYTEST_RESULTS}" | sed -E "s/\x1B\[([0-9]{1,3}(;[0-9]{1
 PYTEST_RESULTS=$(echo "${PYTEST_RESULTS}" | awk "/^${SNAKEMAKE_UNIT_TESTS_DIR}\/unit\/test_/ && /.py \./")
 PYTEST_RESULTS=$(echo "${PYTEST_RESULTS}" | awk '{print $1}')
 PYTEST_RESULTS=$(echo "${PYTEST_RESULTS}" | sed -E "s:^${SNAKEMAKE_UNIT_TESTS_DIR}/unit/test_:: ; s:\.py$::")
-echo "pytest results are ${PYTEST_RESULTS}"
 ## only if a test succeeds, remove the output directory
 for pytest_file in "$(echo ${PYTEST_RESULTS})" ; do
     if ! [[ -z "${pytest_file}" ]] ; then
