@@ -10,6 +10,7 @@ for i in ${CANDIDATE_TARGETS}; do
     if [[ ! -d "${SNAKEMAKE_UNIT_TESTS_DIR}/unit/${i}" ]] ; then
         echo "rule ${i} does not seem to have a unit test installed under ${SNAKEMAKE_UNIT_TESTS_DIR}/unit"
     else
+	echo "removing output from failed prior run for rule ${i}"
         ## remove any existing output directory from a previous failed run
         rm -Rf "${SNAKEMAKE_UNIT_TESTS_DIR}/unit/${i}/output"
         ## add to global target list
@@ -26,7 +27,7 @@ PYTEST_RESULTS=$(echo "${PYTEST_RESULTS}" | awk "/^${SNAKEMAKE_UNIT_TESTS_DIR}\/
 PYTEST_RESULTS=$(echo "${PYTEST_RESULTS}" | awk '{print $1}')
 PYTEST_RESULTS=$(echo "${PYTEST_RESULTS}" | sed -E "s:^${SNAKEMAKE_UNIT_TESTS_DIR}/unit/test_:: ; s:\.py$::")
 ## only if a test succeeds, remove the output directory
-for pytest_file in "$(echo ${PYTEST_RESULTS})" ; do
+for pytest_file in $(echo ${PYTEST_RESULTS}) ; do
     if ! [[ -z "${pytest_file}" ]] ; then
         rm -Rf "${SNAKEMAKE_UNIT_TESTS_DIR}/unit/${pytest_file}/output"
     fi
