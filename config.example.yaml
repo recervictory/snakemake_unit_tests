@@ -95,6 +95,18 @@ added-directories:
   - workflow/envs
   - workflow/scripts
 
+# include-rules: [scalar or sequence]
+## one or more rule names that should be included in the test generation
+## process. note that this set of rules is designed to coexist with the
+## `exclude-rules` entries below: if either list is unspecified, the specified
+## list controls behavior, but if both lists are specified, only rules present
+## in the include list and absent from the include list will be reported out.
+## note that if you specify additional --include-rules at the command
+## line, they will be *added* to this list; they will not replace this list.
+## if you want that behavior, remove entries from this file.
+include-rules:
+  - good_rulename # this rule will actually be included if present in the log and snakefile
+  - tabix_vcf     # since this rule is also present in the exclude list, it will *not* be included
 # exclude-rules: [scalar or sequence]
 ## one or more rule names that should be skipped in the test generation
 ## process. there are various reasons why rules might fail: perhaps the intermediates

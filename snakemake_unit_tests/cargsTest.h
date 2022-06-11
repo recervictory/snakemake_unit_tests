@@ -63,6 +63,7 @@ class cargsTest : public CppUnit::TestFixture {
   CPPUNIT_TEST(test_cargs_get_inst_dir);
   CPPUNIT_TEST(test_cargs_get_added_files);
   CPPUNIT_TEST(test_cargs_get_added_directories);
+  CPPUNIT_TEST(test_cargs_get_include_rules);
   CPPUNIT_TEST(test_cargs_get_exclude_rules);
   CPPUNIT_TEST(test_cargs_include_entire_dag);
   CPPUNIT_TEST(test_cargs_update_all);
@@ -74,6 +75,7 @@ class cargsTest : public CppUnit::TestFixture {
   CPPUNIT_TEST(test_cargs_update_pytest);
   CPPUNIT_TEST(test_cargs_verbose);
   CPPUNIT_TEST(test_cargs_compute_flag);
+  CPPUNIT_TEST_EXCEPTION(test_cargs_compute_flag_invalid_flag, std::logic_error);
   CPPUNIT_TEST(test_cargs_compute_parameter);
   CPPUNIT_TEST_EXCEPTION(test_cargs_compute_missing_required_parameter, std::domain_error);
   CPPUNIT_TEST(test_cargs_print_help);
@@ -133,6 +135,7 @@ class cargsTest : public CppUnit::TestFixture {
   void test_cargs_get_inst_dir();
   void test_cargs_get_added_files();
   void test_cargs_get_added_directories();
+  void test_cargs_get_include_rules();
   void test_cargs_get_exclude_rules();
   void test_cargs_include_entire_dag();
   void test_cargs_update_all();
@@ -144,6 +147,7 @@ class cargsTest : public CppUnit::TestFixture {
   void test_cargs_update_pytest();
   void test_cargs_verbose();
   void test_cargs_compute_flag();
+  void test_cargs_compute_flag_invalid_flag();
   void test_cargs_compute_parameter();
   void test_cargs_compute_missing_required_parameter();
   void test_cargs_print_help();

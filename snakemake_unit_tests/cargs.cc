@@ -12,8 +12,10 @@ void snakemake_unit_tests::cargs::initialize_options() {
                       "config yaml file specifying default options for other flags")(
       "added-directories,d", boost::program_options::value<std::vector<std::string> >(),
       "optional set of relative directory paths that will be installed "
-      "alongside tests")("exclude-rules,e", boost::program_options::value<std::vector<std::string> >(),
-                         "optional set of rules to skip for testing")(
+      "alongside tests")("include-rules,n", boost::program_options::value<std::vector<std::string> >(),
+                         "optional set of rules to include in testing")(
+      "exclude-rules,e", boost::program_options::value<std::vector<std::string> >(),
+      "optional set of rules to skip for testing")(
       "added-files,f", boost::program_options::value<std::vector<std::string> >(),
       "optional set of relative file paths that will be installed alongside "
       "tests")("help,h", "emit this help message")("inst-dir,i", boost::program_options::value<std::string>(),
@@ -80,6 +82,9 @@ snakemake_unit_tests::params snakemake_unit_tests::cargs::set_parameters() const
       if (p.config.query_valid("added-directories")) {
         p.added_directories = vector_convert<boost::filesystem::path>(p.config.get_sequence("added-directories"));
       }
+      if (p.config.query_valid("include-rules")) {
+        p.include_rules = vector_to_map<std::string>(p.config.get_sequence("include-rules"));
+      }
       if (p.config.query_valid("exclude-rules")) {
         p.exclude_rules = vector_to_map<std::string>(p.config.get_sequence("exclude-rules"));
       }
@@ -137,6 +142,10 @@ snakemake_unit_tests::params snakemake_unit_tests::cargs::set_parameters() const
   add_contents<boost::filesystem::path>(get_added_files(), &p.added_files);
   // added_directories: augment whatever is present in config.yaml
   add_contents<boost::filesystem::path>(get_added_directories(), &p.added_directories);
+  // include_rules: augment whatever is present in config.yaml
+  // note that I'm not sure that this is best? what is the intuitive behavior?
+  // override with command line? I guess we'll have to wait and see
+  add_contents<std::string>(get_include_rules(), &p.include_rules);
   // exclude_rules: augment whatever is present in config.yaml
   add_contents<std::string>(get_exclude_rules(), &p.exclude_rules);
   // add "all" to exclusion list, always
@@ -270,6 +279,8 @@ void snakemake_unit_tests::params::report_settings(const boost::filesystem::path
   emit_yaml_vector(&out, added_files, "added-files");
   // added-directories
   emit_yaml_vector(&out, added_directories, "added-directories");
+  // include-rules
+  emit_yaml_map(&out, include_rules, "include-rules");
   // exclude-rules
   emit_yaml_map(&out, exclude_rules, "exclude-rules");
   // exclude-extensions

@@ -127,8 +127,8 @@ void snakemake_unit_tests::solved_rules::load_file(const std::string &filename) 
 void snakemake_unit_tests::solved_rules::emit_tests(
     const snakemake_file &sf, const boost::filesystem::path &output_test_dir,
     const boost::filesystem::path &pipeline_top_dir, const boost::filesystem::path &pipeline_run_dir,
-    const boost::filesystem::path &inst_dir, const std::map<std::string, bool> &exclude_rules,
-    const std::vector<boost::filesystem::path> &added_files,
+    const boost::filesystem::path &inst_dir, const std::map<std::string, bool> &include_rules,
+    const std::map<std::string, bool> &exclude_rules, const std::vector<boost::filesystem::path> &added_files,
     const std::vector<boost::filesystem::path> &added_directories, bool update_snakefiles, bool update_added_content,
     bool update_inputs, bool update_outputs, bool update_pytest, bool include_entire_dag,
     std::map<std::string, std::vector<std::string>> *files_outside_workspace) const {
@@ -160,12 +160,14 @@ void snakemake_unit_tests::solved_rules::emit_tests(
       std::map<boost::shared_ptr<recipe>, bool> missing_recipes;
       do {
         create_workspace(*iter, sf, output_test_dir, test_parent_path, pipeline_top_dir, pipeline_run_dir, inst_test_py,
-                         missing_recipes, exclude_rules, added_files, added_directories, update_snakefiles,
-                         update_added_content, update_inputs, update_outputs, update_pytest, include_entire_dag,
-                         files_outside_workspace);
+                         missing_recipes, include_rules, exclude_rules, added_files, added_directories,
+                         update_snakefiles, update_added_content, update_inputs, update_outputs, update_pytest,
+                         include_entire_dag, files_outside_workspace);
         // new: deal with the fact that certain kinds of rule relationships (e.g. rulesdot) cannot be
         // reliably detected with this program's approach to querying snakefiles
-        if (exclude_rules.find((*iter)->get_rule_name()) == exclude_rules.end()) {
+        if (exclude_rules.find((*iter)->get_rule_name()) == exclude_rules.end() &&
+            (include_rules.empty() || include_rules.find((*iter)->get_rule_name()) != include_rules.end()) &&
+            (update_snakefiles || update_added_content || update_inputs || update_outputs)) {
           std::vector<std::string> snakemake_exec;
           snakemake_exec = sf.exec("cd " + (test_parent_path / (*iter)->get_rule_name() / "workspace").string() +
                                        " && snakemake -nFs " + sf.get_snakefile_relative_path().string(),
@@ -239,7 +241,8 @@ void snakemake_unit_tests::solved_rules::create_workspace(
     const boost::filesystem::path &test_parent_path, const boost::filesystem::path &pipeline_top_dir,
     const boost::filesystem::path &pipeline_run_dir, const boost::filesystem::path &inst_test_py,
     const std::map<boost::shared_ptr<recipe>, bool> &extra_required_recipes,
-    const std::map<std::string, bool> &exclude_rules, const std::vector<boost::filesystem::path> &added_files,
+    const std::map<std::string, bool> &include_rules, const std::map<std::string, bool> &exclude_rules,
+    const std::vector<boost::filesystem::path> &added_files,
     const std::vector<boost::filesystem::path> &added_directories, bool update_snakefiles, bool update_added_content,
     bool update_inputs, bool update_outputs, bool update_pytest, bool include_entire_dag,
     std::map<std::string, std::vector<std::string>> *files_outside_workspace) const {
@@ -260,7 +263,8 @@ void snakemake_unit_tests::solved_rules::create_workspace(
   }
   // only create output if the rule has not already been hit,
   // and if the user didn't want this rule disabled
-  if (exclude_rules.find(rec->get_rule_name()) == exclude_rules.end()) {
+  if (exclude_rules.find(rec->get_rule_name()) == exclude_rules.end() &&
+      (include_rules.empty() || include_rules.find(rec->get_rule_name()) != include_rules.end())) {
     std::cout << "emitting test for rule \"" << rec->get_rule_name() << "\"" << std::endl;
 
     bool update_any = update_snakefiles || update_added_content || update_inputs || update_outputs || update_pytest;
