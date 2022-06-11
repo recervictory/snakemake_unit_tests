@@ -40,14 +40,14 @@ void snakemake_unit_tests::cargsTest::populate_arguments(const std::string &cmd,
 void snakemake_unit_tests::cargsTest::setUp() {
   std::string longform =
       "./snakemake_unit_tests.out --config configname.yaml "
-      "--added-directories added_dir --exclude-rules rulename --added-files added_file "
+      "--added-directories added_dir --include-rules keepme --exclude-rules rulename --added-files added_file "
       "--help --inst-dir inst --snakemake-log logfile --output-test-dir outdir "
       "--pipeline-top-dir project --pipeline-run-dir rundir --snakefile Snakefile "
       "--verbose --update-all --update-snakefiles --update-added-content "
       "--update-config --update-inputs --update-outputs --update-pytest --include-entire-dag";
   std::string shortform =
       "./snakemake_unit_tests.out -c configname.yaml "
-      "-d added_dir -e rulename -f added_file "
+      "-d added_dir -n keepme -e rulename -f added_file "
       "-h -i inst -l logfile -o outdir "
       "-p project -r rundir -s Snakefile -v";
   populate_arguments(longform, &_arg_vec_long, &_argv_long);
@@ -101,6 +101,7 @@ void snakemake_unit_tests::cargsTest::test_params_default_constructor() {
   CPPUNIT_ASSERT(p.snakemake_log.string().empty());
   CPPUNIT_ASSERT(p.added_files.empty());
   CPPUNIT_ASSERT(p.added_directories.empty());
+  CPPUNIT_ASSERT(p.include_rules.empty());
   CPPUNIT_ASSERT(p.exclude_rules.empty());
   CPPUNIT_ASSERT(p.exclude_extensions.empty());
   CPPUNIT_ASSERT(p.exclude_paths.empty());
@@ -121,6 +122,7 @@ void snakemake_unit_tests::cargsTest::test_params_copy_constructor() {
   p.snakemake_log = "thing7";
   p.added_files.push_back("thing8");
   p.added_directories.push_back("thing9");
+  p.include_rules["thing9a"] = true;
   p.exclude_rules["thing10"] = true;
   p.exclude_extensions["thing11"] = true;
   p.exclude_paths["thing12"] = true;
@@ -144,6 +146,7 @@ void snakemake_unit_tests::cargsTest::test_params_copy_constructor() {
   CPPUNIT_ASSERT(p.snakemake_log == q.snakemake_log);
   CPPUNIT_ASSERT(p.added_files == q.added_files);
   CPPUNIT_ASSERT(p.added_directories == q.added_directories);
+  CPPUNIT_ASSERT(p.include_rules == q.include_rules);
   CPPUNIT_ASSERT(p.exclude_rules == q.exclude_rules);
   CPPUNIT_ASSERT(p.exclude_extensions == q.exclude_extensions);
   CPPUNIT_ASSERT(p.exclude_paths == q.exclude_paths);
@@ -166,6 +169,8 @@ void snakemake_unit_tests::cargsTest::test_params_report_settings() {
   directories.push_back("dname1");
   directories.push_back("dname2");
   p.added_directories = directories;
+  p.include_rules["keepme1"] = true;
+  p.include_rules["keepme2"] = true;
   p.exclude_rules["rulename1"] = true;
   p.exclude_rules["rulename2"] = true;
   p.exclude_extensions.clear();
@@ -194,6 +199,7 @@ void snakemake_unit_tests::cargsTest::test_params_report_settings() {
                                   "/slog\n"
                                   "added-files:\n  - fname1\n  - fname2\n"
                                   "added-directories:\n  - dname1\n  - dname2\n"
+                                  "include-rules:\n  - keepme1\n  - keepme2\n"
                                   "exclude-rules:\n  - rulename1\n  - rulename2\n"
                                   "exclude-extensions: ~\n"
                                   "exclude-paths:\n  - path1\n"
@@ -327,7 +333,8 @@ void snakemake_unit_tests::cargsTest::test_cargs_copy_constructor() {
       CPPUNIT_ASSERT_MESSAGE("cargs copy constructor, parameters sane: " + prev + " -> " + current,
                              ap2._vm.count(prev));
       // handle multiple value parameters separately
-      if (!prev.compare("added-directories") || !prev.compare("added-files") || !prev.compare("exclude-rules")) {
+      if (!prev.compare("added-directories") || !prev.compare("added-files") || !prev.compare("include-rules") ||
+          !prev.compare("exclude-rules")) {
         std::vector<std::string> result = ap2._vm[prev].as<std::vector<std::string> >();
         CPPUNIT_ASSERT_MESSAGE("cargs copy constructor key->value: " + prev + " -> " + current,
                                result.size() == 1 && !result.at(0).compare(current));
@@ -357,6 +364,7 @@ void snakemake_unit_tests::cargsTest::test_cargs_initialize_options() {
   o << ap._desc;
   CPPUNIT_ASSERT(o.str().find("-c [ --config ] arg") != std::string::npos);
   CPPUNIT_ASSERT(o.str().find("-d [ --added-directories ] arg") != std::string::npos);
+  CPPUNIT_ASSERT(o.str().find("-n [ --include-rules ] arg") != std::string::npos);
   CPPUNIT_ASSERT(o.str().find("-e [ --exclude-rules ] arg") != std::string::npos);
   CPPUNIT_ASSERT(o.str().find("-f [ --added-files ] arg") != std::string::npos);
   CPPUNIT_ASSERT(o.str().find("-h [ --help ]") != std::string::npos);
@@ -411,8 +419,9 @@ void snakemake_unit_tests::cargsTest::test_cargs_set_parameters() {
     parameters that augment when present on the CLI:
     - (added-files, added-files, added_files)
     - (added-directories, added-directories, added_directories)
+    - (include-rules, include-rules, include_rules)
     - (exclude-rules, exclude-rules, exclude_rules)
-    -   exclude_rules unconditionally gets 'all' added to it
+    -   exclude_rules unconditionally gets 'all' added to it (flagged for deprecation)
    */
   // mandatory input files and directories need to be present for this test
   boost::filesystem::path filename, prefix = std::string(_tmp_dir);
@@ -462,6 +471,12 @@ void snakemake_unit_tests::cargsTest::test_cargs_set_parameters() {
   added_dirs["dir2"] = true;
   added_dirs_config["dir1_config"] = true;
   added_dirs_config["dir2_config"] = true;
+  // included rules
+  std::map<std::string, bool> include_rules, include_rules_config;
+  include_rules["keepme1"] = true;
+  include_rules["keepme2"] = true;
+  include_rules["keepme1_config"] = true;
+  include_rules["keepme2_config"] = true;
   // excluded rules
   std::map<std::string, bool> exclude_rules, exclude_rules_config;
   exclude_rules["rule1"] = true;
@@ -515,6 +530,11 @@ void snakemake_unit_tests::cargsTest::test_cargs_set_parameters() {
     // for later tests, this directory must also be installed under the non-config top directory
     std::filesystem::create_directory((top_dir / iter->first).string().c_str());
   }
+  config_data += "include-rules:\n";
+  for (std::map<std::string, bool>::const_iterator iter = include_rules_config.begin();
+       iter != include_rules_config.end(); ++iter) {
+    config_data += "  - " + iter->first + "\n";
+  }
   config_data += "exclude-rules:\n";
   for (std::map<std::string, bool>::const_iterator iter = exclude_rules_config.begin();
        iter != exclude_rules_config.end(); ++iter) {
@@ -560,7 +580,8 @@ void snakemake_unit_tests::cargsTest::test_cargs_set_parameters() {
       "--inst-dir " +
       inst_dir.string() + " --snakemake-log " + run_log.string() + " --output-test-dir " + outdir.string() +
       " --pipeline-top-dir " + top_dir.string() + " --pipeline-run-dir " + run_dir.string() + " --snakefile " +
-      snakefile.string() + " --exclude-rules rule1 --exclude-rules rule2";
+      snakefile.string() +
+      " --include-rules keepme1 --include-rules keepme2 --exclude-rules rule1 --exclude-rules rule2";
   for (std::map<boost::filesystem::path, bool>::const_iterator iter = added_dirs.begin(); iter != added_dirs.end();
        ++iter) {
     command += " -d " + iter->first.string();
@@ -570,6 +591,9 @@ void snakemake_unit_tests::cargsTest::test_cargs_set_parameters() {
        ++iter) {
     command += " -f " + iter->first.string();
     create_empty_file(top_dir / iter->first);
+  }
+  for (std::map<std::string, bool>::const_iterator iter = include_rules.begin(); iter != include_rules.end(); ++iter) {
+    command += " -n " + iter->first;
   }
   for (std::map<std::string, bool>::const_iterator iter = exclude_rules.begin(); iter != exclude_rules.end(); ++iter) {
     command += " -e " + iter->first;
@@ -599,6 +623,11 @@ void snakemake_unit_tests::cargsTest::test_cargs_set_parameters() {
        iter != p2.added_directories.end(); ++iter) {
     CPPUNIT_ASSERT(added_dirs.find(*iter) != added_dirs.end());
   }
+  CPPUNIT_ASSERT(p2.include_rules.size() == include_rules.size());
+  for (std::map<std::string, bool>::const_iterator iter = p2.include_rules.begin(); iter != p2.include_rules.end();
+       ++iter) {
+    CPPUNIT_ASSERT(include_rules.find(iter->first) != include_rules.end());
+  }
   CPPUNIT_ASSERT(p2.exclude_rules.size() == exclude_rules.size() + 1);
   for (std::map<std::string, bool>::const_iterator iter = p2.exclude_rules.begin(); iter != p2.exclude_rules.end();
        ++iter) {
@@ -627,6 +656,11 @@ void snakemake_unit_tests::cargsTest::test_cargs_set_parameters() {
   for (std::vector<boost::filesystem::path>::const_iterator iter = p3.added_directories.begin();
        iter != p3.added_directories.end(); ++iter) {
     CPPUNIT_ASSERT(added_dirs_config.find(*iter) != added_dirs_config.end());
+  }
+  CPPUNIT_ASSERT(p3.include_rules.size() == include_rules_config.size());
+  for (std::map<std::string, bool>::const_iterator iter = p3.include_rules.begin(); iter != p3.include_rules.end();
+       ++iter) {
+    CPPUNIT_ASSERT(include_rules.find(iter->first) != include_rules.end());
   }
   CPPUNIT_ASSERT(p3.exclude_rules.size() == exclude_rules_config.size() + 1);
   for (std::map<std::string, bool>::const_iterator iter = p3.exclude_rules.begin(); iter != p3.exclude_rules.end();
@@ -698,6 +732,11 @@ void snakemake_unit_tests::cargsTest::test_cargs_set_parameters() {
     CPPUNIT_ASSERT(added_dirs_config.find(*iter) != added_dirs_config.end() ||
                    added_dirs.find(*iter) != added_dirs.end());
   }
+  CPPUNIT_ASSERT(p4.include_rules.size() == include_rules_config.size());
+  for (std::map<std::string, bool>::const_iterator iter = p4.include_rules.begin(); iter != p4.include_rules.end();
+       ++iter) {
+    CPPUNIT_ASSERT(include_rules.find(iter->first) != include_rules.end());
+  }
   CPPUNIT_ASSERT(p4.exclude_rules.size() == exclude_rules.size() + exclude_rules_config.size() + 1);
   for (std::map<std::string, bool>::const_iterator iter = p4.exclude_rules.begin(); iter != p4.exclude_rules.end();
        ++iter) {
@@ -707,19 +746,19 @@ void snakemake_unit_tests::cargsTest::test_cargs_set_parameters() {
     }
   }
   CPPUNIT_ASSERT(p4.exclude_rules.find("all") != p4.exclude_rules.end());
-  CPPUNIT_ASSERT(p3.exclude_paths.size() == exclude_paths.size());
-  for (std::map<std::string, bool>::const_iterator iter = p3.exclude_paths.begin(); iter != p3.exclude_paths.end();
+  CPPUNIT_ASSERT(p4.exclude_paths.size() == exclude_paths.size());
+  for (std::map<std::string, bool>::const_iterator iter = p4.exclude_paths.begin(); iter != p4.exclude_paths.end();
        ++iter) {
     CPPUNIT_ASSERT(exclude_paths.find(iter->first) != exclude_paths.end());
   }
-  CPPUNIT_ASSERT(p3.exclude_extensions.size() == exclude_extensions.size());
-  for (std::map<std::string, bool>::const_iterator iter = p3.exclude_extensions.begin();
-       iter != p3.exclude_extensions.end(); ++iter) {
+  CPPUNIT_ASSERT(p4.exclude_extensions.size() == exclude_extensions.size());
+  for (std::map<std::string, bool>::const_iterator iter = p4.exclude_extensions.begin();
+       iter != p4.exclude_extensions.end(); ++iter) {
     CPPUNIT_ASSERT(exclude_extensions.find(iter->first) != exclude_extensions.end());
   }
-  CPPUNIT_ASSERT(p3.byte_comparisons.size() == byte_comparisons.size());
-  for (std::map<std::string, bool>::const_iterator iter = p3.byte_comparisons.begin();
-       iter != p3.byte_comparisons.end(); ++iter) {
+  CPPUNIT_ASSERT(p4.byte_comparisons.size() == byte_comparisons.size());
+  for (std::map<std::string, bool>::const_iterator iter = p4.byte_comparisons.begin();
+       iter != p4.byte_comparisons.end(); ++iter) {
     CPPUNIT_ASSERT(byte_comparisons.find(iter->first) != byte_comparisons.end());
   }
 }
@@ -1113,6 +1152,11 @@ void snakemake_unit_tests::cargsTest::test_cargs_get_added_directories() {
   cargs ap(_arg_vec_long.size(), _argv_long);
   std::vector<std::string> res = ap.get_added_directories();
   CPPUNIT_ASSERT(res.size() == 1 && !res.at(0).compare("added_dir"));
+}
+void snakemake_unit_tests::cargsTest::test_cargs_get_include_rules() {
+  cargs ap(_arg_vec_long.size(), _argv_long);
+  std::vector<std::string> res = ap.get_include_rules();
+  CPPUNIT_ASSERT(res.size() == 1 && !res.at(0).compare("keepme"));
 }
 void snakemake_unit_tests::cargsTest::test_cargs_get_exclude_rules() {
   cargs ap(_arg_vec_long.size(), _argv_long);

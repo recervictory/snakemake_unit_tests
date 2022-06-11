@@ -63,7 +63,7 @@ int main(int argc, const char** const argv) {
   if (p.verbose) {
     std::cout << "computed snakefile is \"" << snakefile_str << "\"" << std::endl;
   }
-  sf.load_everything(boost::filesystem::path(snakefile_str), p.pipeline_top_dir, &p.exclude_rules, p.verbose);
+  sf.load_everything(boost::filesystem::path(snakefile_str), p.pipeline_top_dir, p.verbose);
 
   // parse the log file to determine the solved system of rules and outputs
   snakemake_unit_tests::solved_rules sr;
@@ -92,11 +92,11 @@ int main(int argc, const char** const argv) {
   sr.remove_empty_workspace(p.output_test_dir);
 
   // refactor: move postflight snakefile checks to after the python passes
-  sf.postflight_checks(&p.exclude_rules);
+  sf.postflight_checks(p.include_rules, p.exclude_rules);
 
   // iterate over the solved rules, emitting them with modifiers as desired
-  sr.emit_tests(sf, p.output_test_dir, p.pipeline_top_dir, p.pipeline_run_dir, p.inst_dir, p.exclude_rules,
-                p.added_files, p.added_directories, p.update_snakefiles || p.update_all,
+  sr.emit_tests(sf, p.output_test_dir, p.pipeline_top_dir, p.pipeline_run_dir, p.inst_dir, p.include_rules,
+                p.exclude_rules, p.added_files, p.added_directories, p.update_snakefiles || p.update_all,
                 p.update_added_content || p.update_all, p.update_inputs || p.update_all,
                 p.update_outputs || p.update_all, p.update_pytest || p.update_all, p.include_entire_dag,
                 &files_outside_workspace);

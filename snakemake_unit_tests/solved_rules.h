@@ -161,6 +161,9 @@ class solved_rules {
     @param inst_dir directory in snakemake_unit_tests repo containing
     installation files (when conda mode is enabled, this will default to
     $CONDA_PREFIX/share/snakemake_unit_tests/inst)
+    @param include_rules map of rules to include tests for; note that
+    an empty map is taken to imply that all rules are to be included except
+    for those explicitly in the exclude list
     @param exclude_rules map of rules to skip tests for
     @param added_files vector of additional files to add to test workspaces
     @param added_directories vector of additional directories to add to test
@@ -179,7 +182,8 @@ class solved_rules {
   */
   void emit_tests(const snakemake_file &sf, const boost::filesystem::path &output_test_dir,
                   const boost::filesystem::path &pipeline_top_dir, const boost::filesystem::path &pipeline_run_dir,
-                  const boost::filesystem::path &inst_dir, const std::map<std::string, bool> &exclude_rules,
+                  const boost::filesystem::path &inst_dir, const std::map<std::string, bool> &include_rules,
+                  const std::map<std::string, bool> &exclude_rules,
                   const std::vector<boost::filesystem::path> &added_files,
                   const std::vector<boost::filesystem::path> &added_directories, bool update_snakefiles,
                   bool update_added_content, bool update_inputs, bool update_outputs, bool update_pytest,
@@ -219,6 +223,9 @@ class solved_rules {
     @param extra_required_recipes map of recipes to spike into the snakefile
     in addition to target rule. this is the intended injection point for
     ad hoc `rules.`-style rule handling
+    @param include_rules map of rules to include tests for; note that an
+    empty map implies that all rules are to be included, except for those
+    explicitly flagged in the exclude set
     @param exclude_rules map of rules to skip tests for
     @param added_files vector of additional files to add to test workspaces
     @param added_directories vector of additional directories to add to test
@@ -240,6 +247,7 @@ class solved_rules {
                         const boost::filesystem::path &pipeline_top_dir,
                         const boost::filesystem::path &pipeline_run_dir, const boost::filesystem::path &test_inst_py,
                         const std::map<boost::shared_ptr<recipe>, bool> &extra_required_recipes,
+                        const std::map<std::string, bool> &include_rules,
                         const std::map<std::string, bool> &exclude_rules,
                         const std::vector<boost::filesystem::path> &added_files,
                         const std::vector<boost::filesystem::path> &added_directories, bool update_snakefiles,

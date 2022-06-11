@@ -92,6 +92,7 @@ class params {
         snakemake_log(obj.snakemake_log),
         added_files(obj.added_files),
         added_directories(obj.added_directories),
+        include_rules(obj.include_rules),
         exclude_rules(obj.exclude_rules),
         exclude_extensions(obj.exclude_extensions),
         exclude_paths(obj.exclude_paths),
@@ -221,6 +222,10 @@ class params {
     @brief user-defined directories to recursively place in test workspaces
    */
   std::vector<boost::filesystem::path> added_directories;
+  /*!
+    @brief user-defined rulenames to include in test generation
+   */
+  std::map<std::string, bool> include_rules;
   /*!
     @brief user-defined rulenames to skip in test generation
    */
@@ -404,6 +409,14 @@ class cargs {
    */
   std::vector<std::string> get_added_directories() const {
     return compute_parameter<std::vector<std::string> >("added-directories", true);
+  }
+
+  /*!
+    @brief get optional rule names to include in testing
+    @return vector of all provided rules to include from test output
+   */
+  std::vector<std::string> get_include_rules() const {
+    return compute_parameter<std::vector<std::string> >("include-rules", true);
   }
 
   /*!

@@ -63,6 +63,7 @@ class cargsTest : public CppUnit::TestFixture {
   CPPUNIT_TEST(test_cargs_get_inst_dir);
   CPPUNIT_TEST(test_cargs_get_added_files);
   CPPUNIT_TEST(test_cargs_get_added_directories);
+  CPPUNIT_TEST(test_cargs_get_include_rules);
   CPPUNIT_TEST(test_cargs_get_exclude_rules);
   CPPUNIT_TEST(test_cargs_include_entire_dag);
   CPPUNIT_TEST(test_cargs_update_all);
@@ -134,6 +135,7 @@ class cargsTest : public CppUnit::TestFixture {
   void test_cargs_get_inst_dir();
   void test_cargs_get_added_files();
   void test_cargs_get_added_directories();
+  void test_cargs_get_include_rules();
   void test_cargs_get_exclude_rules();
   void test_cargs_include_entire_dag();
   void test_cargs_update_all();

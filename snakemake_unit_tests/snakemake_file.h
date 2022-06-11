@@ -63,12 +63,9 @@ class snakemake_file {
   @brief load and parse snakemake pipeline
   @param filename name of top-level snakefile, relative to pipeline top level
   @param base_dir pipeline top level
-  @param exclude_rules excluded rule set, for communicating problematic
-  rules back upstream
   @param verbose whether to emit verbose logging output
  */
-  void load_everything(const boost::filesystem::path &filename, const boost::filesystem::path &base_dir,
-                       std::map<std::string, bool> *exclude_rules, bool verbose);
+  void load_everything(const boost::filesystem::path &filename, const boost::filesystem::path &base_dir, bool verbose);
 
   /*!
  @brief parse a snakemake file
@@ -91,17 +88,14 @@ class snakemake_file {
 
   /*!
   @brief report on internal discrepancies in the snakefile load results
-  @param exclude_rules excluded rule set, for communicating problematic
-  rules back upstream
+  @param include_rules included rule set, for helpful logging
+  @param exclude_rules excluded rule set, for helpful logging
 
-  this is particularly designed to detect known unsupported features in
-  snakemake/python interactions, specifically conditional inclusion of files
-  or rules that relies on python logic and/or leads to inconsistent results
-  if not correctly parsed.
-
-  these features are flagged to be correctly supported in a later patch
+  most features originally flagged by this method are now supported by the program,
+  and this logging function is more for coverage reporting than error handling.
  */
-  void detect_known_issues(std::map<std::string, bool> *exclude_rules);
+  void detect_known_issues(const std::map<std::string, bool> &include_rules,
+                           const std::map<std::string, bool> &exclude_rules);
 
   /*!
   @brief print block contents to stream
@@ -201,12 +195,11 @@ class snakemake_file {
   void capture_python_tag_values(const std::vector<std::string> &vec, std::map<std::string, std::string> *target) const;
   /*!
   @brief resolve derived rules and check for sanity
+  @param include_rules flagged rules to be included
   @param exclude_rules flagged rules to be excluded
-
-  note that more content will be added here presumably once more snakemake
-  features are supported
  */
-  void postflight_checks(std::map<std::string, bool> *exclude_rules);
+  void postflight_checks(const std::map<std::string, bool> &include_rules,
+                         const std::map<std::string, bool> &exclude_rules);
 
   /*!
   @brief report relative path of snakefile this object represents
