@@ -55,12 +55,7 @@
  */
 
 void snakemake_unit_tests::snakemake_file::load_everything(const boost::filesystem::path &filename,
-                                                           const boost::filesystem::path &base_dir,
-                                                           std::map<std::string, bool> *exclude_rules, bool verbose) {
-  if (!exclude_rules)
-    throw std::runtime_error(
-        "null exclude_rules provided to "
-        "load_everything");
+                                                           const boost::filesystem::path &base_dir, bool verbose) {
   _snakefile_relative_path = filename;
   std::vector<std::string> loaded_lines;
   boost::filesystem::path recursive_path = base_dir / filename;
@@ -70,9 +65,10 @@ void snakemake_unit_tests::snakemake_file::load_everything(const boost::filesyst
   parse_file(loaded_lines, _blocks.begin(), filename, verbose);
 }
 
-void snakemake_unit_tests::snakemake_file::postflight_checks(std::map<std::string, bool> *exclude_rules) {
+void snakemake_unit_tests::snakemake_file::postflight_checks(const std::map<std::string, bool> &include_rules,
+                                                             const std::map<std::string, bool> &exclude_rules) {
   // placeholder: add screening step to detect known issues/unsupported features
-  detect_known_issues(exclude_rules);
+  detect_known_issues(include_rules, exclude_rules);
   // resolved rules are being dealt with differently, and in solved_rules
 }
 
@@ -105,7 +101,8 @@ void snakemake_unit_tests::snakemake_file::report_rules(
   }
 }
 
-void snakemake_unit_tests::snakemake_file::detect_known_issues(std::map<std::string, bool> *exclude_rules) {
+void snakemake_unit_tests::snakemake_file::detect_known_issues(const std::map<std::string, bool> &include_rules,
+                                                               const std::map<std::string, bool> &exclude_rules) {
   /*
     Known issues as implemented here
 
@@ -116,13 +113,13 @@ void snakemake_unit_tests::snakemake_file::detect_known_issues(std::map<std::str
     so long as the output files are not what is requested specifically as input in the DAG.
     this is extremely problematic behavior and should be avoided in pipeline implementation.
    */
-  if (!exclude_rules) throw std::runtime_error("null pointer provided to exclude_rules");
   std::map<std::string, std::vector<boost::shared_ptr<rule_block> > > aggregated_rules;
   std::map<std::string, std::vector<boost::shared_ptr<rule_block> > >::const_iterator finder;
   report_rules(&aggregated_rules);
   unsigned rules_not_excluded = 0;
   for (finder = aggregated_rules.begin(); finder != aggregated_rules.end(); ++finder) {
-    if (exclude_rules->find(finder->first) == exclude_rules->end()) {
+    if (exclude_rules.find(finder->first) == exclude_rules.end() &&
+        (include_rules.empty() || include_rules.find(finder->first) != include_rules.end())) {
       ++rules_not_excluded;
     }
   }
