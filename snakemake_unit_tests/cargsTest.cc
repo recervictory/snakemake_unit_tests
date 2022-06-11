@@ -338,6 +338,13 @@ void snakemake_unit_tests::cargsTest::test_cargs_copy_constructor() {
       }
     }
   }
+  // enforce that permitted flags are copied to new object
+  CPPUNIT_ASSERT(ap._permitted_flags.size() == ap2._permitted_flags.size());
+  std::map<std::string, bool>::const_iterator iter1, iter2;
+  for (iter1 = ap._permitted_flags.begin(), iter2 = ap2._permitted_flags.begin(); iter1 != ap._permitted_flags.end();
+       ++iter1, ++iter2) {
+    CPPUNIT_ASSERT(!iter1->first.compare(iter2->first));
+  }
 }
 void snakemake_unit_tests::cargsTest::test_cargs_initialize_options() {
   cargs ap(_arg_vec_long.size(), _argv_long);
@@ -1151,9 +1158,23 @@ void snakemake_unit_tests::cargsTest::test_cargs_verbose() {
 void snakemake_unit_tests::cargsTest::test_cargs_compute_flag() {
   // note that a desired behavior might be for this to not behave
   // gracefully but rather crash when an unsupported flag is queried
-  cargs ap(_arg_vec_long.size(), _argv_long);
+  cargs ap(_arg_vec_short.size(), _argv_short);
   CPPUNIT_ASSERT(ap.compute_flag("help"));
-  CPPUNIT_ASSERT_MESSAGE("cargs compute_flag gracefully handles absent tags", !ap.compute_flag("othertag"));
+  CPPUNIT_ASSERT(ap.compute_flag("verbose"));
+  CPPUNIT_ASSERT_MESSAGE("cargs compute_flag gracefully handles absent tags", !ap.compute_flag("update-all"));
+  // make sure all permitted flags are in fact permitted
+  CPPUNIT_ASSERT(!ap.compute_flag("include-entire-dag"));
+  CPPUNIT_ASSERT(!ap.compute_flag("update-all"));
+  CPPUNIT_ASSERT(!ap.compute_flag("update-snakefiles"));
+  CPPUNIT_ASSERT(!ap.compute_flag("update-added-content"));
+  CPPUNIT_ASSERT(!ap.compute_flag("update-inputs"));
+  CPPUNIT_ASSERT(!ap.compute_flag("update-outputs"));
+  CPPUNIT_ASSERT(!ap.compute_flag("update-pytest"));
+  CPPUNIT_ASSERT(!ap.compute_flag("update-config"));
+}
+void snakemake_unit_tests::cargsTest::test_cargs_compute_flag_invalid_flag() {
+  cargs ap(_arg_vec_short.size(), _argv_short);
+  ap.compute_flag("othertag");
 }
 void snakemake_unit_tests::cargsTest::test_cargs_compute_parameter() {
   // note that as with compute_flag, this doesn't actually check that

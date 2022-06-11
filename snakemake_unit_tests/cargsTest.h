@@ -74,6 +74,7 @@ class cargsTest : public CppUnit::TestFixture {
   CPPUNIT_TEST(test_cargs_update_pytest);
   CPPUNIT_TEST(test_cargs_verbose);
   CPPUNIT_TEST(test_cargs_compute_flag);
+  CPPUNIT_TEST_EXCEPTION(test_cargs_compute_flag_invalid_flag, std::logic_error);
   CPPUNIT_TEST(test_cargs_compute_parameter);
   CPPUNIT_TEST_EXCEPTION(test_cargs_compute_missing_required_parameter, std::domain_error);
   CPPUNIT_TEST(test_cargs_print_help);
@@ -144,6 +145,7 @@ class cargsTest : public CppUnit::TestFixture {
   void test_cargs_update_pytest();
   void test_cargs_verbose();
   void test_cargs_compute_flag();
+  void test_cargs_compute_flag_invalid_flag();
   void test_cargs_compute_parameter();
   void test_cargs_compute_missing_required_parameter();
   void test_cargs_print_help();

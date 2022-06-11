@@ -254,12 +254,22 @@ class cargs {
     initialize_options();
     boost::program_options::store(boost::program_options::parse_command_line(argc, argv, _desc), _vm);
     boost::program_options::notify(_vm);
+    _permitted_flags["help"] = true;
+    _permitted_flags["verbose"] = true;
+    _permitted_flags["include-entire-dag"] = true;
+    _permitted_flags["update-all"] = true;
+    _permitted_flags["update-pytest"] = true;
+    _permitted_flags["update-added-content"] = true;
+    _permitted_flags["update-snakefiles"] = true;
+    _permitted_flags["update-config"] = true;
+    _permitted_flags["update-inputs"] = true;
+    _permitted_flags["update-outputs"] = true;
   }
   /*!
     @brief copy constructor
     @param obj existing cargs object
    */
-  cargs(const cargs &obj) : _desc(obj._desc), _vm(obj._vm) {}
+  cargs(const cargs &obj) : _desc(obj._desc), _vm(obj._vm), _permitted_flags(obj._permitted_flags) {}
   /*!
     \brief destructor
    */
@@ -483,7 +493,18 @@ class cargs {
     the custom access functions or want to allow dynamic specification from a
     config file.
    */
-  bool compute_flag(const std::string &tag) const { return _vm.count(tag); }
+  bool compute_flag(const std::string &tag) const {
+    /*
+      because of the way flags work, the optional handler in compute_parameter
+      doesn't have a good direct analogue here. is it reasonable to have
+      a hard list of permitted flags, and screen the parameter to this
+      function against them?
+     */
+    if (_permitted_flags.find(tag) == _permitted_flags.end()) {
+      throw std::logic_error("invalid flag requested from argument parser: \"" + tag + "\"");
+    }
+    return _vm.count(tag);
+  }
 
   /*!
     @brief find value of arbitrary parameter
@@ -524,6 +545,7 @@ class cargs {
   cargs() { throw std::domain_error("cargs: do not use default constructor"); }
   boost::program_options::options_description _desc;  //!< help documentation string
   boost::program_options::variables_map _vm;          //!< storage of parsed command line settings
+  std::map<std::string, bool> _permitted_flags;       //!< lookup of permitted indicator flags
   /*!
     @brief if the first parameter is nonempty, return it; otherwise return
     the second
