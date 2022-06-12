@@ -236,7 +236,7 @@ class params {
   /*!
     @brief user-defined file extensions to flag as needing binary comparison
    */
-  std::map<std::string, bool> comparators;
+  YAML::Node comparators;
 };
 
 /*!

@@ -92,7 +92,7 @@ snakemake_unit_tests::params snakemake_unit_tests::cargs::set_parameters() const
         p.exclude_patterns = vector_to_map<std::string>(p.config.get_sequence("exclude-patterns"));
       }
       if (p.config.query_valid("comparators")) {
-        p.comparators = vector_to_map<std::string>(p.config.get_sequence("comparators"));
+        p.comparators = p.config.get_node("comparators");
       }
     } else {
       throw std::runtime_error("configuration file \"" + p.config_filename.string() + "\" is not a regular file");
@@ -283,7 +283,9 @@ void snakemake_unit_tests::params::report_settings(const boost::filesystem::path
   // exclude-patterns
   emit_yaml_map(&out, exclude_patterns, "exclude-patterns");
   // comparators
-  emit_yaml_map(&out, comparators, "comparators");
+  if (comparators.size()) {
+    out << YAML::Key << "comparators" << YAML::Value << comparators;
+  }
   // end the content
   out << YAML::EndMap;
   // write to output file
