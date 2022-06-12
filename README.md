@@ -278,6 +278,17 @@ and the names of the options in those different contexts are listed when applica
 	that are exclusively fixed infrastructure files. An alternative would be, for example, if a config directory
 	is used to contain *output* from a rule for some reason. In that case, please individually specify the
 	files to include from that directory using `added-files`.
+- **Included Rules, to Include from Log**
+  - command line: `-n` or `--include-rules`
+  - yaml configuration key: `include-rules`
+  - argument type: string (multiple values accepted)
+  - behavior if multiply specified: all values used
+  - notes: particularly when iteratively updating unit tests during initial installation and debugging,
+    there are instances when it makes sense to only process one or a handful of rules. this parameter
+	is specifically convenient to use on the command line with `-n`. note that if **no rules** are
+	specified with this parameter, implicitly all rules are flagged as available for processing;
+	and if any rules are specified with this parameter, they will only be processed if they are
+	not also specified with `--exclude-rules` (see below).
 - **Excluded Rules, to Ignore from Log**
   - command line: `-e` or `--exclude-rules`
   - yaml configuration key: `exclude-rules`
