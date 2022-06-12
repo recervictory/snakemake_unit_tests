@@ -95,7 +95,7 @@ class params {
         include_rules(obj.include_rules),
         exclude_rules(obj.exclude_rules),
         exclude_patterns(obj.exclude_patterns),
-        byte_comparisons(obj.byte_comparisons) {}
+        comparators(obj.comparators) {}
   /*!
     @brief destructor
    */
@@ -236,7 +236,7 @@ class params {
   /*!
     @brief user-defined file extensions to flag as needing binary comparison
    */
-  std::map<std::string, bool> byte_comparisons;
+  std::map<std::string, bool> comparators;
 };
 
 /*!

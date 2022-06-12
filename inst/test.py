@@ -19,7 +19,7 @@ with open("{}/unit/config.yaml".format(testdir), "r") as f:
     config = yaml.safe_load(f)
 if config["exclude-patterns"] is not None:
     exclude_patterns.extend(config["exclude-patterns"])
-byte_comparisons = list(config["byte-comparisons"] or "")
+comparators = config["comparators"] if "comparators" in config else {}
 
 
 def test_function():
@@ -55,7 +55,7 @@ def test_function():
             ]
         )
 
-        # Check the output byte by byte using cmp.
+        # Check the output using assorted comparators.
         # To modify this behavior, you can inherit from common.OutputChecker in here
         # and overwrite the method `compare_files(generated_file, expected_file),
         # also see common.py.
@@ -64,7 +64,7 @@ def test_function():
             workspace_path,
             expected_path,
             exclude_patterns,
-            byte_comparisons,
+            comparators,
             extra_comparison_exclusions,
             rundir,
         ).check()

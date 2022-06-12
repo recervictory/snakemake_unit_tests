@@ -104,7 +104,7 @@ void snakemake_unit_tests::cargsTest::test_params_default_constructor() {
   CPPUNIT_ASSERT(p.include_rules.empty());
   CPPUNIT_ASSERT(p.exclude_rules.empty());
   CPPUNIT_ASSERT(p.exclude_patterns.empty());
-  CPPUNIT_ASSERT(p.byte_comparisons.empty());
+  CPPUNIT_ASSERT(p.comparators.empty());
 }
 
 void snakemake_unit_tests::cargsTest::test_params_copy_constructor() {
@@ -124,7 +124,7 @@ void snakemake_unit_tests::cargsTest::test_params_copy_constructor() {
   p.include_rules["thing9a"] = true;
   p.exclude_rules["thing10"] = true;
   p.exclude_patterns["thing11"] = true;
-  p.byte_comparisons["thing13"] = true;
+  p.comparators["thing13"] = true;
   params q(p);
   CPPUNIT_ASSERT(p.verbose == q.verbose);
   CPPUNIT_ASSERT(p.update_all = q.update_all);
@@ -147,7 +147,7 @@ void snakemake_unit_tests::cargsTest::test_params_copy_constructor() {
   CPPUNIT_ASSERT(p.include_rules == q.include_rules);
   CPPUNIT_ASSERT(p.exclude_rules == q.exclude_rules);
   CPPUNIT_ASSERT(p.exclude_patterns == q.exclude_patterns);
-  CPPUNIT_ASSERT(p.byte_comparisons == q.byte_comparisons);
+  CPPUNIT_ASSERT(p.comparators == q.comparators);
 }
 void snakemake_unit_tests::cargsTest::test_params_report_settings() {
   boost::filesystem::path output_filename =
@@ -171,9 +171,9 @@ void snakemake_unit_tests::cargsTest::test_params_report_settings() {
   p.exclude_rules["rulename1"] = true;
   p.exclude_rules["rulename2"] = true;
   p.exclude_patterns["path1"] = true;
-  p.byte_comparisons[".ext1"] = true;
-  p.byte_comparisons[".ext2"] = true;
-  p.byte_comparisons[".ext3"] = true;
+  p.comparators[".ext1"] = true;
+  p.comparators[".ext2"] = true;
+  p.comparators[".ext3"] = true;
   p.report_settings(output_filename);
   std::string pwd = boost::filesystem::current_path().string();
   std::string expected_contents = "output-test-dir: " + pwd +
@@ -198,7 +198,7 @@ void snakemake_unit_tests::cargsTest::test_params_report_settings() {
                                   "include-rules:\n  - keepme1\n  - keepme2\n"
                                   "exclude-rules:\n  - rulename1\n  - rulename2\n"
                                   "exclude-patterns:\n  - path1\n"
-                                  "byte-comparisons:\n  - .ext1\n  - .ext2\n  - .ext3\n";
+                                  "comparators:\n  - .ext1\n  - .ext2\n  - .ext3\n";
   std::ifstream input;
   std::string line = "";
   std::ostringstream observed_contents;
@@ -478,12 +478,12 @@ void snakemake_unit_tests::cargsTest::test_cargs_set_parameters() {
   exclude_rules["rule2"] = true;
   exclude_rules["rule1_config"] = true;
   exclude_rules["rule2_config"] = true;
-  // excluded patterns; byte comparisons. these are only accepted from the config
-  std::map<std::string, bool> exclude_patterns, byte_comparisons;
+  // excluded patterns; comparators. these are only accepted from the config
+  std::map<std::string, bool> exclude_patterns, comparators;
   exclude_patterns["path1"] = true;
   exclude_patterns["path2"] = true;
-  byte_comparisons["ext3"] = true;
-  byte_comparisons["ext4"] = true;
+  comparators["ext3"] = true;
+  comparators["ext4"] = true;
   // added directories
   // doesn't need to be created, but worth keeping this stored
   boost::filesystem::path outdir = prefix / "outdir";
@@ -538,9 +538,8 @@ void snakemake_unit_tests::cargsTest::test_cargs_set_parameters() {
        ++iter) {
     config_data += "  - " + iter->first + "\n";
   }
-  config_data += "byte-comparisons:\n";
-  for (std::map<std::string, bool>::const_iterator iter = byte_comparisons.begin(); iter != byte_comparisons.end();
-       ++iter) {
+  config_data += "comparators:\n";
+  for (std::map<std::string, bool>::const_iterator iter = comparators.begin(); iter != comparators.end(); ++iter) {
     config_data += "  - " + iter->first + "\n";
   }
   output.open(config_yaml.string().c_str());
@@ -664,10 +663,10 @@ void snakemake_unit_tests::cargsTest::test_cargs_set_parameters() {
        iter != p3.exclude_patterns.end(); ++iter) {
     CPPUNIT_ASSERT(exclude_patterns.find(iter->first) != exclude_patterns.end());
   }
-  CPPUNIT_ASSERT(p3.byte_comparisons.size() == byte_comparisons.size());
-  for (std::map<std::string, bool>::const_iterator iter = p3.byte_comparisons.begin();
-       iter != p3.byte_comparisons.end(); ++iter) {
-    CPPUNIT_ASSERT(byte_comparisons.find(iter->first) != byte_comparisons.end());
+  CPPUNIT_ASSERT(p3.comparators.size() == comparators.size());
+  for (std::map<std::string, bool>::const_iterator iter = p3.comparators.begin(); iter != p3.comparators.end();
+       ++iter) {
+    CPPUNIT_ASSERT(comparators.find(iter->first) != comparators.end());
   }
 
   // a run with both config yaml input and CLI input, to test resolution
@@ -735,10 +734,10 @@ void snakemake_unit_tests::cargsTest::test_cargs_set_parameters() {
        iter != p4.exclude_patterns.end(); ++iter) {
     CPPUNIT_ASSERT(exclude_patterns.find(iter->first) != exclude_patterns.end());
   }
-  CPPUNIT_ASSERT(p4.byte_comparisons.size() == byte_comparisons.size());
-  for (std::map<std::string, bool>::const_iterator iter = p4.byte_comparisons.begin();
-       iter != p4.byte_comparisons.end(); ++iter) {
-    CPPUNIT_ASSERT(byte_comparisons.find(iter->first) != byte_comparisons.end());
+  CPPUNIT_ASSERT(p4.comparators.size() == comparators.size());
+  for (std::map<std::string, bool>::const_iterator iter = p4.comparators.begin(); iter != p4.comparators.end();
+       ++iter) {
+    CPPUNIT_ASSERT(comparators.find(iter->first) != comparators.end());
   }
 }
 void snakemake_unit_tests::cargsTest::test_cargs_set_parameters_output_dir_missing() {

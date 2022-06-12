@@ -11,6 +11,7 @@ import subprocess as sp
 from pathlib import Path
 
 import magic
+import pandas as pd
 import pytest
 
 
@@ -20,14 +21,14 @@ class OutputChecker:
         data_path,
         expected_path,
         exclude_patterns,
-        byte_comparisons,
+        comparators,
         extra_comparison_exclusions,
         workdir,
     ):
         self.data_path = data_path
         self.expected_path = expected_path
         self.exclude_patterns = exclude_patterns
-        self.byte_comparisons = byte_comparisons
+        self.comparators = comparators
         self.extra_comparison_exclusions = extra_comparison_exclusions
         self.workdir = workdir
 
@@ -65,25 +66,61 @@ class OutputChecker:
             )
 
     def compare_files(self, generated_file, expected_file):
-        """Compare binary or text files.
+        """Compare input files.
 
-        Use byte-wise comparison if files are binary via bash cmp.  If the
-        files are plain text, then strip comment lines and compare (to
+        Logic chain is as follows:
+        - if user config contains defined comparators and patterns, match against those
+        - if the file does not match any pattern in user config:
+           - if the file is not plaintext, use cmp
+           - else directly compare in text mode
+
+        If the files are plain text, then strip comment lines and compare (to
         circumvent datestamps causing assert failures).
         """
         f = magic.Magic(uncompress=True, mime=True)
-        if (
-            any(
-                regex.search(str(generated_file))
-                for regex in map(re.compile, self.byte_comparisons)
-            )
-            or f.from_file(str(generated_file)) != "text/plain"
-        ):
-            sp.check_output(["cmp", generated_file, expected_file])
-        else:
-            gen = process_file(generated_file)
-            exp = process_file(expected_file)
-            assert gen == exp
+        found_handler = False
+        if self.comparators is not None:
+            for comparator in self.comparators:
+                if any(
+                    regex.search(str(generated_file))
+                    for regex in map(re.compile, comparator["patterns"])
+                ):
+                    found_handler = True
+                    if comparator["type"] == "byte":
+                        sp.check_output(["cmp", generated_file, expected_file])
+                    elif comparator["type"] == "frame":
+                        pandas_assert_frame_equal(
+                            generated_file,
+                            expected_file,
+                            comparator["args"] if "args" in comparator else {},
+                        )
+                    elif comparator["type"] == "plaintext":
+                        gen = process_file(generated_file)
+                        exp = process_file(expected_file)
+                        assert gen == exp
+                    else:
+                        raise LookupError(
+                            "comparator type {} is not defined in snakemake_unit_tests".format(
+                                comparator["type"]
+                            )
+                        )
+        if not found_handler:
+            if f.from_file(str(generated_file)) != "text/plain":
+                sp.check_output(["cmp", generated_file, expected_file])
+            else:
+                gen = process_file(generated_file)
+                exp = process_file(expected_file)
+                assert gen == exp
+
+
+def pandas_assert_frame_equal(infile1, infile2, args):
+    df1 = pd.read_table(
+        infile1, sep=args["sep"], header=args["header"], index_col=args["index_col"]
+    )
+    df2 = pd.read_table(
+        infile2, sep=args["sep"], header=args["header"], index_col=args["index_col"]
+    )
+    pd.testing.assert_frame_equal(df1, df2, check_exact=False, rtol=args["rtol"], atol=args["atol"])
 
 
 def process_file(infile):
