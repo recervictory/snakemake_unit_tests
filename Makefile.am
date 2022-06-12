@@ -51,6 +51,7 @@ TESTS = tests/test0.test \
 	tests/test34.test \
 	tests/test35.test \
 	tests/test36.test \
+	tests/test37.test \
 	tests/test_config_defaults.test \
 	tests/test_config_override_output_dir.test \
 	tests/test_config_override_snakemake_log.test \

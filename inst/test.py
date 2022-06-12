@@ -11,15 +11,14 @@ sys.path.insert(0, os.path.dirname(__file__))
 
 import common
 
-exclude_paths = [
-    ".snakemake/",
+exclude_patterns = [
+    "\\.snakemake/",
     "__pycache__",
 ]
 with open("{}/unit/config.yaml".format(testdir), "r") as f:
     config = yaml.safe_load(f)
-if config["exclude-paths"] is not None:
-    exclude_paths.extend(config["exclude-paths"])
-exclude_ext = list(config["exclude-extensions"] or "")
+if config["exclude-patterns"] is not None:
+    exclude_patterns.extend(config["exclude-patterns"])
 byte_comparisons = list(config["byte-comparisons"] or "")
 
 
@@ -64,8 +63,7 @@ def test_function():
         common.OutputChecker(
             workspace_path,
             expected_path,
-            exclude_paths,
-            exclude_ext,
+            exclude_patterns,
             byte_comparisons,
             extra_comparison_exclusions,
             rundir,

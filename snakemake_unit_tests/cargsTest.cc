@@ -103,8 +103,7 @@ void snakemake_unit_tests::cargsTest::test_params_default_constructor() {
   CPPUNIT_ASSERT(p.added_directories.empty());
   CPPUNIT_ASSERT(p.include_rules.empty());
   CPPUNIT_ASSERT(p.exclude_rules.empty());
-  CPPUNIT_ASSERT(p.exclude_extensions.empty());
-  CPPUNIT_ASSERT(p.exclude_paths.empty());
+  CPPUNIT_ASSERT(p.exclude_patterns.empty());
   CPPUNIT_ASSERT(p.byte_comparisons.empty());
 }
 
@@ -124,8 +123,7 @@ void snakemake_unit_tests::cargsTest::test_params_copy_constructor() {
   p.added_directories.push_back("thing9");
   p.include_rules["thing9a"] = true;
   p.exclude_rules["thing10"] = true;
-  p.exclude_extensions["thing11"] = true;
-  p.exclude_paths["thing12"] = true;
+  p.exclude_patterns["thing11"] = true;
   p.byte_comparisons["thing13"] = true;
   params q(p);
   CPPUNIT_ASSERT(p.verbose == q.verbose);
@@ -148,8 +146,7 @@ void snakemake_unit_tests::cargsTest::test_params_copy_constructor() {
   CPPUNIT_ASSERT(p.added_directories == q.added_directories);
   CPPUNIT_ASSERT(p.include_rules == q.include_rules);
   CPPUNIT_ASSERT(p.exclude_rules == q.exclude_rules);
-  CPPUNIT_ASSERT(p.exclude_extensions == q.exclude_extensions);
-  CPPUNIT_ASSERT(p.exclude_paths == q.exclude_paths);
+  CPPUNIT_ASSERT(p.exclude_patterns == q.exclude_patterns);
   CPPUNIT_ASSERT(p.byte_comparisons == q.byte_comparisons);
 }
 void snakemake_unit_tests::cargsTest::test_params_report_settings() {
@@ -173,8 +170,7 @@ void snakemake_unit_tests::cargsTest::test_params_report_settings() {
   p.include_rules["keepme2"] = true;
   p.exclude_rules["rulename1"] = true;
   p.exclude_rules["rulename2"] = true;
-  p.exclude_extensions.clear();
-  p.exclude_paths["path1"] = true;
+  p.exclude_patterns["path1"] = true;
   p.byte_comparisons[".ext1"] = true;
   p.byte_comparisons[".ext2"] = true;
   p.byte_comparisons[".ext3"] = true;
@@ -201,8 +197,7 @@ void snakemake_unit_tests::cargsTest::test_params_report_settings() {
                                   "added-directories:\n  - dname1\n  - dname2\n"
                                   "include-rules:\n  - keepme1\n  - keepme2\n"
                                   "exclude-rules:\n  - rulename1\n  - rulename2\n"
-                                  "exclude-extensions: ~\n"
-                                  "exclude-paths:\n  - path1\n"
+                                  "exclude-patterns:\n  - path1\n"
                                   "byte-comparisons:\n  - .ext1\n  - .ext2\n  - .ext3\n";
   std::ifstream input;
   std::string line = "";
@@ -483,12 +478,10 @@ void snakemake_unit_tests::cargsTest::test_cargs_set_parameters() {
   exclude_rules["rule2"] = true;
   exclude_rules["rule1_config"] = true;
   exclude_rules["rule2_config"] = true;
-  // excluded paths, extensions; byte comparisons. these are only accepted from the config
-  std::map<std::string, bool> exclude_paths, exclude_extensions, byte_comparisons;
-  exclude_paths["path1"] = true;
-  exclude_paths["path2"] = true;
-  exclude_extensions["ext1"] = true;
-  exclude_extensions["ext2"] = true;
+  // excluded patterns; byte comparisons. these are only accepted from the config
+  std::map<std::string, bool> exclude_patterns, byte_comparisons;
+  exclude_patterns["path1"] = true;
+  exclude_patterns["path2"] = true;
   byte_comparisons["ext3"] = true;
   byte_comparisons["ext4"] = true;
   // added directories
@@ -540,12 +533,8 @@ void snakemake_unit_tests::cargsTest::test_cargs_set_parameters() {
        iter != exclude_rules_config.end(); ++iter) {
     config_data += "  - " + iter->first + "\n";
   }
-  config_data += "exclude-paths:\n";
-  for (std::map<std::string, bool>::const_iterator iter = exclude_paths.begin(); iter != exclude_paths.end(); ++iter) {
-    config_data += "  - " + iter->first + "\n";
-  }
-  config_data += "exclude-extensions:\n";
-  for (std::map<std::string, bool>::const_iterator iter = exclude_extensions.begin(); iter != exclude_extensions.end();
+  config_data += "exclude-patterns:\n";
+  for (std::map<std::string, bool>::const_iterator iter = exclude_patterns.begin(); iter != exclude_patterns.end();
        ++iter) {
     config_data += "  - " + iter->first + "\n";
   }
@@ -670,15 +659,10 @@ void snakemake_unit_tests::cargsTest::test_cargs_set_parameters() {
     }
   }
   CPPUNIT_ASSERT(p3.exclude_rules.find("all") != p3.exclude_rules.end());
-  CPPUNIT_ASSERT(p3.exclude_paths.size() == exclude_paths.size());
-  for (std::map<std::string, bool>::const_iterator iter = p3.exclude_paths.begin(); iter != p3.exclude_paths.end();
-       ++iter) {
-    CPPUNIT_ASSERT(exclude_paths.find(iter->first) != exclude_paths.end());
-  }
-  CPPUNIT_ASSERT(p3.exclude_extensions.size() == exclude_extensions.size());
-  for (std::map<std::string, bool>::const_iterator iter = p3.exclude_extensions.begin();
-       iter != p3.exclude_extensions.end(); ++iter) {
-    CPPUNIT_ASSERT(exclude_extensions.find(iter->first) != exclude_extensions.end());
+  CPPUNIT_ASSERT(p3.exclude_patterns.size() == exclude_patterns.size());
+  for (std::map<std::string, bool>::const_iterator iter = p3.exclude_patterns.begin();
+       iter != p3.exclude_patterns.end(); ++iter) {
+    CPPUNIT_ASSERT(exclude_patterns.find(iter->first) != exclude_patterns.end());
   }
   CPPUNIT_ASSERT(p3.byte_comparisons.size() == byte_comparisons.size());
   for (std::map<std::string, bool>::const_iterator iter = p3.byte_comparisons.begin();
@@ -746,15 +730,10 @@ void snakemake_unit_tests::cargsTest::test_cargs_set_parameters() {
     }
   }
   CPPUNIT_ASSERT(p4.exclude_rules.find("all") != p4.exclude_rules.end());
-  CPPUNIT_ASSERT(p4.exclude_paths.size() == exclude_paths.size());
-  for (std::map<std::string, bool>::const_iterator iter = p4.exclude_paths.begin(); iter != p4.exclude_paths.end();
-       ++iter) {
-    CPPUNIT_ASSERT(exclude_paths.find(iter->first) != exclude_paths.end());
-  }
-  CPPUNIT_ASSERT(p4.exclude_extensions.size() == exclude_extensions.size());
-  for (std::map<std::string, bool>::const_iterator iter = p4.exclude_extensions.begin();
-       iter != p4.exclude_extensions.end(); ++iter) {
-    CPPUNIT_ASSERT(exclude_extensions.find(iter->first) != exclude_extensions.end());
+  CPPUNIT_ASSERT(p4.exclude_patterns.size() == exclude_patterns.size());
+  for (std::map<std::string, bool>::const_iterator iter = p4.exclude_patterns.begin();
+       iter != p4.exclude_patterns.end(); ++iter) {
+    CPPUNIT_ASSERT(exclude_patterns.find(iter->first) != exclude_patterns.end());
   }
   CPPUNIT_ASSERT(p4.byte_comparisons.size() == byte_comparisons.size());
   for (std::map<std::string, bool>::const_iterator iter = p4.byte_comparisons.begin();

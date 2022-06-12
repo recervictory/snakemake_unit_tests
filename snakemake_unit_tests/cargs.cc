@@ -88,11 +88,8 @@ snakemake_unit_tests::params snakemake_unit_tests::cargs::set_parameters() const
       if (p.config.query_valid("exclude-rules")) {
         p.exclude_rules = vector_to_map<std::string>(p.config.get_sequence("exclude-rules"));
       }
-      if (p.config.query_valid("exclude-extensions")) {
-        p.exclude_extensions = vector_to_map<std::string>(p.config.get_sequence("exclude-extensions"));
-      }
-      if (p.config.query_valid("exclude-paths")) {
-        p.exclude_paths = vector_to_map<std::string>(p.config.get_sequence("exclude-paths"));
+      if (p.config.query_valid("exclude-patterns")) {
+        p.exclude_patterns = vector_to_map<std::string>(p.config.get_sequence("exclude-patterns"));
       }
       if (p.config.query_valid("byte-comparisons")) {
         p.byte_comparisons = vector_to_map<std::string>(p.config.get_sequence("byte-comparisons"));
@@ -283,10 +280,8 @@ void snakemake_unit_tests::params::report_settings(const boost::filesystem::path
   emit_yaml_map(&out, include_rules, "include-rules");
   // exclude-rules
   emit_yaml_map(&out, exclude_rules, "exclude-rules");
-  // exclude-extensions
-  emit_yaml_map(&out, exclude_extensions, "exclude-extensions");
-  // exclude-paths
-  emit_yaml_map(&out, exclude_paths, "exclude-paths");
+  // exclude-patterns
+  emit_yaml_map(&out, exclude_patterns, "exclude-patterns");
   // byte-comparisons
   emit_yaml_map(&out, byte_comparisons, "byte-comparisons");
   // end the content

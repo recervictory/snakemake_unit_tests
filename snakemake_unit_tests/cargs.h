@@ -94,8 +94,7 @@ class params {
         added_directories(obj.added_directories),
         include_rules(obj.include_rules),
         exclude_rules(obj.exclude_rules),
-        exclude_extensions(obj.exclude_extensions),
-        exclude_paths(obj.exclude_paths),
+        exclude_patterns(obj.exclude_patterns),
         byte_comparisons(obj.byte_comparisons) {}
   /*!
     @brief destructor
@@ -231,13 +230,9 @@ class params {
    */
   std::map<std::string, bool> exclude_rules;
   /*!
-    @brief user-defined file extensions to exclude from pytest comparison
+    @brief user-defined file/path regular expressions to exclude from pytest comparison
    */
-  std::map<std::string, bool> exclude_extensions;
-  /*!
-    @brief user-defined path patterns to exclude from pytest comparison
-   */
-  std::map<std::string, bool> exclude_paths;
+  std::map<std::string, bool> exclude_patterns;
   /*!
     @brief user-defined file extensions to flag as needing binary comparison
    */

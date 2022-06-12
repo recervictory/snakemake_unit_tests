@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+## Test: control processing of output files by pytest with exclude_patterns
+echo 1..1
+
+TESTNAME="test37"
+TESTDESCRIPTION="skip output files with exclude_patterns"
+OUTPUTDIR="tests/examples/$TESTNAME/output"
+
+## since this is expected pass, enforce pytest functionality as a proxy for pytest configuration
+pytest "$OUTPUTDIR/unit" > /dev/null 2>&1
+
+if [[ "$?" != "0" ]] ; then
+    echo "not ok - $TESTDESCRIPTION pytest did not skip targeted output"
+    exit 0
+fi
+
+## report success
+echo "ok - $TESTDESCRIPTION"
