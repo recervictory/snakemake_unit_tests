@@ -64,6 +64,19 @@ std::vector<std::string> lexical_parse(const std::vector<std::string> &lines, bo
   @param target vector in which to store data
  */
 void split_comma_list(const std::string &s, std::vector<std::string> *target);
+
+/*!
+@brief execute a system command and capture its results
+@param cmd system command to execute
+@param fail_on_error whether python errors should trigger immediate exception
+@param emit_error_logging whether, in the case that the executed command returns an error code,
+any captured output should be emitted to std::cerr
+@return captured results, line by line
+
+https://stackoverflow.com/questions/478898/how-do-i-execute-a-command-and-get-the-output-of-the-command-within-c-using-po
+*/
+std::vector<std::string> exec(const std::string &cmd, bool fail_on_error, bool emit_error_logging = true);
+
 }  // namespace snakemake_unit_tests
 
 #endif  // SNAKEMAKE_UNIT_TESTS_UTILITIES_H_

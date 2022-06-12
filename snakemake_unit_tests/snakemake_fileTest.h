@@ -40,7 +40,6 @@ class snakemake_fileTest : public CppUnit::TestFixture {
   CPPUNIT_TEST(test_snakemake_file_contains_blockers);
   CPPUNIT_TEST(test_snakemake_file_resolve_with_python);
   CPPUNIT_TEST(test_snakemake_file_process_python_results);
-  CPPUNIT_TEST(test_snakemake_file_exec);
   CPPUNIT_TEST(test_snakemake_file_capture_python_tag_values);
   CPPUNIT_TEST(test_snakemake_file_postflight_checks);
   CPPUNIT_TEST(test_snakemake_file_get_snakefile_relative_path);
@@ -69,7 +68,6 @@ class snakemake_fileTest : public CppUnit::TestFixture {
   void test_snakemake_file_contains_blockers();
   void test_snakemake_file_resolve_with_python();
   void test_snakemake_file_process_python_results();
-  void test_snakemake_file_exec();
   void test_snakemake_file_capture_python_tag_values();
   void test_snakemake_file_postflight_checks();
   void test_snakemake_file_get_snakefile_relative_path();
