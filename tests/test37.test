@@ -9,6 +9,8 @@ OUTPUTDIR="tests/examples/$TESTNAME/output"
 
 ## since this is expected pass, enforce pytest functionality as a proxy for pytest configuration
 pytest "$OUTPUTDIR/unit" > /dev/null 2>&1
+## since this is a non-standard test, there is an additional cleanup step required
+rm -Rf "$OUTPUTDIR/unit/simple_rule/output"
 
 if [[ "$?" != "0" ]] ; then
     echo "not ok - $TESTDESCRIPTION pytest did not skip targeted output"
