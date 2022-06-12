@@ -22,6 +22,7 @@
 
 #include "boost/filesystem.hpp"
 #include "boost/program_options.hpp"
+#include "snakemake_unit_tests/utilities.h"
 #include "snakemake_unit_tests/yaml_reader.h"
 #include "yaml-cpp/yaml.h"
 
@@ -286,12 +287,15 @@ class cargs {
 
   /*!
     @brief deal with parameter settings, across CLI and config yaml
+    @param use_schema_validation whether the program should attempt to get
+    python to validate the config with the preset schema; defaults to on,
+    but can be disabled for unit testing
     @return params object containing consistent parameter settings
 
     note that this should be called after initialize_options(), and will
     have fairly lackluster effects otherwise lol
    */
-  params set_parameters() const;
+  params set_parameters(bool use_schema_validation = true) const;
 
   /*!
     @brief determine whether the user has requested help documentation
@@ -563,6 +567,18 @@ class cargs {
   */
   boost::filesystem::path override_if_specified(const std::string &cli_entry,
                                                 const boost::filesystem::path &params_entry) const;
+
+  /*!
+    @brief validate a configuration yaml file with json schema in python
+
+    I'm not familiar with a straightforward way to do this directly in c++,
+    and we already have python lying around, so may as well do it this way.
+
+    @param config_filename name of config file to validate
+    @param inst_directory path to inst/ that should contain json schema
+   */
+  void validate_config(const boost::filesystem::path &config_filename,
+                       const boost::filesystem::path &inst_directory) const;
 
   /*!
     @brief append any CLI entries for a multitoken parameter to

@@ -552,7 +552,7 @@ void snakemake_unit_tests::cargsTest::test_cargs_set_parameters() {
       snakefile.string();
   populate_arguments(command, &_arg_vec_adhoc, &_argv_adhoc);
   cargs ap1(_arg_vec_adhoc.size(), _argv_adhoc);
-  params p1 = ap1.set_parameters();
+  params p1 = ap1.set_parameters(false);
   CPPUNIT_ASSERT(p1.update_all);
   // a run with every other state flag;
   // also check the propagated state of the mandatory arguments
@@ -583,7 +583,7 @@ void snakemake_unit_tests::cargsTest::test_cargs_set_parameters() {
   }
   populate_arguments(command, &_arg_vec_adhoc, &_argv_adhoc);
   cargs ap2(_arg_vec_adhoc.size(), _argv_adhoc);
-  params p2 = ap2.set_parameters();
+  params p2 = ap2.set_parameters(false);
   CPPUNIT_ASSERT(p2.update_snakefiles);
   CPPUNIT_ASSERT(p2.update_config);
   CPPUNIT_ASSERT(p2.update_pytest);
@@ -623,7 +623,7 @@ void snakemake_unit_tests::cargsTest::test_cargs_set_parameters() {
   command = "./snakemake_unit_tests.out -c " + config_yaml.string();
   populate_arguments(command, &_arg_vec_adhoc, &_argv_adhoc);
   cargs ap3(_arg_vec_adhoc.size(), _argv_adhoc);
-  params p3 = ap3.set_parameters();
+  params p3 = ap3.set_parameters(false);
   CPPUNIT_ASSERT(!p3.snakefile.string().compare(snakefile_config.string()));
   CPPUNIT_ASSERT(!p3.pipeline_top_dir.string().compare(top_dir_config.string()));
   CPPUNIT_ASSERT(!p3.pipeline_run_dir.string().compare(run_dir_config.string()));
@@ -685,7 +685,7 @@ void snakemake_unit_tests::cargsTest::test_cargs_set_parameters() {
   command += " -c " + config_yaml.string();
   populate_arguments(command, &_arg_vec_adhoc, &_argv_adhoc);
   cargs ap4(_arg_vec_adhoc.size(), _argv_adhoc);
-  params p4 = ap4.set_parameters();
+  params p4 = ap4.set_parameters(false);
   // almost everything should be what was found on the command line, not in the config yaml
   CPPUNIT_ASSERT(!p4.snakefile.string().compare(snakefile.string()));
   CPPUNIT_ASSERT(!p4.pipeline_top_dir.string().compare(top_dir.string()));
@@ -758,7 +758,7 @@ void snakemake_unit_tests::cargsTest::test_cargs_set_parameters_output_dir_missi
       " --pipeline-run-dir " + run_dir.string() + " --snakefile " + snakefile.string();
   populate_arguments(command, &_arg_vec_adhoc, &_argv_adhoc);
   cargs ap(_arg_vec_adhoc.size(), _argv_adhoc);
-  params p = ap.set_parameters();
+  params p = ap.set_parameters(false);
 }
 
 void snakemake_unit_tests::cargsTest::test_cargs_set_parameters_snakefile_invalid() {
@@ -793,7 +793,7 @@ void snakemake_unit_tests::cargsTest::test_cargs_set_parameters_snakefile_invali
       top_dir.string() + " --pipeline-run-dir " + run_dir.string() + " --snakefile " + snakefile.string();
   populate_arguments(command, &_arg_vec_adhoc, &_argv_adhoc);
   cargs ap(_arg_vec_adhoc.size(), _argv_adhoc);
-  params p = ap.set_parameters();
+  params p = ap.set_parameters(false);
 }
 
 void snakemake_unit_tests::cargsTest::test_cargs_set_parameters_top_dir_invalid() {
@@ -829,7 +829,7 @@ void snakemake_unit_tests::cargsTest::test_cargs_set_parameters_top_dir_invalid(
       (top_dir / "bad").string() + " --pipeline-run-dir " + run_dir.string() + " --snakefile " + snakefile.string();
   populate_arguments(command, &_arg_vec_adhoc, &_argv_adhoc);
   cargs ap(_arg_vec_adhoc.size(), _argv_adhoc);
-  params p = ap.set_parameters();
+  params p = ap.set_parameters(false);
 }
 
 void snakemake_unit_tests::cargsTest::test_cargs_set_parameters_run_dir_invalid() {
@@ -865,7 +865,7 @@ void snakemake_unit_tests::cargsTest::test_cargs_set_parameters_run_dir_invalid(
       top_dir.string() + " --pipeline-run-dir " + run_dir.string() + " --snakefile " + snakefile.string();
   populate_arguments(command, &_arg_vec_adhoc, &_argv_adhoc);
   cargs ap(_arg_vec_adhoc.size(), _argv_adhoc);
-  params p = ap.set_parameters();
+  params p = ap.set_parameters(false);
 }
 
 void snakemake_unit_tests::cargsTest::test_cargs_set_parameters_inst_dir_invalid() {
@@ -894,7 +894,7 @@ void snakemake_unit_tests::cargsTest::test_cargs_set_parameters_inst_dir_invalid
       top_dir.string() + " --pipeline-run-dir " + run_dir.string() + " --snakefile " + snakefile.string();
   populate_arguments(command, &_arg_vec_adhoc, &_argv_adhoc);
   cargs ap(_arg_vec_adhoc.size(), _argv_adhoc);
-  params p = ap.set_parameters();
+  params p = ap.set_parameters(false);
 }
 
 void snakemake_unit_tests::cargsTest::test_cargs_set_parameters_inst_dir_missing_test() {
@@ -929,7 +929,7 @@ void snakemake_unit_tests::cargsTest::test_cargs_set_parameters_inst_dir_missing
       top_dir.string() + " --pipeline-run-dir " + run_dir.string() + " --snakefile " + snakefile.string();
   populate_arguments(command, &_arg_vec_adhoc, &_argv_adhoc);
   cargs ap(_arg_vec_adhoc.size(), _argv_adhoc);
-  params p = ap.set_parameters();
+  params p = ap.set_parameters(false);
 }
 
 void snakemake_unit_tests::cargsTest::test_cargs_set_parameters_inst_dir_missing_common() {
@@ -964,7 +964,7 @@ void snakemake_unit_tests::cargsTest::test_cargs_set_parameters_inst_dir_missing
       top_dir.string() + " --pipeline-run-dir " + run_dir.string() + " --snakefile " + snakefile.string();
   populate_arguments(command, &_arg_vec_adhoc, &_argv_adhoc);
   cargs ap(_arg_vec_adhoc.size(), _argv_adhoc);
-  params p = ap.set_parameters();
+  params p = ap.set_parameters(false);
 }
 
 void snakemake_unit_tests::cargsTest::test_cargs_set_parameters_snakemake_log_missing() {
@@ -999,7 +999,7 @@ void snakemake_unit_tests::cargsTest::test_cargs_set_parameters_snakemake_log_mi
       top_dir.string() + " --pipeline-run-dir " + run_dir.string() + " --snakefile " + snakefile.string();
   populate_arguments(command, &_arg_vec_adhoc, &_argv_adhoc);
   cargs ap(_arg_vec_adhoc.size(), _argv_adhoc);
-  params p = ap.set_parameters();
+  params p = ap.set_parameters(false);
 }
 
 void snakemake_unit_tests::cargsTest::test_cargs_set_parameters_added_files_invalid() {
@@ -1036,7 +1036,7 @@ void snakemake_unit_tests::cargsTest::test_cargs_set_parameters_added_files_inva
       (top_dir / "weird_file").string();
   populate_arguments(command, &_arg_vec_adhoc, &_argv_adhoc);
   cargs ap(_arg_vec_adhoc.size(), _argv_adhoc);
-  params p = ap.set_parameters();
+  params p = ap.set_parameters(false);
 }
 
 void snakemake_unit_tests::cargsTest::test_cargs_set_parameters_added_directories_invalid() {
@@ -1073,7 +1073,7 @@ void snakemake_unit_tests::cargsTest::test_cargs_set_parameters_added_directorie
       (top_dir / "weird_dir").string();
   populate_arguments(command, &_arg_vec_adhoc, &_argv_adhoc);
   cargs ap(_arg_vec_adhoc.size(), _argv_adhoc);
-  params p = ap.set_parameters();
+  params p = ap.set_parameters(false);
 }
 
 void snakemake_unit_tests::cargsTest::test_cargs_help() {
