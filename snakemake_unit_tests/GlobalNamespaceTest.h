@@ -66,6 +66,8 @@ class GlobalNamespaceTest : public CppUnit::TestFixture {
   CPPUNIT_TEST_EXCEPTION(test_resolve_string_delimiter_index_oob, std::runtime_error);
   CPPUNIT_TEST_EXCEPTION(test_resolve_string_delimiter_index_not_mark, std::runtime_error);
   CPPUNIT_TEST(test_lexical_parse);
+  CPPUNIT_TEST(test_exec);
+  CPPUNIT_TEST_EXCEPTION(test_exec_fail_on_error, std::runtime_error);
   CPPUNIT_TEST_SUITE_END();
 
  public:
@@ -116,6 +118,8 @@ class GlobalNamespaceTest : public CppUnit::TestFixture {
   void test_resolve_string_delimiter_index_oob();
   void test_resolve_string_delimiter_index_not_mark();
   void test_lexical_parse();
+  void test_exec();
+  void test_exec_fail_on_error();
 
  private:
   std::map<std::string, bool> _test_map;

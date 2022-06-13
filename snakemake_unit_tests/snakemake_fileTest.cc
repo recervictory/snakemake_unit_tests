@@ -88,7 +88,6 @@ void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_fully_resolve
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_contains_blockers() {}
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_resolve_with_python() {}
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_process_python_results() {}
-void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_exec() {}
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_capture_python_tag_values() {}
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_postflight_checks() {}
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_get_snakefile_relative_path() {}

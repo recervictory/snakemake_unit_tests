@@ -44,7 +44,8 @@ void snakemake_unit_tests::cargsTest::setUp() {
       "--help --inst-dir inst --snakemake-log logfile --output-test-dir outdir "
       "--pipeline-top-dir project --pipeline-run-dir rundir --snakefile Snakefile "
       "--verbose --update-all --update-snakefiles --update-added-content "
-      "--update-config --update-inputs --update-outputs --update-pytest --include-entire-dag";
+      "--update-config --update-inputs --update-outputs --update-pytest --include-entire-dag "
+      "--disable-config-validation";
   std::string shortform =
       "./snakemake_unit_tests.out -c configname.yaml "
       "-d added_dir -n keepme -e rulename -f added_file "
@@ -91,6 +92,7 @@ void snakemake_unit_tests::cargsTest::test_params_default_constructor() {
   CPPUNIT_ASSERT(!p.update_outputs);
   CPPUNIT_ASSERT(!p.update_pytest);
   CPPUNIT_ASSERT(!p.include_entire_dag);
+  CPPUNIT_ASSERT(!p.skip_validation);
   CPPUNIT_ASSERT(p.config_filename.string().empty());
   CPPUNIT_ASSERT(p.config == yaml_reader());
   CPPUNIT_ASSERT(p.output_test_dir.string().empty());
@@ -103,15 +105,15 @@ void snakemake_unit_tests::cargsTest::test_params_default_constructor() {
   CPPUNIT_ASSERT(p.added_directories.empty());
   CPPUNIT_ASSERT(p.include_rules.empty());
   CPPUNIT_ASSERT(p.exclude_rules.empty());
-  CPPUNIT_ASSERT(p.exclude_extensions.empty());
-  CPPUNIT_ASSERT(p.exclude_paths.empty());
-  CPPUNIT_ASSERT(p.byte_comparisons.empty());
+  CPPUNIT_ASSERT(p.exclude_patterns.empty());
+  CPPUNIT_ASSERT(!p.comparators.size());
 }
 
 void snakemake_unit_tests::cargsTest::test_params_copy_constructor() {
   params p;
   p.verbose = p.update_all = p.update_snakefiles = p.update_added_content = true;
-  p.update_config = p.update_inputs = p.update_outputs = p.update_pytest = p.include_entire_dag = true;
+  p.update_config = p.update_inputs = p.update_outputs = p.update_pytest = p.include_entire_dag = p.skip_validation =
+      true;
   p.config_filename = "thing1";
   p.config._data = YAML::Load("[1, 2, 3]");
   p.output_test_dir = "thing2";
@@ -124,9 +126,8 @@ void snakemake_unit_tests::cargsTest::test_params_copy_constructor() {
   p.added_directories.push_back("thing9");
   p.include_rules["thing9a"] = true;
   p.exclude_rules["thing10"] = true;
-  p.exclude_extensions["thing11"] = true;
-  p.exclude_paths["thing12"] = true;
-  p.byte_comparisons["thing13"] = true;
+  p.exclude_patterns["thing11"] = true;
+  p.comparators = YAML::Load("{comp1: {type: byte}}");
   params q(p);
   CPPUNIT_ASSERT(p.verbose == q.verbose);
   CPPUNIT_ASSERT(p.update_all = q.update_all);
@@ -137,6 +138,7 @@ void snakemake_unit_tests::cargsTest::test_params_copy_constructor() {
   CPPUNIT_ASSERT(p.update_outputs == q.update_outputs);
   CPPUNIT_ASSERT(p.update_pytest == q.update_pytest);
   CPPUNIT_ASSERT(p.include_entire_dag == q.include_entire_dag);
+  CPPUNIT_ASSERT(p.skip_validation == q.skip_validation);
   CPPUNIT_ASSERT(p.config_filename == q.config_filename);
   CPPUNIT_ASSERT(p.config == q.config);
   CPPUNIT_ASSERT(p.output_test_dir == q.output_test_dir);
@@ -148,9 +150,8 @@ void snakemake_unit_tests::cargsTest::test_params_copy_constructor() {
   CPPUNIT_ASSERT(p.added_directories == q.added_directories);
   CPPUNIT_ASSERT(p.include_rules == q.include_rules);
   CPPUNIT_ASSERT(p.exclude_rules == q.exclude_rules);
-  CPPUNIT_ASSERT(p.exclude_extensions == q.exclude_extensions);
-  CPPUNIT_ASSERT(p.exclude_paths == q.exclude_paths);
-  CPPUNIT_ASSERT(p.byte_comparisons == q.byte_comparisons);
+  CPPUNIT_ASSERT(p.exclude_patterns == q.exclude_patterns);
+  CPPUNIT_ASSERT(p.comparators == q.comparators);
 }
 void snakemake_unit_tests::cargsTest::test_params_report_settings() {
   boost::filesystem::path output_filename =
@@ -173,11 +174,8 @@ void snakemake_unit_tests::cargsTest::test_params_report_settings() {
   p.include_rules["keepme2"] = true;
   p.exclude_rules["rulename1"] = true;
   p.exclude_rules["rulename2"] = true;
-  p.exclude_extensions.clear();
-  p.exclude_paths["path1"] = true;
-  p.byte_comparisons[".ext1"] = true;
-  p.byte_comparisons[".ext2"] = true;
-  p.byte_comparisons[".ext3"] = true;
+  p.exclude_patterns["path1"] = true;
+  p.comparators = YAML::Load("{comp1: {type: byte, patterns: ext1, args: {arg1: arg2}}}");
   p.report_settings(output_filename);
   std::string pwd = boost::filesystem::current_path().string();
   std::string expected_contents = "output-test-dir: " + pwd +
@@ -201,9 +199,8 @@ void snakemake_unit_tests::cargsTest::test_params_report_settings() {
                                   "added-directories:\n  - dname1\n  - dname2\n"
                                   "include-rules:\n  - keepme1\n  - keepme2\n"
                                   "exclude-rules:\n  - rulename1\n  - rulename2\n"
-                                  "exclude-extensions: ~\n"
-                                  "exclude-paths:\n  - path1\n"
-                                  "byte-comparisons:\n  - .ext1\n  - .ext2\n  - .ext3\n";
+                                  "exclude-patterns:\n  - path1\n"
+                                  "comparators: {comp1: {type: byte, patterns: ext1, args: {arg1: arg2}}}\n";
   std::ifstream input;
   std::string line = "";
   std::ostringstream observed_contents;
@@ -383,6 +380,7 @@ void snakemake_unit_tests::cargsTest::test_cargs_initialize_options() {
   CPPUNIT_ASSERT(o.str().find("--update-outputs") != std::string::npos);
   CPPUNIT_ASSERT(o.str().find("--update-pytest") != std::string::npos);
   CPPUNIT_ASSERT(o.str().find("--include-entire-dag") != std::string::npos);
+  CPPUNIT_ASSERT(o.str().find("--disable-config-validation") != std::string::npos);
 }
 void snakemake_unit_tests::cargsTest::test_cargs_set_parameters() {
   /*
@@ -405,6 +403,7 @@ void snakemake_unit_tests::cargsTest::test_cargs_set_parameters() {
     - (update-outputs, NA, update_outputs)
     - (update-pytest, NA, update_pytest)
     - (include-entire-dag, NA, include_entire_dag)
+    - (disable-config-validation, NA, skip_validation)
 
     parameters that override when present on the CLI:
     - (output-test-dir, output-test-dir, output_test_dir)
@@ -483,14 +482,12 @@ void snakemake_unit_tests::cargsTest::test_cargs_set_parameters() {
   exclude_rules["rule2"] = true;
   exclude_rules["rule1_config"] = true;
   exclude_rules["rule2_config"] = true;
-  // excluded paths, extensions; byte comparisons. these are only accepted from the config
-  std::map<std::string, bool> exclude_paths, exclude_extensions, byte_comparisons;
-  exclude_paths["path1"] = true;
-  exclude_paths["path2"] = true;
-  exclude_extensions["ext1"] = true;
-  exclude_extensions["ext2"] = true;
-  byte_comparisons["ext3"] = true;
-  byte_comparisons["ext4"] = true;
+  // excluded patterns; comparators. these are only accepted from the config
+  std::map<std::string, bool> exclude_patterns;
+  YAML::Node comparators;
+  exclude_patterns["path1"] = true;
+  exclude_patterns["path2"] = true;
+  comparators = YAML::Load("{comp1: {type: byte}}");
   // added directories
   // doesn't need to be created, but worth keeping this stored
   boost::filesystem::path outdir = prefix / "outdir";
@@ -540,20 +537,12 @@ void snakemake_unit_tests::cargsTest::test_cargs_set_parameters() {
        iter != exclude_rules_config.end(); ++iter) {
     config_data += "  - " + iter->first + "\n";
   }
-  config_data += "exclude-paths:\n";
-  for (std::map<std::string, bool>::const_iterator iter = exclude_paths.begin(); iter != exclude_paths.end(); ++iter) {
-    config_data += "  - " + iter->first + "\n";
-  }
-  config_data += "exclude-extensions:\n";
-  for (std::map<std::string, bool>::const_iterator iter = exclude_extensions.begin(); iter != exclude_extensions.end();
+  config_data += "exclude-patterns:\n";
+  for (std::map<std::string, bool>::const_iterator iter = exclude_patterns.begin(); iter != exclude_patterns.end();
        ++iter) {
     config_data += "  - " + iter->first + "\n";
   }
-  config_data += "byte-comparisons:\n";
-  for (std::map<std::string, bool>::const_iterator iter = byte_comparisons.begin(); iter != byte_comparisons.end();
-       ++iter) {
-    config_data += "  - " + iter->first + "\n";
-  }
+  config_data += "comparators:\n  comp1:\n    type: byte\n";
   output.open(config_yaml.string().c_str());
   if (!output.is_open()) throw std::runtime_error("cargs set_parameters: cannot write config yaml");
   output << config_data;
@@ -569,7 +558,7 @@ void snakemake_unit_tests::cargsTest::test_cargs_set_parameters() {
       snakefile.string();
   populate_arguments(command, &_arg_vec_adhoc, &_argv_adhoc);
   cargs ap1(_arg_vec_adhoc.size(), _argv_adhoc);
-  params p1 = ap1.set_parameters();
+  params p1 = ap1.set_parameters(false);
   CPPUNIT_ASSERT(p1.update_all);
   // a run with every other state flag;
   // also check the propagated state of the mandatory arguments
@@ -600,7 +589,7 @@ void snakemake_unit_tests::cargsTest::test_cargs_set_parameters() {
   }
   populate_arguments(command, &_arg_vec_adhoc, &_argv_adhoc);
   cargs ap2(_arg_vec_adhoc.size(), _argv_adhoc);
-  params p2 = ap2.set_parameters();
+  params p2 = ap2.set_parameters(false);
   CPPUNIT_ASSERT(p2.update_snakefiles);
   CPPUNIT_ASSERT(p2.update_config);
   CPPUNIT_ASSERT(p2.update_pytest);
@@ -640,7 +629,7 @@ void snakemake_unit_tests::cargsTest::test_cargs_set_parameters() {
   command = "./snakemake_unit_tests.out -c " + config_yaml.string();
   populate_arguments(command, &_arg_vec_adhoc, &_argv_adhoc);
   cargs ap3(_arg_vec_adhoc.size(), _argv_adhoc);
-  params p3 = ap3.set_parameters();
+  params p3 = ap3.set_parameters(false);
   CPPUNIT_ASSERT(!p3.snakefile.string().compare(snakefile_config.string()));
   CPPUNIT_ASSERT(!p3.pipeline_top_dir.string().compare(top_dir_config.string()));
   CPPUNIT_ASSERT(!p3.pipeline_run_dir.string().compare(run_dir_config.string()));
@@ -670,21 +659,12 @@ void snakemake_unit_tests::cargsTest::test_cargs_set_parameters() {
     }
   }
   CPPUNIT_ASSERT(p3.exclude_rules.find("all") != p3.exclude_rules.end());
-  CPPUNIT_ASSERT(p3.exclude_paths.size() == exclude_paths.size());
-  for (std::map<std::string, bool>::const_iterator iter = p3.exclude_paths.begin(); iter != p3.exclude_paths.end();
-       ++iter) {
-    CPPUNIT_ASSERT(exclude_paths.find(iter->first) != exclude_paths.end());
+  CPPUNIT_ASSERT(p3.exclude_patterns.size() == exclude_patterns.size());
+  for (std::map<std::string, bool>::const_iterator iter = p3.exclude_patterns.begin();
+       iter != p3.exclude_patterns.end(); ++iter) {
+    CPPUNIT_ASSERT(exclude_patterns.find(iter->first) != exclude_patterns.end());
   }
-  CPPUNIT_ASSERT(p3.exclude_extensions.size() == exclude_extensions.size());
-  for (std::map<std::string, bool>::const_iterator iter = p3.exclude_extensions.begin();
-       iter != p3.exclude_extensions.end(); ++iter) {
-    CPPUNIT_ASSERT(exclude_extensions.find(iter->first) != exclude_extensions.end());
-  }
-  CPPUNIT_ASSERT(p3.byte_comparisons.size() == byte_comparisons.size());
-  for (std::map<std::string, bool>::const_iterator iter = p3.byte_comparisons.begin();
-       iter != p3.byte_comparisons.end(); ++iter) {
-    CPPUNIT_ASSERT(byte_comparisons.find(iter->first) != byte_comparisons.end());
-  }
+  CPPUNIT_ASSERT(!p3.comparators["comp1"]["type"].as<std::string>().compare("byte"));
 
   // a run with both config yaml input and CLI input, to test resolution
   command =
@@ -711,7 +691,7 @@ void snakemake_unit_tests::cargsTest::test_cargs_set_parameters() {
   command += " -c " + config_yaml.string();
   populate_arguments(command, &_arg_vec_adhoc, &_argv_adhoc);
   cargs ap4(_arg_vec_adhoc.size(), _argv_adhoc);
-  params p4 = ap4.set_parameters();
+  params p4 = ap4.set_parameters(false);
   // almost everything should be what was found on the command line, not in the config yaml
   CPPUNIT_ASSERT(!p4.snakefile.string().compare(snakefile.string()));
   CPPUNIT_ASSERT(!p4.pipeline_top_dir.string().compare(top_dir.string()));
@@ -746,21 +726,12 @@ void snakemake_unit_tests::cargsTest::test_cargs_set_parameters() {
     }
   }
   CPPUNIT_ASSERT(p4.exclude_rules.find("all") != p4.exclude_rules.end());
-  CPPUNIT_ASSERT(p4.exclude_paths.size() == exclude_paths.size());
-  for (std::map<std::string, bool>::const_iterator iter = p4.exclude_paths.begin(); iter != p4.exclude_paths.end();
-       ++iter) {
-    CPPUNIT_ASSERT(exclude_paths.find(iter->first) != exclude_paths.end());
+  CPPUNIT_ASSERT(p4.exclude_patterns.size() == exclude_patterns.size());
+  for (std::map<std::string, bool>::const_iterator iter = p4.exclude_patterns.begin();
+       iter != p4.exclude_patterns.end(); ++iter) {
+    CPPUNIT_ASSERT(exclude_patterns.find(iter->first) != exclude_patterns.end());
   }
-  CPPUNIT_ASSERT(p4.exclude_extensions.size() == exclude_extensions.size());
-  for (std::map<std::string, bool>::const_iterator iter = p4.exclude_extensions.begin();
-       iter != p4.exclude_extensions.end(); ++iter) {
-    CPPUNIT_ASSERT(exclude_extensions.find(iter->first) != exclude_extensions.end());
-  }
-  CPPUNIT_ASSERT(p4.byte_comparisons.size() == byte_comparisons.size());
-  for (std::map<std::string, bool>::const_iterator iter = p4.byte_comparisons.begin();
-       iter != p4.byte_comparisons.end(); ++iter) {
-    CPPUNIT_ASSERT(byte_comparisons.find(iter->first) != byte_comparisons.end());
-  }
+  CPPUNIT_ASSERT(!p4.comparators["comp1"]["type"].as<std::string>().compare("byte"));
 }
 void snakemake_unit_tests::cargsTest::test_cargs_set_parameters_output_dir_missing() {
   // construct an otherwise valid command, but leave out output directory
@@ -793,7 +764,7 @@ void snakemake_unit_tests::cargsTest::test_cargs_set_parameters_output_dir_missi
       " --pipeline-run-dir " + run_dir.string() + " --snakefile " + snakefile.string();
   populate_arguments(command, &_arg_vec_adhoc, &_argv_adhoc);
   cargs ap(_arg_vec_adhoc.size(), _argv_adhoc);
-  params p = ap.set_parameters();
+  params p = ap.set_parameters(false);
 }
 
 void snakemake_unit_tests::cargsTest::test_cargs_set_parameters_snakefile_invalid() {
@@ -828,7 +799,7 @@ void snakemake_unit_tests::cargsTest::test_cargs_set_parameters_snakefile_invali
       top_dir.string() + " --pipeline-run-dir " + run_dir.string() + " --snakefile " + snakefile.string();
   populate_arguments(command, &_arg_vec_adhoc, &_argv_adhoc);
   cargs ap(_arg_vec_adhoc.size(), _argv_adhoc);
-  params p = ap.set_parameters();
+  params p = ap.set_parameters(false);
 }
 
 void snakemake_unit_tests::cargsTest::test_cargs_set_parameters_top_dir_invalid() {
@@ -864,7 +835,7 @@ void snakemake_unit_tests::cargsTest::test_cargs_set_parameters_top_dir_invalid(
       (top_dir / "bad").string() + " --pipeline-run-dir " + run_dir.string() + " --snakefile " + snakefile.string();
   populate_arguments(command, &_arg_vec_adhoc, &_argv_adhoc);
   cargs ap(_arg_vec_adhoc.size(), _argv_adhoc);
-  params p = ap.set_parameters();
+  params p = ap.set_parameters(false);
 }
 
 void snakemake_unit_tests::cargsTest::test_cargs_set_parameters_run_dir_invalid() {
@@ -900,7 +871,7 @@ void snakemake_unit_tests::cargsTest::test_cargs_set_parameters_run_dir_invalid(
       top_dir.string() + " --pipeline-run-dir " + run_dir.string() + " --snakefile " + snakefile.string();
   populate_arguments(command, &_arg_vec_adhoc, &_argv_adhoc);
   cargs ap(_arg_vec_adhoc.size(), _argv_adhoc);
-  params p = ap.set_parameters();
+  params p = ap.set_parameters(false);
 }
 
 void snakemake_unit_tests::cargsTest::test_cargs_set_parameters_inst_dir_invalid() {
@@ -929,7 +900,7 @@ void snakemake_unit_tests::cargsTest::test_cargs_set_parameters_inst_dir_invalid
       top_dir.string() + " --pipeline-run-dir " + run_dir.string() + " --snakefile " + snakefile.string();
   populate_arguments(command, &_arg_vec_adhoc, &_argv_adhoc);
   cargs ap(_arg_vec_adhoc.size(), _argv_adhoc);
-  params p = ap.set_parameters();
+  params p = ap.set_parameters(false);
 }
 
 void snakemake_unit_tests::cargsTest::test_cargs_set_parameters_inst_dir_missing_test() {
@@ -964,7 +935,7 @@ void snakemake_unit_tests::cargsTest::test_cargs_set_parameters_inst_dir_missing
       top_dir.string() + " --pipeline-run-dir " + run_dir.string() + " --snakefile " + snakefile.string();
   populate_arguments(command, &_arg_vec_adhoc, &_argv_adhoc);
   cargs ap(_arg_vec_adhoc.size(), _argv_adhoc);
-  params p = ap.set_parameters();
+  params p = ap.set_parameters(false);
 }
 
 void snakemake_unit_tests::cargsTest::test_cargs_set_parameters_inst_dir_missing_common() {
@@ -999,7 +970,7 @@ void snakemake_unit_tests::cargsTest::test_cargs_set_parameters_inst_dir_missing
       top_dir.string() + " --pipeline-run-dir " + run_dir.string() + " --snakefile " + snakefile.string();
   populate_arguments(command, &_arg_vec_adhoc, &_argv_adhoc);
   cargs ap(_arg_vec_adhoc.size(), _argv_adhoc);
-  params p = ap.set_parameters();
+  params p = ap.set_parameters(false);
 }
 
 void snakemake_unit_tests::cargsTest::test_cargs_set_parameters_snakemake_log_missing() {
@@ -1034,7 +1005,7 @@ void snakemake_unit_tests::cargsTest::test_cargs_set_parameters_snakemake_log_mi
       top_dir.string() + " --pipeline-run-dir " + run_dir.string() + " --snakefile " + snakefile.string();
   populate_arguments(command, &_arg_vec_adhoc, &_argv_adhoc);
   cargs ap(_arg_vec_adhoc.size(), _argv_adhoc);
-  params p = ap.set_parameters();
+  params p = ap.set_parameters(false);
 }
 
 void snakemake_unit_tests::cargsTest::test_cargs_set_parameters_added_files_invalid() {
@@ -1071,7 +1042,7 @@ void snakemake_unit_tests::cargsTest::test_cargs_set_parameters_added_files_inva
       (top_dir / "weird_file").string();
   populate_arguments(command, &_arg_vec_adhoc, &_argv_adhoc);
   cargs ap(_arg_vec_adhoc.size(), _argv_adhoc);
-  params p = ap.set_parameters();
+  params p = ap.set_parameters(false);
 }
 
 void snakemake_unit_tests::cargsTest::test_cargs_set_parameters_added_directories_invalid() {
@@ -1108,7 +1079,7 @@ void snakemake_unit_tests::cargsTest::test_cargs_set_parameters_added_directorie
       (top_dir / "weird_dir").string();
   populate_arguments(command, &_arg_vec_adhoc, &_argv_adhoc);
   cargs ap(_arg_vec_adhoc.size(), _argv_adhoc);
-  params p = ap.set_parameters();
+  params p = ap.set_parameters(false);
 }
 
 void snakemake_unit_tests::cargsTest::test_cargs_help() {
@@ -1167,6 +1138,10 @@ void snakemake_unit_tests::cargsTest::test_cargs_include_entire_dag() {
   cargs ap(_arg_vec_long.size(), _argv_long);
   CPPUNIT_ASSERT(ap.include_entire_dag());
 }
+void snakemake_unit_tests::cargsTest::test_cargs_skip_validation() {
+  cargs ap(_arg_vec_long.size(), _argv_long);
+  CPPUNIT_ASSERT(ap.skip_validation());
+}
 void snakemake_unit_tests::cargsTest::test_cargs_update_all() {
   cargs ap(_arg_vec_long.size(), _argv_long);
   CPPUNIT_ASSERT(ap.update_all());
@@ -1208,6 +1183,7 @@ void snakemake_unit_tests::cargsTest::test_cargs_compute_flag() {
   CPPUNIT_ASSERT_MESSAGE("cargs compute_flag gracefully handles absent tags", !ap.compute_flag("update-all"));
   // make sure all permitted flags are in fact permitted
   CPPUNIT_ASSERT(!ap.compute_flag("include-entire-dag"));
+  CPPUNIT_ASSERT(!ap.compute_flag("disable-config-validation"));
   CPPUNIT_ASSERT(!ap.compute_flag("update-all"));
   CPPUNIT_ASSERT(!ap.compute_flag("update-snakefiles"));
   CPPUNIT_ASSERT(!ap.compute_flag("update-added-content"));

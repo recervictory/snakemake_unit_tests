@@ -41,11 +41,16 @@ void snakemake_unit_tests::cargs::initialize_options() {
       "update-pytest", "update pytest infrastructure in output directories")(
       "include-entire-dag",
       "add entire DAG to test snakefiles, instead of choosing target rules "
-      "only (not recommended)");
+      "only (not recommended)")(
+      "disable-config-validation",
+      "skip validation of user configuration yaml (if provided) with json schema (not recommended)");
 }
 
-snakemake_unit_tests::params snakemake_unit_tests::cargs::set_parameters() const {
+snakemake_unit_tests::params snakemake_unit_tests::cargs::set_parameters(bool use_schema_validation) const {
   params p;
+  // new: allow user to skip over config yaml validation
+  p.skip_validation = skip_validation();
+
   // start with config yaml
   p.config_filename = get_config_yaml();
   // if the user specified a configuration file
@@ -58,6 +63,44 @@ snakemake_unit_tests::params snakemake_unit_tests::cargs::set_parameters() const
       p.config.load_file(p.config_filename.string());
       // do NOT accept help from config file
       // do NOT accept verbose from config file
+      /*
+        new: handle inst as quickly as possible
+
+        - the idea here is that we want to enable schema validation,
+          to provide the user some sanity checks; but the schema is present
+          in inst, so to actually trigger the validator, we need to do
+          at least some interface processing first
+       */
+      if (p.config.query_valid("inst-dir")) {
+        p.inst_dir = p.config.get_entry("inst-dir");
+      }
+      p.inst_dir = override_if_specified(get_inst_dir(), p.inst_dir);
+      // new: migrate inst sanity checks to this alternate point,
+      // so that errors in locating the validation schema are more sane
+      // inst_dir: should exist, be directory
+      check_nonempty(p.inst_dir, "inst-dir");
+      check_and_fix_dir(&p.inst_dir, "", "inst-dir");
+      if (use_schema_validation && !p.skip_validation) {
+        // for now, just check that the schema is present
+        try {
+          check_regular_file("user_config_schema.yaml", p.inst_dir, "inst-dir/user_config_schema.yaml");
+        } catch (...) {
+          throw std::runtime_error("inst directory \"" + p.inst_dir.string() +
+                                   "\" exists, but"
+                                   " doesn't appear to contain 'user_config_schema.yaml',"
+                                   " a required infrastructure file for snakemake_unit_tests. "
+                                   "If you've cloned and built snakemake_unit_tests_locally, "
+                                   "you should provide /path/to/snakemake_unit_tests/inst for "
+                                   "this option; otherwise, if using conda, you can provide "
+                                   "$CONDA_PREFIX/share/snakemake_unit_tests/inst");
+        }
+        // now: validate the config with a json schema spec.
+        // note that, due to the override behavior of the program,
+        // this doesn't enforce all of what it might; rather, it
+        // primarily detects config files with unsupported features
+        validate_config(p.config_filename, p.inst_dir);
+      }
+
       if (p.config.query_valid("output-test-dir")) {
         p.output_test_dir = p.config.get_entry("output-test-dir");
       }
@@ -69,9 +112,6 @@ snakemake_unit_tests::params snakemake_unit_tests::cargs::set_parameters() const
       }
       if (p.config.query_valid("pipeline-run-dir")) {
         p.pipeline_run_dir = p.config.get_entry("pipeline-run-dir");
-      }
-      if (p.config.query_valid("inst-dir")) {
-        p.inst_dir = p.config.get_entry("inst-dir");
       }
       if (p.config.query_valid("snakemake-log")) {
         p.snakemake_log = p.config.get_entry("snakemake-log");
@@ -88,14 +128,11 @@ snakemake_unit_tests::params snakemake_unit_tests::cargs::set_parameters() const
       if (p.config.query_valid("exclude-rules")) {
         p.exclude_rules = vector_to_map<std::string>(p.config.get_sequence("exclude-rules"));
       }
-      if (p.config.query_valid("exclude-extensions")) {
-        p.exclude_extensions = vector_to_map<std::string>(p.config.get_sequence("exclude-extensions"));
+      if (p.config.query_valid("exclude-patterns")) {
+        p.exclude_patterns = vector_to_map<std::string>(p.config.get_sequence("exclude-patterns"));
       }
-      if (p.config.query_valid("exclude-paths")) {
-        p.exclude_paths = vector_to_map<std::string>(p.config.get_sequence("exclude-paths"));
-      }
-      if (p.config.query_valid("byte-comparisons")) {
-        p.byte_comparisons = vector_to_map<std::string>(p.config.get_sequence("byte-comparisons"));
+      if (p.config.query_valid("comparators")) {
+        p.comparators = p.config.get_node("comparators");
       }
     } else {
       throw std::runtime_error("configuration file \"" + p.config_filename.string() + "\" is not a regular file");
@@ -135,6 +172,8 @@ snakemake_unit_tests::params snakemake_unit_tests::cargs::set_parameters() const
     p.pipeline_run_dir = boost::filesystem::path(".");
   }
   // inst_dir: override if specified
+  // this is sort of handled above; but if no config file is provided,
+  // that code above won't be executed, and this directive still works
   p.inst_dir = override_if_specified(get_inst_dir(), p.inst_dir);
   // snakemake_log: override if specified
   p.snakemake_log = override_if_specified(get_snakemake_log(), p.snakemake_log);
@@ -283,12 +322,12 @@ void snakemake_unit_tests::params::report_settings(const boost::filesystem::path
   emit_yaml_map(&out, include_rules, "include-rules");
   // exclude-rules
   emit_yaml_map(&out, exclude_rules, "exclude-rules");
-  // exclude-extensions
-  emit_yaml_map(&out, exclude_extensions, "exclude-extensions");
-  // exclude-paths
-  emit_yaml_map(&out, exclude_paths, "exclude-paths");
-  // byte-comparisons
-  emit_yaml_map(&out, byte_comparisons, "byte-comparisons");
+  // exclude-patterns
+  emit_yaml_map(&out, exclude_patterns, "exclude-patterns");
+  // comparators
+  if (comparators.size()) {
+    out << YAML::Key << "comparators" << YAML::Value << comparators;
+  }
   // end the content
   out << YAML::EndMap;
   // write to output file
@@ -332,5 +371,35 @@ void snakemake_unit_tests::params::emit_yaml_vector(YAML::Emitter *out,
     *out << YAML::EndSeq;
   } else {
     *out << YAML::Null;
+  }
+}
+
+void snakemake_unit_tests::cargs::validate_config(const boost::filesystem::path &config_filename,
+                                                  const boost::filesystem::path &inst_directory) const {
+  boost::filesystem::path schema = inst_directory / "user_config_schema.yaml";
+  if (!boost::filesystem::exists(schema)) {
+    throw std::runtime_error("expected json schema file \"" + schema.string() + "\" could not be located");
+  }
+  std::string command =
+      "python3 -c \"from snakemake.utils import validate ; import yaml ; "
+      "validate(yaml.safe_load(open(\\\"" +
+      config_filename.string() + "\\\", \\\"r\\\")), schema=\\\"" + schema.string() + "\\\")\"";
+  try {
+    std::vector<std::string> result = exec(command, true, true);
+  } catch (const std::runtime_error &e) {
+    std::string message =
+        "validation of --config/-c file \"" + config_filename.string() +
+        "\" has failed. "
+        "the schema for this validation is at \"" +
+        schema.string() +
+        "\" for review. due to how the "
+        "command line and config files interact with snakemake_unit_tests, this schema does not strictly "
+        "enforce most properties. however, it does detect configuration features that are not part of "
+        "the currently supported feature set. examples of likely candidates for this detection are:\n\n"
+        "  - 'pipeline_dir', deprecated in favor of 'pipeline-top-dir' and 'pipeline-run-dir';\n"
+        "  - 'exclude-extensions' and 'exclude-paths', deprecated in favor of 'exclude-patterns';\n"
+        "  - 'byte-comparisons', deprecated in favor of 'comparators'\n\n"
+        "the newest feature set options are available with examples in config.example.yaml.";
+    throw std::logic_error(message);
   }
 }

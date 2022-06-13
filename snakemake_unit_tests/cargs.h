@@ -22,6 +22,7 @@
 
 #include "boost/filesystem.hpp"
 #include "boost/program_options.hpp"
+#include "snakemake_unit_tests/utilities.h"
 #include "snakemake_unit_tests/yaml_reader.h"
 #include "yaml-cpp/yaml.h"
 
@@ -61,6 +62,7 @@ class params {
         update_outputs(false),
         update_pytest(false),
         include_entire_dag(false),
+        skip_validation(false),
         config_filename(""),
         output_test_dir(""),
         snakefile(""),
@@ -82,6 +84,7 @@ class params {
         update_outputs(obj.update_outputs),
         update_pytest(obj.update_pytest),
         include_entire_dag(obj.include_entire_dag),
+        skip_validation(obj.skip_validation),
         config_filename(obj.config_filename),
         config(obj.config),
         output_test_dir(obj.output_test_dir),
@@ -94,9 +97,8 @@ class params {
         added_directories(obj.added_directories),
         include_rules(obj.include_rules),
         exclude_rules(obj.exclude_rules),
-        exclude_extensions(obj.exclude_extensions),
-        exclude_paths(obj.exclude_paths),
-        byte_comparisons(obj.byte_comparisons) {}
+        exclude_patterns(obj.exclude_patterns),
+        comparators(obj.comparators) {}
   /*!
     @brief destructor
    */
@@ -176,11 +178,21 @@ class params {
     @brief spike entire dag into each output snakefile, instead of
    just the rule(s) being tested
 
-   designed as a last ditch solution for unsupported calls to `rules.`.
-   will cause significant performance degradation while running the
-   actual tests.
+   originally designed as a last ditch solution for unsupported calls to `rules.`.
+   `rules.` is now arbitrarily supported, so this flag really is just here
+   in case people idiosyncratically prefer that their entire DAG is present
+   in each unit test. may cause significant performance degradation while running
+   the actual tests.
    */
   bool include_entire_dag;
+  /*!
+    @brief do not attempt to validate user configuration file, if provided,
+    agaist json schema in inst/user_config_schema.yaml
+
+    the intended use case here is if someone wants to add a custom comparator
+    but doesn't want to update the json schema to support it
+   */
+  bool skip_validation;
   /*!
     @brief name of yaml configuration file
    */
@@ -231,17 +243,13 @@ class params {
    */
   std::map<std::string, bool> exclude_rules;
   /*!
-    @brief user-defined file extensions to exclude from pytest comparison
+    @brief user-defined file/path regular expressions to exclude from pytest comparison
    */
-  std::map<std::string, bool> exclude_extensions;
-  /*!
-    @brief user-defined path patterns to exclude from pytest comparison
-   */
-  std::map<std::string, bool> exclude_paths;
+  std::map<std::string, bool> exclude_patterns;
   /*!
     @brief user-defined file extensions to flag as needing binary comparison
    */
-  std::map<std::string, bool> byte_comparisons;
+  YAML::Node comparators;
 };
 
 /*!
@@ -262,6 +270,7 @@ class cargs {
     _permitted_flags["help"] = true;
     _permitted_flags["verbose"] = true;
     _permitted_flags["include-entire-dag"] = true;
+    _permitted_flags["disable-config-validation"] = true;
     _permitted_flags["update-all"] = true;
     _permitted_flags["update-pytest"] = true;
     _permitted_flags["update-added-content"] = true;
@@ -291,12 +300,15 @@ class cargs {
 
   /*!
     @brief deal with parameter settings, across CLI and config yaml
+    @param use_schema_validation whether the program should attempt to get
+    python to validate the config with the preset schema; defaults to on,
+    but can be disabled for unit testing
     @return params object containing consistent parameter settings
 
     note that this should be called after initialize_options(), and will
     have fairly lackluster effects otherwise lol
    */
-  params set_parameters() const;
+  params set_parameters(bool use_schema_validation = true) const;
 
   /*!
     @brief determine whether the user has requested help documentation
@@ -432,12 +444,22 @@ class cargs {
     to synthetic snakefiles
     @return whether the user wants the full DAG
 
-    the user should only activate this when default `rules.` detection has
-    failed due to wrapping `rules.` calls under defined function blocks or
-    other infrastructure. this will potentially massively slow down execution,
-    and should only be used for individual problematic rules.
+    this should effectively never be invoked by the user.
+    this will potentially massively slow down execution,
+    and should only be used for individual problematic rules should
+    they arise with changing snakemake supported features.
    */
   bool include_entire_dag() const { return compute_flag("include-entire-dag"); }
+
+  /*!
+    @brief get user flag for overriding schema validation of user-specified
+    yaml configuration file, if provided
+    @return whether the user wants to skip validation
+
+    this option is provided in case the user adds custom comparators to
+    the inst/ content but doesn't update the json schema
+   */
+  bool skip_validation() const { return compute_flag("disable-config-validation"); }
 
   /*!
     @brief get user flag for updating all parts of unit tests
@@ -568,6 +590,18 @@ class cargs {
   */
   boost::filesystem::path override_if_specified(const std::string &cli_entry,
                                                 const boost::filesystem::path &params_entry) const;
+
+  /*!
+    @brief validate a configuration yaml file with json schema in python
+
+    I'm not familiar with a straightforward way to do this directly in c++,
+    and we already have python lying around, so may as well do it this way.
+
+    @param config_filename name of config file to validate
+    @param inst_directory path to inst/ that should contain json schema
+   */
+  void validate_config(const boost::filesystem::path &config_filename,
+                       const boost::filesystem::path &inst_directory) const;
 
   /*!
     @brief append any CLI entries for a multitoken parameter to
