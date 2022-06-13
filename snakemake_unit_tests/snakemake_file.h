@@ -177,15 +177,6 @@ class snakemake_file {
                               const boost::filesystem::path &output_name);
 
   /*!
-  @brief execute a system command and capture its results
-  @param cmd system command to execute
-  @param fail_on_error whether python errors should trigger immediate exception
-  @return captured results, line by line
-
-  https://stackoverflow.com/questions/478898/how-do-i-execute-a-command-and-get-the-output-of-the-command-within-c-using-po
- */
-  std::vector<std::string> exec(const std::string &cmd, bool fail_on_error) const;
-  /*!
   @brief parse python reporting output to tags or tags and values
   @param vec captured lines from python output
   @param target results collector

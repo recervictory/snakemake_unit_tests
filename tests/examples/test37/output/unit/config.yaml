@@ -1,0 +1,13 @@
+output-test-dir: /home/palmercd/Development/snakemake_unit_tests/tests/examples/test37/output
+snakefile: /home/palmercd/Development/snakemake_unit_tests/tests/examples/test37/input/workflow/Snakefile
+pipeline-top-dir: /home/palmercd/Development/snakemake_unit_tests/tests/examples/test37/input
+pipeline-run-dir: /home/palmercd/Development/snakemake_unit_tests/.
+inst-dir: /home/palmercd/Development/snakemake_unit_tests/inst
+snakemake-log: /home/palmercd/Development/snakemake_unit_tests/tests/examples/test37/input/run.log
+added-files: ~
+added-directories: ~
+include-rules: ~
+exclude-rules:
+  - all
+exclude-patterns: ~
+byte-comparisons: ~

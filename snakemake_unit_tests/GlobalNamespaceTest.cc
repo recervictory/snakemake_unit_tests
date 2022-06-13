@@ -674,4 +674,17 @@ void snakemake_unit_tests::GlobalNamespaceTest::test_lexical_parse() {
   }
 }
 
+void snakemake_unit_tests::GlobalNamespaceTest::test_exec() {
+  std::vector<std::string> result = exec("python3 --version", true);
+  CPPUNIT_ASSERT(result.size() == 1);
+  result = exec("echo hello", true);
+  CPPUNIT_ASSERT(result.size() == 1);
+  CPPUNIT_ASSERT(!result.at(0).compare("hello\n"));
+  result = exec("python33333333___43324 2> /dev/null", false, false);
+}
+
+void snakemake_unit_tests::GlobalNamespaceTest::test_exec_fail_on_error() {
+  std::vector<std::string> result = exec("python33333333___43324 2> /dev/null", true, false);
+}
+
 CPPUNIT_TEST_SUITE_REGISTRATION(snakemake_unit_tests::GlobalNamespaceTest);
