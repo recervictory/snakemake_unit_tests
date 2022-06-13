@@ -44,7 +44,8 @@ void snakemake_unit_tests::cargsTest::setUp() {
       "--help --inst-dir inst --snakemake-log logfile --output-test-dir outdir "
       "--pipeline-top-dir project --pipeline-run-dir rundir --snakefile Snakefile "
       "--verbose --update-all --update-snakefiles --update-added-content "
-      "--update-config --update-inputs --update-outputs --update-pytest --include-entire-dag";
+      "--update-config --update-inputs --update-outputs --update-pytest --include-entire-dag "
+      "--disable-config-validation";
   std::string shortform =
       "./snakemake_unit_tests.out -c configname.yaml "
       "-d added_dir -n keepme -e rulename -f added_file "
@@ -91,6 +92,7 @@ void snakemake_unit_tests::cargsTest::test_params_default_constructor() {
   CPPUNIT_ASSERT(!p.update_outputs);
   CPPUNIT_ASSERT(!p.update_pytest);
   CPPUNIT_ASSERT(!p.include_entire_dag);
+  CPPUNIT_ASSERT(!p.skip_validation);
   CPPUNIT_ASSERT(p.config_filename.string().empty());
   CPPUNIT_ASSERT(p.config == yaml_reader());
   CPPUNIT_ASSERT(p.output_test_dir.string().empty());
@@ -110,7 +112,8 @@ void snakemake_unit_tests::cargsTest::test_params_default_constructor() {
 void snakemake_unit_tests::cargsTest::test_params_copy_constructor() {
   params p;
   p.verbose = p.update_all = p.update_snakefiles = p.update_added_content = true;
-  p.update_config = p.update_inputs = p.update_outputs = p.update_pytest = p.include_entire_dag = true;
+  p.update_config = p.update_inputs = p.update_outputs = p.update_pytest = p.include_entire_dag = p.skip_validation =
+      true;
   p.config_filename = "thing1";
   p.config._data = YAML::Load("[1, 2, 3]");
   p.output_test_dir = "thing2";
@@ -135,6 +138,7 @@ void snakemake_unit_tests::cargsTest::test_params_copy_constructor() {
   CPPUNIT_ASSERT(p.update_outputs == q.update_outputs);
   CPPUNIT_ASSERT(p.update_pytest == q.update_pytest);
   CPPUNIT_ASSERT(p.include_entire_dag == q.include_entire_dag);
+  CPPUNIT_ASSERT(p.skip_validation == q.skip_validation);
   CPPUNIT_ASSERT(p.config_filename == q.config_filename);
   CPPUNIT_ASSERT(p.config == q.config);
   CPPUNIT_ASSERT(p.output_test_dir == q.output_test_dir);
@@ -376,6 +380,7 @@ void snakemake_unit_tests::cargsTest::test_cargs_initialize_options() {
   CPPUNIT_ASSERT(o.str().find("--update-outputs") != std::string::npos);
   CPPUNIT_ASSERT(o.str().find("--update-pytest") != std::string::npos);
   CPPUNIT_ASSERT(o.str().find("--include-entire-dag") != std::string::npos);
+  CPPUNIT_ASSERT(o.str().find("--disable-config-validation") != std::string::npos);
 }
 void snakemake_unit_tests::cargsTest::test_cargs_set_parameters() {
   /*
@@ -398,6 +403,7 @@ void snakemake_unit_tests::cargsTest::test_cargs_set_parameters() {
     - (update-outputs, NA, update_outputs)
     - (update-pytest, NA, update_pytest)
     - (include-entire-dag, NA, include_entire_dag)
+    - (disable-config-validation, NA, skip_validation)
 
     parameters that override when present on the CLI:
     - (output-test-dir, output-test-dir, output_test_dir)
@@ -1132,6 +1138,10 @@ void snakemake_unit_tests::cargsTest::test_cargs_include_entire_dag() {
   cargs ap(_arg_vec_long.size(), _argv_long);
   CPPUNIT_ASSERT(ap.include_entire_dag());
 }
+void snakemake_unit_tests::cargsTest::test_cargs_skip_validation() {
+  cargs ap(_arg_vec_long.size(), _argv_long);
+  CPPUNIT_ASSERT(ap.skip_validation());
+}
 void snakemake_unit_tests::cargsTest::test_cargs_update_all() {
   cargs ap(_arg_vec_long.size(), _argv_long);
   CPPUNIT_ASSERT(ap.update_all());
@@ -1173,6 +1183,7 @@ void snakemake_unit_tests::cargsTest::test_cargs_compute_flag() {
   CPPUNIT_ASSERT_MESSAGE("cargs compute_flag gracefully handles absent tags", !ap.compute_flag("update-all"));
   // make sure all permitted flags are in fact permitted
   CPPUNIT_ASSERT(!ap.compute_flag("include-entire-dag"));
+  CPPUNIT_ASSERT(!ap.compute_flag("disable-config-validation"));
   CPPUNIT_ASSERT(!ap.compute_flag("update-all"));
   CPPUNIT_ASSERT(!ap.compute_flag("update-snakefiles"));
   CPPUNIT_ASSERT(!ap.compute_flag("update-added-content"));

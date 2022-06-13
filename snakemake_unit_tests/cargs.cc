@@ -41,11 +41,16 @@ void snakemake_unit_tests::cargs::initialize_options() {
       "update-pytest", "update pytest infrastructure in output directories")(
       "include-entire-dag",
       "add entire DAG to test snakefiles, instead of choosing target rules "
-      "only (not recommended)");
+      "only (not recommended)")(
+      "disable-config-validation",
+      "skip validation of user configuration yaml (if provided) with json schema (not recommended)");
 }
 
 snakemake_unit_tests::params snakemake_unit_tests::cargs::set_parameters(bool use_schema_validation) const {
   params p;
+  // new: allow user to skip over config yaml validation
+  p.skip_validation = skip_validation();
+
   // start with config yaml
   p.config_filename = get_config_yaml();
   // if the user specified a configuration file
@@ -75,7 +80,7 @@ snakemake_unit_tests::params snakemake_unit_tests::cargs::set_parameters(bool us
       // inst_dir: should exist, be directory
       check_nonempty(p.inst_dir, "inst-dir");
       check_and_fix_dir(&p.inst_dir, "", "inst-dir");
-      if (use_schema_validation) {
+      if (use_schema_validation && !p.skip_validation) {
         // for now, just check that the schema is present
         try {
           check_regular_file("user_config_schema.yaml", p.inst_dir, "inst-dir/user_config_schema.yaml");
