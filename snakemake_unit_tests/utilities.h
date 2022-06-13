@@ -9,6 +9,7 @@
 #ifndef SNAKEMAKE_UNIT_TESTS_UTILITIES_H_
 #define SNAKEMAKE_UNIT_TESTS_UTILITIES_H_
 
+#include <array>
 #include <fstream>
 #include <iostream>
 #include <sstream>
