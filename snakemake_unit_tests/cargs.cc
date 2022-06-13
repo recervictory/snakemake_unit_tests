@@ -70,11 +70,29 @@ snakemake_unit_tests::params snakemake_unit_tests::cargs::set_parameters(bool us
         p.inst_dir = p.config.get_entry("inst-dir");
       }
       p.inst_dir = override_if_specified(get_inst_dir(), p.inst_dir);
-      // now: validate the config with a json schema spec.
-      // note that, due to the override behavior of the program,
-      // this doesn't enforce all of what it might; rather, it
-      // primarily detects config files with unsupported features
+      // new: migrate inst sanity checks to this alternate point,
+      // so that errors in locating the validation schema are more sane
+      // inst_dir: should exist, be directory
+      check_nonempty(p.inst_dir, "inst-dir");
+      check_and_fix_dir(&p.inst_dir, "", "inst-dir");
       if (use_schema_validation) {
+        // for now, just check that the schema is present
+        try {
+          check_regular_file("user_config_schema.yaml", p.inst_dir, "inst-dir/user_config_schema.yaml");
+        } catch (...) {
+          throw std::runtime_error("inst directory \"" + p.inst_dir.string() +
+                                   "\" exists, but"
+                                   " doesn't appear to contain 'user_config_schema.yaml',"
+                                   " a required infrastructure file for snakemake_unit_tests. "
+                                   "If you've cloned and built snakemake_unit_tests_locally, "
+                                   "you should provide /path/to/snakemake_unit_tests/inst for "
+                                   "this option; otherwise, if using conda, you can provide "
+                                   "$CONDA_PREFIX/share/snakemake_unit_tests/inst");
+        }
+        // now: validate the config with a json schema spec.
+        // note that, due to the override behavior of the program,
+        // this doesn't enforce all of what it might; rather, it
+        // primarily detects config files with unsupported features
         validate_config(p.config_filename, p.inst_dir);
       }
 
@@ -89,9 +107,6 @@ snakemake_unit_tests::params snakemake_unit_tests::cargs::set_parameters(bool us
       }
       if (p.config.query_valid("pipeline-run-dir")) {
         p.pipeline_run_dir = p.config.get_entry("pipeline-run-dir");
-      }
-      if (p.config.query_valid("inst-dir")) {
-        p.inst_dir = p.config.get_entry("inst-dir");
       }
       if (p.config.query_valid("snakemake-log")) {
         p.snakemake_log = p.config.get_entry("snakemake-log");
