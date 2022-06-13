@@ -193,4 +193,5 @@ comparators:
       rtol: 0.00001
       header: "infer"
       index_col: ~
+      check_like: no
       sep: "\t"

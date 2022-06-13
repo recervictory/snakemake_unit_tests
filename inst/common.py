@@ -120,7 +120,14 @@ def pandas_assert_frame_equal(infile1, infile2, args):
     df2 = pd.read_table(
         infile2, sep=args["sep"], header=args["header"], index_col=args["index_col"]
     )
-    pd.testing.assert_frame_equal(df1, df2, check_exact=False, rtol=args["rtol"], atol=args["atol"])
+    pd.testing.assert_frame_equal(
+        df1,
+        df2,
+        check_exact=False,
+        check_like=args["check_like"],
+        rtol=args["rtol"],
+        atol=args["atol"],
+    )
 
 
 def process_file(infile):

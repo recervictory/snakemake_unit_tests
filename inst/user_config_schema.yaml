@@ -75,6 +75,8 @@ properties:
                   oneOf:
                     - type: string
                     - type: "null"
+                check_like:
+                  type: boolean
                 sep:
                   type: string
               required:
@@ -82,6 +84,7 @@ properties:
                 - rtol
                 - header
                 - index_col
+                - check_like
                 - sep
               additionalProperties: false
           additionalProperties: false
