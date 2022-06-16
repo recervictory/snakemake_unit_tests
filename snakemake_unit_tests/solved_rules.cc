@@ -190,9 +190,12 @@ void snakemake_unit_tests::solved_rules::emit_tests(
           // the rule was manually excluded in config; for evaluation purposes, that means we're done
           deployment_successful = true;
         }
+        if (!deployment_successful) {
+          std::cout << "\truleset has been adjusted for rules./checkpoint features; trying again..." << std::endl;
+        }
       } while (!deployment_successful);
       test_history[(*iter)->get_rule_name()] = true;
-      // new: remove evidence of having run snakemake in-place
+      // remove evidence of having run snakemake in-place
       boost::filesystem::remove_all(test_parent_path / (*iter)->get_rule_name() / "workspace/.snakemake");
     }
   }
@@ -425,6 +428,19 @@ void snakemake_unit_tests::solved_rules::copy_contents(
       // create parent directories as needed
       boost::filesystem::create_directories(target_file.parent_path());
       // recursive copy
+      // for compatibility with other applications: if the target exists, change its permissions and remove it
+      if (boost::filesystem::exists(target_file)) {
+        if (boost::filesystem::is_directory(target_file)) {
+          boost::filesystem::recursive_directory_iterator rec_iter(target_file), rec_end;
+          for (; rec_iter != rec_end; ++rec_iter) {
+            boost::filesystem::permissions(*rec_iter, boost::filesystem::owner_write | boost::filesystem::add_perms);
+          }
+        } else {
+          boost::filesystem::permissions(target_file, boost::filesystem::owner_write | boost::filesystem::add_perms);
+        }
+        boost::filesystem::remove_all(target_file);
+      }
+      // then copy
       boost::filesystem::copy(
           source_file, target_file,
           boost::filesystem::copy_options::overwrite_existing | boost::filesystem::copy_options::recursive);
