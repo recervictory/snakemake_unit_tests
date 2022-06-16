@@ -169,9 +169,10 @@ void snakemake_unit_tests::solved_rules::emit_tests(
             (include_rules.empty() || include_rules.find((*iter)->get_rule_name()) != include_rules.end()) &&
             (update_snakefiles || update_added_content || update_inputs || update_outputs)) {
           std::vector<std::string> snakemake_exec;
-          snakemake_exec = exec("cd " + (test_parent_path / (*iter)->get_rule_name() / "workspace").string() +
-                                    " && snakemake -nFs " + sf.get_snakefile_relative_path().string(),
-                                false);
+          snakemake_exec =
+              exec("cd " + (test_parent_path / (*iter)->get_rule_name() / "workspace").string() + " && snakemake -nFs" +
+                       sf.get_snakefile_relative_path().string() + " --directory " + pipeline_run_dir.string(),
+                   false);
           // try to find snakemake errors that report rules missing from dag
           unsigned initial_missing_count = missing_rules.size();
           find_missing_rules(snakemake_exec, &missing_rules);
