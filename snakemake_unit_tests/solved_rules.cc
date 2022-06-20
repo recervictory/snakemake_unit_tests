@@ -214,12 +214,31 @@ void snakemake_unit_tests::solved_rules::find_missing_rules(const std::vector<st
   // target error pattern is: "'(Rules|Checkpoints)' object has no attribute 'RULENAME'"
   const boost::regex rule_missing("^.*'Rules' object has no attribute '([^']+)'.*\n$");
   const boost::regex checkpoint_missing("^.*'Checkpoints' object has no attribute '([^']+)'.*\n$");
+  const boost::regex any_error("^.*[eE][xX][cC][eE][pP][tT][iI][oO][nN].*\n?$");
+  bool found_error = false, found_permitted_error = false;
   for (std::vector<std::string>::const_iterator iter = snakemake_exec.begin(); iter != snakemake_exec.end(); ++iter) {
     boost::smatch regex_result;
     if (boost::regex_match(*iter, regex_result, rule_missing) ||
         boost::regex_match(*iter, regex_result, checkpoint_missing)) {
       target->insert(std::make_pair(regex_result[1].str(), true));
+      found_permitted_error = true;
     }
+    if (boost::regex_match(*iter, regex_result, any_error)) {
+      found_error = true;
+    }
+  }
+  if (found_error && !found_permitted_error) {
+    for (std::vector<std::string>::const_iterator iter = snakemake_exec.begin(); iter != snakemake_exec.end(); ++iter) {
+      std::cerr << *iter;
+    }
+    throw std::runtime_error(
+        "snakemake dryrun found unhandled error, indicating something wrong with either "
+        "the configuration of this run or the internal logic of snakemake_unit_tests; "
+        "please inspect the logging information above to determine which. in particular, "
+        "any message about missing infrastructure files from this workflow (e.g. config.yaml) "
+        "may indicate that you need to add more things to added-files or added-directories, "
+        "for files that are necessary for pipeline functionality but that exist outside "
+        "of the DAG.");
   }
 }
 
