@@ -131,7 +131,27 @@ void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_report_single
       "else:\n    pass\n\n\nrule otherrule:\n    input:\n        file2,\n\n\n";
   CPPUNIT_ASSERT(!out.str().compare(expected));
 }
-void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_fully_resolved() {}
+void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_fully_resolved() {
+  snakemake_file sf;
+  boost::shared_ptr<rule_block> rb1(new rule_block), rb2(new rule_block), rb3(new rule_block);
+  rb1->_resolution = RESOLVED_INCLUDED;
+  rb1->_queried_by_python = true;
+  rb2->_resolution = RESOLVED_INCLUDED;
+  rb2->_queried_by_python = true;
+  rb3->_resolution = RESOLVED_INCLUDED;
+  rb3->_queried_by_python = true;
+  sf._blocks.push_back(rb1);
+  sf._blocks.push_back(rb2);
+  sf._blocks.push_back(rb3);
+  CPPUNIT_ASSERT(sf.fully_resolved());
+  rb3->_resolution = RESOLVED_EXCLUDED;
+  CPPUNIT_ASSERT(sf.fully_resolved());
+  rb3->_queried_by_python = false;
+  CPPUNIT_ASSERT(!sf.fully_resolved());
+  rb3->_queried_by_python = true;
+  rb2->_resolution = UNRESOLVED;
+  CPPUNIT_ASSERT(!sf.fully_resolved());
+}
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_contains_blockers() {}
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_resolve_with_python() {}
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_process_python_results() {}
