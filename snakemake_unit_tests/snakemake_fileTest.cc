@@ -275,7 +275,53 @@ void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_contains_bloc
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_resolve_with_python() {}
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_process_python_results() {}
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_capture_python_tag_values() {}
-void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_postflight_checks() {}
+void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_postflight_checks() {
+  // for the moment, this is just a dispatch to detect_known_issues
+  std::map<std::string, bool> include_rules, exclude_rules;
+  boost::shared_ptr<snakemake_file> sf1(new snakemake_file), sf2(new snakemake_file);
+  boost::shared_ptr<rule_block> rb1(new rule_block), rb2(new rule_block), rb3(new rule_block), rb4(new rule_block);
+  rb1->_rule_name = "rule1";
+  rb1->_resolution = RESOLVED_INCLUDED;
+  rb1->_queried_by_python = true;
+  rb2->_rule_name = "rule2";
+  rb2->_resolution = RESOLVED_INCLUDED;
+  rb2->_queried_by_python = true;
+  rb3->_rule_name = "rule3";
+  rb3->_resolution = RESOLVED_INCLUDED;
+  rb3->_queried_by_python = true;
+  rb4->_rule_name = "rule4";
+  rb4->_resolution = RESOLVED_EXCLUDED;
+  rb4->_queried_by_python = true;
+  sf1->_blocks.push_back(rb1);
+  sf1->_blocks.push_back(rb2);
+  sf1->_updated_last_round = false;
+  sf2->_blocks.push_back(rb3);
+  sf2->_blocks.push_back(rb4);
+  sf2->_updated_last_round = false;
+  sf1->_included_files[boost::filesystem::path("mypath")] = sf2;
+  include_rules["rule1"] = true;
+  include_rules["rule2"] = true;
+  exclude_rules["rule3"] = true;
+  exclude_rules["rule4"] = true;
+
+  // capture std::cout
+  std::ostringstream observed;
+  std::streambuf *previous_buffer(std::cout.rdbuf(observed.rdbuf()));
+
+  sf1->postflight_checks(include_rules, exclude_rules);
+
+  // reset std::cout
+  std::cout.rdbuf(previous_buffer);
+
+  std::string expected =
+      "snakefile load summary\n"
+      "----------------------\n"
+      "total loaded candidate rules from snakefile(s): 3\n"
+      "rules from snakefile(s) not excluded by configuration: 2\n"
+      "\tthis number will be further reduced based on how many rules are present in the log\n";
+
+  CPPUNIT_ASSERT(!observed.str().compare(expected));
+}
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_get_snakefile_relative_path() {
   snakemake_file sf;
   sf._snakefile_relative_path = boost::filesystem::path("mypath");
