@@ -152,7 +152,58 @@ void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_fully_resolve
   rb2->_resolution = UNRESOLVED;
   CPPUNIT_ASSERT(!sf.fully_resolved());
 }
-void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_contains_blockers() {}
+void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_contains_blockers() {
+  /*
+    blockers are defined as:
+    - any update the last time python tagging was attempted
+    - any block that reports itself unresolved
+
+    this is recursive through any dependent snakefiles
+   */
+  boost::shared_ptr<snakemake_file> sf1(new snakemake_file), sf2(new snakemake_file);
+  boost::shared_ptr<rule_block> rb1(new rule_block), rb2(new rule_block), rb3(new rule_block), rb4(new rule_block);
+  rb1->_resolution = RESOLVED_INCLUDED;
+  rb1->_queried_by_python = true;
+  rb2->_resolution = RESOLVED_INCLUDED;
+  rb2->_queried_by_python = true;
+  rb3->_resolution = RESOLVED_INCLUDED;
+  rb3->_queried_by_python = true;
+  rb4->_resolution = RESOLVED_INCLUDED;
+  rb4->_queried_by_python = true;
+  sf1->_blocks.push_back(rb1);
+  sf1->_blocks.push_back(rb2);
+  sf2->_blocks.push_back(rb3);
+  sf2->_blocks.push_back(rb4);
+  sf1->_included_files["mypath"] = sf2;
+  // top-level file was updated previously
+  sf1->_updated_last_round = true;
+  sf2->_updated_last_round = false;
+  CPPUNIT_ASSERT(sf1->contains_blockers());
+  // dependent snakefile was updated previously
+  sf1->_updated_last_round = false;
+  sf2->_updated_last_round = true;
+  CPPUNIT_ASSERT(sf1->contains_blockers());
+  // rule in top-level file is not queried by python
+  sf1->_updated_last_round = false;
+  sf2->_updated_last_round = false;
+  rb1->_queried_by_python = false;
+  CPPUNIT_ASSERT(sf1->contains_blockers());
+  // rule in top-level file is unresolved
+  rb1->_queried_by_python = true;
+  rb1->_resolution = UNRESOLVED;
+  CPPUNIT_ASSERT(sf1->contains_blockers());
+  // rule in dependent file is not queried by python
+  rb1->_resolution = RESOLVED_EXCLUDED;
+  rb3->_queried_by_python = false;
+  CPPUNIT_ASSERT(sf1->contains_blockers());
+  // rule in dependent file is unresolved
+  rb3->_queried_by_python = true;
+  rb3->_resolution = UNRESOLVED;
+  CPPUNIT_ASSERT(sf1->contains_blockers());
+  // everything is resolved
+  rb3->_resolution = RESOLVED_EXCLUDED;
+  CPPUNIT_ASSERT(!sf1->contains_blockers());
+}
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_resolve_with_python() {}
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_process_python_results() {}
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_capture_python_tag_values() {}
