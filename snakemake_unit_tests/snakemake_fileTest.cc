@@ -90,7 +90,11 @@ void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_resolve_with_
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_process_python_results() {}
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_capture_python_tag_values() {}
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_postflight_checks() {}
-void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_get_snakefile_relative_path() {}
+void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_get_snakefile_relative_path() {
+  snakemake_file sf;
+  sf._snakefile_relative_path = boost::filesystem::path("mypath");
+  CPPUNIT_ASSERT(!sf.get_snakefile_relative_path().string().compare("mypath"));
+}
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_loaded_files() {}
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_set_update_status() {}
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_report_rules() {}

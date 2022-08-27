@@ -252,10 +252,10 @@ bool snakemake_unit_tests::snakemake_file::resolve_with_python(const boost::file
   }
   // within a workspace, open a snakefile
   std::ofstream output;
-  boost::filesystem::path output_name = workspace / _snakefile_relative_path;
+  boost::filesystem::path output_name = workspace / get_snakefile_relative_path();
   if (verbose) {
     std::cout << "\toutput workspace: \"" << workspace.string() << "\"" << std::endl
-              << "\tsnakefile relative path: \"" << _snakefile_relative_path.string() << "\"" << std::endl
+              << "\tsnakefile relative path: \"" << get_snakefile_relative_path().string() << "\"" << std::endl
               << "\toutput name: \"" << output_name.string() << "\"" << std::endl;
   }
   // create directory if needed
@@ -305,7 +305,7 @@ bool snakemake_unit_tests::snakemake_file::resolve_with_python(const boost::file
     // adjust snakefile such that it is relative to the run directory
     boost::filesystem::path complete_run_directory = boost::filesystem::canonical(pipeline_top_dir / pipeline_run_dir);
     boost::filesystem::path complete_snakefile_loc =
-        boost::filesystem::canonical(pipeline_top_dir / _snakefile_relative_path);
+        boost::filesystem::canonical(pipeline_top_dir / get_snakefile_relative_path());
     std::string adjusted_snakefile = complete_snakefile_loc.string().substr(complete_run_directory.string().size() + 1);
     // execute python script and capture output
     if (verbose) {
