@@ -83,7 +83,54 @@ void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_get_blocks() 
   CPPUNIT_ASSERT(*(result.begin()) == b1);
   CPPUNIT_ASSERT(*(result.rbegin()) == b2);
 }
-void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_report_single_rule() {}
+void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_report_single_rule() {
+  /*
+    construct some dummy infrastructure to test the ability to distinguish between:
+    - a rule that's included
+    - a rule that's excluded
+    - python supporting code
+  */
+  snakemake_file sf;
+  boost::shared_ptr<rule_block> b1(new rule_block), b2(new rule_block), b3(new rule_block), b4(new rule_block),
+      b5(new rule_block);
+  b1->_code_chunk.push_back("if True:");
+  b1->_resolution = RESOLVED_INCLUDED;
+  b1->_queried_by_python = true;
+  b2->_rule_name = "myrule";
+  b2->_local_indentation = 4;
+  b2->_named_blocks.push_back(std::make_pair("input", "\n            file1,"));
+  b2->_resolution = RESOLVED_INCLUDED;
+  b2->_queried_by_python = true;
+  b3->_code_chunk.push_back("else:");
+  b3->_resolution = RESOLVED_INCLUDED;
+  b3->_queried_by_python = true;
+  b4->_rule_name = "myrule";
+  b4->_local_indentation = 4;
+  b4->_resolution = RESOLVED_EXCLUDED;
+  b4->_queried_by_python = true;
+  b5->_rule_name = "otherrule";
+  b5->_local_indentation = 0;
+  b5->_named_blocks.push_back(std::make_pair("input", "\n        file2,"));
+  b5->_resolution = RESOLVED_INCLUDED;
+  b5->_queried_by_python = true;
+
+  sf._blocks.push_back(b1);
+  sf._blocks.push_back(b2);
+  sf._blocks.push_back(b3);
+  sf._blocks.push_back(b4);
+  sf._blocks.push_back(b5);
+
+  std::map<std::string, bool> ruleset;
+  ruleset["myrule"] = true;
+  ruleset["otherrule"] = true;
+  std::ostringstream out;
+  unsigned result = sf.report_single_rule(ruleset, out);
+  CPPUNIT_ASSERT(result == 2);
+  std::string expected =
+      "if True:\n    rule myrule:\n        input:\n            file1,\n\n\n"
+      "else:\n    pass\n\n\nrule otherrule:\n    input:\n        file2,\n\n\n";
+  CPPUNIT_ASSERT(!out.str().compare(expected));
+}
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_fully_resolved() {}
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_contains_blockers() {}
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_resolve_with_python() {}
