@@ -274,7 +274,20 @@ void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_contains_bloc
 }
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_resolve_with_python() {}
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_process_python_results() {}
-void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_capture_python_tag_values() {}
+void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_capture_python_tag_values() {
+  std::vector<std::string> input;
+  std::map<std::string, std::string> output;
+  input.push_back("some sort of infrastructure\n");
+  input.push_back("tag111222\n");
+  input.push_back("tag222333: valuevaluevalue\n");
+  snakemake_file sf;
+  sf.capture_python_tag_values(input, &output);
+  CPPUNIT_ASSERT(output.size() == 2);
+  CPPUNIT_ASSERT(output.find("tag111222") != output.end());
+  CPPUNIT_ASSERT(output["tag1111222"].empty());
+  CPPUNIT_ASSERT(output.find("tag222333") != output.end());
+  CPPUNIT_ASSERT(!output["tag222333"].compare("valuevaluevalue"));
+}
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_postflight_checks() {
   // for the moment, this is just a dispatch to detect_known_issues
   std::map<std::string, bool> include_rules, exclude_rules;
