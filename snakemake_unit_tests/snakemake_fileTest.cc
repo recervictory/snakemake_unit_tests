@@ -65,7 +65,30 @@ void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_copy_construc
 }
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_load_everything() {}
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_parse_file() {}
-void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_load_lines() {}
+void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_load_lines() {
+  // create a dummy snakefile and ensure it's loaded as anticipated
+  std::ofstream output;
+  boost::filesystem::path filename = boost::filesystem::path(std::string(_tmp_dir)) / "test_snakefile";
+  output.open(filename.string().c_str());
+  std::string content = "/usr/bin/env snakemake\n\nrule all:\n    input: TARGETS,\n\n";
+  if (!output.is_open()) {
+    throw std::runtime_error("cannot write test snakefile for load_lines");
+  }
+  if (!(output << content << std::endl)) {
+    throw std::runtime_error("cannot write to disk for snakefile for load_lines");
+  }
+  output.close();
+  std::vector<std::string> target;
+  snakemake_file sf;
+  sf.load_lines(filename, &target);
+  CPPUNIT_ASSERT(target.size() == 6);
+  CPPUNIT_ASSERT(!target.at(0).compare("/usr/bin/env snakemake"));
+  CPPUNIT_ASSERT(target.at(1).empty());
+  CPPUNIT_ASSERT(!target.at(2).compare("rule all:"));
+  CPPUNIT_ASSERT(!target.at(3).compare("    input: TARGETS,"));
+  CPPUNIT_ASSERT(target.at(4).empty());
+  CPPUNIT_ASSERT(target.at(5).empty());
+}
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_detect_known_issues() {}
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_get_blocks() {
   std::list<boost::shared_ptr<rule_block> > result;
