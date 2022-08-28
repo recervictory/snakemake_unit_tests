@@ -273,7 +273,112 @@ void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_contains_bloc
   CPPUNIT_ASSERT(!sf1->contains_blockers());
 }
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_resolve_with_python() {}
-void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_process_python_results() {}
+void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_process_python_results() {
+  /*
+    this function handles the process of finding new files to include. if a snakefile has already
+    been processed once, it recurses; otherwise, it conducts a full snakefile load/lexical parse/etc.
+    of the newly-encountered snakefile.
+
+    need:
+    - a workspace
+    - a path to the top level of the pipeline relative to the workspace
+    - verbosity (probably turn on and just suppress)
+    - the map of tag->value pairs pulled from the python dryrun log
+    - full output path of target snakefile
+   */
+  boost::filesystem::path tmp_parent = boost::filesystem::path(std::string(_tmp_dir));
+  boost::filesystem::path workspace = tmp_parent / "ppr_workspace";
+  boost::filesystem::path pipeline_top = workspace;
+  bool verbose = true;
+  std::map<std::string, std::string> tag_values;
+  boost::filesystem::path snakefile_path = workspace / "workflow/Snakefile";
+  boost::filesystem::path snakefile_include = workspace / "workflow/rules/include.smk";
+  boost::filesystem::create_directories(workspace / "workflow/rules");
+  // first two snakefiles should already be loaded and tagged; third needs to be in file
+  boost::shared_ptr<snakemake_file> sf1(new snakemake_file), sf2(new snakemake_file);
+  boost::shared_ptr<rule_block> rb1(new rule_block), rb2(new rule_block), rb3(new rule_block), rb4(new rule_block),
+      rb5(new rule_block), rb6(new rule_block);
+  rb1->_rule_name = "rule1";
+  rb1->_named_blocks.push_back(std::make_pair("input", "\"input1.txt\","));
+  rb1->_resolution = RESOLVED_INCLUDED;
+  rb1->_queried_by_python = true;
+  rb1->_python_tag = 1;
+  rb2->_rule_name = "";
+  rb2->_code_chunk.push_back("include: \"rules/include.smk\"");
+  rb2->_resolution = RESOLVED_INCLUDED;
+  rb2->_queried_by_python = true;
+  rb2->_python_tag = 2;
+  rb2->_resolved_included_filename = snakefile_include;
+  rb3->_rule_name = "";
+  rb3->_code_chunk.push_back("include: \"rules/fake.smk\"");
+  rb3->_resolution = RESOLVED_INCLUDED;
+  rb3->_queried_by_python = true;
+  rb3->_python_tag = 3;
+  rb4->_rule_name = "rule3";
+  rb4->_named_blocks.push_back(std::make_pair("input", "\"input2.txt\","));
+  rb4->_resolution = UNRESOLVED;
+  rb4->_queried_by_python = false;
+  rb4->_python_tag = 4;
+  rb5->_rule_name = "";
+  rb5->_code_chunk.push_back("pass");
+  rb5->_resolution = UNRESOLVED;
+  rb5->_queried_by_python = false;
+  rb5->_python_tag = 5;
+  rb6->_rule_name = "rule4";
+  rb6->_named_blocks.push_back(std::make_pair("output", "\"output2.txt\","));
+  rb6->_resolution = UNRESOLVED;
+  rb6->_queried_by_python = false;
+  rb6->_python_tag = 6;
+
+  sf1->_blocks.push_back(rb1);
+  sf1->_blocks.push_back(rb2);
+  sf1->_blocks.push_back(rb3);
+  sf2->_blocks.push_back(rb4);
+  sf2->_blocks.push_back(rb5);
+  sf2->_blocks.push_back(rb6);
+  sf1->_included_files[workspace / "workflow/rules/fake.smk"] = sf2;
+
+  tag_values["tag1"] = "";
+  tag_values["tag2"] = "rules/include.smk";
+  tag_values["tag3"] = "";
+  tag_values["tag4"] = "";
+  tag_values["tag5"] = "rules/future.smk";
+  tag_values["tag6"] = "";
+
+  std::string snakefile_contents = "rule rule5:\n    input: \"input5.txt\",\n\n";
+  std::ofstream output;
+  output.open(snakefile_include.string().c_str());
+  if (!output.is_open()) {
+    throw std::runtime_error("cannot write include.smk for python results processing test");
+  }
+  if (!(output << snakefile_contents << std::endl)) {
+    throw std::runtime_error("cannot write to include.smk for python results processing test");
+  }
+  output.close();
+
+  // capture std::cout for cleanliness
+  std::ostringstream endless_void;
+  std::streambuf *previous_buffer(std::cout.rdbuf(endless_void.rdbuf()));
+
+  // actually call the thing
+  sf1->process_python_results(workspace, pipeline_top, verbose, tag_values, snakefile_path);
+
+  // reset std::cout
+  std::cout.rdbuf(previous_buffer);
+
+  /*
+    The following behaviors are expected:
+
+    - it should understand that sf2 is already loaded, and iterate across it
+    - it should trigger the load of sf3
+   */
+  CPPUNIT_ASSERT(sf2->_blocks.size() == 3);
+  CPPUNIT_ASSERT(sf1->_included_files.size() == 2);
+  CPPUNIT_ASSERT(sf1->_included_files.begin()->second == sf2);
+  CPPUNIT_ASSERT(sf1->_included_files.rbegin()->second->_blocks.size() == 1);
+  std::list<boost::shared_ptr<rule_block> >::iterator iter = sf1->_included_files.rbegin()->second->_blocks.begin();
+  CPPUNIT_ASSERT(!(*iter)->_rule_name.compare("rule5"));
+}
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_capture_python_tag_values() {
   std::vector<std::string> input;
   std::map<std::string, std::string> output;

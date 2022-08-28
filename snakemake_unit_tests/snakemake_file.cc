@@ -347,8 +347,10 @@ bool snakemake_unit_tests::snakemake_file::process_python_results(const boost::f
       if (verbose) {
         std::cout << "\tfound an include directive during python processing" << std::endl;
       }
+      // include statements are relative to the directory of the snakefile in which they're included
       boost::filesystem::path recursive_path = output_name.parent_path() / (*iter)->get_resolved_included_filename();
       std::string recursive_str = recursive_path.string();
+      // since the workflow may be installed in nonstandard places, find where it is relative to the test workspace
       recursive_str = recursive_str.substr(recursive_str.find(workspace.string()) + workspace.string().size() + 1);
       // determine if this was included already
       std::map<boost::filesystem::path, boost::shared_ptr<snakemake_file> >::iterator file_finder;
