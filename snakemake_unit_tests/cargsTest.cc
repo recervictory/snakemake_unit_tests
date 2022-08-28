@@ -305,6 +305,18 @@ void snakemake_unit_tests::cargsTest::test_params_emit_yaml_vector_null_pointer(
   params p;
   p.emit_yaml_vector(NULL, data, key);
 }
+void snakemake_unit_tests::cargsTest::test_cargs_set_parameters_inst_dir_missing_schema() {
+  boost::filesystem::path tmp_parent = boost::filesystem::path(std::string(_tmp_dir));
+  boost::filesystem::path configfile = tmp_parent / "spidms_config.yaml";
+  boost::filesystem::path instdir = tmp_parent / "spidms_inst";
+  boost::filesystem::create_directories(instdir);
+  create_empty_file(configfile);
+  std::string command =
+      "./snakemake_unit_tests.out --update-all -c " + configfile.string() + " --inst-dir " + instdir.string();
+  populate_arguments(command, &_arg_vec_adhoc, &_argv_adhoc);
+  cargs ap(_arg_vec_adhoc.size(), _argv_adhoc);
+  ap.set_parameters(true);
+}
 void snakemake_unit_tests::cargsTest::test_cargs_default_constructor() { cargs ap; }
 void snakemake_unit_tests::cargsTest::test_cargs_standard_constructor() {
   cargs ap(_arg_vec_long.size(), _argv_long);
@@ -458,8 +470,20 @@ void snakemake_unit_tests::cargsTest::test_cargs_set_parameters() {
   // inst test.py
   boost::filesystem::path test_py = inst_dir / "test.py";
   boost::filesystem::path test_py_config = inst_dir_config / "test.py";
+  // inst schema validator
+  boost::filesystem::path schema_config = inst_dir_config / "user_config_schema.yaml";
   create_empty_file(test_py);
   create_empty_file(test_py_config);
+  output.open(schema_config.string().c_str());
+  if (!output.is_open()) {
+    throw std::runtime_error("cannot create dummy schema validation file");
+  }
+  if (!(output << "$schema: \"http://json-schema.org/draft-07/schema#\"\ntype: object\n"
+               << "properties:\n  inst-dir:\n    type: string" << std::endl)) {
+    throw std::runtime_error("cannot write dummy schema validation content to file");
+  }
+  output.close();
+  output.clear();
   // added files, directories
   std::map<boost::filesystem::path, bool> added_files, added_files_config, added_dirs, added_dirs_config;
   added_files["file1"] = true;
@@ -629,7 +653,7 @@ void snakemake_unit_tests::cargsTest::test_cargs_set_parameters() {
   command = "./snakemake_unit_tests.out -c " + config_yaml.string();
   populate_arguments(command, &_arg_vec_adhoc, &_argv_adhoc);
   cargs ap3(_arg_vec_adhoc.size(), _argv_adhoc);
-  params p3 = ap3.set_parameters(false);
+  params p3 = ap3.set_parameters(true);
   CPPUNIT_ASSERT(!p3.snakefile.string().compare(snakefile_config.string()));
   CPPUNIT_ASSERT(!p3.pipeline_top_dir.string().compare(top_dir_config.string()));
   CPPUNIT_ASSERT(!p3.pipeline_run_dir.string().compare(run_dir_config.string()));

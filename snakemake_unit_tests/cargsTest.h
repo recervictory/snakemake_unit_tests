@@ -53,6 +53,7 @@ class cargsTest : public CppUnit::TestFixture {
   CPPUNIT_TEST_EXCEPTION(test_cargs_set_parameters_snakemake_log_missing, std::logic_error);
   CPPUNIT_TEST_EXCEPTION(test_cargs_set_parameters_added_files_invalid, std::logic_error);
   CPPUNIT_TEST_EXCEPTION(test_cargs_set_parameters_added_directories_invalid, std::logic_error);
+  CPPUNIT_TEST_EXCEPTION(test_cargs_set_parameters_inst_dir_missing_schema, std::runtime_error);
   CPPUNIT_TEST(test_cargs_help);
   CPPUNIT_TEST(test_cargs_get_config_yaml);
   CPPUNIT_TEST(test_cargs_get_snakefile);
@@ -126,6 +127,7 @@ class cargsTest : public CppUnit::TestFixture {
   void test_cargs_set_parameters_snakemake_log_missing();
   void test_cargs_set_parameters_added_files_invalid();
   void test_cargs_set_parameters_added_directories_invalid();
+  void test_cargs_set_parameters_inst_dir_missing_schema();
   void test_cargs_help();
   void test_cargs_get_config_yaml();
   void test_cargs_get_snakefile();
