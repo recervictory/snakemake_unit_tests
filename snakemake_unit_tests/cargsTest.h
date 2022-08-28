@@ -94,6 +94,7 @@ class cargsTest : public CppUnit::TestFixture {
   CPPUNIT_TEST_EXCEPTION(test_cargs_check_and_fix_dir_null_pointer, std::runtime_error);
   CPPUNIT_TEST_EXCEPTION(test_cargs_check_and_fix_dir_not_directory, std::logic_error);
   CPPUNIT_TEST(test_cargs_vector_convert);
+  CPPUNIT_TEST_EXCEPTION(test_cargs_validate_config_schema_violation, std::logic_error);
   CPPUNIT_TEST_SUITE_END();
 
  public:
@@ -168,6 +169,7 @@ class cargsTest : public CppUnit::TestFixture {
   void test_cargs_check_and_fix_dir_not_directory();
   void test_cargs_check_and_fix_dir_null_pointer();
   void test_cargs_vector_convert();
+  void test_cargs_validate_config_schema_violation();
 
  private:
   void populate_arguments(const std::string &cmd, std::vector<std::string> *vec, const char ***arr) const;

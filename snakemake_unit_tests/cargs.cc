@@ -375,7 +375,8 @@ void snakemake_unit_tests::params::emit_yaml_vector(YAML::Emitter *out,
 }
 
 void snakemake_unit_tests::cargs::validate_config(const boost::filesystem::path &config_filename,
-                                                  const boost::filesystem::path &inst_directory) const {
+                                                  const boost::filesystem::path &inst_directory,
+                                                  bool suppress_screen_output) const {
   boost::filesystem::path schema = inst_directory / "user_config_schema.yaml";
   if (!boost::filesystem::exists(schema)) {
     throw std::runtime_error("expected json schema file \"" + schema.string() + "\" could not be located");
@@ -383,7 +384,8 @@ void snakemake_unit_tests::cargs::validate_config(const boost::filesystem::path 
   std::string command =
       "python3 -c \"from snakemake.utils import validate ; import yaml ; "
       "validate(yaml.safe_load(open(\\\"" +
-      config_filename.string() + "\\\", \\\"r\\\")), schema=\\\"" + schema.string() + "\\\")\"";
+      config_filename.string() + "\\\", \\\"r\\\")), schema=\\\"" + schema.string() + "\\\")\"" +
+      (suppress_screen_output ? std::string(" > /dev/null 2>&1") : std::string(""));
   try {
     std::vector<std::string> result = exec(command, true, true);
   } catch (const std::runtime_error &e) {

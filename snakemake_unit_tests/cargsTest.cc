@@ -317,6 +317,36 @@ void snakemake_unit_tests::cargsTest::test_cargs_set_parameters_inst_dir_missing
   cargs ap(_arg_vec_adhoc.size(), _argv_adhoc);
   ap.set_parameters(true);
 }
+void snakemake_unit_tests::cargsTest::test_cargs_validate_config_schema_violation() {
+  boost::filesystem::path tmp_parent = boost::filesystem::path(std::string(_tmp_dir));
+  boost::filesystem::path configfile = tmp_parent / "spidsv_config.yaml";
+  boost::filesystem::path instdir = tmp_parent / "spidsv_inst";
+  boost::filesystem::path schemafile = instdir / "user_config_schema.yaml";
+  boost::filesystem::create_directories(instdir);
+  std::ofstream output;
+  output.open(schemafile.string().c_str());
+  if (!output.is_open()) {
+    throw std::runtime_error("cannot create dummy schema validation file");
+  }
+  if (!(output << "$schema: \"http://json-schema.org/draft-07/schema#\"\ntype: object\n"
+               << "properties:\n  big-hat:\n    type: string\nrequired:\n  - big-hat" << std::endl)) {
+    throw std::runtime_error("cannot write dummy schema validation content to file");
+  }
+  output.close();
+  output.clear();
+  output.open(configfile.string().c_str());
+  if (!output.is_open()) {
+    throw std::runtime_error("cannot create dummy configuration file");
+  }
+  if (!(output << "added-files:\n  - filename.txt" << std::endl)) {
+    throw std::runtime_error("cannot write dummy configuration file contents");
+  }
+  std::string command =
+      "./snakemake_unit_tests.out --update-all -c " + configfile.string() + " --inst-dir " + instdir.string();
+  populate_arguments(command, &_arg_vec_adhoc, &_argv_adhoc);
+  cargs ap(_arg_vec_adhoc.size(), _argv_adhoc);
+  ap.validate_config(configfile, instdir, true);
+}
 void snakemake_unit_tests::cargsTest::test_cargs_default_constructor() { cargs ap; }
 void snakemake_unit_tests::cargsTest::test_cargs_standard_constructor() {
   cargs ap(_arg_vec_long.size(), _argv_long);

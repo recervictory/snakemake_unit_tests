@@ -599,9 +599,11 @@ class cargs {
 
     @param config_filename name of config file to validate
     @param inst_directory path to inst/ that should contain json schema
+    @param suppress_screen_output whether the raw python validation text should
+    be suppressed; error message from snakemake_unit_tests will still be emitted.
    */
-  void validate_config(const boost::filesystem::path &config_filename,
-                       const boost::filesystem::path &inst_directory) const;
+  void validate_config(const boost::filesystem::path &config_filename, const boost::filesystem::path &inst_directory,
+                       bool suppress_screen_output = false) const;
 
   /*!
     @brief append any CLI entries for a multitoken parameter to
