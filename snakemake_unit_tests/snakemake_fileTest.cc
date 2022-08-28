@@ -121,7 +121,12 @@ void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_detect_known_
   std::ostringstream observed;
   std::streambuf *previous_buffer(std::cout.rdbuf(observed.rdbuf()));
 
-  sf1->detect_known_issues(include_rules, exclude_rules);
+  try {
+    sf1->detect_known_issues(include_rules, exclude_rules);
+  } catch (...) {
+    std::cout.rdbuf(previous_buffer);
+    throw;
+  }
 
   // reset std::cout
   std::cout.rdbuf(previous_buffer);
@@ -361,7 +366,12 @@ void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_process_pytho
   std::streambuf *previous_buffer(std::cout.rdbuf(endless_void.rdbuf()));
 
   // actually call the thing
-  sf1->process_python_results(workspace, pipeline_top, verbose, tag_values, snakefile_path);
+  try {
+    sf1->process_python_results(workspace, pipeline_top, verbose, tag_values, snakefile_path);
+  } catch (...) {
+    std::cout.rdbuf(previous_buffer);
+    throw;
+  }
 
   // reset std::cout
   std::cout.rdbuf(previous_buffer);
@@ -426,7 +436,12 @@ void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_postflight_ch
   std::ostringstream observed;
   std::streambuf *previous_buffer(std::cout.rdbuf(observed.rdbuf()));
 
-  sf1->postflight_checks(include_rules, exclude_rules);
+  try {
+    sf1->postflight_checks(include_rules, exclude_rules);
+  } catch (...) {
+    std::cout.rdbuf(previous_buffer);
+    throw;
+  }
 
   // reset std::cout
   std::cout.rdbuf(previous_buffer);
