@@ -52,57 +52,16 @@ class params {
   /*!
     @brief constructor
    */
-  params()
-      : verbose(false),
-        update_all(false),
-        update_snakefiles(false),
-        update_added_content(false),
-        update_config(false),
-        update_inputs(false),
-        update_outputs(false),
-        update_pytest(false),
-        include_entire_dag(false),
-        skip_validation(false),
-        config_filename(""),
-        output_test_dir(""),
-        snakefile(""),
-        pipeline_top_dir(""),
-        pipeline_run_dir(""),
-        inst_dir(""),
-        snakemake_log("") {}
+  params();
   /*!
     @brief copy constructor
     @param obj existing params object
   */
-  params(const params &obj)
-      : verbose(obj.verbose),
-        update_all(obj.update_all),
-        update_snakefiles(obj.update_snakefiles),
-        update_added_content(obj.update_added_content),
-        update_config(obj.update_config),
-        update_inputs(obj.update_inputs),
-        update_outputs(obj.update_outputs),
-        update_pytest(obj.update_pytest),
-        include_entire_dag(obj.include_entire_dag),
-        skip_validation(obj.skip_validation),
-        config_filename(obj.config_filename),
-        config(obj.config),
-        output_test_dir(obj.output_test_dir),
-        snakefile(obj.snakefile),
-        pipeline_top_dir(obj.pipeline_top_dir),
-        pipeline_run_dir(obj.pipeline_run_dir),
-        inst_dir(obj.inst_dir),
-        snakemake_log(obj.snakemake_log),
-        added_files(obj.added_files),
-        added_directories(obj.added_directories),
-        include_rules(obj.include_rules),
-        exclude_rules(obj.exclude_rules),
-        exclude_patterns(obj.exclude_patterns),
-        comparators(obj.comparators) {}
+  params(const params &obj);
   /*!
     @brief destructor
    */
-  ~params() throw() {}
+  ~params() throw();
   /*!
     @brief report settings to yaml file
     @param filename name of file to write
