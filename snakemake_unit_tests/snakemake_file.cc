@@ -317,14 +317,6 @@ bool snakemake_unit_tests::snakemake_file::resolve_with_python(const boost::file
     std::map<std::string, std::string> tag_values;
     capture_python_tag_values(results, &tag_values);
     process_python_results(workspace, pipeline_top_dir, verbose, tag_values, output_name);
-    if (verbose) {
-      std::cout << "\tprocessing tagged python output" << std::endl;
-    }
-    for (std::map<boost::filesystem::path, boost::shared_ptr<snakemake_file> >::iterator mapper =
-             _included_files.begin();
-         mapper != _included_files.end(); ++mapper) {
-      mapper->second->process_python_results(workspace, pipeline_top_dir, verbose, tag_values, output_name);
-    }
   }
   output.close();
   if (verbose) {
