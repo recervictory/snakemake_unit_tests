@@ -277,7 +277,119 @@ void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_contains_bloc
   rb3->_resolution = RESOLVED_EXCLUDED;
   CPPUNIT_ASSERT(!sf1->contains_blockers());
 }
-void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_resolve_with_python() {}
+void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_resolve_with_python() {
+  /*
+    this function emits dummy tag statements for a snakefile; runs python dryrun; captures tag
+    logging data from the run; and updates rule status for everything that reported back.
+
+    need:
+    - a workspace; in theory, it just has added files/directories
+    - top level of pipeline
+    - run directory within pipeline
+    - verbosity
+    - a boolean controlling recursion behavior, which should always be true from external execution
+   */
+  boost::filesystem::path tmp_parent = boost::filesystem::path(std::string(_tmp_dir));
+  boost::filesystem::path workspace = tmp_parent / "rwp_workspace";
+  boost::filesystem::path pipeline_top = workspace;
+  boost::filesystem::path pipeline_run = boost::filesystem::path(".");
+  boost::filesystem::path snakefile = pipeline_top / "workflow/Snakefile";
+  boost::filesystem::path unloaded_snakefile = pipeline_top / "workflow/rules/future.smk";
+  bool verbose = true;
+  bool disable_reporting = false;
+  boost::filesystem::create_directories(workspace / "workflow/rules");
+
+  boost::shared_ptr<snakemake_file> sf1(new snakemake_file), sf2(new snakemake_file);
+  boost::shared_ptr<rule_block> rb1(new rule_block), rb2(new rule_block), rb3(new rule_block), rb4(new rule_block),
+      rb5(new rule_block);
+  rb1->_rule_name = "rule1";
+  rb1->_local_indentation = 0;
+  rb1->_resolution = RESOLVED_INCLUDED;
+  rb1->_queried_by_python = true;
+  rb1->_python_tag = 1;
+  rb2->_code_chunk.push_back("include: \"rules/include.smk\"");
+  rb2->_local_indentation = 0;
+  rb2->_resolution = RESOLVED_INCLUDED;
+  rb2->_queried_by_python = true;
+  rb2->_python_tag = 2;
+  rb3->_rule_name = "rule2";
+  rb3->_local_indentation = 0;
+  rb3->_resolution = UNRESOLVED;
+  rb3->_queried_by_python = false;
+  rb3->_python_tag = 3;
+  rb4->_code_chunk.push_back("include: \"future.smk\"");
+  rb4->_local_indentation = 0;
+  rb4->_resolution = UNRESOLVED;
+  rb4->_queried_by_python = false;
+  rb4->_python_tag = 4;
+  rb5->_rule_name = "rule3";
+  rb5->_local_indentation = 0;
+  rb5->_resolution = UNRESOLVED;
+  rb5->_queried_by_python = false;
+  rb5->_python_tag = 5;
+
+  sf1->_snakefile_relative_path = "workflow/Snakefile";
+  sf1->_blocks.push_back(rb1);
+  sf1->_blocks.push_back(rb2);
+  sf1->_updated_last_round = true;
+  *(sf1->_tag_counter) = 6;
+  sf2->_blocks.push_back(rb3);
+  sf2->_blocks.push_back(rb4);
+  sf2->_blocks.push_back(rb5);
+  sf2->_snakefile_relative_path = "workflow/rules/include.smk";
+  sf2->_updated_last_round = false;
+  sf1->_included_files[workspace / "workflow/rules/include.smk"] = sf2;
+
+  std::string unloaded_snakefile_contents = "rule rule4:\n    input: \"input.txt\",\n\n";
+  std::ofstream output;
+  output.open(unloaded_snakefile.string().c_str());
+  if (!output.is_open()) {
+    throw std::runtime_error("cannot write future snakefile for resolve_with_python test");
+  }
+  if (!(output << unloaded_snakefile_contents << std::endl)) {
+    throw std::runtime_error("cannot write to future snakefile for resolve_with_python test");
+  }
+  output.close();
+
+  // capture std::cout for cleanliness
+  std::ostringstream endless_void;
+  std::streambuf *previous_buffer(std::cout.rdbuf(endless_void.rdbuf()));
+
+  // actually call the thing
+  try {
+    sf1->resolve_with_python(workspace, pipeline_top, pipeline_run, verbose, disable_reporting);
+  } catch (...) {
+    std::cout.rdbuf(previous_buffer);
+    throw;
+  }
+
+  // reset std::cout
+  std::cout.rdbuf(previous_buffer);
+
+  // probe status of files and blocks
+  CPPUNIT_ASSERT(!sf1->_updated_last_round);
+  CPPUNIT_ASSERT(sf1->_included_files.size() == 1);
+  CPPUNIT_ASSERT(sf1->_included_files.begin()->second == sf2);
+  CPPUNIT_ASSERT(sf2->_updated_last_round);
+  CPPUNIT_ASSERT(sf1->_blocks.size() == 2);
+  CPPUNIT_ASSERT(sf2->_blocks.size() == 3);
+  std::list<boost::shared_ptr<rule_block> >::iterator iter = sf2->_blocks.begin();
+  CPPUNIT_ASSERT((*iter)->_queried_by_python);
+  CPPUNIT_ASSERT((*iter)->_resolution == RESOLVED_INCLUDED);
+  ++iter;
+  CPPUNIT_ASSERT((*iter)->_queried_by_python);
+  CPPUNIT_ASSERT((*iter)->_resolution == RESOLVED_INCLUDED);
+  CPPUNIT_ASSERT(!(*iter)->_resolved_included_filename.string().compare("future.smk"));
+  ++iter;
+  CPPUNIT_ASSERT(!(*iter)->_queried_by_python);
+  CPPUNIT_ASSERT((*iter)->_resolution == RESOLVED_EXCLUDED);
+  CPPUNIT_ASSERT(sf2->_included_files.size() == 1);
+  CPPUNIT_ASSERT(sf2->_included_files.begin()->second->_blocks.size() == 1);
+  iter = sf2->_included_files.begin()->second->_blocks.begin();
+  CPPUNIT_ASSERT(!(*iter)->_rule_name.compare("rule4"));
+  CPPUNIT_ASSERT((*iter)->_resolution == UNRESOLVED);
+  CPPUNIT_ASSERT(!(*iter)->_queried_by_python);
+}
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_process_python_results() {
   /*
     this function handles the process of finding new files to include. if a snakefile has already
@@ -313,7 +425,7 @@ void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_process_pytho
   rb2->_resolution = RESOLVED_INCLUDED;
   rb2->_queried_by_python = true;
   rb2->_python_tag = 2;
-  rb2->_resolved_included_filename = snakefile_include;
+  rb2->_resolved_included_filename = "rules/include.smk";
   rb3->_rule_name = "";
   rb3->_code_chunk.push_back("include: \"rules/fake.smk\"");
   rb3->_resolution = RESOLVED_INCLUDED;
