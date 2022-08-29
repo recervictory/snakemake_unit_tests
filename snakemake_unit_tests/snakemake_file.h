@@ -98,14 +98,6 @@ class snakemake_file {
                            const std::map<std::string, bool> &exclude_rules);
 
   /*!
-  @brief print block contents to stream
-  @param out open stream to which to write data
-
-  this function is primarily intended for debugging purposes at this time
- */
-  void print_blocks(std::ostream &out) const;
-
-  /*!
   @brief get const access to internal block representation
   @return const reference to internal block list
  */

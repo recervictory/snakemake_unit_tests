@@ -185,13 +185,6 @@ void snakemake_unit_tests::snakemake_file::parse_file(
   }
 }
 
-void snakemake_unit_tests::snakemake_file::print_blocks(std::ostream &out) const {
-  for (std::list<boost::shared_ptr<rule_block> >::const_iterator iter = get_blocks().begin();
-       iter != get_blocks().end(); ++iter) {
-    (*iter)->print_contents(out);
-  }
-}
-
 unsigned snakemake_unit_tests::snakemake_file::report_single_rule(const std::map<std::string, bool> &rule_names,
                                                                   std::ostream &out) const {
   // find the requested rule
