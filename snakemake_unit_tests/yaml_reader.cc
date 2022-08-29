@@ -19,7 +19,8 @@ void snakemake_unit_tests::yaml_reader::load_file(const std::string &filename) {
   _data = YAML::LoadFile(filename.c_str());
 }
 
-std::vector<std::string> snakemake_unit_tests::yaml_reader::get_sequence(const std::vector<std::string> &queries) const {
+std::vector<std::string> snakemake_unit_tests::yaml_reader::get_sequence(
+    const std::vector<std::string> &queries) const {
   // copy the top node of the file, lest it get scoped out of existence
   YAML::Node current = YAML::Clone(_data), next;
   std::vector<std::string> res;
@@ -38,9 +39,7 @@ std::vector<std::string> snakemake_unit_tests::yaml_reader::get_sequence(const s
     }
   } else {
     // the user asked for a Sequence tho
-    throw std::runtime_error(
-        "get_value: query chain does not end in "
-        "compatible type");
+    throw std::runtime_error("get_value: query chain does not end in compatible type");
   }
   return res;
 }
@@ -53,7 +52,8 @@ YAML::Node snakemake_unit_tests::yaml_reader::get_node(const std::vector<std::st
   return current;
 }
 
-std::vector<std::pair<std::string, std::string> > snakemake_unit_tests::yaml_reader::get_map(const std::vector<std::string> &queries) const {
+std::vector<std::pair<std::string, std::string> > snakemake_unit_tests::yaml_reader::get_map(
+    const std::vector<std::string> &queries) const {
   // copy the top node of the file, lest it get scoped out of existence
   YAML::Node current = YAML::Clone(_data), next;
   std::vector<std::pair<std::string, std::string> > res;
@@ -68,9 +68,7 @@ std::vector<std::pair<std::string, std::string> > snakemake_unit_tests::yaml_rea
     }
   } else {
     // the user asked for a Map tho
-    throw std::runtime_error(
-        "get_value: query chain does not end in "
-        "compatible type");
+    throw std::runtime_error("get_value: query chain does not end in compatible type");
   }
   return res;
 }
@@ -88,17 +86,16 @@ bool snakemake_unit_tests::yaml_reader::query_valid(const std::vector<std::strin
   return true;
 }
 
-void snakemake_unit_tests::yaml_reader::apply_queries(const std::vector<std::string> &queries, YAML::Node *current, YAML::Node *next) const {
+void snakemake_unit_tests::yaml_reader::apply_queries(const std::vector<std::string> &queries, YAML::Node *current,
+                                                      YAML::Node *next) const {
   // sanity check input pointers
   if (!current || !next) throw std::runtime_error("apply_queries: null pointer");
   // require that the input keys exist at all
   if (queries.empty()) throw std::runtime_error("apply_queries: no query provided");
   // can't probe Scalars or Null
   if (current->Type() != YAML::NodeType::Sequence && current->Type() != YAML::NodeType::Map) {
-    throw std::runtime_error(
-        "apply_queries: starting node not "
-        "Sequence or Map, cannot apply query \"" +
-        queries.at(0) + "\"");
+    throw std::runtime_error("apply_queries: starting node not Sequence or Map, cannot apply query \"" + queries.at(0) +
+                             "\"");
   }
   // for each query
   for (unsigned i = 0; i < queries.size(); ++i) {
@@ -111,7 +108,8 @@ void snakemake_unit_tests::yaml_reader::apply_queries(const std::vector<std::str
         throw std::runtime_error("apply_queries: query \"" + queries.at(i) + "\" not present at query level");
         // Scalar is bad unless it's the endpoint
       case YAML::NodeType::Scalar:
-        if (i != queries.size() - 1) throw std::runtime_error("apply_queries: query \"" + queries.at(i) + "\" found scalar terminator");
+        if (i != queries.size() - 1)
+          throw std::runtime_error("apply_queries: query \"" + queries.at(i) + "\" found scalar terminator");
         break;
         // Sequence is fine
       case YAML::NodeType::Sequence:
@@ -121,10 +119,7 @@ void snakemake_unit_tests::yaml_reader::apply_queries(const std::vector<std::str
         break;
         // Undefined is probably catastrophic
       case YAML::NodeType::Undefined:
-        throw std::runtime_error(
-            "apply_queries: Undefined node type encountered"
-            " for query \"" +
-            queries.at(i) + "\"");
+        throw std::runtime_error("apply_queries: Undefined node type encountered for query \"" + queries.at(i) + "\"");
         // logic error?
       default:
         throw std::logic_error("apply_queries: unrecognized node type?");
@@ -133,4 +128,50 @@ void snakemake_unit_tests::yaml_reader::apply_queries(const std::vector<std::str
     *current = *next;
   }
   // no need to return anything, given the pointer parameters
+}
+
+std::string snakemake_unit_tests::yaml_reader::get_entry(const std::string &query) const {
+  std::vector<std::string> queries;
+  queries.push_back(query);
+  return get_entry(queries);
+}
+
+std::string snakemake_unit_tests::yaml_reader::get_entry(const std::vector<std::string> &queries) const {
+  std::vector<std::string> all_results;
+  all_results = get_sequence(queries);
+  if (all_results.size() != 1) {
+    std::ostringstream o;
+    o << *queries.begin();
+    for (unsigned i = 1; i <= queries.size(); ++i) {
+      o << "::" << queries.at(i);
+    }
+    throw std::runtime_error("invalid number of results for entry query " + o.str() + "\": found " +
+                             std::to_string(all_results.size()));
+  }
+  return *all_results.begin();
+}
+
+std::vector<std::string> snakemake_unit_tests::yaml_reader::get_sequence(const std::string &query) const {
+  std::vector<std::string> queries;
+  queries.push_back(query);
+  return get_sequence(queries);
+}
+
+std::vector<std::pair<std::string, std::string> > snakemake_unit_tests::yaml_reader::get_map(
+    const std::string &query) const {
+  std::vector<std::string> queries;
+  queries.push_back(query);
+  return get_map(queries);
+}
+
+YAML::Node snakemake_unit_tests::yaml_reader::get_node(const std::string &query) const {
+  std::vector<std::string> queries;
+  queries.push_back(query);
+  return get_node(queries);
+}
+
+bool snakemake_unit_tests::yaml_reader::query_valid(const std::string &query) const {
+  std::vector<std::string> queries;
+  queries.push_back(query);
+  return query_valid(queries);
 }
