@@ -62,7 +62,7 @@ void snakemake_unit_tests::snakemake_file::load_everything(const boost::filesyst
   load_lines(recursive_path, &loaded_lines);
   // new: preprocess all lines with the improved lexical parser
   loaded_lines = lexical_parse(loaded_lines);
-  parse_file(loaded_lines, _blocks.begin(), filename, verbose);
+  parse_file(loaded_lines, filename, verbose);
 }
 
 void snakemake_unit_tests::snakemake_file::postflight_checks(const std::map<std::string, bool> &include_rules,
@@ -156,9 +156,8 @@ void snakemake_unit_tests::snakemake_file::load_lines(const boost::filesystem::p
   }
 }
 
-void snakemake_unit_tests::snakemake_file::parse_file(
-    const std::vector<std::string> &loaded_lines, std::list<boost::shared_ptr<rule_block> >::iterator insertion_point,
-    const boost::filesystem::path &filename, bool verbose) {
+void snakemake_unit_tests::snakemake_file::parse_file(const std::vector<std::string> &loaded_lines,
+                                                      const boost::filesystem::path &filename, bool verbose) {
   _snakefile_relative_path = filename;
   // track current line
   unsigned current_line = 0;
@@ -180,7 +179,7 @@ void snakemake_unit_tests::snakemake_file::parse_file(
         // all other contents are good to go, to be handled by interpreter later
         rb->set_resolution(RESOLVED_INCLUDED);
       }
-      _blocks.insert(insertion_point, rb);
+      _blocks.push_back(rb);
     }
   }
 }
@@ -377,7 +376,7 @@ bool snakemake_unit_tests::snakemake_file::process_python_results(const boost::f
         loaded_lines = lexical_parse(loaded_lines, verbose);
         if (verbose) std::cout << "\t\t\tlexical parse successful" << std::endl;
         boost::shared_ptr<snakemake_file> ptr(new snakemake_file(_tag_counter));
-        ptr->parse_file(loaded_lines, ptr->get_blocks().begin(), computed_relative_suffix, verbose);
+        ptr->parse_file(loaded_lines, computed_relative_suffix, verbose);
         _included_files[boost::filesystem::path(input_name)] = ptr;
         // always flag as updated when new file is loaded
         _updated_last_round = true;

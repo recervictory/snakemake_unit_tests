@@ -70,14 +70,11 @@ class snakemake_file {
   /*!
  @brief parse a snakemake file
  @param loaded_lines lines of file to parse
- @param insertion_point list iterator to where to insert content
  @param filename name of file for informative errors
  @param verbose whether to emit verbose
  logging output
 */
-  void parse_file(const std::vector<std::string> &loaded_lines,
-                  std::list<boost::shared_ptr<rule_block>>::iterator insertion_point,
-                  const boost::filesystem::path &filename, bool verbose);
+  void parse_file(const std::vector<std::string> &loaded_lines, const boost::filesystem::path &filename, bool verbose);
 
   /*!
   @brief load all lines from a file into memory
