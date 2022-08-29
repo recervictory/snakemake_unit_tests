@@ -64,7 +64,35 @@ void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_copy_construc
   CPPUNIT_ASSERT(!sf2._updated_last_round);
 }
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_load_everything() {}
-void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_parse_file() {}
+void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_parse_file() {
+  std::vector<std::string> loaded_lines;
+  loaded_lines.push_back("rule rule1:");
+  loaded_lines.push_back("    input: 'filename',");
+  loaded_lines.push_back("include: 'filename'");
+  loaded_lines.push_back("pass");
+  snakemake_file sf;
+  sf.parse_file(loaded_lines, "fakefile", false);
+  CPPUNIT_ASSERT(!sf._snakefile_relative_path.compare("fakefile"));
+  CPPUNIT_ASSERT(sf._blocks.size() == 3);
+  std::list<boost::shared_ptr<rule_block> >::iterator iter = sf._blocks.begin();
+  CPPUNIT_ASSERT(!(*iter)->_rule_name.compare("rule1"));
+  CPPUNIT_ASSERT((*iter)->_named_blocks.size() == 1);
+  CPPUNIT_ASSERT(!(*iter)->_named_blocks.at(0).first.compare("input"));
+  CPPUNIT_ASSERT(!(*iter)->_named_blocks.at(0).second.compare("'filename',"));
+  CPPUNIT_ASSERT((*iter)->_python_tag == 1);
+  CPPUNIT_ASSERT((*iter)->_resolution == UNRESOLVED);
+  ++iter;
+  CPPUNIT_ASSERT((*iter)->_code_chunk.size() == 1);
+  CPPUNIT_ASSERT(!(*iter)->_code_chunk.at(0).compare("include: 'filename'"));
+  CPPUNIT_ASSERT((*iter)->_python_tag == 2);
+  CPPUNIT_ASSERT((*iter)->_resolution == UNRESOLVED);
+  ++iter;
+  CPPUNIT_ASSERT((*iter)->_code_chunk.size() == 1);
+  CPPUNIT_ASSERT(!(*iter)->_code_chunk.at(0).compare("pass"));
+  CPPUNIT_ASSERT((*iter)->_python_tag == 3);
+  CPPUNIT_ASSERT((*iter)->_resolution == RESOLVED_INCLUDED);
+  CPPUNIT_ASSERT(*sf._tag_counter == 4);
+}
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_load_lines() {
   // create a dummy snakefile and ensure it's loaded as anticipated
   std::ofstream output;

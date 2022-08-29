@@ -166,12 +166,8 @@ void snakemake_unit_tests::snakemake_file::parse_file(const std::vector<std::str
     if (rb->load_content_block(loaded_lines, verbose, &current_line)) {
       // set python interpreter resolution status
       // rules should all be set to unresolved before first pass
-      if (!rb->get_rule_name().empty()) {
-        rb->set_resolution(UNRESOLVED);
-        rb->set_interpreter_tag(*_tag_counter);
-        ++*_tag_counter;
-      } else if (rb->contains_include_directive()) {
-        // ambiguous include directives need a complicated resolution pass
+      // and ambiguous include directives need a complicated resolution pass
+      if (!rb->get_rule_name().empty() || rb->contains_include_directive()) {
         rb->set_resolution(UNRESOLVED);
         rb->set_interpreter_tag(*_tag_counter);
         ++*_tag_counter;
