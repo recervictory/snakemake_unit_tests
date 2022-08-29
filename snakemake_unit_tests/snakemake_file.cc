@@ -62,7 +62,7 @@ void snakemake_unit_tests::snakemake_file::load_everything(const boost::filesyst
   load_lines(recursive_path, &loaded_lines);
   // new: preprocess all lines with the improved lexical parser
   loaded_lines = lexical_parse(loaded_lines);
-  parse_file(loaded_lines, _blocks.begin(), filename, verbose);
+  parse_file(loaded_lines, filename, verbose);
 }
 
 void snakemake_unit_tests::snakemake_file::postflight_checks(const std::map<std::string, bool> &include_rules,
@@ -156,9 +156,8 @@ void snakemake_unit_tests::snakemake_file::load_lines(const boost::filesystem::p
   }
 }
 
-void snakemake_unit_tests::snakemake_file::parse_file(
-    const std::vector<std::string> &loaded_lines, std::list<boost::shared_ptr<rule_block> >::iterator insertion_point,
-    const boost::filesystem::path &filename, bool verbose) {
+void snakemake_unit_tests::snakemake_file::parse_file(const std::vector<std::string> &loaded_lines,
+                                                      const boost::filesystem::path &filename, bool verbose) {
   _snakefile_relative_path = filename;
   // track current line
   unsigned current_line = 0;
@@ -167,12 +166,8 @@ void snakemake_unit_tests::snakemake_file::parse_file(
     if (rb->load_content_block(loaded_lines, verbose, &current_line)) {
       // set python interpreter resolution status
       // rules should all be set to unresolved before first pass
-      if (!rb->get_rule_name().empty()) {
-        rb->set_resolution(UNRESOLVED);
-        rb->set_interpreter_tag(*_tag_counter);
-        ++*_tag_counter;
-      } else if (rb->contains_include_directive()) {
-        // ambiguous include directives need a complicated resolution pass
+      // and ambiguous include directives need a complicated resolution pass
+      if (!rb->get_rule_name().empty() || rb->contains_include_directive()) {
         rb->set_resolution(UNRESOLVED);
         rb->set_interpreter_tag(*_tag_counter);
         ++*_tag_counter;
@@ -180,15 +175,8 @@ void snakemake_unit_tests::snakemake_file::parse_file(
         // all other contents are good to go, to be handled by interpreter later
         rb->set_resolution(RESOLVED_INCLUDED);
       }
-      _blocks.insert(insertion_point, rb);
+      _blocks.push_back(rb);
     }
-  }
-}
-
-void snakemake_unit_tests::snakemake_file::print_blocks(std::ostream &out) const {
-  for (std::list<boost::shared_ptr<rule_block> >::const_iterator iter = get_blocks().begin();
-       iter != get_blocks().end(); ++iter) {
-    (*iter)->print_contents(out);
   }
 }
 
@@ -252,10 +240,10 @@ bool snakemake_unit_tests::snakemake_file::resolve_with_python(const boost::file
   }
   // within a workspace, open a snakefile
   std::ofstream output;
-  boost::filesystem::path output_name = workspace / _snakefile_relative_path;
+  boost::filesystem::path output_name = workspace / get_snakefile_relative_path();
   if (verbose) {
     std::cout << "\toutput workspace: \"" << workspace.string() << "\"" << std::endl
-              << "\tsnakefile relative path: \"" << _snakefile_relative_path.string() << "\"" << std::endl
+              << "\tsnakefile relative path: \"" << get_snakefile_relative_path().string() << "\"" << std::endl
               << "\toutput name: \"" << output_name.string() << "\"" << std::endl;
   }
   // create directory if needed
@@ -265,10 +253,7 @@ bool snakemake_unit_tests::snakemake_file::resolve_with_python(const boost::file
   }
   output.open(output_name.string().c_str());
   if (!output.is_open())
-    throw std::runtime_error(
-        "cannot write interpreter snakefile "
-        "to file \"" +
-        output_name.string() + "\"");
+    throw std::runtime_error("cannot write interpreter snakefile to file \"" + output_name.string() + "\"");
   // write python reporting code
   bool reporting_terminated = false;
   for (std::list<boost::shared_ptr<rule_block> >::const_iterator iter = get_blocks().begin();
@@ -305,7 +290,7 @@ bool snakemake_unit_tests::snakemake_file::resolve_with_python(const boost::file
     // adjust snakefile such that it is relative to the run directory
     boost::filesystem::path complete_run_directory = boost::filesystem::canonical(pipeline_top_dir / pipeline_run_dir);
     boost::filesystem::path complete_snakefile_loc =
-        boost::filesystem::canonical(pipeline_top_dir / _snakefile_relative_path);
+        boost::filesystem::canonical(pipeline_top_dir / get_snakefile_relative_path());
     std::string adjusted_snakefile = complete_snakefile_loc.string().substr(complete_run_directory.string().size() + 1);
     // execute python script and capture output
     if (verbose) {
@@ -317,14 +302,6 @@ bool snakemake_unit_tests::snakemake_file::resolve_with_python(const boost::file
     std::map<std::string, std::string> tag_values;
     capture_python_tag_values(results, &tag_values);
     process_python_results(workspace, pipeline_top_dir, verbose, tag_values, output_name);
-    if (verbose) {
-      std::cout << "\tprocessing tagged python output" << std::endl;
-    }
-    for (std::map<boost::filesystem::path, boost::shared_ptr<snakemake_file> >::iterator mapper =
-             _included_files.begin();
-         mapper != _included_files.end(); ++mapper) {
-      mapper->second->process_python_results(workspace, pipeline_top_dir, verbose, tag_values, output_name);
-    }
   }
   output.close();
   if (verbose) {
@@ -347,8 +324,10 @@ bool snakemake_unit_tests::snakemake_file::process_python_results(const boost::f
       if (verbose) {
         std::cout << "\tfound an include directive during python processing" << std::endl;
       }
+      // include statements are relative to the directory of the snakefile in which they're included
       boost::filesystem::path recursive_path = output_name.parent_path() / (*iter)->get_resolved_included_filename();
       std::string recursive_str = recursive_path.string();
+      // since the workflow may be installed in nonstandard places, find where it is relative to the test workspace
       recursive_str = recursive_str.substr(recursive_str.find(workspace.string()) + workspace.string().size() + 1);
       // determine if this was included already
       std::map<boost::filesystem::path, boost::shared_ptr<snakemake_file> >::iterator file_finder;
@@ -393,7 +372,7 @@ bool snakemake_unit_tests::snakemake_file::process_python_results(const boost::f
         loaded_lines = lexical_parse(loaded_lines, verbose);
         if (verbose) std::cout << "\t\t\tlexical parse successful" << std::endl;
         boost::shared_ptr<snakemake_file> ptr(new snakemake_file(_tag_counter));
-        ptr->parse_file(loaded_lines, ptr->get_blocks().begin(), computed_relative_suffix, verbose);
+        ptr->parse_file(loaded_lines, computed_relative_suffix, verbose);
         _included_files[boost::filesystem::path(input_name)] = ptr;
         // always flag as updated when new file is loaded
         _updated_last_round = true;

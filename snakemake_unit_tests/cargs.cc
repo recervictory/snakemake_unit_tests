@@ -7,6 +7,53 @@
 
 #include "snakemake_unit_tests/cargs.h"
 
+snakemake_unit_tests::params::params()
+    : verbose(false),
+      update_all(false),
+      update_snakefiles(false),
+      update_added_content(false),
+      update_config(false),
+      update_inputs(false),
+      update_outputs(false),
+      update_pytest(false),
+      include_entire_dag(false),
+      skip_validation(false),
+      config_filename(""),
+      output_test_dir(""),
+      snakefile(""),
+      pipeline_top_dir(""),
+      pipeline_run_dir(""),
+      inst_dir(""),
+      snakemake_log("") {}
+
+snakemake_unit_tests::params::params(const params &obj)
+    : verbose(obj.verbose),
+      update_all(obj.update_all),
+      update_snakefiles(obj.update_snakefiles),
+      update_added_content(obj.update_added_content),
+      update_config(obj.update_config),
+      update_inputs(obj.update_inputs),
+      update_outputs(obj.update_outputs),
+      update_pytest(obj.update_pytest),
+      include_entire_dag(obj.include_entire_dag),
+      skip_validation(obj.skip_validation),
+      config_filename(obj.config_filename),
+      config(obj.config),
+      output_test_dir(obj.output_test_dir),
+      snakefile(obj.snakefile),
+      pipeline_top_dir(obj.pipeline_top_dir),
+      pipeline_run_dir(obj.pipeline_run_dir),
+      inst_dir(obj.inst_dir),
+      snakemake_log(obj.snakemake_log),
+      added_files(obj.added_files),
+      added_directories(obj.added_directories),
+      include_rules(obj.include_rules),
+      exclude_rules(obj.exclude_rules),
+      exclude_patterns(obj.exclude_patterns),
+      comparators(obj.comparators) {}
+
+snakemake_unit_tests::params::~params() throw() {}
+
 void snakemake_unit_tests::cargs::initialize_options() {
   _desc.add_options()("config,c", boost::program_options::value<std::string>(),
                       "config yaml file specifying default options for other flags")(
@@ -375,7 +422,8 @@ void snakemake_unit_tests::params::emit_yaml_vector(YAML::Emitter *out,
 }
 
 void snakemake_unit_tests::cargs::validate_config(const boost::filesystem::path &config_filename,
-                                                  const boost::filesystem::path &inst_directory) const {
+                                                  const boost::filesystem::path &inst_directory,
+                                                  bool suppress_screen_output) const {
   boost::filesystem::path schema = inst_directory / "user_config_schema.yaml";
   if (!boost::filesystem::exists(schema)) {
     throw std::runtime_error("expected json schema file \"" + schema.string() + "\" could not be located");
@@ -383,7 +431,8 @@ void snakemake_unit_tests::cargs::validate_config(const boost::filesystem::path 
   std::string command =
       "python3 -c \"from snakemake.utils import validate ; import yaml ; "
       "validate(yaml.safe_load(open(\\\"" +
-      config_filename.string() + "\\\", \\\"r\\\")), schema=\\\"" + schema.string() + "\\\")\"";
+      config_filename.string() + "\\\", \\\"r\\\")), schema=\\\"" + schema.string() + "\\\")\"" +
+      (suppress_screen_output ? std::string(" > /dev/null 2>&1") : std::string(""));
   try {
     std::vector<std::string> result = exec(command, true, true);
   } catch (const std::runtime_error &e) {

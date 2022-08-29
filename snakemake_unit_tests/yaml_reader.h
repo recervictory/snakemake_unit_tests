@@ -50,31 +50,14 @@ class yaml_reader {
     @param query key to query in yaml node
     @return value of key in file, cast as std::string
    */
-  std::string get_entry(const std::string &query) const {
-    std::vector<std::string> queries;
-    queries.push_back(query);
-    return get_entry(queries);
-  }
+  std::string get_entry(const std::string &query) const;
   /*!
     @brief get a single value corresponding to an arbitrarily
     deep query
     @param queries ordered set of keys to query in node
     @return value of full query in file, cast as std::string
    */
-  std::string get_entry(const std::vector<std::string> &queries) const {
-    std::vector<std::string> all_results;
-    all_results = get_sequence(queries);
-    if (all_results.size() != 1) {
-      std::ostringstream o;
-      o << *queries.begin();
-      for (unsigned i = 1; i <= queries.size(); ++i) {
-        o << "::" << queries.at(i);
-      }
-      throw std::runtime_error("invalid number of results for entry query " + o.str() + "\": found " +
-                               std::to_string(all_results.size()));
-    }
-    return *all_results.begin();
-  }
+  std::string get_entry(const std::vector<std::string> &queries) const;
   /*!
     @brief get a sequence of values corresponding to a single query
     @param query key to query in yaml node
@@ -89,11 +72,7 @@ class yaml_reader {
       - val2
       - val3
    */
-  std::vector<std::string> get_sequence(const std::string &query) const {
-    std::vector<std::string> queries;
-    queries.push_back(query);
-    return get_sequence(queries);
-  }
+  std::vector<std::string> get_sequence(const std::string &query) const;
   /*!
     @brief get a sequence of values corresponding to an arbitrarily
     deep query
@@ -117,11 +96,7 @@ class yaml_reader {
     @param query key to query in node
     @return vector of key:value pairs
    */
-  std::vector<std::pair<std::string, std::string> > get_map(const std::string &query) const {
-    std::vector<std::string> queries;
-    queries.push_back(query);
-    return get_map(queries);
-  }
+  std::vector<std::pair<std::string, std::string> > get_map(const std::string &query) const;
   /*!
     @brief get map entries corresponding to a series of queries
     @param queries ordered set of keys to query in node
@@ -133,11 +108,7 @@ class yaml_reader {
     @param query key to query in node
     @return Node result of query
    */
-  YAML::Node get_node(const std::string &query) const {
-    std::vector<std::string> queries;
-    queries.push_back(query);
-    return get_node(queries);
-  }
+  YAML::Node get_node(const std::string &query) const;
   /*!
     @brief get arbitrary YAML Node corresponding to a series of queries
     @param queries ordered set of keys to query in node
@@ -149,11 +120,7 @@ class yaml_reader {
     @param query key to query in node
     @return whether the key exists
    */
-  bool query_valid(const std::string &query) const {
-    std::vector<std::string> queries;
-    queries.push_back(query);
-    return query_valid(queries);
-  }
+  bool query_valid(const std::string &query) const;
   /*!
     @brief determine whether series of keys exists in Node
     @param queries ordered set of keys to query in node

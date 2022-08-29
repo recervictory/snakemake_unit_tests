@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+## Test: unhandled dryrun errors cause appropriate program termination
+echo 1..1
+
+TESTNAME="test39"
+TESTDESCRIPTION="unhandled dryrun errors cause appropriate program termination"
+INPUTDIR="tests/examples/$TESTNAME/input"
+OUTPUTDIR="tests/examples/$TESTNAME/output"
+EXPECTEDDIR="tests/examples/$TESTNAME/expected"
+SNAKEMAKE_UNIT_TESTS="./snakemake_unit_tests.out"
+INSTDIR="inst"
+
+## just in case, delete existing output from previously failed tests
+rm -Rf "$OUTPUTDIR"
+
+## run test, dumping output into appropriate directory
+"$SNAKEMAKE_UNIT_TESTS" --update-all -i "$INSTDIR" -l "$INPUTDIR/run.log" -o "$OUTPUTDIR" -p "$INPUTDIR" -s "$INPUTDIR/workflow/Snakefile" > /dev/null 2>&1
+if [[ "$?" != "0" ]] ; then
+    echo "ok - $TESTDESCRIPTION"
+    exit 0
+else
+    echo "not ok - $TESTDESCRIPTION dryrun error not propagated"
+    exit 0
+fi

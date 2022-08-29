@@ -275,7 +275,7 @@ class solved_rules {
   /*!
     @brief recursively remove empty workspace after python integration is
     complete
-    @param output_test_dir output diretory for tests (e.g. '.tests/')
+    @param output_test_dir output directory for tests (e.g. '.tests/')
    */
   void remove_empty_workspace(const boost::filesystem::path &output_test_dir) const;
 

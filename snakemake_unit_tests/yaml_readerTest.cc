@@ -92,6 +92,11 @@ void snakemake_unit_tests::yaml_readerTest::test_yaml_reader_get_entry_queries()
   std::string result = yr.get_entry(queries);
   CPPUNIT_ASSERT(!result.compare("val6"));
 }
+void snakemake_unit_tests::yaml_readerTest::test_yaml_reader_get_entry_multiple_values() {
+  std::string result = "";
+  yaml_reader yr(_yaml_file_1.string());
+  result = yr.get_entry("tag2");
+}
 void snakemake_unit_tests::yaml_readerTest::test_yaml_reader_get_sequence_query() {
   std::vector<std::string> result;
   yaml_reader yr(_yaml_file_1.string());
@@ -118,7 +123,7 @@ void snakemake_unit_tests::yaml_readerTest::test_yaml_reader_get_sequence_querie
 void snakemake_unit_tests::yaml_readerTest::test_yaml_reader_get_sequence_non_conformable() {
   std::vector<std::string> result, queries;
   yaml_reader yr(_yaml_file_1.string());
-  queries.push_back("tag3");
+  queries.push_back("tag7");
   result = yr.get_sequence(queries);
 }
 void snakemake_unit_tests::yaml_readerTest::test_yaml_reader_get_map_query() {
@@ -145,7 +150,7 @@ void snakemake_unit_tests::yaml_readerTest::test_yaml_reader_get_map_queries() {
 void snakemake_unit_tests::yaml_readerTest::test_yaml_reader_get_map_non_conformable() {
   std::vector<std::string> queries;
   yaml_reader yr(_yaml_file_1.string());
-  queries.push_back("tag3");
+  queries.push_back("tag2");
   std::vector<std::pair<std::string, std::string> > result = yr.get_map(queries);
 }
 void snakemake_unit_tests::yaml_readerTest::test_yaml_reader_get_node_query() {
