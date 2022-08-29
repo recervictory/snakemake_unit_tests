@@ -37,6 +37,7 @@ class yaml_readerTest : public CppUnit::TestFixture {
   CPPUNIT_TEST_EXCEPTION(test_yaml_reader_load_file_bad_file, std::runtime_error);
   CPPUNIT_TEST(test_yaml_reader_get_entry_query);
   CPPUNIT_TEST(test_yaml_reader_get_entry_queries);
+  CPPUNIT_TEST_EXCEPTION(test_yaml_reader_get_entry_multiple_values, std::runtime_error);
   CPPUNIT_TEST(test_yaml_reader_get_sequence_query);
   CPPUNIT_TEST(test_yaml_reader_get_sequence_queries);
   CPPUNIT_TEST_EXCEPTION(test_yaml_reader_get_sequence_non_conformable, std::runtime_error);
@@ -68,6 +69,7 @@ class yaml_readerTest : public CppUnit::TestFixture {
   void test_yaml_reader_load_file_bad_file();
   void test_yaml_reader_get_entry_query();
   void test_yaml_reader_get_entry_queries();
+  void test_yaml_reader_get_entry_multiple_values();
   void test_yaml_reader_get_sequence_query();
   void test_yaml_reader_get_sequence_queries();
   void test_yaml_reader_get_sequence_non_conformable();
