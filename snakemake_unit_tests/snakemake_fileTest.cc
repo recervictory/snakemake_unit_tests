@@ -78,7 +78,7 @@ void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_parse_file() 
   CPPUNIT_ASSERT(!(*iter)->_rule_name.compare("rule1"));
   CPPUNIT_ASSERT((*iter)->_named_blocks.size() == 1);
   CPPUNIT_ASSERT(!(*iter)->_named_blocks.at(0).first.compare("input"));
-  CPPUNIT_ASSERT(!(*iter)->_named_blocks.at(0).second.compare("'filename',"));
+  CPPUNIT_ASSERT(!(*iter)->_named_blocks.at(0).second.compare(" 'filename',"));
   CPPUNIT_ASSERT((*iter)->_python_tag == 1);
   CPPUNIT_ASSERT((*iter)->_resolution == UNRESOLVED);
   ++iter;
@@ -89,9 +89,9 @@ void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_parse_file() 
   ++iter;
   CPPUNIT_ASSERT((*iter)->_code_chunk.size() == 1);
   CPPUNIT_ASSERT(!(*iter)->_code_chunk.at(0).compare("pass"));
-  CPPUNIT_ASSERT((*iter)->_python_tag == 3);
+  CPPUNIT_ASSERT((*iter)->_python_tag == 0);
   CPPUNIT_ASSERT((*iter)->_resolution == RESOLVED_INCLUDED);
-  CPPUNIT_ASSERT(*sf._tag_counter == 4);
+  CPPUNIT_ASSERT(*sf._tag_counter == 3);
 }
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_load_lines() {
   // create a dummy snakefile and ensure it's loaded as anticipated
