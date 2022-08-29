@@ -142,7 +142,7 @@ std::string snakemake_unit_tests::yaml_reader::get_entry(const std::vector<std::
   if (all_results.size() != 1) {
     std::ostringstream o;
     o << *queries.begin();
-    for (unsigned i = 1; i <= queries.size(); ++i) {
+    for (unsigned i = 1; i < queries.size(); ++i) {
       o << "::" << queries.at(i);
     }
     throw std::runtime_error("invalid number of results for entry query " + o.str() + "\": found " +
