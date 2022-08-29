@@ -169,9 +169,10 @@ void snakemake_unit_tests::solved_rules::emit_tests(
             (include_rules.empty() || include_rules.find((*iter)->get_rule_name()) != include_rules.end()) &&
             (update_snakefiles || update_added_content || update_inputs || update_outputs)) {
           std::vector<std::string> snakemake_exec;
-          snakemake_exec = exec("cd " + (test_parent_path / (*iter)->get_rule_name() / "workspace").string() +
-                                    " && snakemake -nFs " + sf.get_snakefile_relative_path().string(),
-                                false);
+          snakemake_exec =
+              exec("cd " + (test_parent_path / (*iter)->get_rule_name() / "workspace").string() + " && snakemake -nFs" +
+                       sf.get_snakefile_relative_path().string() + " --directory " + pipeline_run_dir.string(),
+                   false);
           // try to find snakemake errors that report rules missing from dag
           unsigned initial_missing_count = missing_rules.size();
           find_missing_rules(snakemake_exec, &missing_rules);
@@ -189,9 +190,12 @@ void snakemake_unit_tests::solved_rules::emit_tests(
           // the rule was manually excluded in config; for evaluation purposes, that means we're done
           deployment_successful = true;
         }
+        if (!deployment_successful) {
+          std::cout << "\truleset has been adjusted for rules./checkpoint features; trying again..." << std::endl;
+        }
       } while (!deployment_successful);
       test_history[(*iter)->get_rule_name()] = true;
-      // new: remove evidence of having run snakemake in-place
+      // remove evidence of having run snakemake in-place
       boost::filesystem::remove_all(test_parent_path / (*iter)->get_rule_name() / "workspace/.snakemake");
     }
   }
@@ -210,12 +214,31 @@ void snakemake_unit_tests::solved_rules::find_missing_rules(const std::vector<st
   // target error pattern is: "'(Rules|Checkpoints)' object has no attribute 'RULENAME'"
   const boost::regex rule_missing("^.*'Rules' object has no attribute '([^']+)'.*\n$");
   const boost::regex checkpoint_missing("^.*'Checkpoints' object has no attribute '([^']+)'.*\n$");
+  const boost::regex any_error("^.*[eE][xX][cC][eE][pP][tT][iI][oO][nN].*\n?$");
+  bool found_error = false, found_permitted_error = false;
   for (std::vector<std::string>::const_iterator iter = snakemake_exec.begin(); iter != snakemake_exec.end(); ++iter) {
     boost::smatch regex_result;
     if (boost::regex_match(*iter, regex_result, rule_missing) ||
         boost::regex_match(*iter, regex_result, checkpoint_missing)) {
       target->insert(std::make_pair(regex_result[1].str(), true));
+      found_permitted_error = true;
     }
+    if (boost::regex_match(*iter, regex_result, any_error)) {
+      found_error = true;
+    }
+  }
+  if (found_error && !found_permitted_error) {
+    for (std::vector<std::string>::const_iterator iter = snakemake_exec.begin(); iter != snakemake_exec.end(); ++iter) {
+      std::cerr << *iter;
+    }
+    throw std::runtime_error(
+        "snakemake dryrun found unhandled error, indicating something wrong with either "
+        "the configuration of this run or the internal logic of snakemake_unit_tests; "
+        "please inspect the logging information above to determine which. in particular, "
+        "any message about missing infrastructure files from this workflow (e.g. config.yaml) "
+        "may indicate that you need to add more things to added-files or added-directories, "
+        "for files that are necessary for pipeline functionality but that exist outside "
+        "of the DAG.");
   }
 }
 
@@ -424,6 +447,19 @@ void snakemake_unit_tests::solved_rules::copy_contents(
       // create parent directories as needed
       boost::filesystem::create_directories(target_file.parent_path());
       // recursive copy
+      // for compatibility with other applications: if the target exists, change its permissions and remove it
+      if (boost::filesystem::exists(target_file)) {
+        if (boost::filesystem::is_directory(target_file)) {
+          boost::filesystem::recursive_directory_iterator rec_iter(target_file), rec_end;
+          for (; rec_iter != rec_end; ++rec_iter) {
+            boost::filesystem::permissions(*rec_iter, boost::filesystem::owner_write | boost::filesystem::add_perms);
+          }
+        } else {
+          boost::filesystem::permissions(target_file, boost::filesystem::owner_write | boost::filesystem::add_perms);
+        }
+        boost::filesystem::remove_all(target_file);
+      }
+      // then copy
       boost::filesystem::copy(
           source_file, target_file,
           boost::filesystem::copy_options::overwrite_existing | boost::filesystem::copy_options::recursive);

@@ -1,0 +1,17 @@
+rule all:
+    input:
+        "output1.txt",
+
+
+rule simple_rule1:
+    input:
+        "input1.txt",
+    output:
+        protected("output1.txt"),
+    shell:
+        "cp {input} {output}"
+
+
+pass
+
+

@@ -1,0 +1,8 @@
+rule simple_rule:
+    input:
+        intxt="input.txt",
+        inconfig="config.yaml",
+    output:
+        "output.txt",
+    shell:
+        "cp {input.intxt} {output}"

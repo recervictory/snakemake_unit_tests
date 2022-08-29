@@ -9,6 +9,31 @@
 
 #include "snakemake_unit_tests/rule_block.h"
 
+snakemake_unit_tests::rule_block::rule_block()
+    : _rule_name(""),
+      _base_rule_name(""),
+      _rule_is_checkpoint(false),
+      _docstring(""),
+      _local_indentation(0),
+      _resolution(UNRESOLVED),
+      _queried_by_python(false),
+      _python_tag(0) {}
+
+snakemake_unit_tests::rule_block::rule_block(const rule_block &obj)
+    : _rule_name(obj._rule_name),
+      _base_rule_name(obj._base_rule_name),
+      _rule_is_checkpoint(obj._rule_is_checkpoint),
+      _docstring(obj._docstring),
+      _named_blocks(obj._named_blocks),
+      _code_chunk(obj._code_chunk),
+      _local_indentation(obj._local_indentation),
+      _resolution(obj._resolution),
+      _queried_by_python(obj._queried_by_python),
+      _python_tag(obj._python_tag),
+      _resolved_included_filename(obj._resolved_included_filename) {}
+
+snakemake_unit_tests::rule_block::~rule_block() throw() {}
+
 bool snakemake_unit_tests::rule_block::load_content_block(const std::vector<std::string> &loaded_lines, bool verbose,
                                                           unsigned *current_line) {
   if (!current_line) throw std::runtime_error("null pointer for counter passed to load_content_block");
