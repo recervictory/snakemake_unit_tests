@@ -258,10 +258,7 @@ bool snakemake_unit_tests::snakemake_file::resolve_with_python(const boost::file
   }
   output.open(output_name.string().c_str());
   if (!output.is_open())
-    throw std::runtime_error(
-        "cannot write interpreter snakefile "
-        "to file \"" +
-        output_name.string() + "\"");
+    throw std::runtime_error("cannot write interpreter snakefile to file \"" + output_name.string() + "\"");
   // write python reporting code
   bool reporting_terminated = false;
   for (std::list<boost::shared_ptr<rule_block> >::const_iterator iter = get_blocks().begin();
