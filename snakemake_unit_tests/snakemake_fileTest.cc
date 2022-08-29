@@ -578,7 +578,9 @@ void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_report_rules(
 void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_get_base_rule_name() {
   snakemake_file sf1;
   boost::shared_ptr<snakemake_file> sf2(new snakemake_file);
-  boost::shared_ptr<rule_block> b1(new rule_block), b2(new rule_block), b3(new rule_block);
+  boost::shared_ptr<rule_block> b0(new rule_block), b1(new rule_block), b2(new rule_block), b3(new rule_block);
+  b0->_rule_name = "myrule";
+  b0->_resolution = RESOLVED_EXCLUDED;
   b1->_rule_name = "myrule";
   b1->_base_rule_name = "top_level_rule";
   b1->_named_blocks.push_back(std::make_pair("input", " 'myinfile.txt',"));
@@ -592,6 +594,7 @@ void snakemake_unit_tests::snakemake_fileTest::test_snakemake_file_get_base_rule
   b3->_named_blocks.push_back(std::make_pair("output", " 'nextoutfile.txt',"));
   b3->_named_blocks.push_back(std::make_pair("shell", " 'echo otherthing > {output}'"));
   b3->_resolution = RESOLVED_INCLUDED;
+  sf1._blocks.push_back(b0);
   sf1._blocks.push_back(b1);
   sf1._blocks.push_back(b2);
   sf2->_blocks.push_back(b3);
