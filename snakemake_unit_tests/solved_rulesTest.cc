@@ -372,6 +372,57 @@ void snakemake_unit_tests::solved_rulesTest::test_solved_rules_find_missing_rule
   // reset std::cerr
   std::cout.rdbuf(previous_buffer);
 }
-void snakemake_unit_tests::solved_rulesTest::test_solved_rules_add_dag_from_leaf() {}
+void snakemake_unit_tests::solved_rulesTest::test_solved_rules_add_dag_from_leaf() {
+  std::map<boost::shared_ptr<recipe>, bool> included_rules;
+  boost::shared_ptr<recipe> rec1(new recipe), rec2(new recipe), rec3(new recipe);
+  rec1->_inputs.push_back("input1.tsv");
+  rec1->_inputs.push_back("input2.tsv");
+  rec1->_outputs.push_back("output1.tsv");
+  rec2->_inputs.push_back("input3.tsv");
+  rec2->_inputs.push_back("output1.tsv");
+  rec2->_outputs.push_back("output2.tsv");
+  rec3->_inputs.push_back("input4.tsv");
+  rec3->_inputs.push_back("output2.tsv");
+  rec3->_outputs.push_back("output3.tsv");
+  solved_rules sr;
+  sr._recipes.push_back(rec1);
+  sr._recipes.push_back(rec2);
+  sr._recipes.push_back(rec3);
+  sr._output_lookup["output1.tsv"] = rec1;
+  sr._output_lookup["output2.tsv"] = rec2;
+  sr._output_lookup["output3.tsv"] = rec3;
+  sr.add_dag_from_leaf(rec3, false, &included_rules);
+  CPPUNIT_ASSERT(included_rules.size() == 1);
+  CPPUNIT_ASSERT(included_rules.find(rec2) != included_rules.end());
+}
+void snakemake_unit_tests::solved_rulesTest::test_solved_rules_add_dag_from_leaf_entire() {
+  std::map<boost::shared_ptr<recipe>, bool> included_rules;
+  boost::shared_ptr<recipe> rec1(new recipe), rec2(new recipe), rec3(new recipe);
+  rec1->_inputs.push_back("input1.tsv");
+  rec1->_inputs.push_back("input2.tsv");
+  rec1->_outputs.push_back("output1.tsv");
+  rec2->_inputs.push_back("input3.tsv");
+  rec2->_inputs.push_back("output1.tsv");
+  rec2->_outputs.push_back("output2.tsv");
+  rec3->_inputs.push_back("input4.tsv");
+  rec3->_inputs.push_back("output2.tsv");
+  rec3->_outputs.push_back("output3.tsv");
+  solved_rules sr;
+  sr._recipes.push_back(rec1);
+  sr._recipes.push_back(rec2);
+  sr._recipes.push_back(rec3);
+  sr._output_lookup["output1.tsv"] = rec1;
+  sr._output_lookup["output2.tsv"] = rec2;
+  sr._output_lookup["output3.tsv"] = rec3;
+  sr.add_dag_from_leaf(rec3, true, &included_rules);
+  CPPUNIT_ASSERT(included_rules.size() == 2);
+  CPPUNIT_ASSERT(included_rules.find(rec2) != included_rules.end());
+  CPPUNIT_ASSERT(included_rules.find(rec1) != included_rules.end());
+}
+void snakemake_unit_tests::solved_rulesTest::test_solved_rules_add_dag_from_leaf_null_pointer() {
+  boost::shared_ptr<recipe> rec(new recipe);
+  solved_rules sr;
+  sr.add_dag_from_leaf(rec, true, NULL);
+}
 
 CPPUNIT_TEST_SUITE_REGISTRATION(snakemake_unit_tests::solved_rulesTest);

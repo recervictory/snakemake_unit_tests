@@ -56,6 +56,8 @@ class solved_rulesTest : public CppUnit::TestFixture {
   CPPUNIT_TEST_EXCEPTION(test_solved_rules_find_missing_rules_null_pointer, std::runtime_error);
   CPPUNIT_TEST_EXCEPTION(test_solved_rules_find_missing_rules_unexpected_error, std::runtime_error);
   CPPUNIT_TEST(test_solved_rules_add_dag_from_leaf);
+  CPPUNIT_TEST(test_solved_rules_add_dag_from_leaf_entire);
+  CPPUNIT_TEST_EXCEPTION(test_solved_rules_add_dag_from_leaf_null_pointer, std::runtime_error);
   CPPUNIT_TEST_SUITE_END();
 
  public:
@@ -93,6 +95,8 @@ class solved_rulesTest : public CppUnit::TestFixture {
   void test_solved_rules_find_missing_rules_null_pointer();
   void test_solved_rules_find_missing_rules_unexpected_error();
   void test_solved_rules_add_dag_from_leaf();
+  void test_solved_rules_add_dag_from_leaf_entire();
+  void test_solved_rules_add_dag_from_leaf_null_pointer();
 
  private:
   char *_tmp_dir;
