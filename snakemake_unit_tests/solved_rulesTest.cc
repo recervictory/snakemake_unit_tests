@@ -328,7 +328,84 @@ void snakemake_unit_tests::solved_rulesTest::test_solved_rules_remove_empty_work
 void snakemake_unit_tests::solved_rulesTest::test_solved_rules_copy_contents() {}
 void snakemake_unit_tests::solved_rulesTest::test_solved_rules_report_phony_all_target() {}
 void snakemake_unit_tests::solved_rulesTest::test_solved_rules_report_modified_test_script() {}
-void snakemake_unit_tests::solved_rulesTest::test_solved_rules_report_modified_launcher_script() {}
+void snakemake_unit_tests::solved_rulesTest::test_solved_rules_report_modified_launcher_script() {
+  boost::filesystem::path tmp_parent = boost::filesystem::path(std::string(_tmp_dir));
+  boost::filesystem::path inst_dir = tmp_parent / "inst";
+  boost::filesystem::path target_dir = tmp_parent / "target";
+  boost::filesystem::create_directories(inst_dir);
+  boost::filesystem::create_directories(target_dir);
+  boost::filesystem::path input_script = inst_dir / "scriptname.bash";
+  boost::filesystem::path test_dir = target_dir / "all_the_tests";
+  boost::filesystem::path target_script = target_dir / "pytest_runner.bash";
+  std::ifstream input;
+  std::ofstream output;
+  output.open(input_script.string().c_str());
+  if (!output.is_open()) {
+    throw std::runtime_error("cannot write modified launcher script file");
+  }
+  if (!(output << "script\ncontents" << std::endl)) {
+    throw std::runtime_error("cannot write modified launcher script contents");
+  }
+  output.close();
+
+  CPPUNIT_ASSERT(!boost::filesystem::is_regular_file(target_script));
+  solved_rules sr;
+  sr.report_modified_launcher_script(target_dir, test_dir, input_script);
+  CPPUNIT_ASSERT(boost::filesystem::is_regular_file(target_script));
+  input.open(target_script.string().c_str());
+  if (!input.is_open()) {
+    throw std::runtime_error("mysteriously cannot open modified launcher script output");
+  }
+  std::vector<std::string> expected;
+  expected.push_back("#!/usr/bin/env bash");
+  expected.push_back("SNAKEMAKE_UNIT_TESTS_DIR=" + test_dir.string());
+  expected.push_back("script");
+  expected.push_back("contents");
+  unsigned line_count = 0;
+  std::string line = "";
+  for (; line_count < expected.size(); ++line_count) {
+    CPPUNIT_ASSERT(input.peek() != EOF);
+    getline(input, line);
+    CPPUNIT_ASSERT(!line.compare(expected.at(line_count)));
+  }
+  CPPUNIT_ASSERT(input.peek() == EOF);
+}
+void snakemake_unit_tests::solved_rulesTest::test_solved_rules_report_modified_launcher_script_bad_target_directory() {
+  boost::filesystem::path tmp_parent = boost::filesystem::path(std::string(_tmp_dir));
+  boost::filesystem::path inst_dir = tmp_parent / "inst";
+  boost::filesystem::path target_dir = tmp_parent / "target";
+  boost::filesystem::create_directories(inst_dir);
+  boost::filesystem::path input_script = inst_dir / "scriptname.bash";
+  boost::filesystem::path test_dir = target_dir / "all_the_tests";
+  boost::filesystem::path target_script = target_dir / "pytest_runner.bash";
+  std::ofstream output;
+  output.open(input_script.string().c_str());
+  if (!output.is_open()) {
+    throw std::runtime_error("cannot write modified launcher script file");
+  }
+  if (!(output << "script\ncontents" << std::endl)) {
+    throw std::runtime_error("cannot write modified launcher script contents");
+  }
+  output.close();
+
+  CPPUNIT_ASSERT(!boost::filesystem::is_regular_file(target_script));
+  solved_rules sr;
+  sr.report_modified_launcher_script(target_dir, test_dir, input_script);
+}
+void snakemake_unit_tests::solved_rulesTest::test_solved_rules_report_modified_launcher_script_missing_script() {
+  boost::filesystem::path tmp_parent = boost::filesystem::path(std::string(_tmp_dir));
+  boost::filesystem::path inst_dir = tmp_parent / "inst";
+  boost::filesystem::path target_dir = tmp_parent / "target";
+  boost::filesystem::create_directories(inst_dir);
+  boost::filesystem::create_directories(target_dir);
+  boost::filesystem::path input_script = inst_dir / "scriptname.bash";
+  boost::filesystem::path test_dir = target_dir / "all_the_tests";
+  boost::filesystem::path target_script = target_dir / "pytest_runner.bash";
+
+  CPPUNIT_ASSERT(!boost::filesystem::is_regular_file(target_script));
+  solved_rules sr;
+  sr.report_modified_launcher_script(target_dir, test_dir, input_script);
+}
 void snakemake_unit_tests::solved_rulesTest::test_solved_rules_find_missing_rules() {
   std::vector<std::string> exec_log;
   std::map<std::string, bool> missing_rules;
