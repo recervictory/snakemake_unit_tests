@@ -40,6 +40,9 @@ class solved_rulesTest : public CppUnit::TestFixture {
   CPPUNIT_TEST(test_solved_rules_default_constructor);
   CPPUNIT_TEST(test_solved_rules_copy_constructor);
   CPPUNIT_TEST(test_solved_rules_load_file);
+  CPPUNIT_TEST_EXCEPTION(test_solved_rules_load_file_unresolved_checkpoint, std::logic_error);
+  CPPUNIT_TEST(test_solved_rules_load_file_toxic_output_files);
+  CPPUNIT_TEST_EXCEPTION(test_solved_rules_load_file_unrecognized_block, std::logic_error);
   CPPUNIT_TEST(test_solved_rules_emit_tests);
   CPPUNIT_TEST(test_solved_rules_emit_snakefile);
   CPPUNIT_TEST(test_solved_rules_create_workspace);
@@ -72,6 +75,9 @@ class solved_rulesTest : public CppUnit::TestFixture {
   void test_solved_rules_default_constructor();
   void test_solved_rules_copy_constructor();
   void test_solved_rules_load_file();
+  void test_solved_rules_load_file_unresolved_checkpoint();
+  void test_solved_rules_load_file_toxic_output_files();
+  void test_solved_rules_load_file_unrecognized_block();
   void test_solved_rules_emit_tests();
   void test_solved_rules_emit_snakefile();
   void test_solved_rules_create_workspace();
