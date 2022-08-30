@@ -133,8 +133,23 @@ void snakemake_unit_tests::solved_rulesTest::test_recipe_clear() {
   CPPUNIT_ASSERT(r._outputs.empty());
   CPPUNIT_ASSERT(r._log.empty());
 }
-void snakemake_unit_tests::solved_rulesTest::test_solved_rules_default_constructor() {}
-void snakemake_unit_tests::solved_rulesTest::test_solved_rules_copy_constructor() {}
+void snakemake_unit_tests::solved_rulesTest::test_solved_rules_default_constructor() {
+  solved_rules sr;
+  CPPUNIT_ASSERT(sr._recipes.empty());
+  CPPUNIT_ASSERT(sr._output_lookup.empty());
+}
+void snakemake_unit_tests::solved_rulesTest::test_solved_rules_copy_constructor() {
+  solved_rules sr;
+  boost::shared_ptr<recipe> rec(new recipe);
+  sr._recipes.push_back(rec);
+  sr._output_lookup["my/path"] = rec;
+  solved_rules ss(sr);
+  CPPUNIT_ASSERT(ss._recipes.size() == 1);
+  CPPUNIT_ASSERT(ss._recipes.at(0) == rec);
+  CPPUNIT_ASSERT(ss._output_lookup.size() == 1);
+  CPPUNIT_ASSERT(!ss._output_lookup.begin()->first.string().compare("my/path"));
+  CPPUNIT_ASSERT(ss._output_lookup.begin()->second == rec);
+}
 void snakemake_unit_tests::solved_rulesTest::test_solved_rules_load_file() {}
 void snakemake_unit_tests::solved_rulesTest::test_solved_rules_emit_tests() {}
 void snakemake_unit_tests::solved_rulesTest::test_solved_rules_emit_snakefile() {}
