@@ -24,17 +24,115 @@ void snakemake_unit_tests::solved_rulesTest::tearDown() {
   }
 }
 
-void snakemake_unit_tests::solved_rulesTest::test_recipe_default_constructor() {}
-void snakemake_unit_tests::solved_rulesTest::test_recipe_copy_constructor() {}
-void snakemake_unit_tests::solved_rulesTest::test_recipe_get_rule_name() {}
-void snakemake_unit_tests::solved_rulesTest::test_recipe_set_rule_name() {}
-void snakemake_unit_tests::solved_rulesTest::test_recipe_get_inputs() {}
-void snakemake_unit_tests::solved_rulesTest::test_recipe_add_input() {}
-void snakemake_unit_tests::solved_rulesTest::test_recipe_get_outputs() {}
-void snakemake_unit_tests::solved_rulesTest::test_recipe_add_output() {}
-void snakemake_unit_tests::solved_rulesTest::test_recipe_get_log() {}
-void snakemake_unit_tests::solved_rulesTest::test_recipe_set_log() {}
-void snakemake_unit_tests::solved_rulesTest::test_recipe_clear() {}
+void snakemake_unit_tests::solved_rulesTest::test_recipe_default_constructor() {
+  recipe r;
+  CPPUNIT_ASSERT(r._rule_name.empty());
+  CPPUNIT_ASSERT(r._inputs.empty());
+  CPPUNIT_ASSERT(r._outputs.empty());
+  CPPUNIT_ASSERT(r._log.empty());
+}
+void snakemake_unit_tests::solved_rulesTest::test_recipe_copy_constructor() {
+  recipe r;
+  r._rule_name = "rulename";
+  r._inputs.push_back("input1");
+  r._inputs.push_back("input2");
+  r._outputs.push_back("output1");
+  r._outputs.push_back("output2");
+  r._log = "logname";
+  recipe s(r);
+  CPPUNIT_ASSERT(!s._rule_name.compare("rulename"));
+  CPPUNIT_ASSERT(s._inputs.size() == 2);
+  CPPUNIT_ASSERT(!s._inputs.at(0).string().compare("input1"));
+  CPPUNIT_ASSERT(!s._inputs.at(1).string().compare("input2"));
+  CPPUNIT_ASSERT(!s._outputs.at(0).string().compare("output1"));
+  CPPUNIT_ASSERT(!s._outputs.at(1).string().compare("output2"));
+  CPPUNIT_ASSERT(!s._log.compare("logname"));
+}
+void snakemake_unit_tests::solved_rulesTest::test_recipe_get_rule_name() {
+  recipe r;
+  CPPUNIT_ASSERT(r.get_rule_name().empty());
+  r._rule_name = "rulename";
+  CPPUNIT_ASSERT(!r.get_rule_name().compare("rulename"));
+}
+void snakemake_unit_tests::solved_rulesTest::test_recipe_set_rule_name() {
+  recipe r;
+  r.set_rule_name("rulename1");
+  CPPUNIT_ASSERT(!r._rule_name.compare("rulename1"));
+}
+void snakemake_unit_tests::solved_rulesTest::test_recipe_get_inputs() {
+  recipe r;
+  r._inputs.push_back("input1");
+  r._inputs.push_back("input2");
+  std::vector<boost::filesystem::path> inputs;
+  inputs = r.get_inputs();
+  CPPUNIT_ASSERT(inputs.size() == 2);
+  CPPUNIT_ASSERT(!inputs.at(0).string().compare("input1"));
+  CPPUNIT_ASSERT(!inputs.at(1).string().compare("input2"));
+  CPPUNIT_ASSERT(r._inputs.size() == 2);
+  CPPUNIT_ASSERT(!r._inputs.at(0).string().compare("input1"));
+  CPPUNIT_ASSERT(!r._inputs.at(1).string().compare("input2"));
+}
+void snakemake_unit_tests::solved_rulesTest::test_recipe_add_input() {
+  recipe r;
+  r.add_input("input1");
+  CPPUNIT_ASSERT(r._inputs.size() == 1);
+  CPPUNIT_ASSERT(!r._inputs.at(0).string().compare("input1"));
+  r.add_input("input2");
+  CPPUNIT_ASSERT(r._inputs.size() == 2);
+  CPPUNIT_ASSERT(!r._inputs.at(0).string().compare("input1"));
+  CPPUNIT_ASSERT(!r._inputs.at(1).string().compare("input2"));
+}
+void snakemake_unit_tests::solved_rulesTest::test_recipe_get_outputs() {
+  recipe r;
+  r._outputs.push_back("output1");
+  r._outputs.push_back("output2");
+  std::vector<boost::filesystem::path> outputs;
+  outputs = r.get_outputs();
+  CPPUNIT_ASSERT(outputs.size() == 2);
+  CPPUNIT_ASSERT(!outputs.at(0).string().compare("output1"));
+  CPPUNIT_ASSERT(!outputs.at(1).string().compare("output2"));
+  CPPUNIT_ASSERT(r._outputs.size() == 2);
+  CPPUNIT_ASSERT(!r._outputs.at(0).string().compare("output1"));
+  CPPUNIT_ASSERT(!r._outputs.at(1).string().compare("output2"));
+}
+void snakemake_unit_tests::solved_rulesTest::test_recipe_add_output() {
+  recipe r;
+  r.add_output("output1");
+  CPPUNIT_ASSERT(r._outputs.size() == 1);
+  CPPUNIT_ASSERT(!r._outputs.at(0).string().compare("output1"));
+  r.add_output("output2");
+  CPPUNIT_ASSERT(r._outputs.size() == 2);
+  CPPUNIT_ASSERT(!r._outputs.at(0).string().compare("output1"));
+  CPPUNIT_ASSERT(!r._outputs.at(1).string().compare("output2"));
+}
+void snakemake_unit_tests::solved_rulesTest::test_recipe_get_log() {
+  recipe r;
+  r._log = "logname";
+  CPPUNIT_ASSERT(!r.get_log().compare("logname"));
+  r._log = "othername";
+  CPPUNIT_ASSERT(!r.get_log().compare("othername"));
+}
+void snakemake_unit_tests::solved_rulesTest::test_recipe_set_log() {
+  recipe r;
+  r.set_log("logname");
+  CPPUNIT_ASSERT(!r._log.compare("logname"));
+  r.set_log("othername");
+  CPPUNIT_ASSERT(!r._log.compare("othername"));
+}
+void snakemake_unit_tests::solved_rulesTest::test_recipe_clear() {
+  recipe r;
+  r._rule_name = "rulename";
+  r._inputs.push_back("input1");
+  r._inputs.push_back("input2");
+  r._outputs.push_back("output1");
+  r._outputs.push_back("output2");
+  r._log = "logname";
+  r.clear();
+  CPPUNIT_ASSERT(r._rule_name.empty());
+  CPPUNIT_ASSERT(r._inputs.empty());
+  CPPUNIT_ASSERT(r._outputs.empty());
+  CPPUNIT_ASSERT(r._log.empty());
+}
 void snakemake_unit_tests::solved_rulesTest::test_solved_rules_default_constructor() {}
 void snakemake_unit_tests::solved_rulesTest::test_solved_rules_copy_constructor() {}
 void snakemake_unit_tests::solved_rulesTest::test_solved_rules_load_file() {}
