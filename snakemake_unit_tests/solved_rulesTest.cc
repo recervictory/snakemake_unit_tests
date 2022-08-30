@@ -329,7 +329,49 @@ void snakemake_unit_tests::solved_rulesTest::test_solved_rules_copy_contents() {
 void snakemake_unit_tests::solved_rulesTest::test_solved_rules_report_phony_all_target() {}
 void snakemake_unit_tests::solved_rulesTest::test_solved_rules_report_modified_test_script() {}
 void snakemake_unit_tests::solved_rulesTest::test_solved_rules_report_modified_launcher_script() {}
-void snakemake_unit_tests::solved_rulesTest::test_solved_rules_find_missing_rules() {}
+void snakemake_unit_tests::solved_rulesTest::test_solved_rules_find_missing_rules() {
+  std::vector<std::string> exec_log;
+  std::map<std::string, bool> missing_rules;
+  exec_log.push_back("Exception: 'Rules' object has no attribute 'rulename1' so that's a bummer\n");
+  exec_log.push_back("Other exception: 'Rules' object has no attribute 'rulename2' which makes me sad\n");
+  exec_log.push_back("'Rules' object has attribute 'rulename3', so let's not just focus on the negative\n");
+  exec_log.push_back("Exception: 'Checkpoints' object has no attribute 'check1', which again stinks\n");
+  exec_log.push_back("Other exception: 'Checkpoints' object has no attribute 'check2', I give up\n");
+  solved_rules sr;
+  sr.find_missing_rules(exec_log, &missing_rules);
+  CPPUNIT_ASSERT(missing_rules.size() == 4);
+  CPPUNIT_ASSERT(missing_rules.find("rulename1") != missing_rules.end());
+  CPPUNIT_ASSERT(missing_rules.find("rulename2") != missing_rules.end());
+  CPPUNIT_ASSERT(missing_rules.find("check1") != missing_rules.end());
+  CPPUNIT_ASSERT(missing_rules.find("check2") != missing_rules.end());
+}
+void snakemake_unit_tests::solved_rulesTest::test_solved_rules_find_missing_rules_null_pointer() {
+  std::vector<std::string> exec_log;
+  solved_rules sr;
+  sr.find_missing_rules(exec_log, NULL);
+}
+void snakemake_unit_tests::solved_rulesTest::test_solved_rules_find_missing_rules_unexpected_error() {
+  std::vector<std::string> exec_log;
+  std::map<std::string, bool> missing_rules;
+  exec_log.push_back("'Rules' object has attribute 'rulename3', so let's not just focus on the negative\n");
+  exec_log.push_back("Exception: damnable portal of antediluvian evil\n");
+
+  // capture std::cerr
+  std::ostringstream observed;
+  std::streambuf *previous_buffer(std::cerr.rdbuf(observed.rdbuf()));
+  solved_rules sr;
+
+  try {
+    sr.find_missing_rules(exec_log, &missing_rules);
+  } catch (...) {
+    std::cerr.rdbuf(previous_buffer);
+    CPPUNIT_ASSERT(observed.str().find("damnable portal of antediluvian evil") != std::string::npos);
+    throw;
+  }
+
+  // reset std::cerr
+  std::cout.rdbuf(previous_buffer);
+}
 void snakemake_unit_tests::solved_rulesTest::test_solved_rules_add_dag_from_leaf() {}
 
 CPPUNIT_TEST_SUITE_REGISTRATION(snakemake_unit_tests::solved_rulesTest);
