@@ -223,6 +223,7 @@ class snakemake_file {
 
  private:
   friend class snakemake_fileTest;
+  friend class solved_rulesTest;
   /*!
   @brief minimal contents of snakemake file as blocks of code
  */
