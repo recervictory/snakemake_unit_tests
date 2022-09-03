@@ -327,7 +327,87 @@ void snakemake_unit_tests::solved_rulesTest::test_solved_rules_create_empty_work
 void snakemake_unit_tests::solved_rulesTest::test_solved_rules_remove_empty_workspace() {}
 void snakemake_unit_tests::solved_rulesTest::test_solved_rules_copy_contents() {}
 void snakemake_unit_tests::solved_rulesTest::test_solved_rules_report_phony_all_target() {}
-void snakemake_unit_tests::solved_rulesTest::test_solved_rules_report_modified_test_script() {}
+void snakemake_unit_tests::solved_rulesTest::test_solved_rules_report_modified_test_script() {
+  /*
+    need the following:
+    - parent directory for output script (e.g. tests/unit/)
+    - directory for relative calls to pytest (e.g. tests/)
+    - rule name
+    - snakefile path relative to workflow execution directory
+    - workflow execution directory
+    - bonus patterns to add to comparison ignore list
+    - full path to inst/test.py schematic file
+   */
+  boost::filesystem::path tmp_parent = boost::filesystem::path(std::string(_tmp_dir));
+  boost::filesystem::path testdir = tmp_parent / "tests";
+  boost::filesystem::path unitdir = testdir / "unit";
+  std::string rulename = "myrule";
+  boost::filesystem::path snakefile_relative_path = "workflow/Snakefile";
+  boost::filesystem::path rundir = ".";
+  std::vector<boost::filesystem::path> extra_exclusions;
+  extra_exclusions.push_back(".docx");
+  extra_exclusions.push_back(".eps");
+  boost::filesystem::path inst_test_py = tmp_parent / "inst" / "test.py";
+  boost::filesystem::create_directories(unitdir);
+  boost::filesystem::create_directories(tmp_parent / "inst");
+
+  std::ofstream output;
+  output.open(inst_test_py.string().c_str());
+  if (!output.is_open()) {
+    throw std::runtime_error("cannot write modified_test_script inst.py");
+  }
+  if (!(output << "interesting stuff goes here" << std::endl)) {
+    throw std::runtime_error("cannot write contents of modified_test_script inst.py");
+  }
+  output.close();
+
+  solved_rules sr;
+  sr.report_modified_test_script(unitdir, testdir, rulename, snakefile_relative_path, rundir, extra_exclusions,
+                                 inst_test_py);
+
+  boost::filesystem::path expected = unitdir / ("test_" + rulename + ".py");
+  CPPUNIT_ASSERT(boost::filesystem::is_regular_file(expected));
+  std::ifstream input;
+  input.open(expected.string().c_str());
+  bool found_shebang = false, found_testdir = false, found_rulename = false, found_relative_path = false,
+       found_exec_path = false, found_extra_exclusions = false, found_inst_contents = false, firstline = true;
+  std::string line = "";
+  while (input.peek() != EOF) {
+    getline(input, line);
+    if (!line.compare("#!/usr/bin/env python3")) {
+      CPPUNIT_ASSERT(firstline);
+      firstline = false;
+      found_shebang = true;
+    } else if (!line.compare("testdir='" + testdir.string() + "'")) {
+      CPPUNIT_ASSERT(!found_testdir);
+      found_testdir = true;
+    } else if (!line.compare("rulename='" + rulename + "'")) {
+      CPPUNIT_ASSERT(!found_rulename);
+      found_rulename = true;
+    } else if (!line.compare("snakefile_relative_path='" + snakefile_relative_path.string() + "'")) {
+      CPPUNIT_ASSERT(!found_relative_path);
+      found_relative_path = true;
+    } else if (!line.compare("snakemake_exec_path='" + rundir.string() + "'")) {
+      CPPUNIT_ASSERT(!found_exec_path);
+      found_exec_path = true;
+    } else if (!line.compare("extra_comparison_exclusions=['.docx', '.eps', ]")) {
+      CPPUNIT_ASSERT(!found_extra_exclusions);
+      found_extra_exclusions = true;
+    } else if (!line.compare("interesting stuff goes here")) {
+      CPPUNIT_ASSERT(!found_inst_contents);
+      found_inst_contents = true;
+    }
+  }
+  input.close();
+
+  CPPUNIT_ASSERT(found_shebang);
+  CPPUNIT_ASSERT(found_testdir);
+  CPPUNIT_ASSERT(found_rulename);
+  CPPUNIT_ASSERT(found_relative_path);
+  CPPUNIT_ASSERT(found_exec_path);
+  CPPUNIT_ASSERT(found_extra_exclusions);
+  CPPUNIT_ASSERT(found_inst_contents);
+}
 void snakemake_unit_tests::solved_rulesTest::test_solved_rules_report_modified_launcher_script() {
   boost::filesystem::path tmp_parent = boost::filesystem::path(std::string(_tmp_dir));
   boost::filesystem::path inst_dir = tmp_parent / "inst";
