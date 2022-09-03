@@ -321,7 +321,108 @@ void snakemake_unit_tests::solved_rulesTest::test_solved_rules_load_file_unrecog
   sr.load_file(output_filename.string());
 }
 void snakemake_unit_tests::solved_rulesTest::test_solved_rules_emit_tests() {}
-void snakemake_unit_tests::solved_rulesTest::test_solved_rules_emit_snakefile() {}
+void snakemake_unit_tests::solved_rulesTest::test_solved_rules_emit_snakefile() {
+  boost::filesystem::path tmp_parent = boost::filesystem::path(std::string(_tmp_dir));
+  boost::filesystem::path workspace = tmp_parent / "workspace";
+
+  boost::shared_ptr<snakemake_file> sf1(new snakemake_file), sf2(new snakemake_file);
+  boost::shared_ptr<recipe> rec(new recipe);
+  rec->_rule_name = "myrule1";
+  rec->_inputs.push_back("input1.tsv");
+  rec->_outputs.push_back("output1.tsv");
+
+  boost::shared_ptr<rule_block> rb1(new rule_block), rb2(new rule_block), rb3(new rule_block);
+  rb1->_rule_name = "myrule1";
+  rb1->_named_blocks.push_back(std::make_pair("input", " \"input1.tsv\","));
+  rb1->_named_blocks.push_back(std::make_pair("output", " \"output1.tsv\","));
+  rb1->_queried_by_python = true;
+  rb1->_resolution = RESOLVED_INCLUDED;
+  rb2->_code_chunk.push_back("include: \"rules/file2.smk\"");
+  rb2->_queried_by_python = true;
+  rb2->_resolution = RESOLVED_INCLUDED;
+  rb3->_rule_name = "myrule2";
+  rb3->_named_blocks.push_back(std::make_pair("output", " \"output2.tsv\","));
+  rb3->_queried_by_python = true;
+  rb3->_resolution = RESOLVED_INCLUDED;
+  sf1->_blocks.push_back(rb1);
+  sf1->_blocks.push_back(rb2);
+  sf2->_blocks.push_back(rb3);
+
+  sf1->_snakefile_relative_path = "workflow/file1.smk";
+  sf2->_snakefile_relative_path = "workflow/rules/file2.smk";
+
+  sf1->_included_files["workflow/rules/file2.smk"] = sf2;
+
+  std::map<std::string, bool> dependent_rulenames;
+  dependent_rulenames["myrule1"] = true;
+  dependent_rulenames["myrule2"] = true;
+
+  solved_rules sr;
+  sr.emit_snakefile(*sf1, workspace, rec, dependent_rulenames, true);
+
+  CPPUNIT_ASSERT(boost::filesystem::is_directory(workspace));
+  CPPUNIT_ASSERT(boost::filesystem::is_directory(workspace / "workflow"));
+  CPPUNIT_ASSERT(boost::filesystem::is_directory(workspace / "workflow" / "rules"));
+  CPPUNIT_ASSERT(boost::filesystem::is_regular_file(workspace / "workflow" / "file1.smk"));
+  CPPUNIT_ASSERT(boost::filesystem::is_regular_file(workspace / "workflow" / "rules" / "file2.smk"));
+
+  std::ifstream input;
+  std::string line = "";
+  input.open((workspace / "workflow" / "file1.smk").string().c_str());
+  CPPUNIT_ASSERT(input.is_open());
+  CPPUNIT_ASSERT(input.peek() != EOF);
+  getline(input, line);
+  CPPUNIT_ASSERT(!line.compare("rule all:"));
+  CPPUNIT_ASSERT(input.peek() != EOF);
+  getline(input, line);
+  CPPUNIT_ASSERT(!line.compare("    input:"));
+  CPPUNIT_ASSERT(input.peek() != EOF);
+  getline(input, line);
+  CPPUNIT_ASSERT(!line.compare("        \"output1.tsv\","));
+  CPPUNIT_ASSERT(input.peek() != EOF);
+  getline(input, line);
+  CPPUNIT_ASSERT(line.empty());
+  CPPUNIT_ASSERT(input.peek() != EOF);
+  getline(input, line);
+  CPPUNIT_ASSERT(line.empty());
+  CPPUNIT_ASSERT(input.peek() != EOF);
+  getline(input, line);
+  CPPUNIT_ASSERT(!line.compare("rule myrule1:"));
+  CPPUNIT_ASSERT(input.peek() != EOF);
+  getline(input, line);
+  CPPUNIT_ASSERT(!line.compare("    input: \"input1.tsv\","));
+  CPPUNIT_ASSERT(input.peek() != EOF);
+  getline(input, line);
+  CPPUNIT_ASSERT(!line.compare("    output: \"output1.tsv\","));
+  CPPUNIT_ASSERT(input.peek() != EOF);
+  getline(input, line);
+  CPPUNIT_ASSERT(line.empty());
+  CPPUNIT_ASSERT(input.peek() != EOF);
+  getline(input, line);
+  CPPUNIT_ASSERT(line.empty());
+  CPPUNIT_ASSERT(input.peek() != EOF);
+  getline(input, line);
+  CPPUNIT_ASSERT(!line.compare("include: \"rules/file2.smk\""));
+  CPPUNIT_ASSERT(input.peek() == EOF);
+
+  input.close();
+  input.clear();
+  input.open((workspace / "workflow" / "rules" / "file2.smk").string().c_str());
+  CPPUNIT_ASSERT(input.is_open());
+  CPPUNIT_ASSERT(input.peek() != EOF);
+  getline(input, line);
+  CPPUNIT_ASSERT(!line.compare("rule myrule2:"));
+  CPPUNIT_ASSERT(input.peek() != EOF);
+  getline(input, line);
+  CPPUNIT_ASSERT(!line.compare("    output: \"output2.tsv\","));
+  CPPUNIT_ASSERT(input.peek() != EOF);
+  getline(input, line);
+  CPPUNIT_ASSERT(line.empty());
+  CPPUNIT_ASSERT(input.peek() != EOF);
+  getline(input, line);
+  CPPUNIT_ASSERT(line.empty());
+  CPPUNIT_ASSERT(input.peek() == EOF);
+}
 void snakemake_unit_tests::solved_rulesTest::test_solved_rules_create_workspace() {}
 void snakemake_unit_tests::solved_rulesTest::test_solved_rules_create_empty_workspace() {
   boost::filesystem::path tmp_parent = boost::filesystem::path(std::string(_tmp_dir));
