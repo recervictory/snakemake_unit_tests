@@ -323,7 +323,62 @@ void snakemake_unit_tests::solved_rulesTest::test_solved_rules_load_file_unrecog
 void snakemake_unit_tests::solved_rulesTest::test_solved_rules_emit_tests() {}
 void snakemake_unit_tests::solved_rulesTest::test_solved_rules_emit_snakefile() {}
 void snakemake_unit_tests::solved_rulesTest::test_solved_rules_create_workspace() {}
-void snakemake_unit_tests::solved_rulesTest::test_solved_rules_create_empty_workspace() {}
+void snakemake_unit_tests::solved_rulesTest::test_solved_rules_create_empty_workspace() {
+  boost::filesystem::path tmp_parent = boost::filesystem::path(std::string(_tmp_dir));
+  boost::filesystem::path target = tmp_parent / "target";
+  boost::filesystem::path inputs = tmp_parent / "workspace/inputs";
+  boost::filesystem::path input_dir = inputs / "input_dir";
+  boost::filesystem::path input_file_dir = inputs / "input_files";
+  boost::filesystem::path input_file1 = input_file_dir / "file1.tsv";
+  boost::filesystem::path input_file2 = input_file_dir / "file2.tsv";
+  boost::filesystem::path excluded_file = input_file_dir / "file3.tsv";
+  boost::filesystem::path dir_file = input_dir / "file4.tsv";
+  boost::filesystem::path external_file = tmp_parent / "file5.tsv";
+
+  boost::filesystem::create_directories(target);
+  boost::filesystem::create_directories(input_dir);
+  boost::filesystem::create_directories(input_file_dir);
+
+  std::ofstream output;
+  output.open(input_file1.string().c_str());
+  output.close();
+  output.clear();
+  output.open(input_file2.string().c_str());
+  output.close();
+  output.clear();
+  output.open(excluded_file.string().c_str());
+  output.close();
+  output.clear();
+  output.open(dir_file.string().c_str());
+  output.close();
+  output.clear();
+  output.open(external_file.string().c_str());
+  output.close();
+  output.clear();
+
+  std::vector<boost::filesystem::path> added_files, added_directories;
+  added_files.push_back(input_file1);
+  added_files.push_back(input_file2);
+  added_files.push_back(external_file);
+  added_directories.push_back(input_dir);
+
+  std::map<std::string, std::vector<std::string> > files_outside_workspace;
+
+  solved_rules sr;
+  sr.create_empty_workspace(target, inputs, added_files, added_directories, &files_outside_workspace);
+
+  CPPUNIT_ASSERT(boost::filesystem::is_directory(target / ".snakemake_unit_tests"));
+  CPPUNIT_ASSERT(boost::filesystem::is_directory(target / ".snakemake_unit_tests" / "input_dir"));
+  CPPUNIT_ASSERT(boost::filesystem::is_directory(target / ".snakemake_unit_tests" / "input_files"));
+  CPPUNIT_ASSERT(boost::filesystem::is_regular_file(target / ".snakemake_unit_tests" / "input_dir" / "file4.tsv"));
+  CPPUNIT_ASSERT(boost::filesystem::is_regular_file(target / ".snakemake_unit_tests" / "input_files" / "file1.tsv"));
+  CPPUNIT_ASSERT(boost::filesystem::is_regular_file(target / ".snakemake_unit_tests" / "input_files" / "file2.tsv"));
+  CPPUNIT_ASSERT(!boost::filesystem::is_regular_file(target / ".snakemake_unit_tests" / "input_files" / "file3.tsv"));
+  CPPUNIT_ASSERT(files_outside_workspace.size() == 1);
+  CPPUNIT_ASSERT(files_outside_workspace.find(external_file.string()) != files_outside_workspace.end());
+  CPPUNIT_ASSERT(files_outside_workspace[external_file.string()].size() == 1);
+  CPPUNIT_ASSERT(!files_outside_workspace[external_file.string()].at(0).compare("added files"));
+}
 void snakemake_unit_tests::solved_rulesTest::test_solved_rules_remove_empty_workspace() {
   boost::filesystem::path tmp_parent = boost::filesystem::path(std::string(_tmp_dir));
   boost::filesystem::path workspace = tmp_parent / ".snakemake_unit_tests";
