@@ -325,7 +325,52 @@ void snakemake_unit_tests::solved_rulesTest::test_solved_rules_emit_snakefile() 
 void snakemake_unit_tests::solved_rulesTest::test_solved_rules_create_workspace() {}
 void snakemake_unit_tests::solved_rulesTest::test_solved_rules_create_empty_workspace() {}
 void snakemake_unit_tests::solved_rulesTest::test_solved_rules_remove_empty_workspace() {}
-void snakemake_unit_tests::solved_rulesTest::test_solved_rules_copy_contents() {}
+void snakemake_unit_tests::solved_rulesTest::test_solved_rules_copy_contents() {
+  boost::filesystem::path tmp_parent = boost::filesystem::path(std::string(_tmp_dir));
+  boost::filesystem::path workspace = tmp_parent / "workspace";
+  boost::filesystem::path outside = tmp_parent / "outside";
+  boost::filesystem::path target = tmp_parent / "destination";
+  boost::filesystem::create_directories(workspace);
+  boost::filesystem::create_directories(outside);
+  boost::filesystem::create_directories(target);
+  // create some files for copying
+  boost::filesystem::path file1 = workspace / "test1.tsv";
+  boost::filesystem::path file2 = workspace / "test2.tsv";
+  boost::filesystem::path file3 = outside / "test3.tsv";
+  std::ofstream output;
+  output.open(file1.string().c_str());
+  output.close();
+  output.clear();
+  output.open(file2.string().c_str());
+  output.close();
+  output.clear();
+  output.open(file3.string().c_str());
+  output.close();
+  output.clear();
+  // pretend a file already exists in target and is permission locked
+  output.open((target / "test2.tsv").string().c_str());
+  output.close();
+  output.clear();
+  boost::filesystem::permissions(target / "test2.tsv",
+                                 boost::filesystem::owner_write | boost::filesystem::remove_perms);
+
+  std::vector<boost::filesystem::path> contents;
+  contents.push_back(boost::filesystem::path("test1.tsv"));
+  contents.push_back(file2);
+  contents.push_back(boost::filesystem::path(file3));
+  std::map<std::string, std::vector<std::string> > files_outside_workspace;
+
+  solved_rules sr;
+  sr.copy_contents(contents, workspace, target, "myrule", &files_outside_workspace);
+
+  CPPUNIT_ASSERT(boost::filesystem::is_regular_file(target / "test1.tsv"));
+  CPPUNIT_ASSERT(boost::filesystem::is_regular_file(target / "test2.tsv"));
+  CPPUNIT_ASSERT(!boost::filesystem::is_regular_file(target / "test3.tsv"));
+  CPPUNIT_ASSERT(files_outside_workspace.size() == 1);
+  CPPUNIT_ASSERT(files_outside_workspace.find(file3.string()) != files_outside_workspace.end());
+  CPPUNIT_ASSERT(files_outside_workspace[file3.string()].size() == 1);
+  CPPUNIT_ASSERT(!files_outside_workspace[file3.string()].at(0).compare("myrule"));
+}
 void snakemake_unit_tests::solved_rulesTest::test_solved_rules_report_phony_all_target() {
   std::ofstream output;
   std::vector<boost::filesystem::path> targets;
