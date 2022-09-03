@@ -326,7 +326,52 @@ void snakemake_unit_tests::solved_rulesTest::test_solved_rules_create_workspace(
 void snakemake_unit_tests::solved_rulesTest::test_solved_rules_create_empty_workspace() {}
 void snakemake_unit_tests::solved_rulesTest::test_solved_rules_remove_empty_workspace() {}
 void snakemake_unit_tests::solved_rulesTest::test_solved_rules_copy_contents() {}
-void snakemake_unit_tests::solved_rulesTest::test_solved_rules_report_phony_all_target() {}
+void snakemake_unit_tests::solved_rulesTest::test_solved_rules_report_phony_all_target() {
+  std::ofstream output;
+  std::vector<boost::filesystem::path> targets;
+  boost::filesystem::path tmp_parent = boost::filesystem::path(std::string(_tmp_dir));
+  boost::filesystem::path output_file = tmp_parent / "output.smk";
+  output.open(output_file.string().c_str());
+  if (!output.is_open()) {
+    throw std::runtime_error("cannot write phony_all_target output file");
+  }
+  if (!(output << "preserved content" << std::endl)) {
+    throw std::runtime_error("cannot write contents of phony_all_target output file");
+  }
+  targets.push_back(tmp_parent / "target2.tsv");
+  targets.push_back(tmp_parent / "target1.tsv");
+  solved_rules sr;
+  sr.report_phony_all_target(output, targets);
+  output.close();
+
+  std::ifstream input;
+  std::string line = "";
+  input.open(output_file.string().c_str());
+  CPPUNIT_ASSERT(input.is_open());
+  CPPUNIT_ASSERT(input.peek() != EOF);
+  getline(input, line);
+  CPPUNIT_ASSERT(!line.compare("preserved content"));
+  CPPUNIT_ASSERT(input.peek() != EOF);
+  getline(input, line);
+  CPPUNIT_ASSERT(!line.compare("rule all:"));
+  CPPUNIT_ASSERT(input.peek() != EOF);
+  getline(input, line);
+  CPPUNIT_ASSERT(!line.compare("    input:"));
+  CPPUNIT_ASSERT(input.peek() != EOF);
+  getline(input, line);
+  CPPUNIT_ASSERT(!line.compare("        \"" + targets.at(0).string() + "\","));
+  CPPUNIT_ASSERT(input.peek() != EOF);
+  getline(input, line);
+  CPPUNIT_ASSERT(!line.compare("        \"" + targets.at(1).string() + "\","));
+  CPPUNIT_ASSERT(input.peek() != EOF);
+  getline(input, line);
+  CPPUNIT_ASSERT(line.empty());
+  CPPUNIT_ASSERT(input.peek() != EOF);
+  getline(input, line);
+  CPPUNIT_ASSERT(line.empty());
+  CPPUNIT_ASSERT(input.peek() == EOF);
+  input.close();
+}
 void snakemake_unit_tests::solved_rulesTest::test_solved_rules_report_modified_test_script() {
   /*
     need the following:
