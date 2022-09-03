@@ -423,7 +423,119 @@ void snakemake_unit_tests::solved_rulesTest::test_solved_rules_emit_snakefile() 
   CPPUNIT_ASSERT(line.empty());
   CPPUNIT_ASSERT(input.peek() == EOF);
 }
-void snakemake_unit_tests::solved_rulesTest::test_solved_rules_create_workspace() {}
+void snakemake_unit_tests::solved_rulesTest::test_solved_rules_create_workspace() {
+  /*
+    need:
+    - a recipe (pointer)
+    - a snakemake file
+    - testdir
+    - testdir/unit
+    - pipeline top directory
+    - pipeline run directory (relative to top)
+    - path to inst/test.py
+    - map of extra required recipes (pointers)
+    - map of included rule names (as strings)
+    - map of excluded rule names (as strings)
+    - vector of added files
+    - vector of added directories
+    - update snakefiles?
+    - update added files/directories?
+    - update inputs?
+    - update outputs?
+    - update pytest infrastructure?
+    - include entire dag?
+    - pointer to map of files from outside workspace -> rule names
+
+    yes, it's a lot
+   */
+  boost::shared_ptr<recipe> rec1(new recipe);
+  rec1->_rule_name = "myrule1";
+  rec1->_inputs.push_back("results/input1.tsv");
+  rec1->_outputs.push_back("results/output1.tsv");
+  boost::shared_ptr<snakemake_file> sf1(new snakemake_file);
+  boost::shared_ptr<rule_block> rb1(new rule_block);
+  rb1->_rule_name = "myrule1";
+  rb1->_named_blocks.push_back(std::make_pair("input", " \"input1.tsv\","));
+  rb1->_named_blocks.push_back(std::make_pair("output", " \"output1.tsv\","));
+  rb1->_queried_by_python = true;
+  rb1->_resolution = RESOLVED_INCLUDED;
+  sf1->_blocks.push_back(rb1);
+  sf1->_snakefile_relative_path = "workflow/Snakefile";
+  boost::filesystem::path tmp_parent = boost::filesystem::path(std::string(_tmp_dir));
+  boost::filesystem::path testdir = tmp_parent / ".tests";
+  boost::filesystem::path unitdir = testdir / "unit";
+  boost::filesystem::path pipeline_top_dir = tmp_parent / "pipeline";
+  boost::filesystem::path pipeline_run_dir = "workflow";
+  boost::filesystem::path inst_test_py = tmp_parent / "inst" / "test.py";
+  std::map<boost::shared_ptr<recipe>, bool> extra_required_recipes;
+  std::map<std::string, bool> include_rules, exclude_rules;
+  std::vector<boost::filesystem::path> added_files, added_directories;
+  bool update_snakefiles = true, update_added_content = true, update_inputs = true, update_outputs = true,
+       update_pytest = true, include_entire_dag = false;
+  std::map<std::string, std::vector<std::string> > files_outside_workspace;
+
+  added_files.push_back("file2.tsv");
+  added_directories.push_back("extra_stuff");
+
+  boost::filesystem::create_directories(pipeline_top_dir / pipeline_run_dir / "results");
+  boost::filesystem::create_directories(tmp_parent / "inst");
+  boost::filesystem::create_directories(pipeline_top_dir / "extra_stuff");
+
+  std::ofstream output;
+  output.open(inst_test_py.string().c_str());
+  output << "inst test py content goes here" << std::endl;
+  output.close();
+  output.clear();
+  output.open((pipeline_top_dir / pipeline_run_dir / "results" / "input1.tsv").string().c_str());
+  output.close();
+  output.clear();
+  output.open((pipeline_top_dir / pipeline_run_dir / "results" / "output1.tsv").string().c_str());
+  output.close();
+  output.clear();
+  output.open((pipeline_top_dir / "extra_stuff" / "file1.tsv").string().c_str());
+  output.close();
+  output.clear();
+  output.open((pipeline_top_dir / "file2.tsv").string().c_str());
+  output.close();
+  output.clear();
+
+  solved_rules sr;
+  sr._recipes.push_back(rec1);
+  sr._output_lookup["output1.tsv"] = rec1;
+
+  // capture std::cout
+  std::ostringstream observed;
+  std::streambuf *previous_buffer(std::cout.rdbuf(observed.rdbuf()));
+
+  try {
+    sr.create_workspace(rec1, *sf1, testdir, unitdir, pipeline_top_dir, pipeline_run_dir, inst_test_py,
+                        extra_required_recipes, include_rules, exclude_rules, added_files, added_directories,
+                        update_snakefiles, update_added_content, update_inputs, update_outputs, update_pytest,
+                        include_entire_dag, &files_outside_workspace);
+  } catch (...) {
+    std::cout.rdbuf(previous_buffer);
+    throw;
+  }
+
+  // reset std::cout
+  std::cout.rdbuf(previous_buffer);
+  CPPUNIT_ASSERT(!observed.str().compare("emitting test for rule \"myrule1\"\n"));
+  CPPUNIT_ASSERT(boost::filesystem::is_directory(unitdir));
+  CPPUNIT_ASSERT(boost::filesystem::is_directory(unitdir / "myrule1"));
+  CPPUNIT_ASSERT(boost::filesystem::is_directory(unitdir / "myrule1" / "workspace"));
+  CPPUNIT_ASSERT(boost::filesystem::is_directory(unitdir / "myrule1" / "expected"));
+  CPPUNIT_ASSERT(boost::filesystem::is_directory(unitdir / "myrule1" / "expected" / "workflow" / "results"));
+  CPPUNIT_ASSERT(boost::filesystem::is_directory(unitdir / "myrule1" / "workspace" / "workflow" / "results"));
+  CPPUNIT_ASSERT(
+      boost::filesystem::is_regular_file(unitdir / "myrule1" / "expected" / "workflow" / "results" / "output1.tsv"));
+  CPPUNIT_ASSERT(
+      boost::filesystem::is_regular_file(unitdir / "myrule1" / "workspace" / "workflow" / "results" / "input1.tsv"));
+  CPPUNIT_ASSERT(boost::filesystem::is_regular_file(unitdir / "myrule1" / "workspace" / "workflow" / "Snakefile"));
+  CPPUNIT_ASSERT(boost::filesystem::is_regular_file(unitdir / "myrule1" / "workspace" / "file2.tsv"));
+  CPPUNIT_ASSERT(boost::filesystem::is_directory(unitdir / "myrule1" / "workspace" / "extra_stuff"));
+  CPPUNIT_ASSERT(boost::filesystem::is_regular_file(unitdir / "myrule1" / "workspace" / "extra_stuff" / "file1.tsv"));
+  CPPUNIT_ASSERT(boost::filesystem::is_regular_file(unitdir / "test_myrule1.py"));
+}
 void snakemake_unit_tests::solved_rulesTest::test_solved_rules_create_empty_workspace() {
   boost::filesystem::path tmp_parent = boost::filesystem::path(std::string(_tmp_dir));
   boost::filesystem::path target = tmp_parent / "target";
