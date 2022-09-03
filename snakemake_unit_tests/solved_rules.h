@@ -35,66 +35,61 @@ class recipe {
   /*!
     @brief constructor
    */
-  recipe() : _rule_name(""), _log("") {}
+  recipe();
   /*!
     @brief copy constructor
     @param obj existing recipe object
    */
-  recipe(const recipe &obj)
-      : _rule_name(obj._rule_name), _inputs(obj._inputs), _outputs(obj._outputs), _log(obj._log) {}
+  recipe(const recipe &obj);
   /*!
     @brief destructor
    */
-  ~recipe() throw() {}
+  ~recipe() throw();
 
   /*!
     @brief access rule name
     @return rule name
    */
-  const std::string &get_rule_name() const { return _rule_name; }
+  const std::string &get_rule_name() const;
   /*!
     @brief set rule name
     @param s new rule name
    */
-  void set_rule_name(const std::string &s) { _rule_name = s; }
+  void set_rule_name(const std::string &s);
   /*!
     @brief access list of input files
     @return vector storing all input filenames; may be empty
   */
-  const std::vector<boost::filesystem::path> &get_inputs() const { return _inputs; }
+  const std::vector<boost::filesystem::path> &get_inputs() const;
   /*!
     @brief add an input filename
     @param s new input filename
    */
-  void add_input(const std::string &s) { _inputs.push_back(s); }
+  void add_input(const std::string &s);
   /*!
     @brief access list of output files
     @return vector storing all output filenames; shouldn't be empty
    */
-  const std::vector<boost::filesystem::path> &get_outputs() const { return _outputs; }
+  const std::vector<boost::filesystem::path> &get_outputs() const;
   /*!
     @brief add an output filename
     @param s new output filename
    */
-  void add_output(const std::string &s) { _outputs.push_back(s); }
+  void add_output(const std::string &s);
   /*!
     @brief access log filename
     @return log filename, if given; else empty string
    */
-  const std::string &get_log() const { return _log; }
+  const std::string &get_log() const;
   /*!
     @brief set log filename
     @param s new log filename
    */
-  void set_log(const std::string &s) { _log = s; }
+  void set_log(const std::string &s);
   /*!
     @brief clear all stored contents
    */
-  void clear() {
-    _rule_name = _log = "";
-    _inputs.clear();
-    _outputs.clear();
-  }
+  void clear();
 
  private:
   friend class solved_rulesTest;

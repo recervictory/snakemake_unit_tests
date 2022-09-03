@@ -236,6 +236,7 @@ class rule_block {
  private:
   friend class rule_blockTest;
   friend class snakemake_fileTest;
+  friend class solved_rulesTest;
   /*!
     @brief return a string containing some number of whitespaces
     @param count total whitespace indentation to apply

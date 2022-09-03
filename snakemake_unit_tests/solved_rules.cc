@@ -8,6 +8,24 @@
 
 #include "snakemake_unit_tests/solved_rules.h"
 
+snakemake_unit_tests::recipe::recipe() : _rule_name(""), _log("") {}
+snakemake_unit_tests::recipe::recipe(const recipe &obj)
+    : _rule_name(obj._rule_name), _inputs(obj._inputs), _outputs(obj._outputs), _log(obj._log) {}
+snakemake_unit_tests::recipe::~recipe() throw() {}
+const std::string &snakemake_unit_tests::recipe::get_rule_name() const { return _rule_name; }
+void snakemake_unit_tests::recipe::set_rule_name(const std::string &s) { _rule_name = s; }
+const std::vector<boost::filesystem::path> &snakemake_unit_tests::recipe::get_inputs() const { return _inputs; }
+void snakemake_unit_tests::recipe::add_input(const std::string &s) { _inputs.push_back(s); }
+const std::vector<boost::filesystem::path> &snakemake_unit_tests::recipe::get_outputs() const { return _outputs; }
+void snakemake_unit_tests::recipe::add_output(const std::string &s) { _outputs.push_back(s); }
+const std::string &snakemake_unit_tests::recipe::get_log() const { return _log; }
+void snakemake_unit_tests::recipe::set_log(const std::string &s) { _log = s; }
+void snakemake_unit_tests::recipe::clear() {
+  _rule_name = _log = "";
+  _inputs.clear();
+  _outputs.clear();
+}
+
 void snakemake_unit_tests::solved_rules::load_file(const std::string &filename) {
   std::ifstream input;
   std::string line = "";

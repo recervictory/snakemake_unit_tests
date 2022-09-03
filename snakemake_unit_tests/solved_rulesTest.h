@@ -40,6 +40,9 @@ class solved_rulesTest : public CppUnit::TestFixture {
   CPPUNIT_TEST(test_solved_rules_default_constructor);
   CPPUNIT_TEST(test_solved_rules_copy_constructor);
   CPPUNIT_TEST(test_solved_rules_load_file);
+  CPPUNIT_TEST_EXCEPTION(test_solved_rules_load_file_unresolved_checkpoint, std::logic_error);
+  CPPUNIT_TEST(test_solved_rules_load_file_toxic_output_files);
+  CPPUNIT_TEST_EXCEPTION(test_solved_rules_load_file_unrecognized_block, std::logic_error);
   CPPUNIT_TEST(test_solved_rules_emit_tests);
   CPPUNIT_TEST(test_solved_rules_emit_snakefile);
   CPPUNIT_TEST(test_solved_rules_create_workspace);
@@ -49,8 +52,14 @@ class solved_rulesTest : public CppUnit::TestFixture {
   CPPUNIT_TEST(test_solved_rules_report_phony_all_target);
   CPPUNIT_TEST(test_solved_rules_report_modified_test_script);
   CPPUNIT_TEST(test_solved_rules_report_modified_launcher_script);
+  CPPUNIT_TEST_EXCEPTION(test_solved_rules_report_modified_launcher_script_bad_target_directory, std::runtime_error);
+  CPPUNIT_TEST_EXCEPTION(test_solved_rules_report_modified_launcher_script_missing_script, std::runtime_error);
   CPPUNIT_TEST(test_solved_rules_find_missing_rules);
+  CPPUNIT_TEST_EXCEPTION(test_solved_rules_find_missing_rules_null_pointer, std::runtime_error);
+  CPPUNIT_TEST_EXCEPTION(test_solved_rules_find_missing_rules_unexpected_error, std::runtime_error);
   CPPUNIT_TEST(test_solved_rules_add_dag_from_leaf);
+  CPPUNIT_TEST(test_solved_rules_add_dag_from_leaf_entire);
+  CPPUNIT_TEST_EXCEPTION(test_solved_rules_add_dag_from_leaf_null_pointer, std::runtime_error);
   CPPUNIT_TEST_SUITE_END();
 
  public:
@@ -72,6 +81,9 @@ class solved_rulesTest : public CppUnit::TestFixture {
   void test_solved_rules_default_constructor();
   void test_solved_rules_copy_constructor();
   void test_solved_rules_load_file();
+  void test_solved_rules_load_file_unresolved_checkpoint();
+  void test_solved_rules_load_file_toxic_output_files();
+  void test_solved_rules_load_file_unrecognized_block();
   void test_solved_rules_emit_tests();
   void test_solved_rules_emit_snakefile();
   void test_solved_rules_create_workspace();
@@ -81,8 +93,14 @@ class solved_rulesTest : public CppUnit::TestFixture {
   void test_solved_rules_report_phony_all_target();
   void test_solved_rules_report_modified_test_script();
   void test_solved_rules_report_modified_launcher_script();
+  void test_solved_rules_report_modified_launcher_script_bad_target_directory();
+  void test_solved_rules_report_modified_launcher_script_missing_script();
   void test_solved_rules_find_missing_rules();
+  void test_solved_rules_find_missing_rules_null_pointer();
+  void test_solved_rules_find_missing_rules_unexpected_error();
   void test_solved_rules_add_dag_from_leaf();
+  void test_solved_rules_add_dag_from_leaf_entire();
+  void test_solved_rules_add_dag_from_leaf_null_pointer();
 
  private:
   char *_tmp_dir;

@@ -1,3 +1,4 @@
+build*bash
 node_modules
 package*json
 .tests*
