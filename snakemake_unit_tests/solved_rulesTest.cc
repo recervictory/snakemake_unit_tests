@@ -324,7 +324,17 @@ void snakemake_unit_tests::solved_rulesTest::test_solved_rules_emit_tests() {}
 void snakemake_unit_tests::solved_rulesTest::test_solved_rules_emit_snakefile() {}
 void snakemake_unit_tests::solved_rulesTest::test_solved_rules_create_workspace() {}
 void snakemake_unit_tests::solved_rulesTest::test_solved_rules_create_empty_workspace() {}
-void snakemake_unit_tests::solved_rulesTest::test_solved_rules_remove_empty_workspace() {}
+void snakemake_unit_tests::solved_rulesTest::test_solved_rules_remove_empty_workspace() {
+  boost::filesystem::path tmp_parent = boost::filesystem::path(std::string(_tmp_dir));
+  boost::filesystem::path workspace = tmp_parent / ".snakemake_unit_tests";
+  boost::filesystem::path embedded_content = workspace / "subdir";
+  boost::filesystem::create_directories(embedded_content);
+  CPPUNIT_ASSERT(boost::filesystem::is_directory(workspace));
+
+  solved_rules sr;
+  sr.remove_empty_workspace(tmp_parent);
+  CPPUNIT_ASSERT(!boost::filesystem::is_directory(workspace));
+}
 void snakemake_unit_tests::solved_rulesTest::test_solved_rules_copy_contents() {
   boost::filesystem::path tmp_parent = boost::filesystem::path(std::string(_tmp_dir));
   boost::filesystem::path workspace = tmp_parent / "workspace";
